@@ -105,8 +105,8 @@ fun Modifier.handleVerticalDragGestures(
 ): Modifier {
     var startY = 0f
 
-    return pointerInput(Unit) {
-        detectVerticalDragGestures { change, dragAmount ->
+    return this then pointerInput(Unit) {
+        detectVerticalDragGestures { change, _ ->
             when {
                 change.positionChanged() -> {
                     if (startY == 0f) {

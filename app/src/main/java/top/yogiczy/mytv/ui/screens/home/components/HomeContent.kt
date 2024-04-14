@@ -27,9 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
@@ -53,6 +51,7 @@ import top.yogiczy.mytv.ui.screens.monitor.MonitorScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelScreen
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.ui.screens.video.VideoScreen
+import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import top.yogiczy.mytv.ui.utils.handleVerticalDragGestures
@@ -174,34 +173,6 @@ private fun BackPressHandledArea(
         }
     }
     .then(modifier), content = content)
-
-class ExoPlayerState {
-    var resolution by mutableStateOf(Pair(0, 0))
-    var error by mutableStateOf(false)
-}
-
-@Composable
-private fun rememberExoPlayerState(exoPlayer: ExoPlayer): ExoPlayerState {
-    val state = remember { ExoPlayerState() }
-
-    exoPlayer.addListener(object : Player.Listener {
-        override fun onVideoSizeChanged(videoSize: VideoSize) {
-            state.resolution = Pair(videoSize.width, videoSize.height)
-        }
-
-        override fun onPlayerError(error: PlaybackException) {
-            state.error = true
-        }
-
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            if (playbackState == Player.STATE_BUFFERING) {
-                state.error = false
-            }
-        }
-    })
-
-    return state
-}
 
 @UnstableApi
 class HomeContentState(
