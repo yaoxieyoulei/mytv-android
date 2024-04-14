@@ -107,7 +107,14 @@ fun HomeContent(
                     onSettings = { state.changeSettingsVisible(true) },
                     onNumber = { channelNoInputState.input(it) }
                 )
-                .handleVerticalDragGestures(onSwipeUp = { }, onSwipeDown = { })
+                .handleVerticalDragGestures(
+                    onSwipeUp = {
+                        state.changeCurrentIptvToNext()
+                    },
+                    onSwipeDown = {
+                        state.changeCurrentIptvToPrev()
+                    },
+                )
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = { state.changePanelVisible(true) },

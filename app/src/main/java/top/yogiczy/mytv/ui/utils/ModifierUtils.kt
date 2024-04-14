@@ -3,10 +3,13 @@ package top.yogiczy.mytv.ui.utils
 import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.unit.dp
 
 /**
  * 监听短按、长按按键事件
@@ -99,31 +102,25 @@ fun Modifier.handleDPadKeyEvents(
 /**
  * 监听手势上下滑动事件
  */
+@Composable
 fun Modifier.handleVerticalDragGestures(
     onSwipeUp: () -> Unit = {},
     onSwipeDown: () -> Unit = {},
 ): Modifier {
-    var startY = 0f
+    val verticalTracker = remember { VelocityTracker() }
+    val swipeThreshold = 100.dp
 
     return this then pointerInput(Unit) {
-        detectVerticalDragGestures { change, _ ->
-            when {
-                change.positionChanged() -> {
-                    if (startY == 0f) {
-                        startY = change.position.y
-                    }
-                }
-
-                change.position.y - startY > 0 -> {
+        detectVerticalDragGestures(
+            onDragEnd = {
+                if (verticalTracker.calculateVelocity().y > swipeThreshold.toPx()) {
                     onSwipeDown()
-                    startY = 0f
-                }
-
-                change.position.y - startY < 0 -> {
+                } else if (verticalTracker.calculateVelocity().y < -swipeThreshold.toPx()) {
                     onSwipeUp()
-                    startY = 0f
                 }
-            }
+            },
+        ) { change, _ ->
+            verticalTracker.addPosition(change.uptimeMillis, change.position)
         }
     }
 }
