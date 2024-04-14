@@ -24,7 +24,7 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -120,8 +120,6 @@ dependencies {
 
     // 网络请求
     implementation(libs.okhttp)
-
-    implementation(libs.coil.compose)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
