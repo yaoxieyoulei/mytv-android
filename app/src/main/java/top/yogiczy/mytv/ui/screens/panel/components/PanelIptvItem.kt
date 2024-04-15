@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,20 +33,11 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 fun PanelIptvItem(
     modifier: Modifier = Modifier,
     iptv: Iptv = Iptv.EMPTY,
-    currentIptv: Iptv = Iptv.EMPTY,
     onIptvSelected: () -> Unit = {},
     programmes: Pair<String?, String?> = Pair(null, null),
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        if (iptv == currentIptv) focusRequester.requestFocus()
-    }
-
-    LaunchedEffect(isFocused) {
-        if (isFocused) focusRequester.requestFocus()
-    }
 
     Card(
         modifier = modifier
@@ -100,7 +90,6 @@ private fun PanelIptvItemPreview() {
     MyTVTheme {
         PanelIptvItem(
             iptv = Iptv.EXAMPLE,
-            currentIptv = Iptv.EMPTY,
         )
     }
 }

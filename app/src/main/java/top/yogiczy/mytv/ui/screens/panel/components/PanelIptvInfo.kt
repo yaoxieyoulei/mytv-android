@@ -29,6 +29,7 @@ fun PanelIptvInfo(
                 text = iptv.name,
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -38,6 +39,7 @@ fun PanelIptvInfo(
                     text = "播放失败",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.error,
+                    softWrap = false,
                 )
             }
         }
@@ -45,11 +47,13 @@ fun PanelIptvInfo(
             text = "正在播放：${programmes.first ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            maxLines = 1,
         )
         Text(
             text = "正在播放：${programmes.second ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            maxLines = 1,
         )
     }
 }
@@ -60,7 +64,7 @@ private fun PanelIptvInfoPreview() {
     MyTVTheme {
         PanelIptvInfo(
             iptv = Iptv.EXAMPLE,
-            programmes = Pair("新闻联播", null),
+            programmes = Pair("实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场", null),
             playerError = true,
         )
     }

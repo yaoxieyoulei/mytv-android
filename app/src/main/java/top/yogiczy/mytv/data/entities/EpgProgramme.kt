@@ -1,8 +1,11 @@
 package top.yogiczy.mytv.data.entities
 
+import kotlinx.serialization.Serializable
+
 /**
  * 频道界面
  */
+@Serializable
 data class EpgProgramme(
     /**
      * 开始时间（时间戳）

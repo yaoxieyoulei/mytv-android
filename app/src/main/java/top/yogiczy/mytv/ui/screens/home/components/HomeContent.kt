@@ -44,6 +44,8 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.data.entities.EpgList
+import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
@@ -61,6 +63,7 @@ import top.yogiczy.mytv.ui.utils.handleVerticalDragGestures
 fun HomeContent(
     modifier: Modifier = Modifier,
     iptvGroupList: IptvGroupList = IptvGroupList(),
+    epgList: EpgList = EpgList(),
     onBackPressed: () -> Unit = {},
     state: HomeContentState = rememberHomeContentState(
         iptvGroupList = iptvGroupList,
@@ -102,10 +105,7 @@ fun HomeContent(
                     onEnter = { state.changePanelVisible(true) },
                     onLongEnter = { state.changeSettingsVisible(true) },
                     onSettings = { state.changeSettingsVisible(true) },
-                    onNumber = {
-                        state.changePanelVisible(false)
-                        channelNoInputState.input(it)
-                    })
+                    onNumber = { channelNoInputState.input(it) })
                 .handleVerticalDragGestures(
                     onSwipeUp = {
                         state.changeCurrentIptvToNext()
@@ -136,6 +136,7 @@ fun HomeContent(
                 channelNo = iptvGroupList.iptvIdx(state.currentIptv) + 1,
                 currentIptv = state.currentIptv,
                 playerError = playerState.error,
+                programmes = epgList.currentProgrammes(state.currentIptv),
             )
         }
 
@@ -146,6 +147,7 @@ fun HomeContent(
                 currentIptv = state.currentIptv,
                 playerState = playerState,
                 iptvGroupList = iptvGroupList,
+                epgList = epgList,
                 onClose = { state.changePanelVisible(false) },
                 onIptvSelected = {
                     state.changeCurrentIptv(it)

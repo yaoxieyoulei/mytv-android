@@ -3,6 +3,7 @@ package top.yogiczy.mytv.ui.screens.home.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,9 @@ fun IptvTempPanel(
                 .align(Alignment.BottomStart),
         ) {
             PanelIptvInfo(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .sizeIn(maxWidth = 500.dp),
                 iptv = currentIptv,
                 playerError = playerError,
                 programmes = programmes,
@@ -63,6 +66,11 @@ private fun IptvTempPanelPreview() {
         IptvTempPanel(
             channelNo = 1,
             currentIptv = Iptv.EXAMPLE,
+            playerError = true,
+            programmes = Pair(
+                "实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场",
+                "实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场"
+            )
         )
     }
 }

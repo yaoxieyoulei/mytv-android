@@ -112,32 +112,32 @@ fun SettingsList(
             )
         }
 
-        // item {
-        //     SettingsItem(
-        //         title = "节目单",
-        //         value = if (epgEnable) "启用" else "禁用",
-        //         description = "首次加载时可能会有跳帧风险",
-        //         onClick = { epgEnable = !epgEnable },
-        //     )
-        // }
-        //
-        // item {
-        //     SettingsItem(
-        //         title = "节目单缓存",
-        //         value = "当天",
-        //         description = if (epgXmlCacheTime > 0) "已缓存(点击清除缓存)" else "未缓存",
-        //         onClick = {
-        //             epgXmlCacheTime = 0
-        //             epgCacheHash = 0
-        //         },
-        //     )
-        // }
+        item {
+            SettingsItem(
+                title = "节目单",
+                value = if (epgEnable) "启用" else "禁用",
+                description = "首次加载时可能会有跳帧风险",
+                onClick = { epgEnable = !epgEnable },
+            )
+        }
+
+        item {
+            SettingsItem(
+                title = "节目单缓存",
+                value = "当天",
+                description = if (epgXmlCacheTime > 0) "已缓存(点击清除缓存)" else "未缓存",
+                onClick = {
+                    epgXmlCacheTime = 0
+                    epgCacheHash = 0
+                },
+            )
+        }
 
         item {
             SettingsItem(
                 title = "显示FPS",
                 value = if (debugShowFps) "启用" else "禁用",
-                description = "显示当前帧率（重启生效）",
+                description = "显示当前帧率",
                 onClick = { debugShowFps = !debugShowFps },
             )
         }

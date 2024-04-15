@@ -69,9 +69,9 @@ fun PanelScreen(
 
         PanelBottom(
             currentIptv = currentIptv,
-            epgList = epgList,
             playerState = playerState,
             iptvGroupList = iptvGroupList,
+            epgList = epgList,
             onIptvSelected = onIptvSelected,
         )
     }
@@ -132,9 +132,11 @@ fun PanelBottom(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
+            val currentProgrammes = remember { epgList.currentProgrammes(currentIptv) }
+
             PanelIptvInfo(
                 iptv = currentIptv,
-                programmes = epgList.currentProgrammes(currentIptv),
+                programmes = currentProgrammes,
                 playerError = playerState.error,
                 modifier = Modifier.padding(start = childPadding.start),
             )

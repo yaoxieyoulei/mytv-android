@@ -7,6 +7,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
+import top.yogiczy.mytv.data.repositories.EpgRepository
+import top.yogiczy.mytv.data.repositories.EpgRepositoryImpl
 import top.yogiczy.mytv.data.repositories.IptvRepository
 import top.yogiczy.mytv.data.repositories.IptvRepositoryImpl
 
@@ -25,5 +27,10 @@ object AppModule {
     @Provides
     fun provideIptvRepository(context: Context): IptvRepository {
         return IptvRepositoryImpl(context)
+    }
+
+    @Provides
+    fun provideEpgRepository(context: Context): EpgRepository {
+        return EpgRepositoryImpl(context)
     }
 }

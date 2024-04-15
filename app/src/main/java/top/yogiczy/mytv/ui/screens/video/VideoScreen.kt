@@ -2,7 +2,6 @@ package top.yogiczy.mytv.ui.screens.video
 
 import android.view.SurfaceView
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -28,14 +27,15 @@ fun VideoScreen(
 
     AndroidView(
         modifier = modifier
-            .fillMaxSize()
             .aspectRatio(state.aspectRatio),
         factory = {
             // PlayerView 切换视频时黑屏闪烁，使用 SurfaceView 代替
             SurfaceView(context)
         },
         update = { surfaceView ->
-            exoPlayer.setVideoSurface(surfaceView.holder.surface)
+            if (surfaceView.holder.surface.isValid) {
+                exoPlayer.setVideoSurface(surfaceView.holder.surface)
+            }
         },
         onRelease = {
             exoPlayer.release()

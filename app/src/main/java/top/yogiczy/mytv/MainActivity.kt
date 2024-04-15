@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -35,7 +33,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             // 隐藏状态栏、导航栏
             WindowCompat.setDecorFitsSystemWindows(window, false)
-            window.statusBarColor = Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, window.decorView).let { insetsController ->
                 insetsController.hide(WindowInsetsCompat.Type.statusBars())
                 insetsController.hide(WindowInsetsCompat.Type.navigationBars())
@@ -44,9 +41,7 @@ class MainActivity : ComponentActivity() {
             }
 
             // 屏幕常亮
-            WindowManager.LayoutParams().apply {
-                flags = flags or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-            }
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
             MyTVTheme {
                 Box(

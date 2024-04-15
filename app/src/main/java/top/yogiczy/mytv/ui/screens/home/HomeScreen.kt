@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -28,13 +27,25 @@ fun HomeScreen(
     onBackPressed: () -> Unit = {},
     homeScreeViewModel: HomeScreeViewModel = hiltViewModel(),
 ) {
-    val uiState by homeScreeViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by homeScreeViewModel.uiState
+
+    // var epgList by remember { mutableStateOf(EpgList()) }
+    //
+    // LaunchedEffect(uiState) {
+    //     if (uiState is HomeScreenUiState.Ready) {
+    //         epgList =
+    //             EpgRepositoryImpl(context).getEpgs((uiState as HomeScreenUiState.Ready).iptvGroupList.flatMap { it.iptvs }
+    //                 .map { it.channelName })
+    //         Log.d("", "${epgList.size}}")
+    //     }
+    // }
 
     when (val s = uiState) {
         is HomeScreenUiState.Ready -> {
             HomeContent(
                 modifier = modifier,
                 iptvGroupList = s.iptvGroupList,
+                epgList = s.epgList,
                 onBackPressed = onBackPressed,
             )
         }
@@ -127,8 +138,7 @@ private fun HomeScreenErrorPreview() {
 private fun HomeScreenErrorLongPreview() {
     MyTVTheme {
         HomeScreenError(
-            "Caused by: androidx.media3.datasource.HttpDataSource\$HttpDataSourceException:" +
-                    " java.io.IOException: unexpected end of stream on com.android.okhttp.Address@2f10c24d"
+            "Caused by: androidx.media3.datasource.HttpDataSource\$HttpDataSourceException:" + " java.io.IOException: unexpected end of stream on com.android.okhttp.Address@2f10c24d"
         )
     }
 }
