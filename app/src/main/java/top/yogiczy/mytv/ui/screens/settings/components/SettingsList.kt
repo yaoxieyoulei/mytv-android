@@ -29,7 +29,7 @@ fun SettingsList(
     var debugShowFps by remember { mutableStateOf(SP.debugShowFps) }
     var iptvChannelChangeFlip by remember { mutableStateOf(SP.iptvChannelChangeFlip) }
     var iptvSourceSimplify by remember { mutableStateOf(SP.iptvSourceSimplify) }
-    var iptvCustomSource by remember { mutableStateOf(SP.iptvCustomSource) }
+    val iptvCustomSource by remember { mutableStateOf(SP.iptvCustomSource) }
     var iptvSourceCacheTime by remember { mutableLongStateOf(SP.iptvSourceCacheTime) }
     var epgEnable by remember { mutableStateOf(SP.epgEnable) }
     var epgXmlCacheTime by remember { mutableLongStateOf(SP.epgXmlCacheTime) }
