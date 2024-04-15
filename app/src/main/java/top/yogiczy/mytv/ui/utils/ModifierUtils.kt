@@ -70,7 +70,6 @@ fun Modifier.handleDPadKeyEvents(
 
         KeyEvent.KEYCODE_MENU to onSettings,
         KeyEvent.KEYCODE_SETTINGS to onSettings,
-        KeyEvent.KEYCODE_HELP to onSettings,
         KeyEvent.KEYCODE_H to onSettings,
         KeyEvent.KEYCODE_UNKNOWN to onSettings,
 
@@ -90,6 +89,10 @@ fun Modifier.handleDPadKeyEvents(
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT to onRight
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP to onUp
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN to onDown
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            KeyEvent.KEYCODE_HELP to onSettings
         }
     },
     onKeyLongTap = mapOf(
