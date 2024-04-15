@@ -34,6 +34,8 @@ import top.yogiczy.mytv.ui.screens.panel.components.PanelDateTime
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvInfo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelPlayerInfo
+import top.yogiczy.mytv.ui.screens.video.ExoPlayerState
+import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
 
@@ -42,8 +44,7 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 fun PanelScreen(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
-    playerError: Boolean = false,
-    playerResolution: Pair<Int, Int> = Pair(0, 0),
+    playerState: ExoPlayerState = rememberExoPlayerState(),
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onClose: () -> Unit = {},
@@ -69,8 +70,7 @@ fun PanelScreen(
         PanelBottom(
             currentIptv = currentIptv,
             epgList = epgList,
-            playerError = playerError,
-            playerResolution = playerResolution,
+            playerState = playerState,
             iptvGroupList = iptvGroupList,
             onIptvSelected = onIptvSelected,
         )
@@ -123,8 +123,7 @@ private fun PanelTopRightPreview() {
 fun PanelBottom(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
-    playerError: Boolean = false,
-    playerResolution: Pair<Int, Int> = Pair(0, 0),
+    playerState: ExoPlayerState = rememberExoPlayerState(),
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
@@ -136,14 +135,14 @@ fun PanelBottom(
             PanelIptvInfo(
                 iptv = currentIptv,
                 programmes = epgList.currentProgrammes(currentIptv),
-                playerError = playerError,
+                playerError = playerState.error,
                 modifier = Modifier.padding(start = childPadding.start),
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             PanelPlayerInfo(
-                resolution = playerResolution,
+                resolution = playerState.resolution,
                 modifier = Modifier.padding(start = childPadding.start),
             )
 
@@ -166,8 +165,7 @@ private fun PanelBottomPreview() {
     MyTVTheme {
         PanelBottom(
             currentIptv = Iptv.EXAMPLE,
-            playerError = true,
-            playerResolution = Pair(1920, 1080),
+            playerState = ExoPlayerState(),
             iptvGroupList = IptvGroupList.EXAMPLE,
         )
     }
@@ -179,8 +177,7 @@ private fun PanelScreenPreview() {
     MyTVTheme {
         PanelScreen(
             currentIptv = Iptv.EXAMPLE,
-            playerError = false,
-            playerResolution = Pair(1920, 1080),
+            playerState = ExoPlayerState(),
             iptvGroupList = IptvGroupList.EXAMPLE,
         )
     }

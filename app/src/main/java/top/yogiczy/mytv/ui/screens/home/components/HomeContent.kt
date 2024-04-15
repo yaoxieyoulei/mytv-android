@@ -84,20 +84,17 @@ fun HomeContent(
     BackPressHandledArea(
         modifier = modifier,
         onBackPressed = {
-            if (state.isPanelVisible)
-                state.changePanelVisible(false)
-            else if (state.isSettingsVisible)
-                state.changeSettingsVisible(false)
+            if (state.isPanelVisible) state.changePanelVisible(false)
+            else if (state.isSettingsVisible) state.changeSettingsVisible(false)
             else onBackPressed()
         },
     ) {
         Box(
             modifier = Modifier
-                .handleDPadKeyEvents(
-                    onUp = {
-                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
-                        else state.changeCurrentIptvToPrev()
-                    },
+                .handleDPadKeyEvents(onUp = {
+                    if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
+                    else state.changeCurrentIptvToPrev()
+                },
                     onDown = {
                         if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToPrev()
                         else state.changeCurrentIptvToNext()
@@ -105,8 +102,10 @@ fun HomeContent(
                     onEnter = { state.changePanelVisible(true) },
                     onLongEnter = { state.changeSettingsVisible(true) },
                     onSettings = { state.changeSettingsVisible(true) },
-                    onNumber = { channelNoInputState.input(it) }
-                )
+                    onNumber = {
+                        state.changePanelVisible(false)
+                        channelNoInputState.input(it)
+                    })
                 .handleVerticalDragGestures(
                     onSwipeUp = {
                         state.changeCurrentIptvToNext()
@@ -145,8 +144,7 @@ fun HomeContent(
         if (state.isPanelVisible) {
             PanelScreen(
                 currentIptv = state.currentIptv,
-                playerError = playerState.error,
-                playerResolution = playerState.resolution,
+                playerState = playerState,
                 iptvGroupList = iptvGroupList,
                 onClose = { state.changePanelVisible(false) },
                 onIptvSelected = {
@@ -223,8 +221,11 @@ class HomeContentState(
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
                     coroutineScope.launch {
+                        val name = currentIptv.name
                         delay(1000)
-                        changeTempPanelVisible(false)
+                        if (name == currentIptv.name) {
+                            _isTempPanelVisible = false
+                        }
                     }
                 }
             }
@@ -237,10 +238,6 @@ class HomeContentState(
 
     fun changeSettingsVisible(visible: Boolean) {
         _isSettingsVisible = visible
-    }
-
-    fun changeTempPanelVisible(visible: Boolean) {
-        _isTempPanelVisible = visible
     }
 
     private fun getPrevIptv(): Iptv {
@@ -272,8 +269,7 @@ class HomeContentState(
 
         if (iptv.urlList.isNotEmpty()) {
             val uri = Uri.parse(iptv.urlList.first())
-            val contentType =
-                if (uri.path?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
+            val contentType = if (uri.path?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
 
             exoPlayer.setMediaSource(
                 getExoPlayerMediaSource(uri, dataSourceFactory, contentType)

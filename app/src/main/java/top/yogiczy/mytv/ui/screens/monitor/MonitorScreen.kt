@@ -61,7 +61,7 @@ fun MonitorScreen(
             .fillMaxSize()
             .padding(start = childPadding.start, top = childPadding.top)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .background(
@@ -70,17 +70,15 @@ fun MonitorScreen(
                 )
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
-            Column {
-                Text(
-                    text = "FPS: $fps",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+            Text(
+                text = "FPS: $fps",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
 
-                Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-                FpsBar(fpsList = fpsList)
-            }
+            FpsBar(fpsList = fpsList)
         }
     }
 }

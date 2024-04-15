@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -15,6 +16,7 @@ import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.panel.components.PanelChannelNo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvInfo
+import top.yogiczy.mytv.ui.theme.MyTVTheme
 
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -24,6 +26,7 @@ fun IptvTempPanel(
     channelNo: Int = 0,
     currentIptv: Iptv = Iptv.EMPTY,
     playerError: Boolean = false,
+    programmes: Pair<String?, String?> = Pair(null, null),
 ) {
     val childPadding = rememberChildPadding()
 
@@ -44,10 +47,22 @@ fun IptvTempPanel(
                 .align(Alignment.BottomStart),
         ) {
             PanelIptvInfo(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 iptv = currentIptv,
                 playerError = playerError,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                programmes = programmes,
             )
         }
+    }
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun IptvTempPanelPreview() {
+    MyTVTheme {
+        IptvTempPanel(
+            channelNo = 1,
+            currentIptv = Iptv.EXAMPLE,
+        )
     }
 }

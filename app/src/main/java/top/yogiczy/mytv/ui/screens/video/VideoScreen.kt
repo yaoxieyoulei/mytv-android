@@ -2,7 +2,9 @@ package top.yogiczy.mytv.ui.screens.video
 
 import android.view.SurfaceView
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +28,7 @@ fun VideoScreen(
 
     AndroidView(
         modifier = modifier
+            .fillMaxSize()
             .aspectRatio(state.aspectRatio),
         factory = {
             // PlayerView 切换视频时黑屏闪烁，使用 SurfaceView 代替
@@ -47,10 +50,12 @@ class ExoPlayerState {
 }
 
 @Composable
-fun rememberExoPlayerState(exoPlayer: ExoPlayer): ExoPlayerState {
+fun rememberExoPlayerState(
+    exoPlayer: ExoPlayer = ExoPlayer.Builder(LocalContext.current).build(),
+): ExoPlayerState {
     val state = remember { ExoPlayerState() }
 
-    exoPlayer.addListener(object : Player.Listener {
+    val listener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
             state.resolution = Pair(videoSize.width, videoSize.height)
 
@@ -68,7 +73,15 @@ fun rememberExoPlayerState(exoPlayer: ExoPlayer): ExoPlayerState {
                 state.error = false
             }
         }
-    })
+    }
+
+    DisposableEffect(Unit) {
+        exoPlayer.addListener(listener)
+
+        onDispose {
+            exoPlayer.removeListener(listener)
+        }
+    }
 
     return state
 }
