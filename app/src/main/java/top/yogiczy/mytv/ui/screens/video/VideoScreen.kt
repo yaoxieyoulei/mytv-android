@@ -33,13 +33,8 @@ fun VideoScreen(
             SurfaceView(context)
         },
         update = { surfaceView ->
-            if (surfaceView.holder.surface.isValid) {
-                exoPlayer.setVideoSurface(surfaceView.holder.surface)
-            }
+            exoPlayer.setVideoSurfaceView(surfaceView)
         },
-        onRelease = {
-            exoPlayer.release()
-        }
     )
 }
 
@@ -66,6 +61,11 @@ fun rememberExoPlayerState(
 
         override fun onPlayerError(error: PlaybackException) {
             state.error = true
+
+            if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
+                exoPlayer.seekToDefaultPosition()
+                exoPlayer.prepare()
+            }
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +26,9 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -69,6 +73,7 @@ fun HomeContent(
         iptvGroupList = iptvGroupList,
     ),
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     val focusRequester = remember { FocusRequester() }
 
     val playerState = rememberExoPlayerState(state.exoPlayer)
@@ -81,6 +86,22 @@ fun HomeContent(
     LaunchedEffect(state.isPanelVisible, state.isSettingsVisible) {
         if (!state.isPanelVisible && !state.isSettingsVisible) {
             focusRequester.requestFocus()
+        }
+    }
+
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                state.exoPlayer.play()
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                state.exoPlayer.pause()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

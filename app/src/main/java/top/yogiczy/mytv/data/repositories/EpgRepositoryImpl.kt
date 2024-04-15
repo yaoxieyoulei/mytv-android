@@ -33,7 +33,6 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             return@flow
         }
 
-        val xml = getXml()
         val hashCode = filteredChannels.hashCode()
 
         if (SP.epgCacheHash == hashCode) {
@@ -45,6 +44,7 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             }
         }
 
+        val xml = getXml()
         val epgList = parseFromXml(xml, filteredChannels)
         val cacheFile = getCacheFile()
         cacheFile.writeText(Json.encodeToString(epgList.value))
@@ -93,12 +93,12 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
         if (dateFormat.format(System.currentTimeMillis()) == dateFormat.format(SP.epgXmlCacheTime)) {
             val cache = getCacheXml()
             if (cache.isNotBlank()) {
-                Log.d(IptvRepositoryImpl.TAG, "使用缓存xml")
+                Log.d(TAG, "使用缓存xml")
                 return cache
             }
         } else {
             if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 1) {
-                Log.d(IptvRepositoryImpl.TAG, "未到1点，不刷新epg")
+                Log.d(TAG, "未到1点，不刷新epg")
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             }
         }
