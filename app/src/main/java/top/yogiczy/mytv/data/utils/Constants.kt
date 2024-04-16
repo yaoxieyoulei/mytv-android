@@ -19,5 +19,10 @@ object Constants {
      * GitHub最新版本信息
      */
     const val GITHUB_RELEASE_LATEST_URL =
-        "https://api.github.com/repos/yaoxieyoulei/my_tv/releases/latest"
+        "https://api.github.com/repos/yaoxieyoulei/mytv-android/releases/latest"
+
+    /**
+     * GitHub加速代理地址
+     */
+    const val GITHUB_PROXY = "https://mirror.ghproxy.com/"
 }

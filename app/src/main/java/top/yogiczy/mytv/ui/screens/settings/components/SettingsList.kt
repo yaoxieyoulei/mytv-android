@@ -9,12 +9,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyRow
+import kotlinx.coroutines.launch
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.SP
@@ -22,6 +24,7 @@ import top.yogiczy.mytv.ui.utils.SP
 @Composable
 fun SettingsList(
     modifier: Modifier = Modifier,
+    updateState: UpdateState = rememberUpdateState(),
 ) {
     val childPadding = rememberChildPadding()
 
@@ -58,11 +61,17 @@ fun SettingsList(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {
+            val coroutineScope = rememberCoroutineScope()
+
             SettingsItem(
                 title = "应用更新",
-                value = "无更新",
-                description = "最新版本：v1.0.0",
-                onClick = { },
+                value = if (updateState.isUpdateAvailable) "新版本" else "无更新",
+                description = "最新版本：${updateState.latestRelease.tagName}",
+                onLongClick = {
+                    coroutineScope.launch {
+                        updateState.downloadAndUpdate()
+                    }
+                },
             )
         }
 

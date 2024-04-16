@@ -56,6 +56,7 @@ import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.ui.screens.monitor.MonitorScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelScreen
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
+import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
 import top.yogiczy.mytv.ui.screens.video.VideoScreen
 import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.utils.SP
@@ -76,6 +77,7 @@ fun HomeContent(
     val lifecycleOwner = LocalLifecycleOwner.current
     val focusRequester = remember { FocusRequester() }
 
+    val updateState = rememberUpdateState()
     val playerState = rememberExoPlayerState(state.exoPlayer)
     val channelNoInputState = rememberChannelNoInputState { channelNo ->
         if (channelNo.toInt() - 1 in 0..<iptvGroupList.flatMap { it.iptvs }.size) {
@@ -177,7 +179,10 @@ fun HomeContent(
         }
 
         if (state.isSettingsVisible) {
-            SettingsScreen(onClose = { state.changeSettingsVisible(false) })
+            SettingsScreen(
+                updateState = updateState,
+                onClose = { state.changeSettingsVisible(false) },
+            )
         }
 
         if (SP.debugShowFps) {

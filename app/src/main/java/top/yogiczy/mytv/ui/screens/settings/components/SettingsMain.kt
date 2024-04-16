@@ -20,6 +20,7 @@ import top.yogiczy.mytv.ui.utils.SP
 @Composable
 fun SettingsMain(
     modifier: Modifier = Modifier,
+    updateState: UpdateState = rememberUpdateState(),
 ) {
     val childPadding = rememberChildPadding()
 
@@ -31,7 +32,7 @@ fun SettingsMain(
             modifier = Modifier.padding(start = childPadding.start),
         )
         Spacer(modifier = Modifier.height(6.dp))
-        SettingsList()
+        SettingsList(updateState = updateState)
     }
 }
 

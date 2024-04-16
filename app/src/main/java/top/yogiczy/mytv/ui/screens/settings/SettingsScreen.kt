@@ -24,6 +24,8 @@ import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsAppInfo
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsMain
+import top.yogiczy.mytv.ui.screens.settings.components.UpdateState
+import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.SP
 
@@ -31,6 +33,7 @@ import top.yogiczy.mytv.ui.utils.SP
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
+    updateState: UpdateState = rememberUpdateState(),
     onClose: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
@@ -53,7 +56,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            SettingsMain()
+            SettingsMain(updateState = updateState)
         }
     }
 }
