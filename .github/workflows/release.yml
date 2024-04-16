@@ -25,7 +25,8 @@ jobs:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
       - name: 生成apk
-        run: ./gradlew assembleRelease
+        run: chmod +x ./gradlew && ./gradlew assembleRelease
+
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
