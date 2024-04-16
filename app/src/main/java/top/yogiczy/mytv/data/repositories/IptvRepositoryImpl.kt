@@ -137,7 +137,7 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
             if (line.isBlank() || line.startsWith("#")) return@forEach
 
             if (line.endsWith("#genre#")) {
-                groupName = line.split(",").last()
+                groupName = line.split(",").first()
             } else {
                 val res = line.replace("，", ",").split(",")
                 if (res.size < 2) return@forEach

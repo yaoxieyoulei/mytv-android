@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta
+                content="width=device-width, initial-scale=1"
+                name="viewport">
+        <title>我的电视</title>
+        <link
+                href="https://cdn.staticfile.org/layui/2.9.7/css/layui.css"
+                rel="stylesheet">
+    </head>
+
+    <body>
+        <script src="https://cdn.staticfile.org/layui/2.9.7/layui.js"></script>
+        <script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            // Usage
+            layui.use(function () {
+              document.getElementById('customIptvSourceSetBtn').addEventListener('click', () => {
+                var iptvSource = document.getElementById('customIptvSourceInput').value.trim();
+                if (!iptvSource) {
+                  layui.layer.msg('请输入订阅链接', { icon: 5 });
+                  return
+                }
+
+                $.ajax({
+                  type: "GET",
+                  url: "/api/settings/iptvCustomSource?source=" + iptvSource,
+                  success: (data) => {
+                    layui.layer.msg('推送成功', { icon: 6 });
+                  },
+                  error: (err) => {
+                    layui.layer.msg('推送失败', { icon: 5 });
+                  },
+                });
+              })
+
+              document.getElementById('customIptvSourceResetBtn').addEventListener('click', () => {
+                $.ajax({
+                  type: "GET",
+                  url: "/api/settings/iptvCustomSource?source=",
+                  success: (data) => {
+                    layui.layer.msg('清除成功', { icon: 6 });
+                  },
+                  error: (err) => {
+                    layui.layer.msg('推送失败', { icon: 5 });
+                  },
+                });
+              })
+            });
+        </script>
+
+        <div style="padding: 15px;">
+            <div class="layui-card">
+                <div class="layui-card-header">自定义直播源</div>
+                <div class="layui-card-body">
+                    <div style="display: flex; flex-direction: column; gap: 16px">
+                        <div style="display: flex; flex-direction: column;">
+                            <div>支持m3u订阅链接与TVBOX链接</div>
+                            <div>推送：将自定义直播源推送到设备</div>
+                            <div>删除：删除设备自定义直播源</div>
+                        </div>
+
+                        <input
+                                class="layui-input"
+                                id="customIptvSourceInput"
+                                name=""
+                                placeholder="请输入订阅链接"
+                                type="text">
+
+                        <div
+                                class="layui-btn-container"
+                                style="display: flex; justify-content: space-between;">
+                            <button
+                                    class="layui-btn layui-bg-blue"
+                                    id="customIptvSourceSetBtn"
+                                    style="width: 40%;"
+                                    type="button">推送
+                            </button>
+                            <button
+                                    class="layui-btn layui-bg-red"
+                                    id="customIptvSourceResetBtn"
+                                    style="width: 40%;"
+                                    type="button">删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+</html>

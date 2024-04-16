@@ -60,6 +60,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/io.netty.versions.properties"
         }
     }
 
@@ -120,6 +122,11 @@ dependencies {
 
     // 网络请求
     implementation(libs.okhttp)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
+
+    // 二维码
+    implementation(libs.qrose)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

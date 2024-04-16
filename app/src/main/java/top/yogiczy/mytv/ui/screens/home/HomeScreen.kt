@@ -29,17 +29,6 @@ fun HomeScreen(
 ) {
     val uiState by homeScreeViewModel.uiState
 
-    // var epgList by remember { mutableStateOf(EpgList()) }
-    //
-    // LaunchedEffect(uiState) {
-    //     if (uiState is HomeScreenUiState.Ready) {
-    //         epgList =
-    //             EpgRepositoryImpl(context).getEpgs((uiState as HomeScreenUiState.Ready).iptvGroupList.flatMap { it.iptvs }
-    //                 .map { it.channelName })
-    //         Log.d("", "${epgList.size}}")
-    //     }
-    // }
-
     when (val s = uiState) {
         is HomeScreenUiState.Ready -> {
             HomeContent(

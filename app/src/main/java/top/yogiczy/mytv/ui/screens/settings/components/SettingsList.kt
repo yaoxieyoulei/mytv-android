@@ -1,7 +1,15 @@
 package top.yogiczy.mytv.ui.screens.settings.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -12,13 +20,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyRow
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
+import io.github.alexzhirkevich.qrose.options.QrBallShape
+import io.github.alexzhirkevich.qrose.options.QrFrameShape
+import io.github.alexzhirkevich.qrose.options.QrPixelShape
+import io.github.alexzhirkevich.qrose.options.QrShapes
+import io.github.alexzhirkevich.qrose.options.circle
+import io.github.alexzhirkevich.qrose.options.roundCorners
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.data.entities.GithubRelease
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.SP
 
 @Composable
@@ -62,17 +85,28 @@ fun SettingsList(
     ) {
         item {
             val coroutineScope = rememberCoroutineScope()
+            var showDialog by remember { mutableStateOf(false) }
 
             SettingsItem(
                 title = "应用更新",
                 value = if (updateState.isUpdateAvailable) "新版本" else "无更新",
-                description = "最新版本：${updateState.latestRelease.tagName}",
+                description = "最新版本：${updateState.latestRelease.tagName}" + if (updateState.isUpdateAvailable) "（长按更新）" else "",
+                onClick = {
+                    showDialog = true
+                },
                 onLongClick = {
                     coroutineScope.launch {
                         updateState.downloadAndUpdate()
                     }
                 },
             )
+
+            if (showDialog) {
+                SettingsUpdateInfoDialog(
+                    onDismissRequest = { showDialog = false },
+                    release = updateState.latestRelease,
+                )
+            }
         }
 
         item {
@@ -103,14 +137,26 @@ fun SettingsList(
             )
         }
 
-        // item {
-        //     SettingsItem(
-        //         title = "自定义直播源",
-        //         value = if (iptvCustomSource.isNotBlank()) "已启用" else "未启用",
-        //         description = "访问以下网址进行配置：",
-        //         onClick = { },
-        //     )
-        // }
+        item {
+            val serverUrl = "http://${HttpServer.getLocalIpAddress()}:${HttpServer.SERVER_PORT}"
+            var showQrcode by remember { mutableStateOf(false) }
+
+            SettingsItem(
+                title = "自定义直播源",
+                value = if (iptvCustomSource.isNotBlank()) "已启用" else "未启用",
+                description = "访问以下网址进行配置：$serverUrl",
+                onClick = {
+                    showQrcode = true
+                },
+            )
+
+            if (showQrcode) {
+                SettingsQrcodeDialog(
+                    onDismissRequest = { showQrcode = false },
+                    data = serverUrl,
+                )
+            }
+        }
 
         item {
             SettingsItem(
@@ -159,6 +205,91 @@ fun SettingsList(
         //         onClick = { },
         //     )
         // }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun SettingsQrcodeDialog(
+    modifier: Modifier = Modifier,
+    data: String = "",
+    onDismissRequest: () -> Unit = {},
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        content = {
+            Box(
+                modifier = modifier
+                    .background(Color.White, MaterialTheme.shapes.medium)
+                    .padding(16.dp),
+            ) {
+                Image(
+                    painter = rememberQrCodePainter(
+                        data = data,
+                        shapes = QrShapes(
+                            ball = QrBallShape.circle(),
+                            darkPixel = QrPixelShape.roundCorners(),
+                            frame = QrFrameShape.roundCorners(.25f),
+                        ),
+                    ),
+                    contentDescription = data,
+                )
+            }
+        },
+    )
+}
+
+@Preview
+@Composable
+private fun SettingsQrcodeDialogPreview() {
+    MyTVTheme {
+        SettingsQrcodeDialog(
+            data = "data",
+        )
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+fun SettingsUpdateInfoDialog(
+    modifier: Modifier = Modifier,
+    release: GithubRelease = GithubRelease(),
+    onDismissRequest: () -> Unit = {},
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        content = {
+            Column(
+                modifier = modifier
+                    .background(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.shapes.medium,
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
+                Text(
+                    text = release.tagName,
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                TvLazyColumn(modifier = Modifier.sizeIn(maxHeight = 400.dp)) {
+                    item {
+                        Text(
+                            text = release.description,
+                        )
+                    }
+                }
+            }
+        },
+    )
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun SettingsUpdateInfoDialogPreview() {
+    MyTVTheme {
+        SettingsUpdateInfoDialog()
     }
 }
 

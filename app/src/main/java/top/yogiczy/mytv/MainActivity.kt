@@ -19,6 +19,7 @@ import androidx.tv.material3.MaterialTheme
 import dagger.hilt.android.AndroidEntryPoint
 import top.yogiczy.mytv.ui.App
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.SP
 
 
@@ -43,6 +44,8 @@ class MainActivity : ComponentActivity() {
             // 屏幕常亮
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+            HttpServer.start(applicationContext)
+
             MyTVTheme {
                 Box(
                     modifier = Modifier
@@ -59,5 +62,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        HttpServer.stop()
+        super.onDestroy()
     }
 }
