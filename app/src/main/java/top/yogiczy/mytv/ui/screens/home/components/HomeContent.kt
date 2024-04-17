@@ -85,6 +85,11 @@ fun HomeContent(
         }
     }
 
+    LaunchedEffect(Unit) {
+        delay(3000)
+        updateState.checkUpdate()
+    }
+
     LaunchedEffect(state.isPanelVisible, state.isSettingsVisible) {
         if (!state.isPanelVisible && !state.isSettingsVisible) {
             focusRequester.requestFocus()

@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui
 
-import android.widget.Toast
 import androidx.annotation.IntRange
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -11,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -20,6 +18,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import top.yogiczy.mytv.ui.screens.home.HomeScreen
+import top.yogiczy.mytv.ui.screens.toast.ToastScreen
+import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.utils.Padding
 
 val ParentPadding = PaddingValues(vertical = 12.dp, horizontal = 24.dp)
@@ -38,7 +38,6 @@ fun rememberChildPadding(direction: LayoutDirection = LocalLayoutDirection.curre
 
 @Composable
 fun App(onBackPressed: () -> Unit = {}) {
-    val context = LocalContext.current
     val doubleBackPressedExitState = rememberDoubleBackPressedExitState()
 
     HomeScreen(
@@ -47,10 +46,12 @@ fun App(onBackPressed: () -> Unit = {}) {
                 onBackPressed()
             } else {
                 doubleBackPressedExitState.backPress()
-                Toast.makeText(context, "再按一次退出", Toast.LENGTH_SHORT).show()
+                ToastState.I.showToast("再按一次退出")
             }
         },
     )
+
+    ToastScreen()
 }
 
 class DoubleBackPressedExitState internal constructor(

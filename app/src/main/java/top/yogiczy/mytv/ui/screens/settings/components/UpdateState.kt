@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -23,6 +22,8 @@ import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.GithubRelease
 import top.yogiczy.mytv.data.repositories.GithubRepositoryImpl
 import top.yogiczy.mytv.data.utils.Constants
+import top.yogiczy.mytv.ui.screens.toast.ToastProperty
+import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.utils.ApkInstaller
 import top.yogiczy.mytv.ui.utils.DownloadUtil
 import top.yogiczy.mytv.ui.utils.VersionUtil
@@ -58,21 +59,15 @@ data class UpdateState(
             _isChecking = true
             _latestRelease = GithubRepositoryImpl().latestRelease()
             if (VersionUtil.compareVersion(
-                    _latestRelease.tagName.substring(1),
-                    packageInfo.versionName
+                    _latestRelease.tagName.substring(1), packageInfo.versionName
                 ) > 0
             ) {
                 _isUpdateAvailable = true
-                Toast.makeText(
-                    context,
-                    "新版本: ${_latestRelease.tagName}",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                ToastState.I.showToast("新版本: ${_latestRelease.tagName}")
             }
         } catch (e: Exception) {
             Log.e("UpdateState", e.message ?: e.toString(), e)
-            Toast.makeText(context, "检查更新失败", Toast.LENGTH_SHORT).show()
+            ToastState.I.showToast("检查更新失败")
         } finally {
             _isChecking = false
         }
@@ -86,39 +81,29 @@ data class UpdateState(
             _isUpdating = true
             _updateDownloaded = false
 
-            var toast = Toast.makeText(
-                context, "开始下载更新: ${_latestRelease.tagName}", Toast.LENGTH_SHORT
-            ).apply { show() }
-
+            ToastState.I.showToast(
+                "开始下载更新",
+                ToastProperty.Duration.Custom(10_000),
+            )
             DownloadUtil.downloadTo(
                 "${Constants.GITHUB_PROXY}${_latestRelease.downloadUrl}",
                 latestFile.path,
                 downloadListener = object : DownloadUtil.DownloadListener() {
-                    var lastTime = 0L
                     override fun onProgress(progress: Int) {
                         coroutineScope.launch {
-                            if (System.currentTimeMillis() - lastTime > 1000) {
-                                lastTime = System.currentTimeMillis()
-                                toast.cancel()
-                                toast = Toast.makeText(
-                                    context,
-                                    "正在下载更新: $progress%",
-                                    Toast.LENGTH_SHORT
-                                ).apply { show() }
-                            }
+                            ToastState.I.showToast(
+                                "正在下载更新: $progress%",
+                                ToastProperty.Duration.Custom(10_000),
+                            )
                         }
                     }
-                }
+                },
             )
 
             _updateDownloaded = true
-            toast.cancel()
-            Toast.makeText(
-                context, "下载更新成功: ${_latestRelease.tagName}", Toast.LENGTH_SHORT
-            ).show()
-
+            ToastState.I.showToast("下载更新成功")
         } catch (e: Exception) {
-            Toast.makeText(context, "下载更新失败", Toast.LENGTH_SHORT).show()
+            ToastState.I.showToast("下载更新失败")
         } finally {
             _isUpdating = false
         }
@@ -140,17 +125,14 @@ fun rememberUpdateState(
         )
     }
 
-    LaunchedEffect(Unit) {
-        state.checkUpdate()
-    }
-
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (context.packageManager.canRequestPackageInstalls())
-                    ApkInstaller.installApk(context, state.latestFile.path)
-                else
-                    Toast.makeText(context, "未授予安装权限", Toast.LENGTH_SHORT).show()
+                if (context.packageManager.canRequestPackageInstalls()) ApkInstaller.installApk(
+                    context,
+                    state.latestFile.path
+                )
+                else ToastState.I.showToast("未授予安装权限")
             }
         }
 

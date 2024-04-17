@@ -2,7 +2,6 @@ package top.yogiczy.mytv.ui.utils
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import io.ktor.http.ContentType
 import io.ktor.server.application.call
 import io.ktor.server.engine.ApplicationEngine
@@ -16,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.R
+import top.yogiczy.mytv.ui.screens.toast.ToastState
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.SocketException
@@ -42,12 +42,10 @@ object HttpServer {
 
                     SP.iptvCustomSource = source
 
-                    launch(Dispatchers.Main) {
-                        if (source.isNotBlank()) {
-                            Toast.makeText(context, "直播源设置成功", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "已恢复默认直播源", Toast.LENGTH_SHORT).show()
-                        }
+                    if (source.isNotBlank()) {
+                        ToastState.I.showToast("直播源设置成功")
+                    } else {
+                        ToastState.I.showToast("直播源已恢复默认")
                     }
 
                     call.respondText("success")

@@ -33,6 +33,7 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             return@flow
         }
 
+        val xml = getXml()
         val hashCode = filteredChannels.hashCode()
 
         if (SP.epgCacheHash == hashCode) {
@@ -44,7 +45,6 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             }
         }
 
-        val xml = getXml()
         val epgList = parseFromXml(xml, filteredChannels)
         val cacheFile = getCacheFile()
         cacheFile.writeText(Json.encodeToString(epgList.value))

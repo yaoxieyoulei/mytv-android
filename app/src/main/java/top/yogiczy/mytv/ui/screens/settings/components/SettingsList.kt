@@ -44,6 +44,7 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.SP
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SettingsList(
     modifier: Modifier = Modifier,
@@ -92,7 +93,7 @@ fun SettingsList(
                 value = if (updateState.isUpdateAvailable) "新版本" else "无更新",
                 description = "最新版本：${updateState.latestRelease.tagName}" + if (updateState.isUpdateAvailable) "（长按更新）" else "",
                 onClick = {
-                    showDialog = true
+                    if (updateState.isUpdateAvailable) showDialog = true
                 },
                 onLongClick = {
                     coroutineScope.launch {
