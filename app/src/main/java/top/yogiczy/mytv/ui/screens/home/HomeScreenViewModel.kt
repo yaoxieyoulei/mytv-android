@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
@@ -24,28 +27,37 @@ class HomeScreeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            try {
-                val iptvGroupList = iptvRepository.getIptvGroups().first()
-                uiState.value = HomeScreenUiState.Ready(iptvGroupList = iptvGroupList)
-
-                val epgList = EpgList(epgRepository.getEpgs(iptvGroupList.flatMap { it.iptvs }
-                    .map { iptv -> iptv.channelName }).first().map { epg ->
-                    epg.copy(
-                        programmes = EpgProgrammeList(
-                            epg.programmes.filter { programme ->
-                                System.currentTimeMillis() < programme.endAt
-                            },
-                        )
+            iptvRepository.getIptvGroups()
+                .catch { uiState.value = HomeScreenUiState.Error(it.message) }
+                .map {
+                    uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
+                    it
+                }
+                .flatMapLatest { iptvGroupList ->
+                    val channels =
+                        iptvGroupList.flatMap { it.iptvs }.map { iptv -> iptv.channelName }
+                    epgRepository.getEpgs(channels)
+                }
+                .catch { emit(EpgList()) }
+                .map { epgList ->
+                    // 移除过期节目
+                    epgList.copy(
+                        value = epgList.map { epg ->
+                            epg.copy(
+                                programmes = EpgProgrammeList(
+                                    epg.programmes.filter { programme ->
+                                        System.currentTimeMillis() < programme.endAt
+                                    },
+                                )
+                            )
+                        }
                     )
-                })
-
-                uiState.value =
-                    HomeScreenUiState.Ready(iptvGroupList = iptvGroupList, epgList = epgList)
-
-            } catch (e: Exception) {
-                uiState.value = HomeScreenUiState.Error(e.message)
-            }
-
+                }
+                .map { epgList ->
+                    uiState.value = (uiState.value as HomeScreenUiState.Ready)
+                        .copy(epgList = epgList)
+                }
+                .collect()
         }
     }
 }
