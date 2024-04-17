@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -82,9 +83,15 @@ fun ToastItem(
 @Composable
 private fun ToastScreenPreview() {
     MyTVTheme {
-        ToastItem(
-            property = ToastProperty(message = "新版本: v1.2.2")
-        )
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(bottom = 20.dp, end = 20.dp),
+        ) {
+            ToastItem(
+                property = ToastProperty(message = "新版本: v1.2.2")
+            )
+        }
     }
 }
 
