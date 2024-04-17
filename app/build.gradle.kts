@@ -34,6 +34,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
@@ -122,8 +123,7 @@ dependencies {
 
     // 网络请求
     implementation(libs.okhttp)
-    implementation(libs.ktor.server.core)
-    implementation(libs.ktor.server.netty)
+    implementation(libs.nanohttpd)
 
     // 二维码
     implementation(libs.qrose)

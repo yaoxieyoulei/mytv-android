@@ -2,15 +2,8 @@ package top.yogiczy.mytv.ui.utils
 
 import android.content.Context
 import android.util.Log
-import io.ktor.http.ContentType
-import io.ktor.server.application.call
-import io.ktor.server.engine.ApplicationEngine
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.response.respondBytes
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
+import android.widget.Toast
+import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,46 +14,29 @@ import java.net.NetworkInterface
 import java.net.SocketException
 
 object HttpServer {
-    private const val TAG = "HttpServer"
-
     const val SERVER_PORT = 10481
-    private lateinit var server: ApplicationEngine
+
+    private const val TAG = "HttpServer"
+    private lateinit var server: NanoHTTPD
 
     fun start(context: Context) {
-        server = embeddedServer(Netty, SERVER_PORT) {
-            routing {
-                get("/") {
-                    call.respondBytes(
-                        context.resources.openRawResource(R.raw.index).readBytes(),
-                        ContentType("text", "html")
-                    )
-                }
-
-                get("/api/settings/iptvCustomSource") {
-                    val source = call.parameters["source"] ?: ""
-                    Log.d(TAG, "设置直播源: $source")
-
-                    SP.iptvCustomSource = source
-
-                    if (source.isNotBlank()) {
-                        ToastState.I.showToast("直播源设置成功")
-                    } else {
-                        ToastState.I.showToast("直播源已恢复默认")
-                    }
-
-                    call.respondText("success")
-                }
-            }
-        }
+        if (this::server.isInitialized) return
 
         CoroutineScope(Dispatchers.IO).launch {
-            server.start()
-            Log.d(TAG, "服务已启动: 0.0.0.0:${SERVER_PORT}")
+            try {
+                server = ServerApplication(context, SERVER_PORT)
+                Log.d(TAG, "服务已启动: 0.0.0.0:${SERVER_PORT}")
+            } catch (ex: Exception) {
+                Log.e(TAG, "服务启动失败: ${ex.message}", ex.cause)
+                launch(Dispatchers.Main) {
+                    Toast.makeText(context, "设置服务启动失败", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
     fun stop() {
-        server.stop(1000, 1000)
+        server.stop()
     }
 
     fun getLocalIpAddress(): String {
@@ -82,6 +58,36 @@ object HttpServer {
         } catch (ex: SocketException) {
             Log.e(TAG, "IP Address: ${ex.message}", ex)
             return defaultIp
+        }
+    }
+
+
+    private class ServerApplication(private val context: Context, port: Int) : NanoHTTPD(port) {
+        init {
+            start(SOCKET_READ_TIMEOUT, false)
+        }
+
+        override fun serve(session: IHTTPSession): Response {
+            if (session.uri == "/") {
+                return newFixedLengthResponse(
+                    context.resources.openRawResource(R.raw.index).readBytes().decodeToString(),
+                )
+            } else if (session.uri.startsWith("/api/settings/iptvCustomSource")) {
+                val source = session.parameters["source"]?.firstOrNull() ?: ""
+                Log.d(TAG, "设置直播源: $source")
+
+                SP.iptvCustomSource = source
+
+                if (source.isNotBlank()) {
+                    ToastState.I.showToast("直播源设置成功")
+                } else {
+                    ToastState.I.showToast("直播源已恢复默认")
+                }
+
+                return newFixedLengthResponse("success")
+            }
+
+            return newFixedLengthResponse("not found")
         }
     }
 }
