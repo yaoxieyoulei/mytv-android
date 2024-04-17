@@ -11,7 +11,7 @@ import top.yogiczy.mytv.data.entities.GithubRelease
 import top.yogiczy.mytv.data.utils.Constants
 
 class GithubRepositoryImpl : GithubRepository {
-    override suspend fun latestRelease(): GithubRelease = withContext(Dispatchers.IO) {
+    override suspend fun latestRelease() = withContext(Dispatchers.IO) {
         Log.d(TAG, "获取最新release: ${Constants.GITHUB_RELEASE_LATEST_URL}")
 
         val client = OkHttpClient()

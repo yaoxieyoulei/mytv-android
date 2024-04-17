@@ -5,10 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
@@ -23,21 +27,31 @@ class HomeScreeViewModel @Inject constructor(
     iptvRepository: IptvRepository,
     epgRepository: EpgRepository,
 ) : ViewModel() {
-    var uiState = mutableStateOf<HomeScreenUiState>(HomeScreenUiState.Loading)
+    var uiState = mutableStateOf<HomeScreenUiState>(HomeScreenUiState.Loading(""))
 
     init {
         viewModelScope.launch {
-            iptvRepository.getIptvGroups()
+            flow { emit(iptvRepository.getIptvGroups()) }
+                .retryWhen { _, attempt ->
+                    if (attempt >= 10) return@retryWhen false
+
+                    uiState.value =
+                        HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/10)...")
+                    delay(3000)
+                    true
+                }
                 .catch { uiState.value = HomeScreenUiState.Error(it.message) }
                 .map {
                     uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
                     it
                 }
+                // 开始获取epg
                 .flatMapLatest { iptvGroupList ->
                     val channels =
                         iptvGroupList.flatMap { it.iptvs }.map { iptv -> iptv.channelName }
-                    epgRepository.getEpgs(channels)
+                    flow { emit(epgRepository.getEpgs(channels)) }
                 }
+                .retry(10) { delay(3000); true }
                 .catch { emit(EpgList()) }
                 .map { epgList ->
                     // 移除过期节目
@@ -63,7 +77,7 @@ class HomeScreeViewModel @Inject constructor(
 }
 
 sealed interface HomeScreenUiState {
-    data object Loading : HomeScreenUiState
+    data class Loading(val message: String?) : HomeScreenUiState
     data class Error(val message: String?) : HomeScreenUiState
     data class Ready(
         val iptvGroupList: IptvGroupList = IptvGroupList(),

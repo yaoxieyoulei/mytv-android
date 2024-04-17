@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import android.util.Xml
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,10 +25,9 @@ import javax.inject.Singleton
 
 @Singleton
 class EpgRepositoryImpl(private val context: Context) : EpgRepository {
-    override fun getEpgs(filteredChannels: List<String>) = flow {
+    override suspend fun getEpgs(filteredChannels: List<String>): EpgList {
         if (!SP.epgEnable) {
-            emit(EpgList())
-            return@flow
+            return EpgList()
         }
 
         val xml = getXml()
@@ -40,22 +37,19 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             val cache = getCache()
             if (cache != null) {
                 Log.d(TAG, "使用缓存epg")
-                emit(cache)
-                return@flow
+                return cache
             }
         }
 
         val epgList = parseFromXml(xml, filteredChannels)
-        val cacheFile = getCacheFile()
-        cacheFile.writeText(Json.encodeToString(epgList.value))
+        setCache(epgList)
         SP.epgCacheHash = hashCode
 
-        emit(epgList)
-        return@flow
+        return epgList
     }
 
-    private suspend fun fetchXml(retry: Int = 0): String = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取远程xml($retry): ${Constants.EPG_XML_URL}")
+    private suspend fun fetchXml(): String = withContext(Dispatchers.IO) {
+        Log.d(TAG, "获取远程xml: ${Constants.EPG_XML_URL}")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(Constants.EPG_XML_URL).build()
@@ -70,10 +64,6 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             }
         } catch (e: Exception) {
             Log.e(TAG, "获取远程xml失败", e)
-            if (retry < 10) {
-                delay(3_000)
-                return@withContext fetchXml(retry + 1)
-            }
             throw Exception("获取远程EPG失败，请检查网络连接", e.cause)
         }
     }
@@ -82,9 +72,13 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
         return File(context.cacheDir, "epg.xml")
     }
 
-    private fun getCacheXml(): String {
+    private suspend fun getCacheXml() = withContext(Dispatchers.IO) {
         val file = getCacheXmlFile()
-        return if (file.exists()) file.readText() else ""
+        if (file.exists()) file.readText() else ""
+    }
+
+    private suspend fun setCacheXml(xml: String) = withContext(Dispatchers.IO) {
+        getCacheXmlFile().writeText(xml)
     }
 
     private suspend fun getXml(): String {
@@ -103,9 +97,8 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
             }
         }
 
-        val xml = fetchXml(0)
-        val cacheFile = getCacheXmlFile()
-        cacheFile.writeText(xml)
+        val xml = fetchXml()
+        setCacheXml(xml)
         SP.epgXmlCacheTime = System.currentTimeMillis()
         SP.epgCacheHash = 0
 
@@ -115,7 +108,7 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
     private suspend fun parseFromXml(
         xmlString: String,
         filteredChannels: List<String> = emptyList(),
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(Dispatchers.Default) {
         val parser: XmlPullParser = Xml.newPullParser()
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
         parser.setInput(StringReader(xmlString))
@@ -144,8 +137,9 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
                         fun parseTime(time: String): Long {
                             if (time.length < 14) return 0
 
-                            return SimpleDateFormat("yyyyMMddHHmmss Z", Locale.getDefault())
-                                .parse(time)?.time ?: 0
+                            return SimpleDateFormat("yyyyMMddHHmmss Z", Locale.getDefault()).parse(
+                                time
+                            )?.time ?: 0
                         }
 
                         if (epgMap.containsKey(channelId)) {
@@ -176,13 +170,17 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
         return File(context.cacheDir, "epg.json")
     }
 
-    private fun getCache(): EpgList? {
+    private suspend fun getCache() = withContext(Dispatchers.IO) {
         val file = getCacheFile()
-        return if (file.exists()) {
+        if (file.exists()) {
             EpgList(Json.decodeFromString<List<Epg>>(file.readText()))
         } else {
             null
         }
+    }
+
+    private suspend fun setCache(epgList: EpgList) = withContext(Dispatchers.IO) {
+        getCacheFile().writeText(Json.encodeToString(epgList.value))
     }
 
     companion object {

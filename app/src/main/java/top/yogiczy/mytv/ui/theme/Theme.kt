@@ -33,7 +33,6 @@ private val darkColorScheme
         border = Border,
     )
 
-
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MyTVTheme(

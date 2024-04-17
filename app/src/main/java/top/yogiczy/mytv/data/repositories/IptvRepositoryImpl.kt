@@ -3,8 +3,6 @@ package top.yogiczy.mytv.data.repositories
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,25 +18,22 @@ import javax.inject.Singleton
 
 @Singleton
 class IptvRepositoryImpl(private val context: Context) : IptvRepository {
-    override fun getIptvGroups() = flow {
+    override suspend fun getIptvGroups(): IptvGroupList {
         val now = System.currentTimeMillis()
 
         if (now - SP.iptvSourceCacheTime < 24 * 60 * 60 * 1000) {
             val cache = getCache()
             if (cache.isNotBlank()) {
                 Log.d(TAG, "使用缓存直播源")
-                emit(parseSource(cache))
-                return@flow
+                return parseSource(cache)
             }
         }
 
         val data = fetchSource()
-
-        getCacheFile().writeText(data)
+        setCache(data)
         SP.iptvSourceCacheTime = now
 
-        emit(parseSource(data))
-        return@flow
+        return parseSource(data)
     }
 
     private fun getSource() = SP.iptvCustomSource.ifBlank { Constants.IPTV_SOURCE_URL }
@@ -47,8 +42,8 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
         return if (getSource().endsWith(".m3u")) SourceType.M3U else SourceType.TVBOX
     }
 
-    private suspend fun fetchSource(retry: Int = 0): String = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取远程直播源($retry): ${getSource()}")
+    private suspend fun fetchSource(): String = withContext(Dispatchers.IO) {
+        Log.d(TAG, "获取远程直播源: ${getSource()}")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(getSource()).build()
@@ -63,10 +58,6 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
             }
         } catch (e: Exception) {
             Log.e(TAG, "获取远程直播源失败", e)
-            if (retry < 10) {
-                delay(3_000)
-                return@withContext fetchSource(retry + 1)
-            }
             throw Exception("获取远程直播源失败，请检查网络连接", e.cause)
         }
     }
@@ -76,8 +67,12 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
         else File(context.cacheDir, "iptv-tvbox.txt")
     }
 
-    private fun getCache(): String {
-        return if (getCacheFile().exists()) getCacheFile().readText() else ""
+    private suspend fun getCache() = withContext(Dispatchers.IO) {
+        if (getCacheFile().exists()) getCacheFile().readText() else ""
+    }
+
+    private suspend fun setCache(data: String) = withContext(Dispatchers.IO) {
+        getCacheFile().writeText(data)
     }
 
     private fun parseSourceM3u(data: String): IptvGroupList {
@@ -88,10 +83,8 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
             if (!line.startsWith("#EXTINF")) return@forEachIndexed
 
             val name = line.split(",").last()
-            val channelName =
-                Regex("tvg-name=\"(.+?)\"").find(line)?.groupValues?.get(1) ?: name
-            val groupName =
-                Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1) ?: "其他"
+            val channelName = Regex("tvg-name=\"(.+?)\"").find(line)?.groupValues?.get(1) ?: name
+            val groupName = Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1) ?: "其他"
 
             if (SP.iptvSourceSimplify) {
                 if (!name.lowercase().startsWith("cctv") && !name.lowercase()

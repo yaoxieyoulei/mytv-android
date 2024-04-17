@@ -39,7 +39,7 @@ fun HomeScreen(
             )
         }
 
-        is HomeScreenUiState.Loading -> HomeScreenLoading()
+        is HomeScreenUiState.Loading -> HomeScreenLoading(s.message)
         is HomeScreenUiState.Error -> HomeScreenError(s.message)
     }
 }
@@ -57,20 +57,32 @@ fun AppBanner(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun HomeScreenLoading(modifier: Modifier = Modifier) {
+private fun HomeScreenLoading(message: String?) {
     val childPadding = rememberChildPadding()
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         AppBanner(modifier = Modifier.align(Alignment.Center))
 
-        Text(
-            text = "加载中...",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = childPadding.start, bottom = childPadding.bottom),
-        )
+        ) {
+            Text(
+                text = "加载中...",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if (message != null) {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    modifier = Modifier.sizeIn(maxWidth = 500.dp),
+                )
+            }
+        }
     }
 }
 
@@ -78,7 +90,7 @@ private fun HomeScreenLoading(modifier: Modifier = Modifier) {
 @Composable
 private fun HomeScreenLoadingPreview() {
     MyTVTheme {
-        HomeScreenLoading()
+        HomeScreenLoading("获取远程直播源(2/10)...")
     }
 }
 

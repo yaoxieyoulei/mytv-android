@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -18,7 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.FlowPreview
 import top.yogiczy.mytv.data.entities.GithubRelease
 import top.yogiczy.mytv.data.repositories.GithubRepositoryImpl
 import top.yogiczy.mytv.data.utils.Constants
@@ -26,7 +25,6 @@ import top.yogiczy.mytv.ui.screens.toast.ToastProperty
 import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.utils.ApkInstaller
 import top.yogiczy.mytv.ui.utils.DownloadUtil
-import top.yogiczy.mytv.ui.utils.VersionUtil
 import java.io.File
 
 @Stable
@@ -58,51 +56,42 @@ data class UpdateState(
         try {
             _isChecking = true
             _latestRelease = GithubRepositoryImpl().latestRelease()
-            if (VersionUtil.compareVersion(
-                    _latestRelease.tagName.substring(1), packageInfo.versionName
-                ) > 0
-            ) {
-                _isUpdateAvailable = true
+            _isUpdateAvailable = compareVersion(
+                _latestRelease.tagName.substring(1), packageInfo.versionName
+            ) > 0
+
+            if (_isUpdateAvailable) {
                 ToastState.I.showToast("新版本: ${_latestRelease.tagName}")
             }
         } catch (e: Exception) {
-            Log.e("UpdateState", e.message ?: e.toString(), e)
             ToastState.I.showToast("检查更新失败")
         } finally {
             _isChecking = false
         }
     }
 
+    @OptIn(FlowPreview::class)
     suspend fun downloadAndUpdate() {
         if (!_isUpdateAvailable) return
         if (_isUpdating) return
 
-        try {
-            _isUpdating = true
-            _updateDownloaded = false
+        _isUpdating = true
+        _updateDownloaded = false
+        ToastState.I.showToast("开始下载更新", ToastProperty.Duration.Custom(10_000))
 
-            ToastState.I.showToast(
-                "开始下载更新",
-                ToastProperty.Duration.Custom(10_000),
-            )
+        try {
             DownloadUtil.downloadTo(
-                "${Constants.GITHUB_PROXY}${_latestRelease.downloadUrl}",
-                latestFile.path,
-                downloadListener = object : DownloadUtil.DownloadListener() {
-                    override fun onProgress(progress: Int) {
-                        coroutineScope.launch {
-                            ToastState.I.showToast(
-                                "正在下载更新: $progress%",
-                                ToastProperty.Duration.Custom(10_000),
-                            )
-                        }
-                    }
-                },
-            )
+                "${Constants.GITHUB_PROXY}${_latestRelease.downloadUrl}", latestFile.path
+            ) {
+                ToastState.I.showToast(
+                    "正在下载更新: $it%",
+                    ToastProperty.Duration.Custom(10_000),
+                )
+            }
 
             _updateDownloaded = true
             ToastState.I.showToast("下载更新成功")
-        } catch (e: Exception) {
+        } catch (ex: Exception) {
             ToastState.I.showToast("下载更新失败")
         } finally {
             _isUpdating = false
@@ -129,8 +118,7 @@ fun rememberUpdateState(
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (context.packageManager.canRequestPackageInstalls()) ApkInstaller.installApk(
-                    context,
-                    state.latestFile.path
+                    context, state.latestFile.path
                 )
                 else ToastState.I.showToast("未授予安装权限")
             }
@@ -152,4 +140,16 @@ fun rememberUpdateState(
     }
 
     return state
+}
+
+private fun compareVersion(version1: String, version2: String): Int {
+    val v1 = version1.split(".").map { it.toInt() }
+    val v2 = version2.split(".").map { it.toInt() }
+    val maxLength = maxOf(v1.size, v2.size)
+    for (i in 0 until maxLength) {
+        if (v1.getOrElse(i) { 0 } > v2.getOrElse(i) { 0 }) return 1
+        else if (v1.getOrElse(i) { 0 } < v2.getOrElse(i) { 0 }) return -1
+    }
+
+    return 0
 }
