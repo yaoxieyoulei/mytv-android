@@ -35,10 +35,6 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
         return parseSource(data)
     }
 
-    private fun getSourceType(): SourceType {
-        return if (SP.iptvSourceUrl.endsWith(".m3u")) SourceType.M3U else SourceType.TVBOX
-    }
-
     private suspend fun fetchSource(): String = withContext(Dispatchers.IO) {
         Log.d(TAG, "获取远程直播源: ${SP.iptvSourceUrl}")
 
@@ -60,8 +56,7 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
     }
 
     private fun getCacheFile(): File {
-        return if (getSourceType() == SourceType.M3U) File(context.cacheDir, "iptv.m3u")
-        else File(context.cacheDir, "iptv-tvbox.txt")
+        return File(context.cacheDir, "iptv.txt")
     }
 
     private suspend fun getCache() = withContext(Dispatchers.IO) {
@@ -164,7 +159,7 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
 
     private fun parseSource(data: String): IptvGroupList {
         try {
-            return if (getSourceType() == SourceType.M3U) {
+            return if (data.startsWith("#EXTM3U")) {
                 parseSourceM3u(data)
             } else {
                 parseSourceTvbox(data)

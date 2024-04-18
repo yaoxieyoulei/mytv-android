@@ -58,13 +58,6 @@ object SP {
 
         /** epg刷新时间阈值（小时） */
         EPG_REFRESH_TIME_THRESHOLD,
-
-        /** ==================== 网络请求 ==================== */
-        /** HTTP请求重试次数 */
-        HTTP_RETRY_COUNT,
-
-        /** HTTP请求重试间隔时间（毫秒） */
-        HTTP_RETRY_INTERVAL,
     }
 
     /** ==================== 应用 ==================== */
@@ -136,15 +129,4 @@ object SP {
     var epgRefreshTimeThreshold: Int
         get() = sp.getInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, Constants.EPG_REFRESH_TIME_THRESHOLD)
         set(value) = sp.edit().putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value).apply()
-
-    /** ==================== 网络请求 ==================== */
-    /** HTTP请求重试次数 */
-    var httpRetryCount: Long
-        get() = sp.getLong(KEY.HTTP_RETRY_COUNT.name, Constants.HTTP_RETRY_COUNT)
-        set(value) = sp.edit().putLong(KEY.HTTP_RETRY_COUNT.name, value).apply()
-
-    /** HTTP请求重试间隔时间（毫秒） */
-    var httpRetryInterval: Long
-        get() = sp.getLong(KEY.HTTP_RETRY_INTERVAL.name, Constants.HTTP_RETRY_INTERVAL)
-        set(value) = sp.edit().putLong(KEY.HTTP_RETRY_INTERVAL.name, value).apply()
 }

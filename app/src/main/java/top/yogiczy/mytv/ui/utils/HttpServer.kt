@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.ui.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -14,6 +15,7 @@ import top.yogiczy.mytv.R
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.SocketException
+
 
 object HttpServer {
     const val SERVER_PORT = 10481
@@ -107,12 +109,17 @@ object HttpServer {
             return Json.decodeFromString(files["postData"]!!)
         }
 
+        @SuppressLint("ResourceType")
         override fun serve(session: IHTTPSession): Response {
             if (isPreflightRequest(session)) {
                 return responseCORS(session)
             }
 
-            if (session.uri.startsWith("/api/settings")) {
+            if (session.uri == "/") {
+                return newFixedLengthResponse(
+                    context.resources.openRawResource(R.raw.index).readBytes().decodeToString(),
+                )
+            } else if (session.uri.startsWith("/api/settings")) {
                 if (session.method == Method.GET) {
                     return wrapResponse(
                         session,
@@ -131,9 +138,6 @@ object HttpServer {
                                 epgCachedHash = SP.epgCachedHash,
                                 epgXmlUrl = SP.epgXmlUrl,
                                 epgRefreshTimeThreshold = SP.epgRefreshTimeThreshold,
-
-                                httpRetryCount = SP.httpRetryCount,
-                                httpRetryInterval = SP.httpRetryInterval,
 
                                 debugShowFps = SP.debugShowFps,
                             )
@@ -155,17 +159,15 @@ object HttpServer {
                     SP.epgXmlUrl = data.epgXmlUrl
                     SP.epgRefreshTimeThreshold = data.epgRefreshTimeThreshold
 
-                    SP.httpRetryCount = data.httpRetryCount
-                    SP.httpRetryInterval = data.httpRetryInterval
-
                     SP.debugShowFps = data.debugShowFps
 
                     return wrapResponse(session, newFixedLengthResponse("success"))
                 }
             }
 
-            return newFixedLengthResponse(
-                context.resources.openRawResource(R.raw.index).readBytes().decodeToString(),
+            return wrapResponse(
+                session,
+                newFixedLengthResponse(Response.Status.NOT_FOUND, "text/plain", "Not Found")
             )
         }
     }
@@ -186,9 +188,6 @@ private data class AllSettings(
     val epgCachedHash: Int,
     val epgXmlUrl: String,
     val epgRefreshTimeThreshold: Int,
-
-    val httpRetryCount: Long,
-    val httpRetryInterval: Long,
 
     val debugShowFps: Boolean,
 )

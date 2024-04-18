@@ -31,7 +31,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
-          
+
       - name: 获取版本号
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/v}" >>$GITHUB_OUTPUT
@@ -44,7 +44,12 @@ jobs:
               mv "$file" "$new_file_name"
             fi
           done
-            
+
+      - name: Prepare artifacts
+        run: |
+          mkdir artifacts
+          cp app/release/mytv-android-*.apk artifacts/
+
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
@@ -54,4 +59,4 @@ jobs:
           omitNameDuringUpdate: true
           omitPrereleaseDuringUpdate: true
           allowUpdates: true
-          artifacts: app/release/mytv-android-*.apk
+          artifacts: artifacts/*

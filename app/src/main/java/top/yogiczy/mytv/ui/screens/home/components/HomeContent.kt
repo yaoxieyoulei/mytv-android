@@ -122,10 +122,11 @@ fun HomeContent(
     ) {
         Box(
             modifier = Modifier
-                .handleDPadKeyEvents(onUp = {
-                    if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
-                    else state.changeCurrentIptvToPrev()
-                },
+                .handleDPadKeyEvents(
+                    onUp = {
+                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
+                        else state.changeCurrentIptvToPrev()
+                    },
                     onDown = {
                         if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToPrev()
                         else state.changeCurrentIptvToNext()
@@ -133,7 +134,8 @@ fun HomeContent(
                     onEnter = { state.changePanelVisible(true) },
                     onLongEnter = { state.changeSettingsVisible(true) },
                     onSettings = { state.changeSettingsVisible(true) },
-                    onNumber = { channelNoInputState.input(it) })
+                    onNumber = { channelNoInputState.input(it) },
+                )
                 .handleVerticalDragGestures(
                     onSwipeUp = {
                         state.changeCurrentIptvToNext()

@@ -39,6 +39,7 @@ import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.GithubRelease
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
@@ -57,9 +58,11 @@ fun SettingsList(
     var iptvSourceSimplify by remember { mutableStateOf(SP.iptvSourceSimplify) }
     var iptvSourceCachedAt by remember { mutableLongStateOf(SP.iptvSourceCachedAt) }
     val iptvSourceCacheTime by remember { mutableLongStateOf(SP.iptvSourceCacheTime) }
+    var iptvSourceUrl by remember { mutableStateOf(SP.iptvSourceUrl) }
     var epgEnable by remember { mutableStateOf(SP.epgEnable) }
     var epgXmlCachedAt by remember { mutableLongStateOf(SP.epgXmlCachedAt) }
     var epgCachedHash by remember { mutableIntStateOf(SP.epgCachedHash) }
+    var epgXmlUrl by remember { mutableStateOf(SP.epgXmlUrl) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -67,11 +70,24 @@ fun SettingsList(
             SP.iptvChannelChangeFlip = iptvChannelChangeFlip
             SP.iptvSourceSimplify = iptvSourceSimplify
             SP.iptvSourceCachedAt = iptvSourceCachedAt
+            SP.iptvSourceCacheTime = iptvSourceCacheTime
+            SP.iptvSourceUrl = iptvSourceUrl
             SP.epgEnable = epgEnable
             SP.epgXmlCachedAt = epgXmlCachedAt
             SP.epgCachedHash = epgCachedHash
+            SP.epgXmlUrl = epgXmlUrl
         }
     }
+
+    var showServerQrcode by remember { mutableStateOf(false) }
+    val serverUrl = "http://${HttpServer.getLocalIpAddress()}:${HttpServer.SERVER_PORT}"
+    if (showServerQrcode) {
+        SettingsQrcodeDialog(
+            onDismissRequest = { showServerQrcode = false },
+            data = serverUrl,
+        )
+    }
+
     TvLazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(
@@ -138,6 +154,16 @@ fun SettingsList(
         }
 
         item {
+            SettingsItem(
+                title = "自定义直播源",
+                value = if (iptvSourceUrl != Constants.IPTV_SOURCE_URL) "已启用" else "未启用",
+                description = if (iptvSourceUrl != Constants.IPTV_SOURCE_URL) "长按恢复默认" else "点击查看网址二维码",
+                onClick = { showServerQrcode = true },
+                onLongClick = { iptvSourceUrl = "" },
+            )
+        }
+
+        item {
             fun formatDuration(ms: Long): String {
                 return when (ms) {
                     in 0..<60_000 -> "${ms / 1000}秒"
@@ -165,6 +191,16 @@ fun SettingsList(
 
         item {
             SettingsItem(
+                title = "自定义节目单",
+                value = if (epgXmlUrl != Constants.EPG_XML_URL) "已启用" else "未启用",
+                description = if (epgXmlUrl != Constants.EPG_XML_URL) "长按恢复默认" else "点击查看网址二维码",
+                onClick = { showServerQrcode = true },
+                onLongClick = { epgXmlUrl = "" },
+            )
+        }
+
+        item {
+            SettingsItem(
                 title = "节目单缓存",
                 value = "当天",
                 description = if (epgXmlCachedAt > 0) "已缓存(点击清除缓存)" else "未缓存",
@@ -176,24 +212,12 @@ fun SettingsList(
         }
 
         item {
-            val serverUrl = "http://${HttpServer.getLocalIpAddress()}:${HttpServer.SERVER_PORT}"
-            var showQrcode by remember { mutableStateOf(false) }
-
             SettingsItem(
                 title = "更多设置",
                 value = "",
                 description = "访问以下网址进行配置：$serverUrl",
-                onClick = {
-                    showQrcode = true
-                },
+                onClick = { showServerQrcode = true },
             )
-
-            if (showQrcode) {
-                SettingsQrcodeDialog(
-                    onDismissRequest = { showQrcode = false },
-                    data = serverUrl,
-                )
-            }
         }
 
         // item {

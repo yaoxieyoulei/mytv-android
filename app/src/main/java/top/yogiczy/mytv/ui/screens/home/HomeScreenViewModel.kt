@@ -19,7 +19,7 @@ import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.repositories.EpgRepository
 import top.yogiczy.mytv.data.repositories.IptvRepository
-import top.yogiczy.mytv.ui.utils.SP
+import top.yogiczy.mytv.data.utils.Constants
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,11 +33,11 @@ class HomeScreeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             flow { emit(iptvRepository.getIptvGroups()) }.retryWhen { _, attempt ->
-                if (attempt >= SP.httpRetryCount) return@retryWhen false
+                if (attempt >= Constants.HTTP_RETRY_COUNT) return@retryWhen false
 
                 uiState.value =
-                    HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/${SP.httpRetryCount})...")
-                delay(SP.httpRetryInterval)
+                    HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/${Constants.HTTP_RETRY_COUNT})...")
+                delay(Constants.HTTP_RETRY_INTERVAL)
                 true
             }.catch { uiState.value = HomeScreenUiState.Error(it.message) }.map {
                 uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
@@ -48,7 +48,7 @@ class HomeScreeViewModel @Inject constructor(
                     val channels =
                         iptvGroupList.flatMap { it.iptvs }.map { iptv -> iptv.channelName }
                     flow { emit(epgRepository.getEpgs(channels)) }
-                }.retry(SP.httpRetryCount) { delay(SP.httpRetryInterval); true }
+                }.retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
                 .catch { emit(EpgList()) }.map { epgList ->
                     // 移除过期节目
                     epgList.copy(value = epgList.map { epg ->

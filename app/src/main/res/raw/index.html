@@ -98,7 +98,7 @@
 
                         <template #extra>
                             <van-button
-                                    @click="confirmSettings"
+                                    @click="settings.iptvSourceCachedAt = 0; confirmSettings()"
                                     size="small"
                                     type="primary">推送链接
                             </van-button>
@@ -184,7 +184,7 @@
 
                         <template #extra>
                             <van-button
-                                    @click="confirmSettings"
+                                    @click="settings.epgXmlCachedAt = 0; settings.epgCachedHash = 0; confirmSettings()"
                                     size="small"
                                     type="primary">推送链接
                             </van-button>
@@ -226,40 +226,6 @@
 
                 <van-cell-group
                         inset
-                        title="网络">
-                    <van-cell title="HTTP请求重试次数">
-                        <template #label>
-                            当前重试支持：直播源获取、节目单获取
-                        </template>
-
-                        <template #extra>
-                            <van-stepper
-                                    @change="confirmSettings()"
-                                    integer
-                                    v-model="settings.httpRetryCount"></van-stepper>
-                        </template>
-                    </van-cell>
-
-                    <van-cell title="HTTP请求重试间隔时间">
-                        <template #label>
-                            {{ foramtDuration(settings.httpRetryInterval) }}
-                        </template>
-
-                        <template #extra>
-                            <van-space>
-                                秒
-                                <van-stepper
-                                        :model-value="settings.httpRetryInterval / 1000"
-                                        @change="confirmSettings()"
-                                        @update:model-value="settings.httpRetryInterval = $event * 1000"
-                                        integer></van-stepper>
-                            </van-space>
-                        </template>
-                    </van-cell>
-                </van-cell-group>
-
-                <van-cell-group
-                        inset
                         title="调试">
                     <van-cell
                             label="在屏幕左上角显示fps和柱状图"
@@ -284,57 +250,57 @@
             dayjs.extend(dayjs_plugin_relativeTime)
 
             createApp({
-              setup() {
+                setup() {
 
-                const tabActive = ref(0)
+                    const tabActive = ref(0)
 
-                const settings = ref()
-                async function confirmSettings() {
-                  let loading = vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
-                  try {
-                    await fetch(`${baseUrl}/api/settings`, {
-                      method: "POST",
-                      body: JSON.stringify(settings.value)
+                    const settings = ref()
+                    async function confirmSettings() {
+                        let loading = vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
+                        try {
+                            await fetch(`${baseUrl}/api/settings`, {
+                                method: "POST",
+                                body: JSON.stringify(settings.value)
+                            })
+                            await refreshSettings()
+                            loading.clear()
+                        } catch (e) {
+                            vant.Toast.fail('无法修改设置')
+                            console.error(e)
+                        }
+                    }
+                    async function refreshSettings() {
+                        let loading = vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
+
+                        try {
+                            settings.value = await (await fetch(`${baseUrl}/api/settings`)).json()
+                            loading.clear()
+                        } catch (e) {
+                            vant.Toast.fail('无法获取设置')
+                            console.error(e)
+                        }
+                    }
+
+
+                    onMounted(async () => {
+                        await refreshSettings()
                     })
-                    await refreshSettings()
-                    loading.clear()
-                  } catch (e) {
-                    vant.Toast.fail('无法修改设置')
-                    console.error(e)
-                  }
+
+                    function foramtDuration(ms) {
+                        return humanizeDuration(ms, { language: 'zh_CN', round: true, largest: 2 })
+                    }
+
+                    return {
+                        dayjs,
+                        foramtDuration,
+                        tabActive,
+                        settings,
+                        confirmSettings,
+                    }
                 }
-                async function refreshSettings() {
-                  let loading = vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
-
-                  try {
-                    settings.value = await (await fetch(`${baseUrl}/api/settings`)).json()
-                    loading.clear()
-                  } catch (e) {
-                    vant.Toast.fail('无法获取设置')
-                    console.error(e)
-                  }
-                }
-
-
-                onMounted(async () => {
-                  await refreshSettings()
-                })
-
-                function foramtDuration(ms) {
-                  return humanizeDuration(ms, { language: 'zh_CN', round: true, largest: 2 })
-                }
-
-                return {
-                  dayjs,
-                  foramtDuration,
-                  tabActive,
-                  settings,
-                  confirmSettings,
-                }
-              }
             })
-              .use(vant)
-              .mount('#app')
+                .use(vant)
+                .mount('#app')
         </script>
     </body>
 
