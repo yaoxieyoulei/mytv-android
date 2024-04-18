@@ -19,6 +19,7 @@ import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.repositories.EpgRepository
 import top.yogiczy.mytv.data.repositories.IptvRepository
+import top.yogiczy.mytv.ui.utils.SP
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,47 +32,38 @@ class HomeScreeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            flow { emit(iptvRepository.getIptvGroups()) }
-                .retryWhen { _, attempt ->
-                    if (attempt >= 10) return@retryWhen false
+            flow { emit(iptvRepository.getIptvGroups()) }.retryWhen { _, attempt ->
+                if (attempt >= SP.httpRetryCount) return@retryWhen false
 
-                    uiState.value =
-                        HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/10)...")
-                    delay(3000)
-                    true
-                }
-                .catch { uiState.value = HomeScreenUiState.Error(it.message) }
-                .map {
-                    uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
-                    it
-                }
+                uiState.value =
+                    HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/${SP.httpRetryCount})...")
+                delay(SP.httpRetryInterval)
+                true
+            }.catch { uiState.value = HomeScreenUiState.Error(it.message) }.map {
+                uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
+                it
+            }
                 // 开始获取epg
                 .flatMapLatest { iptvGroupList ->
                     val channels =
                         iptvGroupList.flatMap { it.iptvs }.map { iptv -> iptv.channelName }
                     flow { emit(epgRepository.getEpgs(channels)) }
-                }
-                .retry(10) { delay(3000); true }
-                .catch { emit(EpgList()) }
-                .map { epgList ->
+                }.retry(SP.httpRetryCount) { delay(SP.httpRetryInterval); true }
+                .catch { emit(EpgList()) }.map { epgList ->
                     // 移除过期节目
-                    epgList.copy(
-                        value = epgList.map { epg ->
-                            epg.copy(
-                                programmes = EpgProgrammeList(
-                                    epg.programmes.filter { programme ->
-                                        System.currentTimeMillis() < programme.endAt
-                                    },
-                                )
+                    epgList.copy(value = epgList.map { epg ->
+                        epg.copy(
+                            programmes = EpgProgrammeList(
+                                epg.programmes.filter { programme ->
+                                    System.currentTimeMillis() < programme.endAt
+                                },
                             )
-                        }
-                    )
-                }
-                .map { epgList ->
-                    uiState.value = (uiState.value as HomeScreenUiState.Ready)
-                        .copy(epgList = epgList)
-                }
-                .collect()
+                        )
+                    })
+                }.map { epgList ->
+                    uiState.value =
+                        (uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)
+                }.collect()
         }
     }
 }

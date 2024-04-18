@@ -11,7 +11,6 @@ import top.yogiczy.mytv.data.entities.IptvGroup
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.data.models.IptvResponseItem
-import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.utils.SP
 import java.io.File
 import javax.inject.Singleton
@@ -21,7 +20,7 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
     override suspend fun getIptvGroups(): IptvGroupList {
         val now = System.currentTimeMillis()
 
-        if (now - SP.iptvSourceCacheTime < 24 * 60 * 60 * 1000) {
+        if (now - SP.iptvSourceCachedAt < SP.iptvSourceCacheTime) {
             val cache = getCache()
             if (cache.isNotBlank()) {
                 Log.d(TAG, "使用缓存直播源")
@@ -31,22 +30,20 @@ class IptvRepositoryImpl(private val context: Context) : IptvRepository {
 
         val data = fetchSource()
         setCache(data)
-        SP.iptvSourceCacheTime = now
+        SP.iptvSourceCachedAt = now
 
         return parseSource(data)
     }
 
-    private fun getSource() = SP.iptvCustomSource.ifBlank { Constants.IPTV_SOURCE_URL }
-
     private fun getSourceType(): SourceType {
-        return if (getSource().endsWith(".m3u")) SourceType.M3U else SourceType.TVBOX
+        return if (SP.iptvSourceUrl.endsWith(".m3u")) SourceType.M3U else SourceType.TVBOX
     }
 
     private suspend fun fetchSource(): String = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取远程直播源: ${getSource()}")
+        Log.d(TAG, "获取远程直播源: ${SP.iptvSourceUrl}")
 
         val client = OkHttpClient()
-        val request = Request.Builder().url(getSource()).build()
+        val request = Request.Builder().url(SP.iptvSourceUrl).build()
 
         try {
             return@withContext with(client.newCall(request).execute()) {

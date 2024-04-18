@@ -53,26 +53,23 @@ fun SettingsList(
     val childPadding = rememberChildPadding()
 
     var appBootLaunch by remember { mutableStateOf(SP.appBootLaunch) }
-    var debugShowFps by remember { mutableStateOf(SP.debugShowFps) }
     var iptvChannelChangeFlip by remember { mutableStateOf(SP.iptvChannelChangeFlip) }
     var iptvSourceSimplify by remember { mutableStateOf(SP.iptvSourceSimplify) }
-    val iptvCustomSource by remember { mutableStateOf(SP.iptvCustomSource) }
-    var iptvSourceCacheTime by remember { mutableLongStateOf(SP.iptvSourceCacheTime) }
+    var iptvSourceCachedAt by remember { mutableLongStateOf(SP.iptvSourceCachedAt) }
+    val iptvSourceCacheTime by remember { mutableLongStateOf(SP.iptvSourceCacheTime) }
     var epgEnable by remember { mutableStateOf(SP.epgEnable) }
-    var epgXmlCacheTime by remember { mutableLongStateOf(SP.epgXmlCacheTime) }
-    var epgCacheHash by remember { mutableIntStateOf(SP.epgCacheHash) }
+    var epgXmlCachedAt by remember { mutableLongStateOf(SP.epgXmlCachedAt) }
+    var epgCachedHash by remember { mutableIntStateOf(SP.epgCachedHash) }
 
     DisposableEffect(Unit) {
         onDispose {
             SP.appBootLaunch = appBootLaunch
-            SP.debugShowFps = debugShowFps
             SP.iptvChannelChangeFlip = iptvChannelChangeFlip
             SP.iptvSourceSimplify = iptvSourceSimplify
-            SP.iptvCustomSource = iptvCustomSource
-            SP.iptvSourceCacheTime = iptvSourceCacheTime
+            SP.iptvSourceCachedAt = iptvSourceCachedAt
             SP.epgEnable = epgEnable
-            SP.epgXmlCacheTime = epgXmlCacheTime
-            SP.epgCacheHash = epgCacheHash
+            SP.epgXmlCachedAt = epgXmlCachedAt
+            SP.epgCachedHash = epgCachedHash
         }
     }
     TvLazyRow(
@@ -141,32 +138,19 @@ fun SettingsList(
         }
 
         item {
-            val serverUrl = "http://${HttpServer.getLocalIpAddress()}:${HttpServer.SERVER_PORT}"
-            var showQrcode by remember { mutableStateOf(false) }
-
-            SettingsItem(
-                title = "自定义直播源",
-                value = if (iptvCustomSource.isNotBlank()) "已启用" else "未启用",
-                description = "访问以下网址进行配置：$serverUrl",
-                onClick = {
-                    showQrcode = true
-                },
-            )
-
-            if (showQrcode) {
-                SettingsQrcodeDialog(
-                    onDismissRequest = { showQrcode = false },
-                    data = serverUrl,
-                )
+            fun formatDuration(ms: Long): String {
+                return when (ms) {
+                    in 0..<60_000 -> "${ms / 1000}秒"
+                    in 60_000..<3_600_000 -> "${ms / 60_000}分钟"
+                    else -> "${ms / 3_600_000}小时"
+                }
             }
-        }
 
-        item {
             SettingsItem(
                 title = "直播源缓存",
-                value = "24小时",
-                description = if (iptvSourceCacheTime > 0) "已缓存(点击清除缓存)" else "未缓存",
-                onClick = { iptvSourceCacheTime = 0 },
+                value = formatDuration(iptvSourceCacheTime),
+                description = if (iptvSourceCachedAt > 0) "已缓存(点击清除缓存)" else "未缓存",
+                onClick = { iptvSourceCachedAt = 0 },
             )
         }
 
@@ -183,21 +167,33 @@ fun SettingsList(
             SettingsItem(
                 title = "节目单缓存",
                 value = "当天",
-                description = if (epgXmlCacheTime > 0) "已缓存(点击清除缓存)" else "未缓存",
+                description = if (epgXmlCachedAt > 0) "已缓存(点击清除缓存)" else "未缓存",
                 onClick = {
-                    epgXmlCacheTime = 0
-                    epgCacheHash = 0
+                    epgXmlCachedAt = 0
+                    epgCachedHash = 0
                 },
             )
         }
 
         item {
+            val serverUrl = "http://${HttpServer.getLocalIpAddress()}:${HttpServer.SERVER_PORT}"
+            var showQrcode by remember { mutableStateOf(false) }
+
             SettingsItem(
-                title = "显示FPS",
-                value = if (debugShowFps) "启用" else "禁用",
-                description = "显示当前帧率",
-                onClick = { debugShowFps = !debugShowFps },
+                title = "更多设置",
+                value = "",
+                description = "访问以下网址进行配置：$serverUrl",
+                onClick = {
+                    showQrcode = true
+                },
             )
+
+            if (showQrcode) {
+                SettingsQrcodeDialog(
+                    onDismissRequest = { showQrcode = false },
+                    data = serverUrl,
+                )
+            }
         }
 
         // item {

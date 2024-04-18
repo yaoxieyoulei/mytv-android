@@ -21,6 +21,7 @@ import top.yogiczy.mytv.ui.App
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.SP
+import kotlin.system.exitProcess
 
 
 @AndroidEntryPoint
@@ -56,16 +57,14 @@ class MainActivity : ComponentActivity() {
                         LocalContentColor provides MaterialTheme.colorScheme.onSurface
                     ) {
                         App(
-                            onBackPressed = { finishAffinity() }
+                            onBackPressed = {
+                                finish()
+                                exitProcess(0)
+                            }
                         )
                     }
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        HttpServer.stop()
-        super.onDestroy()
     }
 }

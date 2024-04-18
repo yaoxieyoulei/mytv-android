@@ -14,7 +14,6 @@ import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
-import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.utils.SP
 import java.io.File
 import java.io.StringReader
@@ -33,7 +32,7 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
         val xml = getXml()
         val hashCode = filteredChannels.hashCode()
 
-        if (SP.epgCacheHash == hashCode) {
+        if (SP.epgCachedHash == hashCode) {
             val cache = getCache()
             if (cache != null) {
                 Log.d(TAG, "使用缓存epg")
@@ -43,16 +42,16 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
 
         val epgList = parseFromXml(xml, filteredChannels)
         setCache(epgList)
-        SP.epgCacheHash = hashCode
+        SP.epgCachedHash = hashCode
 
         return epgList
     }
 
     private suspend fun fetchXml(): String = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取远程xml: ${Constants.EPG_XML_URL}")
+        Log.d(TAG, "获取远程xml: ${SP.epgXmlUrl}")
 
         val client = OkHttpClient()
-        val request = Request.Builder().url(Constants.EPG_XML_URL).build()
+        val request = Request.Builder().url(SP.epgXmlUrl).build()
 
         try {
             return@withContext with(client.newCall(request).execute()) {
@@ -84,23 +83,25 @@ class EpgRepositoryImpl(private val context: Context) : EpgRepository {
     private suspend fun getXml(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        if (dateFormat.format(System.currentTimeMillis()) == dateFormat.format(SP.epgXmlCacheTime)) {
+        if (dateFormat.format(System.currentTimeMillis()) == dateFormat.format(SP.epgXmlCachedAt)) {
             val cache = getCacheXml()
             if (cache.isNotBlank()) {
                 Log.d(TAG, "使用缓存xml")
                 return cache
             }
         } else {
-            if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 1) {
-                Log.d(TAG, "未到1点，不刷新epg")
+            if (Calendar.getInstance()
+                    .get(Calendar.HOUR_OF_DAY) < SP.epgRefreshTimeThreshold
+            ) {
+                Log.d(TAG, "未到时间点，不刷新epg")
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             }
         }
 
         val xml = fetchXml()
         setCacheXml(xml)
-        SP.epgXmlCacheTime = System.currentTimeMillis()
-        SP.epgCacheHash = 0
+        SP.epgXmlCachedAt = System.currentTimeMillis()
+        SP.epgCachedHash = 0
 
         return xml
     }

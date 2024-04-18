@@ -7,8 +7,10 @@ import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.R
-import top.yogiczy.mytv.ui.screens.toast.ToastState
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.SocketException
@@ -33,10 +35,6 @@ object HttpServer {
                 }
             }
         }
-    }
-
-    fun stop() {
-        server.stop()
     }
 
     fun getLocalIpAddress(): String {
@@ -67,27 +65,130 @@ object HttpServer {
             start(SOCKET_READ_TIMEOUT, false)
         }
 
+        private fun isPreflightRequest(session: IHTTPSession): Boolean {
+            val headers = session.headers
+            return Method.OPTIONS == session.method && headers.contains("origin") && headers.containsKey(
+                "access-control-request-method"
+            ) && headers.containsKey("access-control-request-headers")
+        }
+
+        private fun responseCORS(session: IHTTPSession): Response {
+            val resp = wrapResponse(session, newFixedLengthResponse(""))
+            val headers = session.headers
+            resp.addHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS")
+            val requestHeaders = headers["access-control-request-headers"]
+            if (requestHeaders != null) {
+                resp.addHeader("Access-Control-Allow-Headers", requestHeaders)
+            }
+            resp.addHeader("Access-Control-Max-Age", "0")
+            return resp
+        }
+
+        private fun wrapResponse(session: IHTTPSession, resp: Response): Response {
+            val headers = session.headers
+            resp.addHeader("Access-Control-Allow-Credentials", "true")
+            resp.addHeader("Access-Control-Allow-Origin", headers.getOrElse("origin") { "*" })
+            val requestHeaders = headers["access-control-request-headers"]
+            if (requestHeaders != null) {
+                resp.addHeader("Access-Control-Allow-Headers", requestHeaders)
+            }
+            return resp
+        }
+
+        private inline fun <reified T> responseJson(data: T): Response {
+            return newFixedLengthResponse(
+                Response.Status.OK, "application/json", Json.encodeToString(data)
+            )
+        }
+
+        private inline fun <reified T> parseBody(session: IHTTPSession): T {
+            val files = mutableMapOf<String, String>()
+            session.parseBody(files)
+            return Json.decodeFromString(files["postData"]!!)
+        }
+
         override fun serve(session: IHTTPSession): Response {
-            if (session.uri == "/") {
-                return newFixedLengthResponse(
-                    context.resources.openRawResource(R.raw.index).readBytes().decodeToString(),
-                )
-            } else if (session.uri.startsWith("/api/settings/iptvCustomSource")) {
-                val source = session.parameters["source"]?.firstOrNull() ?: ""
-                Log.d(TAG, "设置直播源: $source")
-
-                SP.iptvCustomSource = source
-
-                if (source.isNotBlank()) {
-                    ToastState.I.showToast("直播源设置成功")
-                } else {
-                    ToastState.I.showToast("直播源已恢复默认")
-                }
-
-                return newFixedLengthResponse("success")
+            if (isPreflightRequest(session)) {
+                return responseCORS(session)
             }
 
-            return newFixedLengthResponse("not found")
+            if (session.uri.startsWith("/api/settings")) {
+                if (session.method == Method.GET) {
+                    return wrapResponse(
+                        session,
+                        responseJson(
+                            AllSettings(
+                                appBootLaunch = SP.appBootLaunch,
+
+                                iptvChannelChangeFlip = SP.iptvChannelChangeFlip,
+                                iptvSourceSimplify = SP.iptvSourceSimplify,
+                                iptvSourceCachedAt = SP.iptvSourceCachedAt,
+                                iptvSourceUrl = SP.iptvSourceUrl,
+                                iptvSourceCacheTime = SP.iptvSourceCacheTime,
+
+                                epgEnable = SP.epgEnable,
+                                epgXmlCachedAt = SP.epgXmlCachedAt,
+                                epgCachedHash = SP.epgCachedHash,
+                                epgXmlUrl = SP.epgXmlUrl,
+                                epgRefreshTimeThreshold = SP.epgRefreshTimeThreshold,
+
+                                httpRetryCount = SP.httpRetryCount,
+                                httpRetryInterval = SP.httpRetryInterval,
+
+                                debugShowFps = SP.debugShowFps,
+                            )
+                        ),
+                    )
+                } else if (session.method == Method.POST) {
+                    val data = parseBody<AllSettings>(session)
+                    SP.appBootLaunch = data.appBootLaunch
+
+                    SP.iptvChannelChangeFlip = data.iptvChannelChangeFlip
+                    SP.iptvSourceSimplify = data.iptvSourceSimplify
+                    SP.iptvSourceCachedAt = data.iptvSourceCachedAt
+                    SP.iptvSourceUrl = data.iptvSourceUrl
+                    SP.iptvSourceCacheTime = data.iptvSourceCacheTime
+
+                    SP.epgEnable = data.epgEnable
+                    SP.epgXmlCachedAt = data.epgXmlCachedAt
+                    SP.epgCachedHash = data.epgCachedHash
+                    SP.epgXmlUrl = data.epgXmlUrl
+                    SP.epgRefreshTimeThreshold = data.epgRefreshTimeThreshold
+
+                    SP.httpRetryCount = data.httpRetryCount
+                    SP.httpRetryInterval = data.httpRetryInterval
+
+                    SP.debugShowFps = data.debugShowFps
+
+                    return wrapResponse(session, newFixedLengthResponse("success"))
+                }
+            }
+
+            return newFixedLengthResponse(
+                context.resources.openRawResource(R.raw.index).readBytes().decodeToString(),
+            )
         }
     }
 }
+
+@Serializable
+private data class AllSettings(
+    val appBootLaunch: Boolean,
+
+    val iptvChannelChangeFlip: Boolean,
+    val iptvSourceSimplify: Boolean,
+    val iptvSourceCachedAt: Long,
+    val iptvSourceUrl: String,
+    val iptvSourceCacheTime: Long,
+
+    val epgEnable: Boolean,
+    val epgXmlCachedAt: Long,
+    val epgCachedHash: Int,
+    val epgXmlUrl: String,
+    val epgRefreshTimeThreshold: Int,
+
+    val httpRetryCount: Long,
+    val httpRetryInterval: Long,
+
+    val debugShowFps: Boolean,
+)
