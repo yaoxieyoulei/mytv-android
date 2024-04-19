@@ -20,6 +20,9 @@ object SP {
         /** 开机自启 */
         APP_BOOT_LAUNCH,
 
+        /** 上一次最新版本 */
+        APP_LAST_LATEST_VERSION,
+
         /** ==================== 调式 ==================== */
         /** 显示fps */
         DEBUG_SHOW_FPS,
@@ -65,6 +68,11 @@ object SP {
     var appBootLaunch: Boolean
         get() = sp.getBoolean(KEY.APP_BOOT_LAUNCH.name, false)
         set(value) = sp.edit().putBoolean(KEY.APP_BOOT_LAUNCH.name, value).apply()
+
+    /** 上一次最新版本 */
+    var appLastLatestVersion: String
+        get() = sp.getString(KEY.APP_LAST_LATEST_VERSION.name, "")!!
+        set(value) = sp.edit().putString(KEY.APP_LAST_LATEST_VERSION.name, value).apply()
 
     /** ==================== 调式 ==================== */
     /** 显示fps */

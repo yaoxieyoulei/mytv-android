@@ -24,6 +24,7 @@ import top.yogiczy.mytv.ui.screens.toast.ToastProperty
 import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.utils.ApkInstaller
 import top.yogiczy.mytv.ui.utils.DownloadUtil
+import top.yogiczy.mytv.ui.utils.SP
 import java.io.File
 
 @Stable
@@ -57,8 +58,9 @@ data class UpdateState(
                 _latestRelease.tagName.substring(1), packageInfo.versionName
             ) > 0
 
-            if (_isUpdateAvailable) {
+            if (_isUpdateAvailable && _latestRelease.tagName != SP.appLastLatestVersion) {
                 ToastState.I.showToast("新版本: ${_latestRelease.tagName}")
+                SP.appLastLatestVersion = _latestRelease.tagName
             }
         } catch (e: Exception) {
             ToastState.I.showToast("检查更新失败")
