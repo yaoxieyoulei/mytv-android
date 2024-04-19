@@ -2,6 +2,9 @@ package top.yogiczy.mytv.ui.screens.home.components
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -134,7 +137,10 @@ fun HomeContent(
                     onEnter = { state.changePanelVisible(true) },
                     onLongEnter = { state.changeSettingsVisible(true) },
                     onSettings = { state.changeSettingsVisible(true) },
-                    onNumber = { channelNoInputState.input(it) },
+                    onNumber = {
+                        state.changeTempPanelVisible(false)
+                        channelNoInputState.input(it)
+                    },
                 )
                 .handleVerticalDragGestures(
                     onSwipeUp = {
@@ -172,7 +178,7 @@ fun HomeContent(
 
         ChannelNoInput(state = channelNoInputState)
 
-        if (state.isPanelVisible) {
+        AnimatedVisibility(state.isPanelVisible, enter = fadeIn(), exit = fadeOut()) {
             PanelScreen(
                 currentIptv = state.currentIptv,
                 playerState = playerState,
@@ -185,7 +191,7 @@ fun HomeContent(
             )
         }
 
-        if (state.isSettingsVisible) {
+        AnimatedVisibility(state.isSettingsVisible, enter = fadeIn(), exit = fadeOut()) {
             SettingsScreen(
                 updateState = updateState,
                 onClose = { state.changeSettingsVisible(false) },
@@ -275,6 +281,10 @@ class HomeContentState(
         _isSettingsVisible = visible
     }
 
+    fun changeTempPanelVisible(visible: Boolean) {
+        _isTempPanelVisible = visible
+    }
+
     private fun getPrevIptv(): Iptv {
         val currentIndex = iptvGroupList.iptvIdx(_currentIptv)
         return if (currentIndex > 0) {
@@ -296,7 +306,7 @@ class HomeContentState(
     fun changeCurrentIptv(iptv: Iptv) {
         _isPanelVisible = false
 
-        if (iptv.name == _currentIptv.name) return
+        if (iptv == _currentIptv) return
 
         _currentIptv = iptv
         SP.iptvLastIptvIdx = iptvGroupList.iptvIdx(iptv)

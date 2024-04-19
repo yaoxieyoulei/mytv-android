@@ -132,11 +132,9 @@ fun PanelBottom(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
-            val currentProgrammes = remember { epgList.currentProgrammes(currentIptv) }
-
             PanelIptvInfo(
                 iptv = currentIptv,
-                programmes = currentProgrammes,
+                programmes = epgList.currentProgrammes(currentIptv),
                 playerError = playerState.error,
                 modifier = Modifier.padding(start = childPadding.start),
             )

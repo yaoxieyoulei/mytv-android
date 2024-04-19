@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -41,7 +42,7 @@ fun PanelIptvItem(
 
     Card(
         modifier = modifier
-            .width(124.dp)
+            .width(130.dp)
             .height(54.dp)
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
@@ -79,6 +80,7 @@ fun PanelIptvItem(
                 text = programmes.first ?: "",
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
+                modifier = Modifier.alpha(0.8f),
             )
         }
     }

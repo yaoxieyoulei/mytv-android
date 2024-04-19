@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -45,7 +45,6 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.SP
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SettingsList(
     modifier: Modifier = Modifier,
@@ -54,30 +53,34 @@ fun SettingsList(
     val childPadding = rememberChildPadding()
 
     var appBootLaunch by remember { mutableStateOf(SP.appBootLaunch) }
-    var iptvChannelChangeFlip by remember { mutableStateOf(SP.iptvChannelChangeFlip) }
-    var iptvSourceSimplify by remember { mutableStateOf(SP.iptvSourceSimplify) }
-    var iptvSourceCachedAt by remember { mutableLongStateOf(SP.iptvSourceCachedAt) }
-    val iptvSourceCacheTime by remember { mutableLongStateOf(SP.iptvSourceCacheTime) }
-    var iptvSourceUrl by remember { mutableStateOf(SP.iptvSourceUrl) }
-    var epgEnable by remember { mutableStateOf(SP.epgEnable) }
-    var epgXmlCachedAt by remember { mutableLongStateOf(SP.epgXmlCachedAt) }
-    var epgCachedHash by remember { mutableIntStateOf(SP.epgCachedHash) }
-    var epgXmlUrl by remember { mutableStateOf(SP.epgXmlUrl) }
+    LaunchedEffect(appBootLaunch) { SP.appBootLaunch = appBootLaunch }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            SP.appBootLaunch = appBootLaunch
-            SP.iptvChannelChangeFlip = iptvChannelChangeFlip
-            SP.iptvSourceSimplify = iptvSourceSimplify
-            SP.iptvSourceCachedAt = iptvSourceCachedAt
-            SP.iptvSourceCacheTime = iptvSourceCacheTime
-            SP.iptvSourceUrl = iptvSourceUrl
-            SP.epgEnable = epgEnable
-            SP.epgXmlCachedAt = epgXmlCachedAt
-            SP.epgCachedHash = epgCachedHash
-            SP.epgXmlUrl = epgXmlUrl
-        }
-    }
+    var iptvChannelChangeFlip by remember { mutableStateOf(SP.iptvChannelChangeFlip) }
+    LaunchedEffect(iptvChannelChangeFlip) { SP.iptvChannelChangeFlip = iptvChannelChangeFlip }
+
+    var iptvSourceSimplify by remember { mutableStateOf(SP.iptvSourceSimplify) }
+    LaunchedEffect(iptvSourceSimplify) { SP.iptvSourceSimplify = iptvSourceSimplify }
+
+    var iptvSourceCachedAt by remember { mutableLongStateOf(SP.iptvSourceCachedAt) }
+    LaunchedEffect(iptvSourceCachedAt) { SP.iptvSourceCachedAt = iptvSourceCachedAt }
+
+    val iptvSourceCacheTime by remember { mutableLongStateOf(SP.iptvSourceCacheTime) }
+    LaunchedEffect(iptvSourceCacheTime) { SP.iptvSourceCacheTime = iptvSourceCacheTime }
+
+    var iptvSourceUrl by remember { mutableStateOf(SP.iptvSourceUrl) }
+    LaunchedEffect(iptvSourceUrl) { SP.iptvSourceUrl = iptvSourceUrl }
+
+    var epgEnable by remember { mutableStateOf(SP.epgEnable) }
+    LaunchedEffect(epgEnable) { SP.epgEnable = epgEnable }
+
+    var epgXmlCachedAt by remember { mutableLongStateOf(SP.epgXmlCachedAt) }
+    LaunchedEffect(epgXmlCachedAt) { SP.epgXmlCachedAt = epgXmlCachedAt }
+
+    var epgCachedHash by remember { mutableIntStateOf(SP.epgCachedHash) }
+    LaunchedEffect(epgCachedHash) { SP.epgCachedHash = epgCachedHash }
+
+    var epgXmlUrl by remember { mutableStateOf(SP.epgXmlUrl) }
+    LaunchedEffect(epgXmlUrl) { SP.epgXmlUrl = epgXmlUrl }
 
     var showServerQrcode by remember { mutableStateOf(false) }
     val serverUrl = "http://${HttpServer.getLocalIpAddress()}:${HttpServer.SERVER_PORT}"
@@ -159,7 +162,10 @@ fun SettingsList(
                 value = if (iptvSourceUrl != Constants.IPTV_SOURCE_URL) "已启用" else "未启用",
                 description = if (iptvSourceUrl != Constants.IPTV_SOURCE_URL) "长按恢复默认" else "点击查看网址二维码",
                 onClick = { showServerQrcode = true },
-                onLongClick = { iptvSourceUrl = "" },
+                onLongClick = {
+                    iptvSourceCachedAt = 0
+                    iptvSourceUrl = Constants.IPTV_SOURCE_URL
+                },
             )
         }
 
@@ -195,7 +201,11 @@ fun SettingsList(
                 value = if (epgXmlUrl != Constants.EPG_XML_URL) "已启用" else "未启用",
                 description = if (epgXmlUrl != Constants.EPG_XML_URL) "长按恢复默认" else "点击查看网址二维码",
                 onClick = { showServerQrcode = true },
-                onLongClick = { epgXmlUrl = "" },
+                onLongClick = {
+                    epgXmlCachedAt = 0
+                    epgCachedHash = 0
+                    epgXmlUrl = Constants.EPG_XML_URL
+                },
             )
         }
 

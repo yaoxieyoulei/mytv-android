@@ -15,9 +15,9 @@ data class IptvGroupList(
         })
 
         fun IptvGroupList.iptvGroupIdx(iptv: Iptv) =
-            this.indexOfFirst { group -> group.iptvs.any { it.name == iptv.name } }
+            this.indexOfFirst { group -> group.iptvs.any { it == iptv } }
 
         fun IptvGroupList.iptvIdx(iptv: Iptv) =
-            this.flatMap { it.iptvs }.indexOfFirst { it.name == iptv.name }
+            this.flatMap { it.iptvs }.indexOfFirst { it == iptv }
     }
 }
