@@ -16,7 +16,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
-import dagger.hilt.android.AndroidEntryPoint
 import top.yogiczy.mytv.ui.App
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
@@ -24,7 +23,6 @@ import top.yogiczy.mytv.ui.utils.SP
 import kotlin.system.exitProcess
 
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {

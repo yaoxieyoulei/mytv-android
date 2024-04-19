@@ -17,9 +17,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import top.yogiczy.mytv.data.entities.GithubRelease
-import top.yogiczy.mytv.data.repositories.GithubRepositoryImpl
+import top.yogiczy.mytv.data.repositories.GithubRepository
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.toast.ToastProperty
 import top.yogiczy.mytv.ui.screens.toast.ToastState
@@ -35,10 +34,8 @@ data class UpdateState(
     val latestFile: File = File(context.cacheDir, "latest.apk"),
 ) {
     private var _isChecking by mutableStateOf(false)
-    val isChecking get() = _isChecking
 
     private var _isUpdating by mutableStateOf(false)
-    val isUpdating get() = _isUpdating
 
     private var _isUpdateAvailable by mutableStateOf(false)
     val isUpdateAvailable get() = _isUpdateAvailable
@@ -55,7 +52,7 @@ data class UpdateState(
 
         try {
             _isChecking = true
-            _latestRelease = GithubRepositoryImpl().latestRelease()
+            _latestRelease = GithubRepository().latestRelease()
             _isUpdateAvailable = compareVersion(
                 _latestRelease.tagName.substring(1), packageInfo.versionName
             ) > 0
@@ -70,7 +67,6 @@ data class UpdateState(
         }
     }
 
-    @OptIn(FlowPreview::class)
     suspend fun downloadAndUpdate() {
         if (!_isUpdateAvailable) return
         if (_isUpdating) return

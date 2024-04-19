@@ -1,11 +1,12 @@
 package top.yogiczy.mytv.ui.screens.home
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
@@ -20,35 +21,38 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.repositories.EpgRepository
 import top.yogiczy.mytv.data.repositories.IptvRepository
 import top.yogiczy.mytv.data.utils.Constants
-import javax.inject.Inject
 
-@HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeScreeViewModel @Inject constructor(
-    iptvRepository: IptvRepository,
-    epgRepository: EpgRepository,
-) : ViewModel() {
-    var uiState = mutableStateOf<HomeScreenUiState>(HomeScreenUiState.Loading(""))
+class HomeScreeViewModel : ViewModel() {
+    private val iptvRepository = IptvRepository()
+    private val epgRepository = EpgRepository()
+
+    private val _uiState = MutableStateFlow<HomeScreenUiState>(HomeScreenUiState.Loading(""))
+    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            flow { emit(iptvRepository.getIptvGroups()) }.retryWhen { _, attempt ->
-                if (attempt >= Constants.HTTP_RETRY_COUNT) return@retryWhen false
+            /* @formatter:off */
+            flow { emit(iptvRepository.getIptvGroups()) }
+                .retryWhen { _, attempt ->
+                    if (attempt >= Constants.HTTP_RETRY_COUNT) return@retryWhen false
 
-                uiState.value =
-                    HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/${Constants.HTTP_RETRY_COUNT})...")
-                delay(Constants.HTTP_RETRY_INTERVAL)
-                true
-            }.catch { uiState.value = HomeScreenUiState.Error(it.message) }.map {
-                uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
-                it
-            }
+                    _uiState.value =
+                        HomeScreenUiState.Loading("获取远程直播源(${attempt + 1}/${Constants.HTTP_RETRY_COUNT})...")
+                    delay(Constants.HTTP_RETRY_INTERVAL)
+                    true
+                }
+                .catch { _uiState.value = HomeScreenUiState.Error(it.message) }.map {
+                    _uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
+                    it
+                }
                 // 开始获取epg
                 .flatMapLatest { iptvGroupList ->
                     val channels =
                         iptvGroupList.flatMap { it.iptvs }.map { iptv -> iptv.channelName }
                     flow { emit(epgRepository.getEpgs(channels)) }
-                }.retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
+                }
+                .retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
                 .catch { emit(EpgList()) }.map { epgList ->
                     // 移除过期节目
                     epgList.copy(value = epgList.map { epg ->
@@ -60,10 +64,12 @@ class HomeScreeViewModel @Inject constructor(
                             )
                         )
                     })
-                }.map { epgList ->
-                    uiState.value =
-                        (uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)
-                }.collect()
+                }
+                .map { epgList ->
+                    _uiState.value =
+                        (_uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)
+                }
+                .collect()
         }
     }
 }

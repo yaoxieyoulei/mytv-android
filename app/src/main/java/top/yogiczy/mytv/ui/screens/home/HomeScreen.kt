@@ -6,12 +6,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -25,9 +26,9 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
-    homeScreeViewModel: HomeScreeViewModel = hiltViewModel(),
+    homeScreeViewModel: HomeScreeViewModel = viewModel(),
 ) {
-    val uiState by homeScreeViewModel.uiState
+    val uiState by homeScreeViewModel.uiState.collectAsState()
 
     when (val s = uiState) {
         is HomeScreenUiState.Ready -> {

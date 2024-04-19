@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
 }
 
 val keystorePropertiesFile = rootProject.file("key.properties")
@@ -104,7 +102,6 @@ dependencies {
     implementation(libs.androidx.tv.material)
 
     // 播放器
-    implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.exoplayer.hls)
     implementation(libs.androidx.media3.exoplayer.dash)
@@ -115,11 +112,6 @@ dependencies {
 
     // JSON parser
     implementation(libs.kotlinx.serialization)
-
-    // Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
-    ksp(libs.hilt.compiler)
 
     // 网络请求
     implementation(libs.okhttp)
