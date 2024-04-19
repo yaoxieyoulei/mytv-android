@@ -40,7 +40,7 @@ fun PanelIptvList(
         items(iptvList) {
             PanelIptvItem(
                 iptv = it,
-                programmes = epgList.currentProgrammes(it),
+                currentProgrammes = epgList.currentProgrammes(it),
                 onIptvSelected = { onIptvSelected(it) },
             )
         }

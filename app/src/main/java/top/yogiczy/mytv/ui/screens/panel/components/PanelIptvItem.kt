@@ -26,6 +26,7 @@ import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
@@ -35,7 +36,7 @@ fun PanelIptvItem(
     modifier: Modifier = Modifier,
     iptv: Iptv = Iptv.EMPTY,
     onIptvSelected: () -> Unit = {},
-    programmes: Pair<String?, String?> = Pair(null, null),
+    currentProgrammes: EpgProgrammeCurrent? = null,
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -77,7 +78,7 @@ fun PanelIptvItem(
             )
 
             Text(
-                text = programmes.first ?: "",
+                text = currentProgrammes?.now?.title ?: "",
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
                 modifier = Modifier.alpha(0.8f),
@@ -92,6 +93,7 @@ private fun PanelIptvItemPreview() {
     MyTVTheme {
         PanelIptvItem(
             iptv = Iptv.EXAMPLE,
+            currentProgrammes = EpgProgrammeCurrent.EXAMPLE,
         )
     }
 }

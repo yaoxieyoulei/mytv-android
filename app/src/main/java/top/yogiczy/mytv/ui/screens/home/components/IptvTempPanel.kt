@@ -13,6 +13,8 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.NonInteractiveSurfaceDefaults
 import androidx.tv.material3.Surface
+import top.yogiczy.mytv.data.entities.EpgProgramme
+import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.panel.components.PanelChannelNo
@@ -27,7 +29,7 @@ fun IptvTempPanel(
     channelNo: Int = 0,
     currentIptv: Iptv = Iptv.EMPTY,
     playerError: Boolean = false,
-    programmes: Pair<String?, String?> = Pair(null, null),
+    currentProgrammes: EpgProgrammeCurrent? = null,
 ) {
     val childPadding = rememberChildPadding()
 
@@ -53,7 +55,7 @@ fun IptvTempPanel(
                     .sizeIn(maxWidth = 500.dp),
                 iptv = currentIptv,
                 playerError = playerError,
-                programmes = programmes,
+                currentProgrammes = currentProgrammes,
             )
         }
     }
@@ -67,9 +69,17 @@ private fun IptvTempPanelPreview() {
             channelNo = 1,
             currentIptv = Iptv.EXAMPLE,
             playerError = true,
-            programmes = Pair(
-                "实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场",
-                "实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场"
+            currentProgrammes = EpgProgrammeCurrent(
+                now = EpgProgramme(
+                    startAt = 0,
+                    endAt = 0,
+                    title = "实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场"
+                ),
+                next = EpgProgramme(
+                    startAt = 0,
+                    endAt = 0,
+                    title = "实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场"
+                ),
             )
         )
     }

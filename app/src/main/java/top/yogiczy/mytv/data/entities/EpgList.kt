@@ -8,17 +8,19 @@ data class EpgList(
 ) : List<Epg> by value {
     companion object {
 
-        fun EpgList.currentProgrammes(iptv: Iptv): Pair<String?, String?> {
-            val epg = firstOrNull { it.channel == iptv.channelName } ?: return Pair(null, null)
+        fun EpgList.currentProgrammes(iptv: Iptv): EpgProgrammeCurrent? {
+            val epg = firstOrNull { it.channel == iptv.channelName } ?: return null
 
             val currentProgramme =
                 epg.programmes.firstOrNull { it.startAt <= System.currentTimeMillis() && it.endAt >= System.currentTimeMillis() }
-                    ?: return Pair(null, null)
+                    ?: return null
 
-            return Pair(
-                currentProgramme.title,
-                epg.programmes.indexOf(currentProgramme).let { index ->
-                    if (index + 1 < epg.programmes.size) epg.programmes[index + 1].title else null
+            return EpgProgrammeCurrent(
+                now = currentProgramme,
+                next = epg.programmes.indexOf(currentProgramme).let { index ->
+                    if (index + 1 < epg.programmes.size) {
+                        epg.programmes[index + 1]
+                    } else null
                 },
             )
         }

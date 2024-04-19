@@ -134,7 +134,7 @@ fun PanelBottom(
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
             PanelIptvInfo(
                 iptv = currentIptv,
-                programmes = epgList.currentProgrammes(currentIptv),
+                currentProgrammes = epgList.currentProgrammes(currentIptv),
                 playerError = playerState.error,
                 modifier = Modifier.padding(start = childPadding.start),
             )

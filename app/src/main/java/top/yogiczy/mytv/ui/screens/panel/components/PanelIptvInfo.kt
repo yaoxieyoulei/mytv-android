@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
@@ -20,7 +21,7 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 fun PanelIptvInfo(
     modifier: Modifier = Modifier,
     iptv: Iptv = Iptv.EMPTY,
-    programmes: Pair<String?, String?> = Pair(null, null),
+    currentProgrammes: EpgProgrammeCurrent? = null,
     playerError: Boolean = false,
 ) {
     Column(modifier = modifier) {
@@ -44,13 +45,13 @@ fun PanelIptvInfo(
             }
         }
         Text(
-            text = "正在播放：${programmes.first ?: "无节目"}",
+            text = "正在播放：${currentProgrammes?.now?.title ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             maxLines = 1,
         )
         Text(
-            text = "正在播放：${programmes.second ?: "无节目"}",
+            text = "正在播放：${currentProgrammes?.next?.title ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             maxLines = 1,
@@ -58,13 +59,13 @@ fun PanelIptvInfo(
     }
 }
 
-@Preview
+@Preview(device = "id:Android TV (720p)")
 @Composable
 private fun PanelIptvInfoPreview() {
     MyTVTheme {
         PanelIptvInfo(
             iptv = Iptv.EXAMPLE,
-            programmes = Pair("实况录像-2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场", null),
+            currentProgrammes = EpgProgrammeCurrent.EXAMPLE,
             playerError = true,
         )
     }

@@ -3,7 +3,7 @@ package top.yogiczy.mytv.data.entities
 import kotlinx.serialization.Serializable
 
 /**
- * 频道界面
+ * 频道节目
  */
 @Serializable
 data class EpgProgramme(
