@@ -25,10 +25,9 @@ fun PanelIptvList(
     iptvList: IptvList = IptvList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
-    listState: TvLazyListState = rememberTvLazyListState(
-        max(0, iptvList.indexOfFirst { it.name == currentIptv.name })
-    ),
+    listState: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
 ) {
+
     val childPadding = rememberChildPadding()
 
     TvLazyRow(
@@ -42,6 +41,7 @@ fun PanelIptvList(
                 iptv = it,
                 currentProgrammes = epgList.currentProgrammes(it),
                 onIptvSelected = { onIptvSelected(it) },
+                initialFocused = it == currentIptv,
             )
         }
     }

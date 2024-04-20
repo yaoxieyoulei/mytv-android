@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +38,16 @@ fun PanelIptvItem(
     iptv: Iptv = Iptv.EMPTY,
     onIptvSelected: () -> Unit = {},
     currentProgrammes: EpgProgrammeCurrent? = null,
+    initialFocused: Boolean = false,
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        if (initialFocused) {
+            focusRequester.requestFocus()
+        }
+    }
 
     Card(
         modifier = modifier

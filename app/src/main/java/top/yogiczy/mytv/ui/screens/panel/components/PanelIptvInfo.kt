@@ -51,7 +51,7 @@ fun PanelIptvInfo(
             maxLines = 1,
         )
         Text(
-            text = "正在播放：${currentProgrammes?.next?.title ?: "无节目"}",
+            text = "稍后播放：${currentProgrammes?.next?.title ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             maxLines = 1,
