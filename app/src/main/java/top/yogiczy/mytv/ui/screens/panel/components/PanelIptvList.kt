@@ -3,6 +3,8 @@ package top.yogiczy.mytv.ui.screens.panel.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,9 +28,13 @@ fun PanelIptvList(
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
     listState: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
+    onListStateChanged: () -> Unit = {},
 ) {
-
     val childPadding = rememberChildPadding()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }.collect { onListStateChanged() }
+    }
 
     TvLazyRow(
         state = listState,

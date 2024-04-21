@@ -53,7 +53,8 @@ class HomeScreeViewModel : ViewModel() {
                     flow { emit(epgRepository.getEpgs(channels)) }
                 }
                 .retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
-                .catch { emit(EpgList()) }.map { epgList ->
+                .catch { emit(EpgList()) }
+                .map { epgList ->
                     // 移除过期节目
                     epgList.copy(value = epgList.map { epg ->
                         epg.copy(

@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.screens.home.components
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,13 +50,18 @@ import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.monitor.MonitorScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelScreen
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
@@ -188,6 +194,7 @@ fun HomeContent(
                 onIptvSelected = {
                     state.changeCurrentIptv(it)
                 },
+                onActiveAction = { state.onActiveAction() }
             )
         }
 
@@ -238,6 +245,8 @@ class HomeContentState(
     private var _isTempPanelVisible by mutableStateOf(false)
     val isTempPanelVisible get() = _isTempPanelVisible
 
+    val timeoutClosePanel = Channel<Long>(Channel.CONFLATED)
+
     private var _exoPlayer = ExoPlayer.Builder(context).build().apply {
         playWhenReady = true
     }
@@ -275,6 +284,7 @@ class HomeContentState(
 
     fun changePanelVisible(visible: Boolean) {
         _isPanelVisible = visible
+        onActiveAction()
     }
 
     fun changeSettingsVisible(visible: Boolean) {
@@ -283,6 +293,10 @@ class HomeContentState(
 
     fun changeTempPanelVisible(visible: Boolean) {
         _isTempPanelVisible = visible
+    }
+
+    fun onActiveAction() {
+        timeoutClosePanel.trySend(Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY)
     }
 
     private fun getPrevIptv(): Iptv {
@@ -313,6 +327,7 @@ class HomeContentState(
         _isTempPanelVisible = true
 
         if (iptv.urlList.isNotEmpty()) {
+            Log.d(TAG, "播放: ${iptv.urlList.first()}")
             val uri = Uri.parse(iptv.urlList.first())
             val contentType = if (uri.path?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
 
@@ -330,20 +345,35 @@ class HomeContentState(
     fun changeCurrentIptvToNext() {
         changeCurrentIptv(getNextIptv())
     }
+
+    companion object {
+        const val TAG = "HomeContentState"
+    }
 }
 
+@OptIn(FlowPreview::class)
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun rememberHomeContentState(
     context: Context = LocalContext.current,
     iptvGroupList: IptvGroupList = IptvGroupList(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-) = remember {
-    HomeContentState(
-        context = context,
-        coroutineScope = coroutineScope,
-        iptvGroupList = iptvGroupList,
-    )
+): HomeContentState {
+    val state = remember {
+        HomeContentState(
+            context = context,
+            coroutineScope = coroutineScope,
+            iptvGroupList = iptvGroupList,
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        state.timeoutClosePanel.consumeAsFlow()
+            .debounce { it }
+            .collect { state.changePanelVisible(false) }
+    }
+
+    return state
 }
 
 @androidx.annotation.OptIn(UnstableApi::class)

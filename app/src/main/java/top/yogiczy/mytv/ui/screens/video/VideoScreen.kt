@@ -26,8 +26,7 @@ fun VideoScreen(
     val context = LocalContext.current
 
     AndroidView(
-        modifier = modifier
-            .aspectRatio(state.aspectRatio),
+        modifier = modifier.aspectRatio(state.aspectRatio),
         factory = {
             // PlayerView 切换视频时黑屏闪烁，使用 SurfaceView 代替
             SurfaceView(context)

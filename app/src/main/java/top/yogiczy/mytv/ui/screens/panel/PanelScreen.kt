@@ -37,6 +37,7 @@ import top.yogiczy.mytv.ui.screens.panel.components.PanelPlayerInfo
 import top.yogiczy.mytv.ui.screens.video.ExoPlayerState
 import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.handleAnyActiveAction
 
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -49,6 +50,7 @@ fun PanelScreen(
     epgList: EpgList = EpgList(),
     onClose: () -> Unit = {},
     onIptvSelected: (Iptv) -> Unit = {},
+    onActiveAction: () -> Unit = {},
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -61,6 +63,7 @@ fun PanelScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
             .focusRequester(focusRequester)
+            .handleAnyActiveAction { onActiveAction() }
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
         PanelTopRight(
@@ -73,6 +76,7 @@ fun PanelScreen(
             iptvGroupList = iptvGroupList,
             epgList = epgList,
             onIptvSelected = onIptvSelected,
+            onActiveAction = onActiveAction
         )
     }
 }
@@ -127,6 +131,7 @@ fun PanelBottom(
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
+    onActiveAction: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -154,6 +159,7 @@ fun PanelBottom(
                 onIptvSelected = onIptvSelected,
                 epgList = epgList,
                 modifier = Modifier.height(150.dp),
+                onListStateChanged = onActiveAction,
             )
         }
     }

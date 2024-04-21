@@ -29,7 +29,7 @@ data class Iptv(
         val EXAMPLE = Iptv(
             name = "CCTV-1 综合",
             channelName = "cctv1",
-            urlList = emptyList(),
+            urlList = listOf("url1", "url2"),
         )
     }
 }

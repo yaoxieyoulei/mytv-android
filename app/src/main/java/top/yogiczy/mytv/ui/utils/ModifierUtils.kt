@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -124,3 +125,10 @@ fun Modifier.handleVerticalDragGestures(
         }
     }
 }
+
+/**
+ * 监听任意事件（按键、滑动、点击）
+ */
+fun Modifier.handleAnyActiveAction(onAction: () -> Unit = {}) =
+    onKeyEvent { onAction(); false }
+        .pointerInput(Unit) { detectDragGestures { _, _ -> onAction() } }

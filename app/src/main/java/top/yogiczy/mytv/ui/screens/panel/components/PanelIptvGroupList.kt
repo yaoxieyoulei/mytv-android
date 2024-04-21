@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -32,9 +35,19 @@ fun PanelIptvGroupList(
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
+    listState: TvLazyListState = rememberTvLazyListState(
+        max(
+            0,
+            iptvGroupList.iptvGroupIdx(currentIptv)
+        )
+    ),
+    onListStateChanged: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
-    val listState = rememberTvLazyListState(max(0, iptvGroupList.iptvGroupIdx(currentIptv)))
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }.collect { onListStateChanged() }
+    }
 
     TvLazyColumn(
         state = listState,
@@ -55,6 +68,7 @@ fun PanelIptvGroupList(
                 iptvList = it.iptvs,
                 epgList = epgList,
                 onIptvSelected = onIptvSelected,
+                onListStateChanged = onListStateChanged,
             )
         }
     }

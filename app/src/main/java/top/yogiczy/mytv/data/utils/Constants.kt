@@ -45,4 +45,9 @@ object Constants {
      * HTTP请求重试间隔时间（毫秒）
      */
     const val HTTP_RETRY_INTERVAL = 3000L
+
+    /**
+     * 界面 超时未操作自动关闭选台界面
+     */
+    const val UI_PANEL_SCREEN_AUTO_CLOSE_DELAY = 1000L * 10L // 10秒
 }
