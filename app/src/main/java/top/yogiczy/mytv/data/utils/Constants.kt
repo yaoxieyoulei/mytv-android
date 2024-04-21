@@ -18,12 +18,12 @@ object Constants {
     /**
      * 节目单XML地址
      */
-    const val EPG_XML_URL = "https://live.fanmingming.com/e.xml"
+    const val EPG_XML_URL = "https://epg.erw.cc/e.xml"
 
     /**
      * 节目单刷新时间阈值（小时）
      */
-    const val EPG_REFRESH_TIME_THRESHOLD = 6 // 不到6点不刷新
+    const val EPG_REFRESH_TIME_THRESHOLD = 2 // 不到2点不刷新
 
     /**
      * GitHub最新版本信息
