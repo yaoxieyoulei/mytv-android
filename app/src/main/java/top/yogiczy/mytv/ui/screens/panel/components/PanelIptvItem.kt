@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,10 +43,12 @@ fun PanelIptvItem(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    var hasFocused by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if (initialFocused) {
+        if (initialFocused && !hasFocused) {
             focusRequester.requestFocus()
+            hasFocused = true
         }
     }
 

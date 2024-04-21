@@ -27,17 +27,17 @@ fun PanelIptvList(
     iptvList: IptvList = IptvList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
-    listState: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
+    state: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
     onListStateChanged: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.isScrollInProgress }.collect { onListStateChanged() }
+    LaunchedEffect(state) {
+        snapshotFlow { state.isScrollInProgress }.collect { onListStateChanged() }
     }
 
     TvLazyRow(
-        state = listState,
+        state = state,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(start = childPadding.start, end = childPadding.end),

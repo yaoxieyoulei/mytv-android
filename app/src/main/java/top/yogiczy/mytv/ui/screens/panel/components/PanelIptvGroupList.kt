@@ -35,22 +35,19 @@ fun PanelIptvGroupList(
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
-    listState: TvLazyListState = rememberTvLazyListState(
-        max(
-            0,
-            iptvGroupList.iptvGroupIdx(currentIptv)
-        )
+    state: TvLazyListState = rememberTvLazyListState(
+        max(0, iptvGroupList.iptvGroupIdx(currentIptv))
     ),
     onListStateChanged: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.isScrollInProgress }.collect { onListStateChanged() }
+    LaunchedEffect(state) {
+        snapshotFlow { state.isScrollInProgress }.collect { onListStateChanged() }
     }
 
     TvLazyColumn(
-        state = listState,
+        state = state,
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(14.dp),
         contentPadding = PaddingValues(bottom = childPadding.bottom),
