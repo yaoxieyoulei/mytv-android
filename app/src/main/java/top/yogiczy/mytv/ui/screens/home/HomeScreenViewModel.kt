@@ -2,14 +2,12 @@ package top.yogiczy.mytv.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
@@ -22,7 +20,6 @@ import top.yogiczy.mytv.data.repositories.EpgRepository
 import top.yogiczy.mytv.data.repositories.IptvRepository
 import top.yogiczy.mytv.data.utils.Constants
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class HomeScreeViewModel : ViewModel() {
     private val iptvRepository = IptvRepository()
     private val epgRepository = EpgRepository()
@@ -32,7 +29,7 @@ class HomeScreeViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            /* @formatter:off */
+            // 获取直播源
             flow { emit(iptvRepository.getIptvGroups()) }
                 .retryWhen { _, attempt ->
                     if (attempt >= Constants.HTTP_RETRY_COUNT) return@retryWhen false
@@ -42,35 +39,40 @@ class HomeScreeViewModel : ViewModel() {
                     delay(Constants.HTTP_RETRY_INTERVAL)
                     true
                 }
-                .catch { _uiState.value = HomeScreenUiState.Error(it.message) }.map {
+                .catch { _uiState.value = HomeScreenUiState.Error(it.message) }
+                .map {
                     _uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
                     it
                 }
-                // 开始获取epg
-                .flatMapLatest { iptvGroupList ->
-                    val channels =
-                        iptvGroupList.flatMap { it.iptvs }.map { iptv -> iptv.channelName }
-                    flow { emit(epgRepository.getEpgs(channels)) }
-                }
-                .retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
-                .catch { emit(EpgList()) }
-                .map { epgList ->
-                    // 移除过期节目
-                    epgList.copy(value = epgList.map { epg ->
-                        epg.copy(
-                            programmes = EpgProgrammeList(
-                                epg.programmes.filter { programme ->
-                                    System.currentTimeMillis() < programme.endAt
-                                },
-                            )
-                        )
-                    })
-                }
-                .map { epgList ->
-                    _uiState.value =
-                        (_uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)
-                }
                 .collect()
+
+            // 开始获取epg
+            if (_uiState.value is HomeScreenUiState.Ready) {
+                val channels = (_uiState.value as HomeScreenUiState.Ready)
+                    .iptvGroupList.flatMap { it.iptvs }
+                    .map { iptv -> iptv.channelName }
+
+                flow { emit(epgRepository.getEpgs(channels)) }
+                    .retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
+                    .catch { emit(EpgList()) }
+                    .map { epgList ->
+                        // 移除过期节目
+                        epgList.copy(value = epgList.map { epg ->
+                            epg.copy(
+                                programmes = EpgProgrammeList(
+                                    epg.programmes.filter { programme ->
+                                        System.currentTimeMillis() < programme.endAt
+                                    },
+                                )
+                            )
+                        })
+                    }
+                    .map { epgList ->
+                        _uiState.value =
+                            (_uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)
+                    }
+                    .collect()
+            }
         }
     }
 }

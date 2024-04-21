@@ -2,7 +2,6 @@ package top.yogiczy.mytv.ui.screens.home.components
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -68,6 +67,7 @@ import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
 import top.yogiczy.mytv.ui.screens.video.VideoScreen
 import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
+import top.yogiczy.mytv.ui.utils.Loggable
 import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import top.yogiczy.mytv.ui.utils.handleVerticalDragGestures
@@ -232,7 +232,7 @@ class HomeContentState(
     context: Context,
     coroutineScope: CoroutineScope,
     private val iptvGroupList: IptvGroupList,
-) {
+) : Loggable() {
     private var _currentIptv by mutableStateOf(Iptv.EMPTY)
     val currentIptv get() = _currentIptv
 
@@ -254,7 +254,7 @@ class HomeContentState(
 
     private val dataSourceFactory: DataSource.Factory =
         DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory().apply {
-            setUserAgent("ExoPlayer")
+            setUserAgent(Constants.VIDEO_PLAYER_HTTP_USER_AGENT)
             setConnectTimeoutMs(5_000)
             setKeepPostFor302Redirects(true)
             setAllowCrossProtocolRedirects(true)
@@ -327,7 +327,7 @@ class HomeContentState(
         _isTempPanelVisible = true
 
         if (iptv.urlList.isNotEmpty()) {
-            Log.d(TAG, "播放: ${iptv.urlList.first()}")
+            log.d("播放: ${iptv.urlList.first()}")
             val uri = Uri.parse(iptv.urlList.first())
             val contentType = if (uri.path?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
 
@@ -344,10 +344,6 @@ class HomeContentState(
 
     fun changeCurrentIptvToNext() {
         changeCurrentIptv(getNextIptv())
-    }
-
-    companion object {
-        const val TAG = "HomeContentState"
     }
 }
 

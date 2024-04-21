@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.data.repositories
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -11,17 +10,18 @@ import top.yogiczy.mytv.data.entities.IptvGroup
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.data.models.IptvResponseItem
+import top.yogiczy.mytv.ui.utils.Loggable
 import top.yogiczy.mytv.ui.utils.SP
 import java.io.File
 
-class IptvRepository {
+class IptvRepository : Loggable() {
     suspend fun getIptvGroups(): IptvGroupList {
         val now = System.currentTimeMillis()
 
         if (now - SP.iptvSourceCachedAt < SP.iptvSourceCacheTime) {
             val cache = getCache()
             if (cache.isNotBlank()) {
-                Log.d(TAG, "使用缓存直播源")
+                log.d("使用缓存直播源")
                 return parseSource(cache)
             }
         }
@@ -34,7 +34,7 @@ class IptvRepository {
     }
 
     private suspend fun fetchSource(): String = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取远程直播源: ${SP.iptvSourceUrl}")
+        log.d("获取远程直播源: ${SP.iptvSourceUrl}")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(SP.iptvSourceUrl).build()
@@ -48,7 +48,7 @@ class IptvRepository {
                 return@with body!!.string()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "获取远程直播源失败", e)
+            log.e("获取远程直播源失败", e)
             throw Exception("获取远程直播源失败，请检查网络连接", e.cause)
         }
     }
@@ -104,8 +104,7 @@ class IptvRepository {
                 }),
             )
         }).also {
-            Log.d(
-                TAG,
+            log.i(
                 "解析m3u完成: ${it.size}个分组, ${it.flatMap { group -> group.iptvs }.size}个频道"
             )
         }
@@ -148,8 +147,7 @@ class IptvRepository {
                 }),
             )
         }).also {
-            Log.d(
-                TAG,
+            log.i(
                 "解析tvbox完成: ${it.size}个分组, ${it.flatMap { group -> group.iptvs }.size}个频道"
             )
         }
@@ -163,12 +161,8 @@ class IptvRepository {
                 parseSourceTvbox(data)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "解析直播源失败，请检查直播源格式", e)
+            log.e("解析直播源失败，请检查直播源格式", e)
             throw Exception("解析直播源失败，请检查直播源格式", e.cause)
         }
-    }
-
-    companion object {
-        const val TAG = "IptvRepositoryImpl"
     }
 }

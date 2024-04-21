@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.data.repositories
 
-import android.util.Log
 import android.util.Xml
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,6 +13,7 @@ import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
+import top.yogiczy.mytv.ui.utils.Loggable
 import top.yogiczy.mytv.ui.utils.SP
 import java.io.File
 import java.io.StringReader
@@ -21,9 +21,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class EpgRepository {
+class EpgRepository : Loggable() {
     suspend fun getEpgs(filteredChannels: List<String>): EpgList {
         if (!SP.epgEnable) {
+            log.d("epg功能未开启，跳过")
             return EpgList()
         }
 
@@ -33,7 +34,7 @@ class EpgRepository {
         if (SP.epgCachedHash == hashCode) {
             val cache = getCache()
             if (cache != null) {
-                Log.d(TAG, "使用缓存epg")
+                log.d("使用缓存epg")
                 return cache
             }
         }
@@ -46,7 +47,7 @@ class EpgRepository {
     }
 
     private suspend fun fetchXml(): String = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取远程xml: ${SP.epgXmlUrl}")
+        log.d("获取远程xml: ${SP.epgXmlUrl}")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(SP.epgXmlUrl).build()
@@ -60,7 +61,7 @@ class EpgRepository {
                 return@with body!!.string()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "获取远程xml失败", e)
+            log.e("获取远程xml失败", e.cause)
             throw Exception("获取远程EPG失败，请检查网络连接", e.cause)
         }
     }
@@ -84,12 +85,12 @@ class EpgRepository {
         if (dateFormat.format(System.currentTimeMillis()) == dateFormat.format(SP.epgXmlCachedAt)) {
             val cache = getCacheXml()
             if (cache.isNotBlank()) {
-                Log.d(TAG, "使用缓存xml")
+                log.d("使用缓存xml")
                 return cache
             }
         } else {
             if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < SP.epgRefreshTimeThreshold) {
-                Log.d(TAG, "未到时间点，不刷新epg")
+                log.d("未到时间点，不刷新epg")
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             }
         }
@@ -159,7 +160,7 @@ class EpgRepository {
             eventType = parser.next()
         }
 
-        Log.d(TAG, "解析epg完成，共${epgMap.size}个频道")
+        log.i("解析epg完成，共${epgMap.size}个频道")
         return@withContext EpgList(epgMap.values.toList())
     }
 
@@ -178,9 +179,5 @@ class EpgRepository {
 
     private suspend fun setCache(epgList: EpgList) = withContext(Dispatchers.IO) {
         getCacheFile().writeText(Json.encodeToString(epgList.value))
-    }
-
-    companion object {
-        const val TAG = "EpgRepository"
     }
 }

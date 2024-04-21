@@ -2,7 +2,6 @@ package top.yogiczy.mytv.ui.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.CoroutineScope
@@ -17,10 +16,9 @@ import java.net.NetworkInterface
 import java.net.SocketException
 
 
-object HttpServer {
+object HttpServer : Loggable() {
     const val SERVER_PORT = 10481
 
-    private const val TAG = "HttpServer"
     private lateinit var server: NanoHTTPD
 
     fun start(context: Context) {
@@ -29,9 +27,9 @@ object HttpServer {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 server = ServerApplication(context, SERVER_PORT)
-                Log.d(TAG, "服务已启动: 0.0.0.0:${SERVER_PORT}")
+                log.i("服务已启动: 0.0.0.0:${SERVER_PORT}")
             } catch (ex: Exception) {
-                Log.e(TAG, "服务启动失败: ${ex.message}", ex.cause)
+                log.e("服务启动失败: ${ex.message}", ex.cause)
                 launch(Dispatchers.Main) {
                     Toast.makeText(context, "设置服务启动失败", Toast.LENGTH_SHORT).show()
                 }
@@ -56,7 +54,7 @@ object HttpServer {
             }
             return defaultIp
         } catch (ex: SocketException) {
-            Log.e(TAG, "IP Address: ${ex.message}", ex)
+            log.e("IP Address: ${ex.message}", ex)
             return defaultIp
         }
     }

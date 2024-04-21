@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.data.repositories
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -9,10 +8,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import top.yogiczy.mytv.data.entities.GithubRelease
 import top.yogiczy.mytv.data.utils.Constants
+import top.yogiczy.mytv.ui.utils.Loggable
 
-class GithubRepository {
+class GithubRepository : Loggable() {
     suspend fun latestRelease() = withContext(Dispatchers.IO) {
-        Log.d(TAG, "获取最新release: ${Constants.GITHUB_RELEASE_LATEST_URL}")
+        log.d("获取最新release: ${Constants.GITHUB_RELEASE_LATEST_URL}")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(Constants.GITHUB_RELEASE_LATEST_URL).build()
@@ -30,17 +30,13 @@ class GithubRepository {
                     downloadUrl = (json["assets"] as JSONArray).getJSONObject(0)["browser_download_url"] as String,
                     description = json["body"] as String
                 )
-                Log.d(TAG, "获取最新release: $release")
+                log.i("最新release: $release")
 
                 return@with release
             }
         } catch (e: Exception) {
-            Log.e(TAG, "获取最新release失败", e)
+            log.e("获取最新release失败", e)
             throw Exception("获取最新release失败，请检查网络连接", e.cause)
         }
-    }
-
-    companion object {
-        const val TAG = "GithubRepository"
     }
 }

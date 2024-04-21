@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui.utils
 
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,10 +12,10 @@ import okio.buffer
 import java.io.File
 import java.io.FileOutputStream
 
-object DownloadUtil {
+object DownloadUtil : Loggable() {
     suspend fun downloadTo(url: String, filePath: String, onProgressCb: ((Int) -> Unit)?) =
         withContext(Dispatchers.IO) {
-            Log.d(TAG, "下载文件: $url")
+            log.d("下载文件: $url")
             val interceptor = Interceptor { chain ->
                 val originalResponse = chain.proceed(chain.request())
                 originalResponse.newBuilder()
@@ -36,7 +35,7 @@ object DownloadUtil {
                     FileOutputStream(file).use { fos -> fos.write(body!!.bytes()) }
                 }
             } catch (ex: Exception) {
-                Log.e(TAG, "下载文件失败", ex)
+                log.e("下载文件失败", ex)
                 throw Exception("下载文件失败，请检查网络连接", ex.cause)
             }
         }
@@ -66,6 +65,4 @@ object DownloadUtil {
         }
 
     }
-
-    private const val TAG = "DownloadUtil"
 }
