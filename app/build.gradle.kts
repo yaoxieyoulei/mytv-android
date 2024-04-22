@@ -115,7 +115,8 @@ dependencies {
 
     // 网络请求
     implementation(libs.okhttp)
-    implementation(libs.nanohttpd)
+    implementation(libs.androidasync)
+
 
     // 二维码
     implementation(libs.qrose)

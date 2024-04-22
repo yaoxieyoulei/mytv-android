@@ -237,6 +237,14 @@
                                     v-model="settings.debugShowFps" />
                         </template>
                     </van-cell>
+
+                    <van-cell title="上传apk">
+                        <template #extra>
+                            <van-uploader
+                                    :after-read="uploaderAfterRead"
+                                    accept=".apk" />
+                        </template>
+                    </van-cell>
                 </van-cell-group>
             </template>
         </div>
@@ -245,6 +253,15 @@
             const { createApp, ref, onMounted, watch, nextTick } = Vue
 
             const baseUrl = ""
+
+            async function requestApi(url, config) {
+                const resp = await fetch(`${baseUrl}${url}`, config)
+                if (resp.status !== 200) {
+                    throw new Error(`请求失败：${resp.status}`)
+                }
+
+                return resp
+            }
 
             dayjs.locale('zh-cn')
             dayjs.extend(dayjs_plugin_relativeTime)
@@ -256,25 +273,27 @@
 
                     const settings = ref()
                     async function confirmSettings() {
-                        let loading = vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
+                        vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
                         try {
-                            await fetch(`${baseUrl}/api/settings`, {
+                            await requestApi('/api/settings', {
                                 method: "POST",
-                                body: JSON.stringify(settings.value)
+                                body: JSON.stringify(settings.value),
+                                headers: { 'Content-Type': 'application/json' }
                             })
                             await refreshSettings()
-                            loading.clear()
+                            vant.Toast.clear()
                         } catch (e) {
                             vant.Toast.fail('无法修改设置')
                             console.error(e)
+                            refreshSettings()
                         }
                     }
                     async function refreshSettings() {
-                        let loading = vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
+                        vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
 
                         try {
-                            settings.value = await (await fetch(`${baseUrl}/api/settings`)).json()
-                            loading.clear()
+                            settings.value = await (await requestApi('/api/settings')).json()
+                            vant.Toast.clear()
                         } catch (e) {
                             vant.Toast.fail('无法获取设置')
                             console.error(e)
@@ -290,12 +309,26 @@
                         return humanizeDuration(ms, { language: 'zh_CN', round: true, largest: 2 })
                     }
 
+                    async function uploaderAfterRead(file) {
+                        vant.Toast.loading({ message: '加载中...', forbidClick: true, duration: 0 })
+                        try {
+                            const formData = new FormData()
+                            formData.append('filename', file.file)
+                            await requestApi('/api/upload/apk', { method: "POST", body: formData })
+                            vant.Toast.clear()
+                        } catch (e) {
+                            vant.Toast.fail('上传apk失败')
+                            console.error(e)
+                        }
+                    }
+
                     return {
                         dayjs,
                         foramtDuration,
                         tabActive,
                         settings,
                         confirmSettings,
+                        uploaderAfterRead,
                     }
                 }
             })
