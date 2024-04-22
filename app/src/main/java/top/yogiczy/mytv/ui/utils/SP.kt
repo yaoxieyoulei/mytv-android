@@ -46,6 +46,9 @@ object SP {
         /** 直播源缓存时间（毫秒） */
         IPTV_SOURCE_CACHE_TIME,
 
+        /** 直播源可播放host列表 */
+        IPTV_PLAYABLE_HOST_LIST,
+
         /** ==================== 节目单 ==================== */
         /** 启用epg */
         EPG_ENABLE,
@@ -111,6 +114,11 @@ object SP {
     var iptvSourceCacheTime: Long
         get() = sp.getLong(KEY.IPTV_SOURCE_CACHE_TIME.name, Constants.IPTV_SOURCE_CACHE_TIME)
         set(value) = sp.edit().putLong(KEY.IPTV_SOURCE_CACHE_TIME.name, value).apply()
+
+    /** 直播源可播放host列表 */
+    var iptvPlayableHostList: Set<String>
+        get() = sp.getStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, emptySet()) ?: emptySet()
+        set(value) = sp.edit().putStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, value).apply()
 
     /** ==================== 节目单 ==================== */
     /** 启用epg */

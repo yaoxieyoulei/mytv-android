@@ -28,6 +28,7 @@ fun IptvTempPanel(
     modifier: Modifier = Modifier,
     channelNo: Int = 0,
     currentIptv: Iptv = Iptv.EMPTY,
+    currentIptvUrlIdx: Int = 0,
     playerError: Boolean = false,
     currentProgrammes: EpgProgrammeCurrent? = null,
 ) {
@@ -54,6 +55,7 @@ fun IptvTempPanel(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .sizeIn(maxWidth = 500.dp),
                 iptv = currentIptv,
+                iptvUrlIdx = currentIptvUrlIdx,
                 playerError = playerError,
                 currentProgrammes = currentProgrammes,
             )

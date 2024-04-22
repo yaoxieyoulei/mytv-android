@@ -3,6 +3,7 @@ package top.yogiczy.mytv.ui.utils
 import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -101,27 +102,42 @@ fun Modifier.handleDPadKeyEvents(
 )
 
 /**
- * 监听手势上下滑动事件
+ * 监听手势滑动事件
  */
 @Composable
 fun Modifier.handleVerticalDragGestures(
     onSwipeUp: () -> Unit = {},
     onSwipeDown: () -> Unit = {},
+    onSwipeLeft: () -> Unit = {},
+    onSwipeRight: () -> Unit = {},
 ): Modifier {
     val verticalTracker = remember { VelocityTracker() }
-    val swipeThreshold = 100.dp
+    val horizontalTracker = remember { VelocityTracker() }
+    val swipeSpeedThreshold = 100.dp
 
-    return this then pointerInput(Unit) {
+    return pointerInput(Unit) {
         detectVerticalDragGestures(
             onDragEnd = {
-                if (verticalTracker.calculateVelocity().y > swipeThreshold.toPx()) {
+                if (verticalTracker.calculateVelocity().y > swipeSpeedThreshold.toPx()) {
                     onSwipeDown()
-                } else if (verticalTracker.calculateVelocity().y < -swipeThreshold.toPx()) {
+                } else if (verticalTracker.calculateVelocity().y < -swipeSpeedThreshold.toPx()) {
                     onSwipeUp()
                 }
             },
         ) { change, _ ->
             verticalTracker.addPosition(change.uptimeMillis, change.position)
+        }
+    }.pointerInput(Unit) {
+        detectHorizontalDragGestures(
+            onDragEnd = {
+                if (horizontalTracker.calculateVelocity().x > swipeSpeedThreshold.toPx()) {
+                    onSwipeRight()
+                } else if (horizontalTracker.calculateVelocity().x < -swipeSpeedThreshold.toPx()) {
+                    onSwipeLeft()
+                }
+            },
+        ) { change, _ ->
+            horizontalTracker.addPosition(change.uptimeMillis, change.position)
         }
     }
 }
@@ -130,5 +146,4 @@ fun Modifier.handleVerticalDragGestures(
  * 监听任意事件（按键、滑动、点击）
  */
 fun Modifier.handleAnyActiveAction(onAction: () -> Unit = {}) =
-    onKeyEvent { onAction(); false }
-        .pointerInput(Unit) { detectDragGestures { _, _ -> onAction() } }
+    onKeyEvent { onAction(); false }.pointerInput(Unit) { detectDragGestures { _, _ -> onAction() } }

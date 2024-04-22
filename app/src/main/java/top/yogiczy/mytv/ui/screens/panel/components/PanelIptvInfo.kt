@@ -1,8 +1,10 @@
 package top.yogiczy.mytv.ui.screens.panel.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import top.yogiczy.mytv.ui.theme.MyTVTheme
 fun PanelIptvInfo(
     modifier: Modifier = Modifier,
     iptv: Iptv = Iptv.EMPTY,
+    iptvUrlIdx: Int = 0,
     currentProgrammes: EpgProgrammeCurrent? = null,
     playerError: Boolean = false,
 ) {
@@ -30,8 +33,26 @@ fun PanelIptvInfo(
                 text = iptv.name,
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.alignByBaseline(),
                 maxLines = 1,
             )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            if (iptv.urlList.size > 1) {
+                Text(
+                    text = "${iptvUrlIdx + 1}/${iptv.urlList.size}",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(bottom = 6.dp)
+                        .background(
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                            MaterialTheme.shapes.extraSmall,
+                        )
+                        .padding(vertical = 2.dp, horizontal = 4.dp),
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -40,6 +61,7 @@ fun PanelIptvInfo(
                     text = "播放失败",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.alignByBaseline(),
                     softWrap = false,
                 )
             }

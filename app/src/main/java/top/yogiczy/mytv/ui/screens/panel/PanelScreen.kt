@@ -45,6 +45,7 @@ import top.yogiczy.mytv.ui.utils.handleAnyActiveAction
 fun PanelScreen(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
+    currentIptvUrlIdx: Int = 0,
     playerState: ExoPlayerState = rememberExoPlayerState(),
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
@@ -72,6 +73,7 @@ fun PanelScreen(
 
         PanelBottom(
             currentIptv = currentIptv,
+            currentIptvUrlIdx = currentIptvUrlIdx,
             playerState = playerState,
             iptvGroupList = iptvGroupList,
             epgList = epgList,
@@ -127,6 +129,7 @@ private fun PanelTopRightPreview() {
 fun PanelBottom(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
+    currentIptvUrlIdx: Int = 0,
     playerState: ExoPlayerState = rememberExoPlayerState(),
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
@@ -139,6 +142,7 @@ fun PanelBottom(
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
             PanelIptvInfo(
                 iptv = currentIptv,
+                iptvUrlIdx = currentIptvUrlIdx,
                 currentProgrammes = epgList.currentProgrammes(currentIptv),
                 playerError = playerState.error,
                 modifier = Modifier.padding(start = childPadding.start),
