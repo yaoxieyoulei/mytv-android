@@ -5,6 +5,16 @@ package top.yogiczy.mytv.data.utils
  */
 object Constants {
     /**
+     * 应用 标题
+     */
+    const val APP_TITLE = "我的电视"
+
+    /**
+     * 应用 代码repository
+     */
+    const val APP_REPO = "https://github.com/yaoxieyoulei/mytv-android"
+
+    /**
      * IPTV源地址
      */
     const val IPTV_SOURCE_URL =

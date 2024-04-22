@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -25,7 +26,7 @@ fun SettingsAppInfo(
     Column(modifier = modifier) {
         Row {
             Text(
-                text = "我的电视",
+                text = Constants.APP_TITLE,
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.alignByBaseline(),
@@ -39,7 +40,7 @@ fun SettingsAppInfo(
             )
         }
         Text(
-            text = "https://github.com/yaoxieyoulei/mytv-android",
+            text = Constants.APP_REPO,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
         )

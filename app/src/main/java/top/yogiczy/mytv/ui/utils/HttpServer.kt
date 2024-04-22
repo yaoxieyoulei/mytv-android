@@ -16,6 +16,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.AppGlobal
 import top.yogiczy.mytv.R
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.toast.ToastState
 import java.io.File
 import java.net.Inet4Address
@@ -61,19 +62,32 @@ object HttpServer : Loggable() {
         }
     }
 
+    private fun wrapResponse(response: AsyncHttpServerResponse) = response.apply {
+        headers.set(
+            "Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, OPTIONS"
+        )
+        headers.set("Access-Control-Allow-Origin", "*")
+        headers.set(
+            "Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token"
+        )
+    }
+
     private fun handleHomePage(response: AsyncHttpServerResponse, context: Context) {
-        response.apply {
+        wrapResponse(response).apply {
             setContentType("text/html; charset=utf-8")
             send(context.resources.openRawResource(R.raw.index).readBytes().decodeToString())
         }
     }
 
     private fun handleGetSettings(response: AsyncHttpServerResponse) {
-        response.apply {
+        wrapResponse(response).apply {
             setContentType("application/json")
             send(
                 Json.encodeToString(
                     AllSettings(
+                        appTitle = Constants.APP_TITLE,
+                        appRepo = Constants.APP_REPO,
+
                         appBootLaunch = SP.appBootLaunch,
 
                         iptvChannelChangeFlip = SP.iptvChannelChangeFlip,
@@ -116,7 +130,7 @@ object HttpServer : Loggable() {
 
         SP.debugShowFps = body.get("debugShowFps").toString().toBoolean()
 
-        response.send("success")
+        wrapResponse(response).send("success")
     }
 
     private fun handleUploadApk(
@@ -148,8 +162,8 @@ object HttpServer : Loggable() {
             os.close()
             ApkInstaller.installApk(context, uploadedApkFile.path)
         }
-        
-        response.send("success")
+
+        wrapResponse(response).send("success")
     }
 
     fun getLocalIpAddress(): String {
@@ -177,6 +191,9 @@ object HttpServer : Loggable() {
 
 @Serializable
 private data class AllSettings(
+    val appTitle: String,
+    val appRepo: String,
+
     val appBootLaunch: Boolean,
 
     val iptvChannelChangeFlip: Boolean,

@@ -17,6 +17,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.home.components.HomeContent
 import top.yogiczy.mytv.ui.theme.MyTVTheme
@@ -49,7 +50,7 @@ fun HomeScreen(
 @Composable
 fun AppBanner(modifier: Modifier = Modifier) {
     Text(
-        text = "我的电视",
+        text = Constants.APP_TITLE,
         style = MaterialTheme.typography.headlineLarge,
         color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier,
