@@ -2,7 +2,6 @@ package top.yogiczy.mytv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -168,9 +167,3 @@ fun Modifier.handleDPadKeyEvents(
         onDoubleTap = { onSettings() },
     )
 }
-
-/**
- * 监听任意事件（按键、滑动、点击）
- */
-fun Modifier.handleAnyActiveAction(onAction: () -> Unit = {}) =
-    onPreviewKeyEvent { onAction(); false }.pointerInput(Unit) { detectDragGestures { _, _ -> onAction() } }

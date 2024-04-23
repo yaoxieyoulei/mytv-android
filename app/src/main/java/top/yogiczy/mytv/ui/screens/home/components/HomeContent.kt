@@ -49,11 +49,7 @@ import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
@@ -213,7 +209,6 @@ fun HomeContent(
                 onIptvSelected = {
                     state.changeCurrentIptv(it)
                 },
-                onActiveAction = { state.onActiveAction() },
             )
         }
 
@@ -270,8 +265,6 @@ class HomeContentState(
     private var _isTempPanelVisible by mutableStateOf(false)
     val isTempPanelVisible get() = _isTempPanelVisible
 
-    val timeoutClosePanel = Channel<Long>(Channel.CONFLATED)
-
     private var _exoPlayer = ExoPlayer.Builder(context).build().apply {
         playWhenReady = true
     }
@@ -324,7 +317,6 @@ class HomeContentState(
 
     fun changePanelVisible(visible: Boolean) {
         _isPanelVisible = visible
-        onActiveAction()
     }
 
     fun changeSettingsVisible(visible: Boolean) {
@@ -333,10 +325,6 @@ class HomeContentState(
 
     fun changeTempPanelVisible(visible: Boolean) {
         _isTempPanelVisible = visible
-    }
-
-    fun onActiveAction() {
-        timeoutClosePanel.trySend(Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY)
     }
 
     private fun getPrevIptv(): Iptv {
@@ -394,7 +382,6 @@ class HomeContentState(
     }
 }
 
-@OptIn(FlowPreview::class)
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun rememberHomeContentState(
@@ -408,11 +395,6 @@ fun rememberHomeContentState(
             coroutineScope = coroutineScope,
             iptvGroupList = iptvGroupList,
         )
-    }
-
-    LaunchedEffect(Unit) {
-        state.timeoutClosePanel.consumeAsFlow().debounce { it }
-            .collect { state.changePanelVisible(false) }
     }
 
     return state

@@ -46,11 +46,7 @@ fun SettingsItem(
     LaunchedEffect(Unit) {
         if (initialFocus) focusRequester.requestFocus()
     }
-
-    LaunchedEffect(isFocused) {
-        if (isFocused) focusRequester.requestFocus()
-    }
-
+    
     Card(
         modifier = modifier
             .width(190.dp)

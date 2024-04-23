@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.EpgList
-import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.repositories.EpgRepository
 import top.yogiczy.mytv.data.repositories.IptvRepository
@@ -63,18 +62,18 @@ class HomeScreeViewModel : ViewModel() {
                         emit(EpgList())
                         SP.epgXmlUrlHistoryList -= SP.epgXmlUrl
                     }
-                    .map { epgList ->
-                        // 移除过期节目
-                        epgList.copy(value = epgList.map { epg ->
-                            epg.copy(
-                                programmes = EpgProgrammeList(
-                                    epg.programmes.filter { programme ->
-                                        System.currentTimeMillis() < programme.endAt
-                                    },
-                                )
-                            )
-                        })
-                    }
+                    // .map { epgList ->
+                    //     // 移除过期节目
+                    //     epgList.copy(value = epgList.map { epg ->
+                    //         epg.copy(
+                    //             programmes = EpgProgrammeList(
+                    //                 epg.programmes.filter { programme ->
+                    //                     System.currentTimeMillis() < programme.endAt
+                    //                 },
+                    //             )
+                    //         )
+                    //     })
+                    // }
                     .map { epgList ->
                         _uiState.value =
                             (_uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)

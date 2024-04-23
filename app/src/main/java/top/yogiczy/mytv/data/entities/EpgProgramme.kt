@@ -21,4 +21,8 @@ data class EpgProgramme(
      * 节目名称
      */
     val title: String,
-)
+) {
+    companion object {
+        fun EpgProgramme.isLive() = System.currentTimeMillis() in startAt..<endAt
+    }
+}

@@ -3,8 +3,6 @@ package top.yogiczy.mytv.ui.screens.panel.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -13,7 +11,6 @@ import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import top.yogiczy.mytv.data.entities.EpgList
-import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
@@ -28,13 +25,8 @@ fun PanelIptvList(
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
     state: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
-    onListStateChanged: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
-
-    LaunchedEffect(state) {
-        snapshotFlow { state.isScrollInProgress }.collect { onListStateChanged() }
-    }
 
     TvLazyRow(
         state = state,
@@ -45,7 +37,7 @@ fun PanelIptvList(
         items(iptvList) {
             PanelIptvItem(
                 iptv = it,
-                currentProgrammes = epgList.currentProgrammes(it),
+                epg = epgList.firstOrNull { epg -> epg.channel == it.channelName },
                 onIptvSelected = { onIptvSelected(it) },
                 initialFocused = it == currentIptv,
             )
