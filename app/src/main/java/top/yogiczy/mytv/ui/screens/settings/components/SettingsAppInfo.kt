@@ -28,21 +28,21 @@ fun SettingsAppInfo(
             Text(
                 text = Constants.APP_TITLE,
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.alignByBaseline(),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "v${packageInfo.versionName}",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                 modifier = Modifier.alignByBaseline(),
             )
         }
         Text(
             text = Constants.APP_REPO,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
         )
     }
 }

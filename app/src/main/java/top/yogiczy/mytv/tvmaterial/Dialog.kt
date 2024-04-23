@@ -1,11 +1,5 @@
 package top.yogiczy.mytv.tvmaterial
 
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -112,84 +103,75 @@ fun StandardDialog(
     textContentColor: Color = StandardDialogDefaults.textContentColor,
     tonalElevation: Dp = StandardDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(),
-    confirmButton: @Composable () -> Unit,
+    confirmButton: @Composable (() -> Unit)? = null,
+    content: @Composable (() -> Unit)? = null,
 ) {
     val elevatedContainerColor = MaterialTheme.colorScheme.applyTonalElevation(
-        backgroundColor = containerColor,
-        elevation = tonalElevation
+        backgroundColor = containerColor, elevation = tonalElevation
     )
 
     Dialog(
-        showDialog = showDialog,
-        onDismissRequest = onDismissRequest,
-        properties = properties
+        showDialog = showDialog, onDismissRequest = onDismissRequest, properties = properties
     ) {
-        Column(
-            modifier = Modifier
-                .widthIn(
-                    min = StandardDialogDefaults.DialogMinWidth,
-                    max = StandardDialogDefaults.DialogMaxWidth
-                )
-                .dialogFocusable()
-                .then(modifier)
-                .graphicsLayer {
-                    this.clip = true
-                    this.shape = shape
-                }
-                .drawBehind { drawRect(color = elevatedContainerColor) }
-                .padding(StandardDialogDefaults.DialogPadding)
-        ) {
+        Column(modifier = Modifier
+            .padding(StandardDialogDefaults.DialogReservedPadding)
+            .widthIn(
+                min = StandardDialogDefaults.DialogMinWidth,
+                max = StandardDialogDefaults.DialogMaxWidth
+            )
+            .dialogFocusable()
+            .then(modifier)
+            .graphicsLayer {
+                this.clip = true
+                this.shape = shape
+            }
+            .drawBehind { drawRect(color = elevatedContainerColor) }
+            .padding(StandardDialogDefaults.DialogPadding)) {
             icon?.let { nnIcon ->
-                CompositionLocalProvider(
-                    LocalContentColor provides iconContentColor,
-                    content = {
-                        nnIcon()
-                        Spacer(
-                            modifier = Modifier.padding(StandardDialogDefaults.IconBottomSpacing)
-                        )
-                    }
-                )
+                CompositionLocalProvider(LocalContentColor provides iconContentColor, content = {
+                    nnIcon()
+                    Spacer(
+                        modifier = Modifier.padding(StandardDialogDefaults.IconBottomSpacing)
+                    )
+                })
             }
             title?.let { nnTitle ->
                 CompositionLocalProvider(LocalContentColor provides titleContentColor) {
-                    ProvideTextStyle(
-                        value = StandardDialogDefaults.titleTextStyle,
-                        content = {
-                            Box(
-                                modifier = Modifier.heightIn(
-                                    max = StandardDialogDefaults.TitleMaxHeight
-                                )
-                            ) { nnTitle() }
-                        }
-                    )
+                    ProvideTextStyle(value = StandardDialogDefaults.titleTextStyle, content = {
+                        Box(
+                            modifier = Modifier.heightIn(
+                                max = StandardDialogDefaults.TitleMaxHeight
+                            )
+                        ) { nnTitle() }
+                    })
                 }
             }
             text?.let { nnText ->
                 CompositionLocalProvider(LocalContentColor provides textContentColor) {
-                    ProvideTextStyle(
-                        value = StandardDialogDefaults.textStyle,
-                        content = {
-                            Spacer(modifier = Modifier.padding(StandardDialogDefaults.TextPadding))
-                            Box(modifier = Modifier.weight(weight = 1f, fill = false)) {
-                                nnText()
-                            }
+                    ProvideTextStyle(value = StandardDialogDefaults.textStyle, content = {
+                        Spacer(modifier = Modifier.padding(StandardDialogDefaults.TextPadding))
+                        Box(modifier = Modifier.weight(weight = 1f, fill = false)) {
+                            nnText()
                         }
-                    )
+                    })
                 }
             }
-            Spacer(modifier = Modifier.padding(StandardDialogDefaults.ButtonsFlowRowPadding))
-            ProvideTextStyle(
-                value = StandardDialogDefaults.buttonsTextStyle,
-                content = {
+            content?.let { nnContent ->
+                Spacer(modifier = Modifier.padding(StandardDialogDefaults.ContentPadding))
+                nnContent()
+            }
+            confirmButton?.let { nnConfirmButton ->
+                Spacer(modifier = Modifier.padding(StandardDialogDefaults.ButtonsFlowRowPadding))
+                ProvideTextStyle(value = StandardDialogDefaults.buttonsTextStyle, content = {
                     DialogFlowRow(
                         mainAxisSpacing = StandardDialogDefaults.ButtonsMainAxisSpacing,
                         crossAxisSpacing = StandardDialogDefaults.ButtonsCrossAxisSpacing
                     ) {
-                        confirmButton()
+                        nnConfirmButton()
                         dismissButton?.invoke()
                     }
-                }
-            )
+                })
+            }
         }
     }
 }
@@ -239,17 +221,12 @@ fun FullScreenDialog(
     confirmButton: @Composable () -> Unit,
 ) {
     Dialog(
-        showDialog = showDialog,
-        onDismissRequest = onDismissRequest,
-        properties = properties
+        showDialog = showDialog, onDismissRequest = onDismissRequest, properties = properties
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .drawBehind { drawRect(color = backgroundColor) }
-                .dialogFocusable(),
-            contentAlignment = Alignment.Center
-        ) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .drawBehind { drawRect(color = backgroundColor) }
+            .dialogFocusable(), contentAlignment = Alignment.Center) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth(FullScreenDialogDefaults.DialogMaxWidth)
@@ -257,53 +234,44 @@ fun FullScreenDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CompositionLocalProvider(
-                    LocalContentColor provides iconContentColor,
-                    content = {
-                        icon?.let { nnIcon ->
-                            nnIcon()
+                CompositionLocalProvider(LocalContentColor provides iconContentColor, content = {
+                    icon?.let { nnIcon ->
+                        nnIcon()
+                        Spacer(
+                            modifier = Modifier.padding(FullScreenDialogDefaults.IconPadding)
+                        )
+                    }
+                })
+
+                CompositionLocalProvider(LocalContentColor provides titleContentColor, content = {
+                    title?.let { nnTitle ->
+                        ProvideTextStyle(
+                            value = FullScreenDialogDefaults.titleTextStyle
+                        ) {
+                            nnTitle()
                             Spacer(
-                                modifier = Modifier.padding(FullScreenDialogDefaults.IconPadding)
+                                modifier = Modifier.padding(
+                                    FullScreenDialogDefaults.TitlePadding
+                                )
                             )
                         }
                     }
-                )
+                })
 
-                CompositionLocalProvider(
-                    LocalContentColor provides titleContentColor,
-                    content = {
-                        title?.let { nnTitle ->
-                            ProvideTextStyle(
-                                value = FullScreenDialogDefaults.titleTextStyle
-                            ) {
-                                nnTitle()
-                                Spacer(
-                                    modifier = Modifier.padding(
-                                        FullScreenDialogDefaults.TitlePadding
-                                    )
+                CompositionLocalProvider(LocalContentColor provides textContentColor, content = {
+                    text?.let { nnText ->
+                        ProvideTextStyle(FullScreenDialogDefaults.descriptionTextStyle) {
+                            Box(
+                                modifier = Modifier.weight(weight = 1f, fill = false)
+                            ) { nnText() }
+                            Spacer(
+                                modifier = Modifier.padding(
+                                    FullScreenDialogDefaults.DescriptionPadding
                                 )
-                            }
+                            )
                         }
                     }
-                )
-
-                CompositionLocalProvider(
-                    LocalContentColor provides textContentColor,
-                    content = {
-                        text?.let { nnText ->
-                            ProvideTextStyle(FullScreenDialogDefaults.descriptionTextStyle) {
-                                Box(
-                                    modifier = Modifier.weight(weight = 1f, fill = false)
-                                ) { nnText() }
-                                Spacer(
-                                    modifier = Modifier.padding(
-                                        FullScreenDialogDefaults.DescriptionPadding
-                                    )
-                                )
-                            }
-                        }
-                    }
-                )
+                })
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -319,24 +287,6 @@ fun FullScreenDialog(
                 }
             }
         }
-    }
-}
-
-/**
- * A state object that can be hoisted to control and observe a [Dialog]'s animation progress.
- */
-@ExperimentalTvMaterial3Api
-class DialogState {
-    /**
-     * Current animation progress of the [Dialog]. This value will range between 0f and 1f. This
-     * progress is generally linked with the dialog's alpha progress as it is the first element to
-     * be displayed on the view and the last element to the removed from the view.
-     */
-    var animationProgress by mutableStateOf(0f)
-        private set
-
-    internal fun updateProgress(currentProgress: Float) {
-        animationProgress = currentProgress
     }
 }
 
@@ -362,82 +312,22 @@ fun Dialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     properties: DialogProperties = DialogProperties(),
-    state: DialogState = remember { DialogState() },
     content: @Composable BoxScope.() -> Unit,
 ) {
-    // Transitions for background and 'dialog content' alpha.
-    var alphaTransitionState by remember {
-        mutableStateOf(MutableTransitionState(AnimationStage.Intro))
-    }
-    val alphaTransition = updateTransition(alphaTransitionState, label = "alphaTransition")
-
-    // Transitions for dialog content scaling.
-    var scaleTransitionState by remember {
-        mutableStateOf(MutableTransitionState(AnimationStage.Intro))
-    }
-    val scaleTransition = updateTransition(scaleTransitionState, label = "scaleTransition")
-
-    if (showDialog || alphaTransitionState.targetState != AnimationStage.Intro ||
-        scaleTransitionState.targetState != AnimationStage.Intro
-    ) {
+    if (showDialog) {
         androidx.compose.ui.window.Dialog(
             onDismissRequest = onDismissRequest,
             properties = properties,
         ) {
-            val alpha by animateDialogAlpha(alphaTransition, alphaTransitionState)
-            val scale by animateDialogScale(scaleTransition, scaleTransitionState)
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        this.scaleX = scale
-                        this.scaleY = scale
-                        this.alpha = alpha
-                    }
-                    .semantics {
-                        dismiss {
-                            onDismissRequest()
-                            true
-                        }
-                    }
-                    .then(modifier),
-                contentAlignment = Alignment.Center,
-                content = content
-            )
-
-            LaunchedEffect(alpha) {
-                state.updateProgress(currentProgress = alpha)
-            }
-
-            // Trigger Outro animation when the caller updates showDialog to false.
-            LaunchedEffect(showDialog) {
-                if (!showDialog) {
-                    // a) Fade out dialog contents b) Scale down dialog contents.
-                    alphaTransitionState.targetState = AnimationStage.Outro
-                    scaleTransitionState.targetState = AnimationStage.Outro
-                }
-            }
-
-            LaunchedEffect(alphaTransitionState.currentState) {
-                when (alphaTransitionState.currentState) {
-                    AnimationStage.Intro -> {
-                        // a) Fade in dialog background b) Scale up dialog contents.
-                        alphaTransitionState.targetState = AnimationStage.Display
-                        scaleTransitionState.targetState = AnimationStage.Display
-                    }
-
-                    AnimationStage.Outro -> {
-                        // After the outro animation, leave the dialog & reset alpha/scale
-                        // transitions.
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .semantics {
+                    dismiss {
                         onDismissRequest()
-                        alphaTransitionState = MutableTransitionState(AnimationStage.Intro)
-                        scaleTransitionState = MutableTransitionState(AnimationStage.Intro)
+                        true
                     }
-
-                    else -> Unit
                 }
-            }
+                .then(modifier), contentAlignment = Alignment.Center, content = content)
         }
     }
 }
@@ -467,8 +357,7 @@ internal fun DialogFlowRow(
 
         // Return whether the placeable can be added to the current sequence.
         fun canAddToCurrentSequence(placeable: Placeable) =
-            currentSequence.isEmpty() || currentMainAxisSize + mainAxisSpacing.roundToPx() +
-                    placeable.width <= constraints.maxWidth
+            currentSequence.isEmpty() || currentMainAxisSize + mainAxisSpacing.roundToPx() + placeable.width <= constraints.maxWidth
 
         // Store current sequence information and start a new sequence.
         fun startNewSequence() {
@@ -514,8 +403,7 @@ internal fun DialogFlowRow(
         layout(mainAxisLayoutSize, crossAxisLayoutSize) {
             sequences.forEachIndexed { i, placeables ->
                 val childrenMainAxisSizes = IntArray(placeables.size) { j ->
-                    placeables[j].width +
-                            if (j < placeables.lastIndex) mainAxisSpacing.roundToPx() else 0
+                    placeables[j].width + if (j < placeables.lastIndex) mainAxisSpacing.roundToPx() else 0
                 }
                 val arrangement = Arrangement.Bottom
                 // Handle vertical direction
@@ -525,8 +413,7 @@ internal fun DialogFlowRow(
                 }
                 placeables.forEachIndexed { j, placeable ->
                     placeable.place(
-                        x = mainAxisPositions[j],
-                        y = crossAxisPositions[i]
+                        x = mainAxisPositions[j], y = crossAxisPositions[i]
                     )
                 }
             }
@@ -548,12 +435,10 @@ private fun Modifier.dialogFocusable() = composed {
         focusRequester.requestFocus()
         focusManager.moveFocus(FocusDirection.Enter)
     }
-    this.then(
-        Modifier
-            .focusRequester(focusRequester)
-            .focusProperties { exit = { FocusRequester.Cancel } }
-            .focusGroup()
-    )
+    this.then(Modifier
+        .focusRequester(focusRequester)
+        .focusProperties { exit = { FocusRequester.Cancel } }
+        .focusGroup())
 }
 
 @ExperimentalTvMaterial3Api
@@ -565,9 +450,11 @@ object StandardDialogDefaults {
     internal val ButtonsMainAxisSpacing = 16.dp
     internal val ButtonsCrossAxisSpacing = 16.dp
 
+    internal val DialogReservedPadding = PaddingValues(vertical = 24.dp)
     internal val DialogPadding = PaddingValues(all = 24.dp)
     internal val IconBottomSpacing = PaddingValues(top = 32.dp)
     internal val TextPadding = PaddingValues(top = 20.dp)
+    internal val ContentPadding = PaddingValues(top = 20.dp)
     internal val ButtonsFlowRowPadding = PaddingValues(top = 24.dp)
     private const val TextColorOpacity = 0.8f
 
@@ -576,43 +463,38 @@ object StandardDialogDefaults {
 
     /** The default container color for StandardDialogs */
     val containerColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.inverseOnSurface
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.surface
 
     /** The default icon color for StandardDialogs */
     val iconContentColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.secondary
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.secondary
 
     /** The default title color for StandardDialogs */
     val titleContentColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.onSurface
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.onSurface
 
     /** The default [TextStyle] for StandardDialogs' title */
     val titleTextStyle: TextStyle
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.typography.headlineMedium
+        @ReadOnlyComposable @Composable get() = MaterialTheme.typography.headlineMedium
 
     /** The default [TextStyle] for StandardDialogs' buttons */
     val buttonsTextStyle
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.typography.labelLarge
+        @ReadOnlyComposable @Composable get() = MaterialTheme.typography.labelLarge
 
     /** The default text color for StandardDialogs */
     val textContentColor: Color
-        @ReadOnlyComposable
-
-        @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.onSurface
 
     /** The default text style for StandardDialogs */
     val textStyle
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.typography.bodyLarge
-            .copy(color = LocalContentColor.current.copy(alpha = TextColorOpacity))
+        @ReadOnlyComposable @Composable get() = MaterialTheme.typography.bodyLarge.copy(
+            color = LocalContentColor.current.copy(
+                alpha = TextColorOpacity
+            )
+        )
 
     /** The default tonal elevation for StandardDialogs */
-    val TonalElevation: Dp = Elevation.Level2
+    val TonalElevation: Dp = Elevation.Level0
 }
 
 @ExperimentalTvMaterial3Api
@@ -626,116 +508,36 @@ object FullScreenDialogDefaults {
 
     /** The default background color for FullScreenDialogs */
     val backgroundColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.background
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.background
 
     /** The default icon color for FullScreenDialogs */
     val iconContentColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.onSurface
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.onSurface
 
     /** The default title color for FullScreenDialogs */
     val titleContentColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.onSurface
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.onSurface
 
     /** The default title text style for FullScreenDialogs */
     val titleTextStyle: TextStyle
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.typography.headlineMedium
-            .copy(textAlign = TextAlign.Center)
+        @ReadOnlyComposable @Composable get() = MaterialTheme.typography.headlineMedium.copy(
+            textAlign = TextAlign.Center
+        )
 
     /** The default buttons text style for FullScreenDialogs */
     val buttonsTextStyle: TextStyle
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.typography.labelLarge
+        @ReadOnlyComposable @Composable get() = MaterialTheme.typography.labelLarge
 
     /** The default description text color for FullScreenDialogs */
     val descriptionContentColor: Color
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant
+        @ReadOnlyComposable @Composable get() = MaterialTheme.colorScheme.onSurface
 
     /** The default description text style for FullScreenDialogs */
     val descriptionTextStyle: TextStyle
-        @ReadOnlyComposable
-        @Composable get() = MaterialTheme.typography.bodyLarge.copy(
+        @ReadOnlyComposable @Composable get() = MaterialTheme.typography.bodyLarge.copy(
             textAlign = TextAlign.Center,
             color = LocalContentColor.current.copy(alpha = DescriptionColorOpacity)
         )
-}
-
-@Composable
-private fun animateDialogAlpha(
-    alphaTransition: Transition<AnimationStage>,
-    alphaTransitionState: MutableTransitionState<AnimationStage>,
-) = alphaTransition.animateFloat(
-    transitionSpec = {
-        if (alphaTransitionState.currentState == AnimationStage.Intro)
-            tween(
-                durationMillis = ENTER_DURATION,
-                easing = MotionTokens.EnterEasing,
-                delayMillis = ENTER_DELAY
-            )
-        else if (alphaTransitionState.targetState == AnimationStage.Outro)
-            tween(
-                durationMillis = EXIT_DURATION,
-                easing = MotionTokens.ExitEasing,
-                delayMillis = EXIT_DELAY
-            )
-        else
-            tween(durationMillis = 0)
-    },
-    label = "alpha"
-) { stage ->
-    when (stage) {
-        AnimationStage.Intro -> 0.0f
-        AnimationStage.Display -> 1.0f
-        AnimationStage.Outro -> 0.0f
-    }
-}
-
-@Composable
-private fun animateDialogScale(
-    scaleTransition: Transition<AnimationStage>,
-    scaleTransitionState: MutableTransitionState<AnimationStage>,
-) = scaleTransition.animateFloat(
-    transitionSpec = {
-        if (scaleTransitionState.currentState == AnimationStage.Intro)
-            tween(
-                durationMillis = ENTER_DURATION,
-                easing = MotionTokens.EnterEasing,
-                delayMillis = ENTER_DELAY
-            )
-        else
-            tween(
-                durationMillis = EXIT_DURATION,
-                easing = MotionTokens.ExitEasing,
-                delayMillis = EXIT_DELAY
-            )
-    },
-    label = "scale"
-) { stage ->
-    when (stage) {
-        AnimationStage.Intro -> 0.97f
-        AnimationStage.Display -> 1.0f
-        AnimationStage.Outro -> 0.97f
-    }
-}
-
-// Transition stages - scaling and alpha is applied as single Intro/Outro animations.
-private enum class AnimationStage {
-    Intro, Display, Outro;
-}
-
-private const val ENTER_DURATION = 500
-private const val EXIT_DURATION = 250
-
-private const val ENTER_DELAY = 250
-private const val EXIT_DELAY = 150
-
-object MotionTokens {
-    val EnterEasing = CubicBezierEasing(0.12f, 1f, 0.4f, 1f)
-    val ExitEasing = CubicBezierEasing(0.4f, 1f, 0.12f, 1f)
 }
 
 private object Elevation {

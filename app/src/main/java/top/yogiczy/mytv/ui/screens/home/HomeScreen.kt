@@ -52,7 +52,7 @@ fun AppBanner(modifier: Modifier = Modifier) {
     Text(
         text = Constants.APP_TITLE,
         style = MaterialTheme.typography.headlineLarge,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier,
     )
 }
@@ -73,14 +73,14 @@ private fun HomeScreenLoading(message: String?) {
             Text(
                 text = "加载中...",
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             if (message != null) {
                 Text(
                     text = message,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                     modifier = Modifier.sizeIn(maxWidth = 500.dp),
                 )
             }

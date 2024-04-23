@@ -56,7 +56,7 @@ fun PanelIptvGroupList(
             Text(
                 text = it.name,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(start = childPadding.start),
             )
             Spacer(modifier = Modifier.height(6.dp))

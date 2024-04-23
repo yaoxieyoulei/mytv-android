@@ -44,7 +44,7 @@ fun IptvTempPanel(
 
         Surface(
             colors = NonInteractiveSurfaceDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
             ),
             modifier = Modifier
                 .padding(start = childPadding.start, bottom = childPadding.bottom)

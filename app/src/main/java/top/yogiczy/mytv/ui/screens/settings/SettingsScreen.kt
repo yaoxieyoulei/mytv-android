@@ -47,7 +47,7 @@ fun SettingsScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
             .focusRequester(focusRequester)
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {

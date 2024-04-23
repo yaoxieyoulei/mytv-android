@@ -18,6 +18,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import java.text.DecimalFormat
 
 @Composable
 fun PanelPlayerInfo(
@@ -41,7 +42,7 @@ fun PanelPlayerInfoResolution(
     Text(
         text = "分辨率：${resolution.first}×${resolution.second}",
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier,
     )
 }
@@ -54,9 +55,9 @@ fun PanelPlayerInfoNetSpeed(
 ) {
     Text(
         text = if (netSpeed < 1024 * 999) "网速：${netSpeed / 1024}KB/s"
-        else "网速：${String.format("%.1f", netSpeed / 1024 / 1024f)}MB/s",
+        else "网速：${DecimalFormat("#.#").format(netSpeed / 1024 / 1024f)}MB/s",
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier,
     )
 }
@@ -90,7 +91,7 @@ private fun PanelPlayerInfoPreview() {
     MyTVTheme {
         PanelPlayerInfo(
             resolution = Pair(1920, 1080),
-            netSpeed = 241914,
+            netSpeed = 242313,
         )
     }
 }

@@ -18,7 +18,7 @@ fun PanelChannelNo(
         modifier = modifier,
         text = channelNo,
         style = MaterialTheme.typography.displayMedium,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
     )
 }
 

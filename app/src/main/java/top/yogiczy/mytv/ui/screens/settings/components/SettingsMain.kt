@@ -28,7 +28,7 @@ fun SettingsMain(
         Text(
             text = "设置（修改后都需要重启生效）",
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = childPadding.start),
         )
         Spacer(modifier = Modifier.height(6.dp))

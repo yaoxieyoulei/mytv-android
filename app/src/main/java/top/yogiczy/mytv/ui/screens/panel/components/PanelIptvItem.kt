@@ -65,10 +65,10 @@ fun PanelIptvItem(
             ),
         scale = CardDefaults.scale(focusedScale = 1.1f),
         colors = CardDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            focusedContainerColor = MaterialTheme.colorScheme.onSurface,
-            focusedContentColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            focusedContainerColor = MaterialTheme.colorScheme.onBackground,
+            focusedContentColor = MaterialTheme.colorScheme.background,
         ),
         onClick = { },
     ) {
@@ -99,9 +99,20 @@ fun PanelIptvItem(
 @Composable
 private fun PanelIptvItemPreview() {
     MyTVTheme {
-        PanelIptvItem(
-            iptv = Iptv.EXAMPLE,
-            currentProgrammes = EpgProgrammeCurrent.EXAMPLE,
-        )
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            PanelIptvItem(
+                iptv = Iptv.EXAMPLE,
+                currentProgrammes = EpgProgrammeCurrent.EXAMPLE,
+            )
+
+            PanelIptvItem(
+                iptv = Iptv.EXAMPLE,
+                currentProgrammes = EpgProgrammeCurrent.EXAMPLE,
+                initialFocused = true,
+            )
+        }
     }
 }

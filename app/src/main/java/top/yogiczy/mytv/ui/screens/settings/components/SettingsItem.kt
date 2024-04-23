@@ -69,10 +69,10 @@ fun SettingsItem(
             ),
         scale = CardDefaults.scale(focusedScale = 1.05f),
         colors = CardDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            focusedContainerColor = MaterialTheme.colorScheme.onSurface,
-            focusedContentColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            focusedContainerColor = MaterialTheme.colorScheme.onBackground,
+            focusedContentColor = MaterialTheme.colorScheme.background,
         ),
         onClick = {}
     ) {

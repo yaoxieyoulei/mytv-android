@@ -41,12 +41,12 @@ fun PanelDateTime(
         Text(
             text = dateFormat.format(now),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
         )
         Text(
             text = timeFormat.format(now),
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 }

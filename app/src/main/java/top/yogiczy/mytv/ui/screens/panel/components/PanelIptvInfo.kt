@@ -32,7 +32,7 @@ fun PanelIptvInfo(
             Text(
                 text = iptv.name,
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.alignByBaseline(),
                 maxLines = 1,
             )
@@ -42,12 +42,12 @@ fun PanelIptvInfo(
             if (iptv.urlList.size > 1) {
                 Text(
                     text = "${iptvUrlIdx + 1}/${iptv.urlList.size}",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(bottom = 6.dp)
                         .background(
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
                             MaterialTheme.shapes.extraSmall,
                         )
                         .padding(vertical = 2.dp, horizontal = 4.dp),
@@ -69,13 +69,13 @@ fun PanelIptvInfo(
         Text(
             text = "正在播放：${currentProgrammes?.now?.title ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             maxLines = 1,
         )
         Text(
             text = "稍后播放：${currentProgrammes?.next?.title ?: "无节目"}",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             maxLines = 1,
         )
     }

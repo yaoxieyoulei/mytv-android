@@ -39,7 +39,6 @@ import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleAnyActiveAction
 
-
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelScreen(
@@ -62,7 +61,7 @@ fun PanelScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
             .focusRequester(focusRequester)
             .handleAnyActiveAction { onActiveAction() }
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },

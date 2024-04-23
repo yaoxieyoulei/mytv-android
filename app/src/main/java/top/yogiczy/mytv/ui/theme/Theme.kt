@@ -1,7 +1,9 @@
 package top.yogiczy.mytv.ui.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 
@@ -42,6 +44,11 @@ fun MyTVTheme(
         colorScheme = darkColorScheme,
         shapes = MaterialTheme.shapes,
         typography = Typography,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.onBackground
+        ) {
+            content()
+        }
+    }
 }

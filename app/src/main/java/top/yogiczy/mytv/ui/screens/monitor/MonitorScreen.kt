@@ -65,7 +65,7 @@ fun MonitorScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
                     shape = MaterialTheme.shapes.extraSmall,
                 )
                 .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -73,7 +73,7 @@ fun MonitorScreen(
             Text(
                 text = "FPS: $fps",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             Spacer(modifier = Modifier.height(4.dp))
