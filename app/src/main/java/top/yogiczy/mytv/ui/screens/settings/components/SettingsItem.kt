@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui.screens.settings.components
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
@@ -29,6 +27,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -58,18 +57,16 @@ fun SettingsItem(
             .height(90.dp)
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        isFocused = true
-                        onClick()
-                    },
-                    onLongPress = {
-                        isFocused = true
-                        onLongClick()
-                    },
-                )
-            },
+            .handleDPadKeyEvents(
+                onSelect = {
+                    focusRequester.requestFocus()
+                    onClick()
+                },
+                onLongSelect = {
+                    focusRequester.requestFocus()
+                    onLongClick()
+                },
+            ),
         scale = CardDefaults.scale(focusedScale = 1.05f),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
@@ -77,8 +74,7 @@ fun SettingsItem(
             focusedContainerColor = MaterialTheme.colorScheme.onSurface,
             focusedContentColor = MaterialTheme.colorScheme.surface,
         ),
-        onClick = onClick,
-        onLongClick = onLongClick,
+        onClick = {}
     ) {
         Column(
             modifier = Modifier

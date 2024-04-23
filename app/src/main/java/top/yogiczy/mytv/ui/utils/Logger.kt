@@ -34,5 +34,5 @@ class Logger private constructor(
 
 abstract class Loggable(private val tag: String? = null) {
     protected val log: Logger
-        get() = Logger.create("[L]${tag ?: javaClass.simpleName}")
+        get() = Logger.create("L|${tag ?: javaClass.simpleName}")
 }

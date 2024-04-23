@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui.screens.panel.components
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
@@ -31,6 +29,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -58,14 +57,12 @@ fun PanelIptvItem(
             .height(54.dp)
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        isFocused = true
-                        onIptvSelected()
-                    },
-                )
-            },
+            .handleDPadKeyEvents(
+                onSelect = {
+                    focusRequester.requestFocus()
+                    onIptvSelected()
+                }
+            ),
         scale = CardDefaults.scale(focusedScale = 1.1f),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
@@ -73,7 +70,7 @@ fun PanelIptvItem(
             focusedContainerColor = MaterialTheme.colorScheme.onSurface,
             focusedContentColor = MaterialTheme.colorScheme.surface,
         ),
-        onClick = { onIptvSelected() },
+        onClick = { },
     ) {
         Column(
             modifier = Modifier

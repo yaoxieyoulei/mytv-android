@@ -4,14 +4,14 @@ import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.dp
+import kotlin.math.absoluteValue
 
 /**
  * 监听短按、长按按键事件
@@ -22,42 +22,97 @@ fun Modifier.handleKeyEvents(
 ): Modifier {
     val keyDownMap = mutableMapOf<Int, Boolean>()
 
-    return onKeyEvent {
+    return onPreviewKeyEvent {
         when (it.nativeKeyEvent.action) {
             KeyEvent.ACTION_DOWN -> {
                 if (it.nativeKeyEvent.repeatCount == 0) {
                     keyDownMap[it.nativeKeyEvent.keyCode] = true
                 } else if (it.nativeKeyEvent.repeatCount == 1) {
-                    onKeyLongTap[it.nativeKeyEvent.keyCode]?.invoke()
                     keyDownMap.remove(it.nativeKeyEvent.keyCode)
+                    onKeyLongTap[it.nativeKeyEvent.keyCode]?.invoke()
                 }
             }
 
             KeyEvent.ACTION_UP -> {
-                if (keyDownMap[it.nativeKeyEvent.keyCode] != true) return@onKeyEvent true
-                keyDownMap.remove(it.nativeKeyEvent.keyCode)
-
-                onKeyTap[it.nativeKeyEvent.keyCode]?.invoke()
+                if (keyDownMap[it.nativeKeyEvent.keyCode] == true) {
+                    keyDownMap.remove(it.nativeKeyEvent.keyCode)
+                    onKeyTap[it.nativeKeyEvent.keyCode]?.invoke()
+                }
             }
         }
 
-        true
+        false
     }
 }
 
 /**
- * 监听全方位的DPad按键事件
+ * 监听手势滑动事件
+ */
+fun Modifier.handleDragGestures(
+    onSwipeUp: () -> Unit = {},
+    onSwipeDown: () -> Unit = {},
+    onSwipeLeft: () -> Unit = {},
+    onSwipeRight: () -> Unit = {},
+): Modifier {
+    val speedThreshold = 100.dp
+    val distanceThreshold = 10.dp
+
+    val verticalTracker = VelocityTracker()
+    var verticalDragOffset = 0f
+    val horizontalTracker = VelocityTracker()
+    var horizontalDragOffset = 0f
+
+
+    return this then pointerInput(Unit) {
+        detectVerticalDragGestures(
+            onDragEnd = {
+                if (verticalDragOffset.absoluteValue > distanceThreshold.toPx()) {
+                    if (verticalTracker.calculateVelocity().y > speedThreshold.toPx()) {
+                        onSwipeDown()
+                    } else if (verticalTracker.calculateVelocity().y < -speedThreshold.toPx()) {
+                        onSwipeUp()
+                    }
+                }
+            },
+        ) { change, dragAmount ->
+            verticalDragOffset += dragAmount
+            verticalTracker.addPosition(change.uptimeMillis, change.position)
+        }
+    }.pointerInput(Unit) {
+        detectHorizontalDragGestures(
+            onDragEnd = {
+                if (horizontalDragOffset.absoluteValue > distanceThreshold.toPx()) {
+                    if (horizontalTracker.calculateVelocity().x > speedThreshold.toPx()) {
+                        onSwipeRight()
+                    } else if (horizontalTracker.calculateVelocity().x < -speedThreshold.toPx()) {
+                        onSwipeLeft()
+                    }
+                }
+            },
+        ) { change, dragAmount ->
+            horizontalDragOffset += dragAmount
+            horizontalTracker.addPosition(change.uptimeMillis, change.position)
+        }
+    }
+}
+
+/**
+ * 监听全方位的DPad按键事件（兼容触摸屏）
  */
 fun Modifier.handleDPadKeyEvents(
-    onLeft: (() -> Unit) = {},
-    onRight: (() -> Unit) = {},
-    onUp: (() -> Unit) = {},
-    onDown: (() -> Unit) = {},
-    onEnter: (() -> Unit) = {},
-    onLongEnter: (() -> Unit) = {},
-    onSettings: (() -> Unit) = {},
-    onNumber: ((Int) -> Unit) = {},
-) = handleKeyEvents(
+    onLeft: () -> Unit = {},
+    onLongLeft: () -> Unit = {},
+    onRight: () -> Unit = {},
+    onLongRight: () -> Unit = {},
+    onUp: () -> Unit = {},
+    onLongUp: () -> Unit = {},
+    onDown: () -> Unit = {},
+    onLongDown: () -> Unit = {},
+    onSelect: () -> Unit = {},
+    onLongSelect: () -> Unit = {},
+    onSettings: () -> Unit = {},
+    onNumber: (Int) -> Unit = {},
+) = this then handleKeyEvents(
     onKeyTap = mapOf(
         KeyEvent.KEYCODE_DPAD_LEFT to onLeft,
         KeyEvent.KEYCODE_DPAD_RIGHT to onRight,
@@ -66,9 +121,9 @@ fun Modifier.handleDPadKeyEvents(
         KeyEvent.KEYCODE_DPAD_DOWN to onDown,
         KeyEvent.KEYCODE_CHANNEL_DOWN to onDown,
 
-        KeyEvent.KEYCODE_DPAD_CENTER to onEnter,
-        KeyEvent.KEYCODE_ENTER to onEnter,
-        KeyEvent.KEYCODE_NUMPAD_ENTER to onEnter,
+        KeyEvent.KEYCODE_DPAD_CENTER to onSelect,
+        KeyEvent.KEYCODE_ENTER to onSelect,
+        KeyEvent.KEYCODE_NUMPAD_ENTER to onSelect,
 
         KeyEvent.KEYCODE_MENU to onSettings,
         KeyEvent.KEYCODE_SETTINGS to onSettings,
@@ -95,55 +150,27 @@ fun Modifier.handleDPadKeyEvents(
         }
     },
     onKeyLongTap = mapOf(
-        KeyEvent.KEYCODE_ENTER to onLongEnter,
-        KeyEvent.KEYCODE_NUMPAD_ENTER to onLongEnter,
-        KeyEvent.KEYCODE_DPAD_CENTER to onLongEnter,
+        KeyEvent.KEYCODE_DPAD_LEFT to onLongLeft,
+        KeyEvent.KEYCODE_DPAD_RIGHT to onLongRight,
+        KeyEvent.KEYCODE_DPAD_UP to onLongUp,
+        KeyEvent.KEYCODE_CHANNEL_UP to onLongUp,
+        KeyEvent.KEYCODE_DPAD_DOWN to onLongDown,
+        KeyEvent.KEYCODE_CHANNEL_DOWN to onLongDown,
+
+        KeyEvent.KEYCODE_ENTER to onLongSelect,
+        KeyEvent.KEYCODE_NUMPAD_ENTER to onLongSelect,
+        KeyEvent.KEYCODE_DPAD_CENTER to onLongSelect,
     ),
-)
-
-/**
- * 监听手势滑动事件
- */
-@Composable
-fun Modifier.handleVerticalDragGestures(
-    onSwipeUp: () -> Unit = {},
-    onSwipeDown: () -> Unit = {},
-    onSwipeLeft: () -> Unit = {},
-    onSwipeRight: () -> Unit = {},
-): Modifier {
-    val verticalTracker = remember { VelocityTracker() }
-    val horizontalTracker = remember { VelocityTracker() }
-    val swipeSpeedThreshold = 100.dp
-
-    return pointerInput(Unit) {
-        detectVerticalDragGestures(
-            onDragEnd = {
-                if (verticalTracker.calculateVelocity().y > swipeSpeedThreshold.toPx()) {
-                    onSwipeDown()
-                } else if (verticalTracker.calculateVelocity().y < -swipeSpeedThreshold.toPx()) {
-                    onSwipeUp()
-                }
-            },
-        ) { change, _ ->
-            verticalTracker.addPosition(change.uptimeMillis, change.position)
-        }
-    }.pointerInput(Unit) {
-        detectHorizontalDragGestures(
-            onDragEnd = {
-                if (horizontalTracker.calculateVelocity().x > swipeSpeedThreshold.toPx()) {
-                    onSwipeRight()
-                } else if (horizontalTracker.calculateVelocity().x < -swipeSpeedThreshold.toPx()) {
-                    onSwipeLeft()
-                }
-            },
-        ) { change, _ ->
-            horizontalTracker.addPosition(change.uptimeMillis, change.position)
-        }
-    }
+).pointerInput(Unit) {
+    detectTapGestures(
+        onTap = { onSelect() },
+        onLongPress = { onLongSelect() },
+        onDoubleTap = { onSettings() },
+    )
 }
 
 /**
  * 监听任意事件（按键、滑动、点击）
  */
 fun Modifier.handleAnyActiveAction(onAction: () -> Unit = {}) =
-    onKeyEvent { onAction(); false }.pointerInput(Unit) { detectDragGestures { _, _ -> onAction() } }
+    onPreviewKeyEvent { onAction(); false }.pointerInput(Unit) { detectDragGestures { _, _ -> onAction() } }

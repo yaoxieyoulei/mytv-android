@@ -19,6 +19,7 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.repositories.EpgRepository
 import top.yogiczy.mytv.data.repositories.IptvRepository
 import top.yogiczy.mytv.data.utils.Constants
+import top.yogiczy.mytv.ui.utils.SP
 
 class HomeScreeViewModel : ViewModel() {
     private val iptvRepository = IptvRepository()
@@ -39,9 +40,13 @@ class HomeScreeViewModel : ViewModel() {
                     delay(Constants.HTTP_RETRY_INTERVAL)
                     true
                 }
-                .catch { _uiState.value = HomeScreenUiState.Error(it.message) }
+                .catch {
+                    _uiState.value = HomeScreenUiState.Error(it.message)
+                    SP.iptvSourceUrlHistoryList -= SP.iptvSourceUrl
+                }
                 .map {
                     _uiState.value = HomeScreenUiState.Ready(iptvGroupList = it)
+                    SP.iptvSourceUrlHistoryList += SP.iptvSourceUrl
                     it
                 }
                 .collect()
@@ -54,7 +59,10 @@ class HomeScreeViewModel : ViewModel() {
 
                 flow { emit(epgRepository.getEpgs(channels)) }
                     .retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
-                    .catch { emit(EpgList()) }
+                    .catch {
+                        emit(EpgList())
+                        SP.epgXmlUrlHistoryList -= SP.epgXmlUrl
+                    }
                     .map { epgList ->
                         // 移除过期节目
                         epgList.copy(value = epgList.map { epg ->
@@ -70,6 +78,7 @@ class HomeScreeViewModel : ViewModel() {
                     .map { epgList ->
                         _uiState.value =
                             (_uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)
+                        SP.epgXmlUrlHistoryList += SP.epgXmlUrl
                     }
                     .collect()
             }

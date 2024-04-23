@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +27,6 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -72,7 +70,7 @@ import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.utils.Loggable
 import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
-import top.yogiczy.mytv.ui.utils.handleVerticalDragGestures
+import top.yogiczy.mytv.ui.utils.handleDragGestures
 import kotlin.math.max
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -153,34 +151,34 @@ fun HomeContent(
                             state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx + 1)
                         }
                     },
-                    onEnter = { state.changePanelVisible(true) },
-                    onLongEnter = { state.changeSettingsVisible(true) },
+                    onSelect = { state.changePanelVisible(true) },
+                    onLongSelect = { state.changeSettingsVisible(true) },
                     onSettings = { state.changeSettingsVisible(true) },
                     onNumber = {
                         state.changeTempPanelVisible(false)
                         channelNoInputState.input(it)
                     },
                 )
-                .handleVerticalDragGestures(
-                    onSwipeUp = { state.changeCurrentIptvToNext() },
-                    onSwipeDown = { state.changeCurrentIptvToPrev() },
-                    onSwipeLeft = {
-                        if (state.currentIptv.urlList.size > 1) {
-                            state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx + 1)
-                        }
+                .handleDragGestures(
+                    onSwipeDown = {
+                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
+                        else state.changeCurrentIptvToPrev()
+                    },
+                    onSwipeUp = {
+                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToPrev()
+                        else state.changeCurrentIptvToNext()
                     },
                     onSwipeRight = {
                         if (state.currentIptv.urlList.size > 1) {
                             state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx - 1)
                         }
                     },
+                    onSwipeLeft = {
+                        if (state.currentIptv.urlList.size > 1) {
+                            state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx + 1)
+                        }
+                    },
                 )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { state.changePanelVisible(true) },
-                        onDoubleTap = { state.changeSettingsVisible(true) },
-                    )
-                }
                 .focusRequester(focusRequester)
                 .focusable(),
         ) {
@@ -237,16 +235,19 @@ private fun BackPressHandledArea(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
-) = Box(modifier = Modifier
-    .onPreviewKeyEvent {
-        if (it.key == Key.Back && it.type == KeyEventType.KeyUp) {
-            onBackPressed()
-            true
-        } else {
-            false
+) = Box(
+    modifier = Modifier
+        .onPreviewKeyEvent {
+            if (it.key == Key.Back && it.type == KeyEventType.KeyUp) {
+                onBackPressed()
+                true
+            } else {
+                false
+            }
         }
-    }
-    .then(modifier), content = content)
+        .then(modifier),
+    content = content,
+)
 
 @UnstableApi
 class HomeContentState(
@@ -304,9 +305,8 @@ class HomeContentState(
                     }
 
                     // 记忆可播放的域名
-                    SP.iptvPlayableHostList = SP.iptvPlayableHostList.plus(
-                        Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host ?: ""
-                    )
+                    SP.iptvPlayableHostList += Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
+                        ?: ""
                 }
             }
 
@@ -316,9 +316,8 @@ class HomeContentState(
                 }
 
                 // 从记忆中删除不可播放的域名
-                SP.iptvPlayableHostList = SP.iptvPlayableHostList.minus(
-                    Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host ?: ""
-                )
+                SP.iptvPlayableHostList -= Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
+                    ?: ""
             }
         })
     }

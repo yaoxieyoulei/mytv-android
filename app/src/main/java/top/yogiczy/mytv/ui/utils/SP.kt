@@ -49,6 +49,9 @@ object SP {
         /** 直播源可播放host列表 */
         IPTV_PLAYABLE_HOST_LIST,
 
+        /** 直播源历史列表 */
+        IPTV_SOURCE_URL_HISTORY_LIST,
+
         /** ==================== 节目单 ==================== */
         /** 启用epg */
         EPG_ENABLE,
@@ -64,6 +67,9 @@ object SP {
 
         /** epg刷新时间阈值（小时） */
         EPG_REFRESH_TIME_THRESHOLD,
+
+        /** epg历史列表 */
+        EPG_XML_URL_HISTORY_LIST,
     }
 
     /** ==================== 应用 ==================== */
@@ -120,6 +126,11 @@ object SP {
         get() = sp.getStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, value).apply()
 
+    /** 直播源历史列表 */
+    var iptvSourceUrlHistoryList: Set<String>
+        get() = sp.getStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
+        set(value) = sp.edit().putStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, value).apply()
+
     /** ==================== 节目单 ==================== */
     /** 启用epg */
     var epgEnable: Boolean
@@ -145,4 +156,9 @@ object SP {
     var epgRefreshTimeThreshold: Int
         get() = sp.getInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, Constants.EPG_REFRESH_TIME_THRESHOLD)
         set(value) = sp.edit().putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value).apply()
+
+    /** epg历史列表 */
+    var epgXmlUrlHistoryList: Set<String>
+        get() = sp.getStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
+        set(value) = sp.edit().putStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, value).apply()
 }
