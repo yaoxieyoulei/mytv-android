@@ -52,6 +52,9 @@ object SP {
         /** 直播源历史列表 */
         IPTV_SOURCE_URL_HISTORY_LIST,
 
+        /** 直播源频道收藏 */
+        IPTV_CHANNEL_FAVORITE_LIST,
+
         /** ==================== 节目单 ==================== */
         /** 启用epg */
         EPG_ENABLE,
@@ -130,6 +133,11 @@ object SP {
     var iptvSourceUrlHistoryList: Set<String>
         get() = sp.getStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, value).apply()
+
+    /** 直播源频道收藏 */
+    var iptvChannelFavoriteList: Set<String>
+        get() = sp.getStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, emptySet()) ?: emptySet()
+        set(value) = sp.edit().putStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, value).apply()
 
     /** ==================== 节目单 ==================== */
     /** 启用epg */

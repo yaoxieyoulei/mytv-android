@@ -25,6 +25,7 @@ fun PanelIptvList(
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
     state: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
+    onIptvFavoriteChange: (Iptv) -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -32,7 +33,10 @@ fun PanelIptvList(
         state = state,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(start = childPadding.start, end = childPadding.end),
+        contentPadding = PaddingValues(
+            start = childPadding.start,
+            end = childPadding.end,
+        ),
     ) {
         items(iptvList) {
             PanelIptvItem(
@@ -40,6 +44,7 @@ fun PanelIptvList(
                 epg = epgList.firstOrNull { epg -> epg.channel == it.channelName },
                 onIptvSelected = { onIptvSelected(it) },
                 initialFocused = it == currentIptv,
+                onFavoriteChange = { onIptvFavoriteChange(it) },
             )
         }
     }

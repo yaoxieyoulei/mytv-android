@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,10 +42,13 @@ import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.isLive
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.tvmaterial.StandardDialog
+import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.max
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -56,6 +58,7 @@ fun PanelIptvItem(
     onIptvSelected: () -> Unit = {},
     epg: Epg? = null,
     initialFocused: Boolean = false,
+    onFavoriteChange: () -> Unit = {},
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -83,12 +86,22 @@ fun PanelIptvItem(
                 },
                 onLongSelect = {
                     focusRequester.requestFocus()
+                    if (SP.iptvChannelFavoriteList.contains(iptv.channelName)) {
+                        SP.iptvChannelFavoriteList -= iptv.channelName
+                        ToastState.I.showToast("取消收藏: ${iptv.channelName}")
+                    } else {
+                        SP.iptvChannelFavoriteList += iptv.channelName
+                        ToastState.I.showToast("已收藏: ${iptv.channelName}")
+                    }
+                    onFavoriteChange()
+                },
+                onSettings = {
+                    focusRequester.requestFocus()
                     if (epg != null) {
                         showEpgDialog = true
                     }
                 },
             ),
-        scale = CardDefaults.scale(focusedScale = 1.1f),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
             contentColor = MaterialTheme.colorScheme.onBackground,
@@ -100,7 +113,7 @@ fun PanelIptvItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Start)
+                // .align(Alignment.Start)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalArrangement = Arrangement.SpaceAround
         ) {
@@ -164,8 +177,9 @@ private fun PanelIptvItemEpgDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(text = "节目单") },
     ) {
-        val listState =
-            rememberTvLazyListState(initialFirstVisibleItemIndex = epg.programmes.indexOfFirst { it.isLive() })
+        val listState = rememberTvLazyListState(
+            initialFirstVisibleItemIndex = max(0, epg.programmes.indexOfFirst { it.isLive() })
+        )
 
         TvLazyColumn(modifier = modifier, state = listState) {
             items(epg.programmes) { programme ->
@@ -204,7 +218,8 @@ private fun PanelIptvItemEpgDialogPreview() {
     MyTVTheme {
         PanelIptvItemEpgDialog(
             showDialog = true, epg = Epg(
-                "CCTV1", EpgProgrammeList(
+                "CCTV1",
+                EpgProgrammeList(
                     listOf(
                         EpgProgramme(
                             startAt = 1713850800000, endAt = 1713854400000, title = "新闻联播1"
@@ -213,7 +228,7 @@ private fun PanelIptvItemEpgDialogPreview() {
                             startAt = 1713861600000, endAt = 1713865200000, title = "新闻联播"
                         ),
                     )
-                )
+                ),
             )
         )
     }

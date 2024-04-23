@@ -198,6 +198,7 @@ fun HomeContent(
 
         ChannelNoInput(state = channelNoInputState)
 
+        var showFavoriteList by remember { mutableStateOf(false) }
         AnimatedVisibility(state.isPanelVisible, enter = fadeIn(), exit = fadeOut()) {
             PanelScreen(
                 currentIptv = state.currentIptv,
@@ -209,6 +210,8 @@ fun HomeContent(
                 onIptvSelected = {
                     state.changeCurrentIptv(it)
                 },
+                showFavoriteList = showFavoriteList,
+                changeShowFavoriteList = { showFavoriteList = it },
             )
         }
 

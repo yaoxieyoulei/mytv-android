@@ -128,7 +128,6 @@ fun Modifier.handleDPadKeyEvents(
         KeyEvent.KEYCODE_SETTINGS to onSettings,
         KeyEvent.KEYCODE_HELP to onSettings,
         KeyEvent.KEYCODE_H to onSettings,
-        KeyEvent.KEYCODE_UNKNOWN to onSettings,
 
         KeyEvent.KEYCODE_0 to { onNumber(0) },
         KeyEvent.KEYCODE_1 to { onNumber(1) },

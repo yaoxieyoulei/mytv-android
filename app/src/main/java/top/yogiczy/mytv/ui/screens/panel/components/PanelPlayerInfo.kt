@@ -1,10 +1,10 @@
 package top.yogiczy.mytv.ui.screens.panel.components
 
 import android.net.TrafficStats
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -14,22 +14,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.LocalContentColor
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
+import top.yogiczy.mytv.ui.screens.video.ExoPlayerState
+import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import java.text.DecimalFormat
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelPlayerInfo(
     modifier: Modifier = Modifier,
-    resolution: Pair<Int, Int> = Pair(0, 0),
+    playerState: ExoPlayerState = rememberExoPlayerState(),
     netSpeed: Long = rememberNetSpeed(),
 ) {
-    Row(modifier = modifier) {
-        PanelPlayerInfoResolution(resolution)
-        Spacer(modifier = Modifier.width(16.dp))
-        PanelPlayerInfoNetSpeed(netSpeed = netSpeed)
+    CompositionLocalProvider(
+        LocalTextStyle provides MaterialTheme.typography.bodyLarge,
+        LocalContentColor provides MaterialTheme.colorScheme.onBackground
+    ) {
+        Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            PanelPlayerInfoResolution(playerState.resolution)
+
+            PanelPlayerInfoNetSpeed(netSpeed = netSpeed)
+        }
     }
 }
 
@@ -41,8 +51,6 @@ fun PanelPlayerInfoResolution(
 ) {
     Text(
         text = "分辨率：${resolution.first}×${resolution.second}",
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier,
     )
 }
@@ -56,8 +64,6 @@ fun PanelPlayerInfoNetSpeed(
     Text(
         text = if (netSpeed < 1024 * 999) "网速：${netSpeed / 1024}KB/s"
         else "网速：${DecimalFormat("#.#").format(netSpeed / 1024 / 1024f)}MB/s",
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier,
     )
 }
@@ -85,12 +91,14 @@ private fun rememberNetSpeed(): Long {
     return netSpeed
 }
 
-@Preview
+@Preview(device = "id:Android TV (720p)")
 @Composable
 private fun PanelPlayerInfoPreview() {
     MyTVTheme {
         PanelPlayerInfo(
-            resolution = Pair(1920, 1080),
+            playerState = ExoPlayerState().apply {
+                resolution = Pair(1920, 1080)
+            },
             netSpeed = 242313,
         )
     }

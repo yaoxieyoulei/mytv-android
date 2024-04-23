@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListState
-import androidx.tv.foundation.lazy.list.items
+import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -23,6 +23,7 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvGroupIdx
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import kotlin.math.max
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -36,6 +37,8 @@ fun PanelIptvGroupList(
     state: TvLazyListState = rememberTvLazyListState(
         max(0, iptvGroupList.iptvGroupIdx(currentIptv))
     ),
+    onIptvFavoriteChange: (Iptv) -> Unit = {},
+    onChangeToFavoriteList: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -45,7 +48,7 @@ fun PanelIptvGroupList(
         verticalArrangement = Arrangement.spacedBy(14.dp),
         contentPadding = PaddingValues(bottom = childPadding.bottom),
     ) {
-        items(iptvGroupList) {
+        itemsIndexed(iptvGroupList) { index, it ->
             Text(
                 text = it.name,
                 style = MaterialTheme.typography.labelMedium,
@@ -54,10 +57,14 @@ fun PanelIptvGroupList(
             )
             Spacer(modifier = Modifier.height(6.dp))
             PanelIptvList(
+                modifier = if (index == 0) {
+                    Modifier.handleDPadKeyEvents(onUp = { onChangeToFavoriteList() })
+                } else Modifier,
                 currentIptv = currentIptv,
                 iptvList = it.iptvs,
                 epgList = epgList,
                 onIptvSelected = onIptvSelected,
+                onIptvFavoriteChange = onIptvFavoriteChange,
             )
         }
     }

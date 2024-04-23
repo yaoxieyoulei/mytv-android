@@ -95,7 +95,7 @@ private fun SettingsEpgHistoryDialog(
                     onClick = { },
                     headlineContent = {
                         Text(
-                            text = if (source == Constants.IPTV_SOURCE_URL) "默认节目单" else source,
+                            text = if (source == Constants.EPG_XML_URL) "默认节目单" else source,
                             modifier = Modifier.fillMaxWidth(),
                             maxLines = 2,
                         )

@@ -63,6 +63,7 @@ object Constants {
 
     /**
      * 界面 超时未操作自动关闭选台界面
+     * TODO 目前由于界面复杂性，无法准确监听用户活动，暂时不实现自动关闭
      */
     const val UI_PANEL_SCREEN_AUTO_CLOSE_DELAY = 1000L * 10L // 10秒
 }
