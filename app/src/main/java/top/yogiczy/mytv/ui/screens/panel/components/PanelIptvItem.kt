@@ -3,6 +3,7 @@ package top.yogiczy.mytv.ui.screens.panel.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -181,11 +182,25 @@ private fun PanelIptvItemEpgDialog(
             initialFirstVisibleItemIndex = max(0, epg.programmes.indexOfFirst { it.isLive() })
         )
 
-        TvLazyColumn(modifier = modifier, state = listState) {
+        TvLazyColumn(
+            modifier = modifier,
+            state = listState,
+            contentPadding = PaddingValues(vertical = 4.dp),
+        ) {
             items(epg.programmes) { programme ->
+                val focusRequester = remember { FocusRequester() }
+                var hasFocused by rememberSaveable { mutableStateOf(false) }
+
+                LaunchedEffect(Unit) {
+                    if (programme.isLive() && !hasFocused) {
+                        focusRequester.requestFocus()
+                        hasFocused = true
+                    }
+                }
+
                 ListItem(
-                    modifier = modifier.padding(vertical = 1.dp),
-                    selected = false,
+                    modifier = Modifier.focusRequester(focusRequester),
+                    selected = programme.isLive(),
                     onClick = { },
                     headlineContent = {
                         Text(
@@ -212,7 +227,7 @@ private fun PanelIptvItemEpgDialog(
     }
 }
 
-@Preview
+@Preview(device = "id:Android TV (720p)")
 @Composable
 private fun PanelIptvItemEpgDialogPreview() {
     MyTVTheme {
@@ -222,7 +237,10 @@ private fun PanelIptvItemEpgDialogPreview() {
                 EpgProgrammeList(
                     listOf(
                         EpgProgramme(
-                            startAt = 1713850800000, endAt = 1713854400000, title = "新闻联播1"
+                            startAt = 1713861600000, endAt = 1713865200000, title = "新闻联播"
+                        ),
+                        EpgProgramme(
+                            startAt = 1714016065000, endAt = 1714026265000, title = "新闻联播1"
                         ),
                         EpgProgramme(
                             startAt = 1713861600000, endAt = 1713865200000, title = "新闻联播"
