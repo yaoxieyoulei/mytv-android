@@ -90,6 +90,9 @@ object HttpServer : Loggable() {
 
                         appBootLaunch = SP.appBootLaunch,
 
+                        debugShowFps = SP.debugShowFps,
+                        debugShowPlayerInfo = SP.debugShowPlayerInfo,
+
                         iptvChannelChangeFlip = SP.iptvChannelChangeFlip,
                         iptvSourceSimplify = SP.iptvSourceSimplify,
                         iptvSourceCachedAt = SP.iptvSourceCachedAt,
@@ -102,8 +105,7 @@ object HttpServer : Loggable() {
                         epgXmlUrl = SP.epgXmlUrl,
                         epgRefreshTimeThreshold = SP.epgRefreshTimeThreshold,
 
-                        debugShowFps = SP.debugShowFps,
-                        debugShowPlayerInfo = SP.debugShowPlayerInfo,
+                        uiShowEpgProgrammeProgress = SP.uiShowEpgProgrammeProgress,
                     )
                 )
             )
@@ -117,6 +119,9 @@ object HttpServer : Loggable() {
         val body = request.getBody<JSONObjectBody>().get()
         SP.appBootLaunch = body.get("appBootLaunch") as Boolean
 
+        SP.debugShowFps = body.get("debugShowFps").toString().toBoolean()
+        SP.debugShowPlayerInfo = body.get("debugShowPlayerInfo").toString().toBoolean()
+
         SP.iptvChannelChangeFlip = body.get("iptvChannelChangeFlip").toString().toBoolean()
         SP.iptvSourceSimplify = body.get("iptvSourceSimplify").toString().toBoolean()
         SP.iptvSourceCachedAt = body.get("iptvSourceCachedAt").toString().toLong()
@@ -129,8 +134,8 @@ object HttpServer : Loggable() {
         SP.epgXmlUrl = body.get("epgXmlUrl").toString()
         SP.epgRefreshTimeThreshold = body.get("epgRefreshTimeThreshold").toString().toInt()
 
-        SP.debugShowFps = body.get("debugShowFps").toString().toBoolean()
-        SP.debugShowPlayerInfo = body.get("debugShowPlayerInfo").toString().toBoolean()
+        SP.uiShowEpgProgrammeProgress =
+            body.get("uiShowEpgProgrammeProgress").toString().toBoolean()
 
         wrapResponse(response).send("success")
     }
@@ -198,6 +203,9 @@ private data class AllSettings(
 
     val appBootLaunch: Boolean,
 
+    val debugShowFps: Boolean,
+    val debugShowPlayerInfo: Boolean,
+
     val iptvChannelChangeFlip: Boolean,
     val iptvSourceSimplify: Boolean,
     val iptvSourceCachedAt: Long,
@@ -210,6 +218,5 @@ private data class AllSettings(
     val epgXmlUrl: String,
     val epgRefreshTimeThreshold: Int,
 
-    val debugShowFps: Boolean,
-    val debugShowPlayerInfo: Boolean,
+    val uiShowEpgProgrammeProgress: Boolean,
 )

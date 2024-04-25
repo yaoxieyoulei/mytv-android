@@ -177,6 +177,15 @@
                     </van-cell>
                 </van-cell-group>
 
+                <van-cell-group inset title="界面">
+                    <van-cell label="在频道项底部显示当前节目进度条" title="显示节目进度">
+                        <template #extra>
+                            <van-switch @change="confirmSettings" size="24"
+                                v-model="settings.uiShowEpgProgrammeProgress" />
+                        </template>
+                    </van-cell>
+                </van-cell-group>
+
                 <van-cell-group inset title="调试">
                     <van-cell label="在屏幕左上角显示fps和柱状图" title="显示fps">
                         <template #extra>
@@ -196,6 +205,14 @@
                         </template>
                     </van-cell>
                 </van-cell-group>
+
+                <!-- <van-tabbar>
+                        <van-tabbar-item name="home" icon="tv-o">直播源</van-tabbar-item>
+                        <van-tabbar-item name="search" icon="list-switch">节目单</van-tabbar-item>
+                        <van-tabbar-item name="friends" icon="brush-o">界面</van-tabbar-item>
+                        <van-tabbar-item name="setting" icon="setting-o">应用</van-tabbar-item>
+                        <van-tabbar-item name="setting" icon="bulb-o">调试</van-tabbar-item>
+                    </van-tabbar> -->
             </template>
 
             <van-empty image="network" v-else />
@@ -205,7 +222,7 @@
     <script>
         const { createApp, ref, onMounted, watch, nextTick } = Vue
 
-        const baseUrl = "http://127.0.0.1:10481"
+        const baseUrl = ""
 
         async function requestApi(url, config) {
             const resp = await fetch(`${baseUrl}${url}`, config)

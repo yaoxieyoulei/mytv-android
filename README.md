@@ -9,10 +9,10 @@
 </div>
     <p>使用Android原生开发的电视直播软件</p>
 
-<img src="https://github.com/yaoxieyoulei/my_tv/blob/main/screenshots/shot_1.png?raw=true" width="96%"/>
+<img src="./screenshots/Screenshot_panel.png" width="96%"/>
 <br/>
-<img src="https://github.com/yaoxieyoulei/my_tv/blob/main/screenshots/shot_3.png?raw=true" width="48%"/>
-<img src="https://github.com/yaoxieyoulei/my_tv/blob/main/screenshots/shot_2.png?raw=true" width="48%"/>
+<img src="./screenshots/Screenshot_temp_panel.png" width="48%"/>
+<img src="./screenshots/Screenshot_settings.png" width="48%"/>
 </div>
 
 ## 使用

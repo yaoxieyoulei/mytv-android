@@ -24,5 +24,7 @@ data class EpgProgramme(
 ) {
     companion object {
         fun EpgProgramme.isLive() = System.currentTimeMillis() in startAt..<endAt
+        fun EpgProgramme.progress() =
+            (System.currentTimeMillis() - startAt).toFloat() / (endAt - startAt)
     }
 }

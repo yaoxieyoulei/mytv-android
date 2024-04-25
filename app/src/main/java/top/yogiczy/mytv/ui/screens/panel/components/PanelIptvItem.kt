@@ -1,7 +1,9 @@
 package top.yogiczy.mytv.ui.screens.panel.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,6 +43,7 @@ import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.Epg.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.isLive
+import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.tvmaterial.StandardDialog
@@ -58,6 +62,7 @@ fun PanelIptvItem(
     iptv: Iptv = Iptv.EMPTY,
     onIptvSelected: () -> Unit = {},
     epg: Epg? = null,
+    currentProgramme: EpgProgramme? = epg?.currentProgrammes()?.now,
     initialFocused: Boolean = false,
     onFavoriteChange: () -> Unit = {},
 ) {
@@ -75,6 +80,7 @@ fun PanelIptvItem(
     }
 
     Card(
+        onClick = { },
         modifier = modifier
             .width(130.dp)
             .height(54.dp)
@@ -109,27 +115,44 @@ fun PanelIptvItem(
             focusedContainerColor = MaterialTheme.colorScheme.onBackground,
             focusedContentColor = MaterialTheme.colorScheme.background,
         ),
-        onClick = { },
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                // .align(Alignment.Start)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalArrangement = Arrangement.SpaceAround
-        ) {
-            Text(
-                text = iptv.name,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-            )
+        Box {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                Text(
+                    text = iptv.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                )
 
-            Text(
-                text = epg?.currentProgrammes()?.now?.title ?: "",
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                modifier = Modifier.alpha(0.8f),
-            )
+                Text(
+                    text = currentProgramme?.title ?: "",
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    modifier = Modifier.alpha(0.8f),
+                )
+
+            }
+
+            // 节目进度条
+            if (SP.uiShowEpgProgrammeProgress && currentProgramme != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth(currentProgramme.progress())
+                        .height(3.dp)
+                        .background(
+                            if (isFocused)
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                            else
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                        ),
+                )
+            }
         }
     }
 
@@ -149,10 +172,20 @@ private fun PanelIptvItemPreview() {
         ) {
             PanelIptvItem(
                 iptv = Iptv.EXAMPLE,
+                currentProgramme = EpgProgramme(
+                    startAt = System.currentTimeMillis() - 100000,
+                    endAt = System.currentTimeMillis() + 200000,
+                    title = "新闻联播",
+                ),
             )
 
             PanelIptvItem(
                 iptv = Iptv.EXAMPLE,
+                currentProgramme = EpgProgramme(
+                    startAt = System.currentTimeMillis() - 100000,
+                    endAt = System.currentTimeMillis() + 200000,
+                    title = "新闻联播",
+                ),
                 initialFocused = true,
             )
         }
@@ -237,13 +270,19 @@ private fun PanelIptvItemEpgDialogPreview() {
                 EpgProgrammeList(
                     listOf(
                         EpgProgramme(
-                            startAt = 1713861600000, endAt = 1713865200000, title = "新闻联播"
+                            startAt = System.currentTimeMillis() - 200000,
+                            endAt = System.currentTimeMillis() - 100000,
+                            title = "新闻联播"
                         ),
                         EpgProgramme(
-                            startAt = 1714016065000, endAt = 1714026265000, title = "新闻联播1"
+                            startAt = System.currentTimeMillis() - 100000,
+                            endAt = System.currentTimeMillis() + 100000,
+                            title = "新闻联播1"
                         ),
                         EpgProgramme(
-                            startAt = 1713861600000, endAt = 1713865200000, title = "新闻联播"
+                            startAt = System.currentTimeMillis() + 100000,
+                            endAt = System.currentTimeMillis() + 200000,
+                            title = "新闻联播2"
                         ),
                     )
                 ),

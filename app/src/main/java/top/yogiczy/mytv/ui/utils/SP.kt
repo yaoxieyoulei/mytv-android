@@ -55,7 +55,7 @@ object SP {
         /** 直播源历史列表 */
         IPTV_SOURCE_URL_HISTORY_LIST,
 
-        /** 直播源频道收藏 */
+        /** 直播源频道收藏列表 */
         IPTV_CHANNEL_FAVORITE_LIST,
 
         /** ==================== 节目单 ==================== */
@@ -76,6 +76,10 @@ object SP {
 
         /** epg历史列表 */
         EPG_XML_URL_HISTORY_LIST,
+
+        /** ==================== 界面 ==================== */
+        /** 显示节目进度 */
+        UI_SHOW_EPG_PROGRAMME_PROGRESS,
     }
 
     /** ==================== 应用 ==================== */
@@ -142,7 +146,7 @@ object SP {
         get() = sp.getStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, value).apply()
 
-    /** 直播源频道收藏 */
+    /** 直播源频道收藏列表 */
     var iptvChannelFavoriteList: Set<String>
         get() = sp.getStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, value).apply()
@@ -177,4 +181,10 @@ object SP {
     var epgXmlUrlHistoryList: Set<String>
         get() = sp.getStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, value).apply()
+
+    /** ==================== 界面 ==================== */
+    /** 显示节目进度 */
+    var uiShowEpgProgrammeProgress: Boolean
+        get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, false)
+        set(value) = sp.edit().putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value).apply()
 }
