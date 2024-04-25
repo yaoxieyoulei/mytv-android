@@ -103,6 +103,7 @@ object HttpServer : Loggable() {
                         epgRefreshTimeThreshold = SP.epgRefreshTimeThreshold,
 
                         debugShowFps = SP.debugShowFps,
+                        debugShowPlayerInfo = SP.debugShowPlayerInfo,
                     )
                 )
             )
@@ -129,6 +130,7 @@ object HttpServer : Loggable() {
         SP.epgRefreshTimeThreshold = body.get("epgRefreshTimeThreshold").toString().toInt()
 
         SP.debugShowFps = body.get("debugShowFps").toString().toBoolean()
+        SP.debugShowPlayerInfo = body.get("debugShowPlayerInfo").toString().toBoolean()
 
         wrapResponse(response).send("success")
     }
@@ -209,4 +211,5 @@ private data class AllSettings(
     val epgRefreshTimeThreshold: Int,
 
     val debugShowFps: Boolean,
+    val debugShowPlayerInfo: Boolean,
 )

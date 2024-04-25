@@ -27,6 +27,9 @@ object SP {
         /** 显示fps */
         DEBUG_SHOW_FPS,
 
+        /** 播放器详细信息 */
+        DEBUG_SHOW_PLAYER_INFO,
+
         /** ==================== 直播源 ==================== */
         /** 上一次直播源序号 */
         IPTV_LAST_IPTV_IDX,
@@ -91,6 +94,11 @@ object SP {
     var debugShowFps: Boolean
         get() = sp.getBoolean(KEY.DEBUG_SHOW_FPS.name, false)
         set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_FPS.name, value).apply()
+
+    /** 播放器详细信息 */
+    var debugShowPlayerInfo: Boolean
+        get() = sp.getBoolean(KEY.DEBUG_SHOW_PLAYER_INFO.name, false)
+        set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_PLAYER_INFO.name, value).apply()
 
     /** ==================== 直播源 ==================== */
     /** 上一次直播源序号 */
