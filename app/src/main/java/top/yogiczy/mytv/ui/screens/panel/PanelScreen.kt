@@ -41,8 +41,8 @@ import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvFavoriteList
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvInfo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelPlayerInfo
-import top.yogiczy.mytv.ui.screens.settings.components.SettingsState
-import top.yogiczy.mytv.ui.screens.settings.components.rememberSettingsState
+import top.yogiczy.mytv.ui.screens.settings.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.screens.video.PlayerState
 import top.yogiczy.mytv.ui.screens.video.rememberPlayerState

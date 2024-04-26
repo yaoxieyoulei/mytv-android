@@ -48,6 +48,7 @@ import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.tvmaterial.StandardDialog
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.focusOnInit
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -67,14 +68,6 @@ fun PanelIptvItem(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    var hasFocused by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (initialFocused && !hasFocused) {
-            focusRequester.requestFocus()
-            hasFocused = true
-        }
-    }
 
     var showEpgDialog by remember { mutableStateOf(false) }
 
@@ -100,7 +93,8 @@ fun PanelIptvItem(
                         showEpgDialog = true
                     }
                 },
-            ),
+            )
+            .focusOnInit(initialFocused),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
             contentColor = MaterialTheme.colorScheme.onBackground,
@@ -139,10 +133,8 @@ fun PanelIptvItem(
                         .fillMaxWidth(currentProgramme.progress())
                         .height(3.dp)
                         .background(
-                            if (isFocused)
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-                            else
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                            if (isFocused) MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
                         ),
                 )
             }

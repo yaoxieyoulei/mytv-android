@@ -26,10 +26,8 @@ import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsAppInfo
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsMain
-import top.yogiczy.mytv.ui.screens.settings.components.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.UpdateState
 import top.yogiczy.mytv.ui.screens.settings.components.rememberPackageInfo
-import top.yogiczy.mytv.ui.screens.settings.components.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 

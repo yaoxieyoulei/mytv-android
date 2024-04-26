@@ -5,7 +5,16 @@ import android.view.KeyEvent
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
@@ -166,3 +175,26 @@ fun Modifier.handleDPadKeyEvents(
         onDoubleTap = { onSettings() },
     )
 }
+
+@Composable
+fun Modifier.focusOnInit(initialFocused: Boolean): Modifier {
+    val focusRequester = remember { FocusRequester() }
+    var hasFocused by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (initialFocused && !hasFocused) {
+            focusRequester.requestFocus()
+            hasFocused = true
+        }
+    }
+
+    return focusRequester(focusRequester)
+}
+
+fun Modifier.ifElse(
+    condition: () -> Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
+): Modifier = then(if (condition()) ifTrueModifier else ifFalseModifier)
+
+fun Modifier.ifElse(
+    condition: Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
+): Modifier = ifElse({ condition }, ifTrueModifier, ifFalseModifier)

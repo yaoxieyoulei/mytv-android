@@ -58,10 +58,10 @@ import top.yogiczy.mytv.ui.screens.panel.PanelScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelTempScreen
 import top.yogiczy.mytv.ui.screens.panel.rememberDigitChannelSelectState
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
-import top.yogiczy.mytv.ui.screens.settings.components.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.UpdateState
-import top.yogiczy.mytv.ui.screens.settings.components.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
+import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.video.PlayerState
 import top.yogiczy.mytv.ui.screens.video.VideoScreen
 import top.yogiczy.mytv.ui.screens.video.rememberPlayerState

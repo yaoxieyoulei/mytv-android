@@ -17,6 +17,8 @@ import androidx.tv.material3.ListItem
 import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.tvmaterial.StandardDialog
+import top.yogiczy.mytv.ui.screens.settings.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 

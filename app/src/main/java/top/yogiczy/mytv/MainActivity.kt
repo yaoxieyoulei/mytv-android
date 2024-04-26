@@ -24,6 +24,7 @@ import kotlin.system.exitProcess
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        UnsafeTrustManager.enableUnsafeTrustManager()
         installSplashScreen()
         SP.init(context = applicationContext)
         super.onCreate(savedInstanceState)
