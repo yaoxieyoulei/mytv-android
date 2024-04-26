@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.ui.screens.home.components
+package top.yogiczy.mytv.ui.screens.panel
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,17 +11,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.panel.components.PanelChannelNo
+import top.yogiczy.mytv.ui.theme.MyTVTheme
 
 @Composable
-fun ChannelNoInput(
+fun PanelDigitChannelSelectScreen(
     modifier: Modifier = Modifier,
-    state: ChannelNoInputState = rememberChannelNoInputState(),
+    state: DigitChannelSelectState = rememberDigitChannelSelectState(),
 ) {
     val childPadding = rememberChildPadding()
 
@@ -35,10 +37,21 @@ fun ChannelNoInput(
     }
 }
 
-class ChannelNoInputState internal constructor(
-    private val onChannelNoConfirm: (String) -> Unit,
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun PanelDigitChannelSelectPreview() {
+    MyTVTheme {
+        PanelDigitChannelSelectScreen(
+            state = DigitChannelSelectState(initialChannelNo = "123")
+        )
+    }
+}
+
+class DigitChannelSelectState internal constructor(
+    private val onChannelNoConfirm: (String) -> Unit = {},
+    initialChannelNo: String = "",
 ) {
-    private var _channelNo by mutableStateOf("")
+    private var _channelNo by mutableStateOf(initialChannelNo)
     val channelNo get() = _channelNo
 
     fun input(no: Int) {
@@ -58,5 +71,5 @@ class ChannelNoInputState internal constructor(
 }
 
 @Composable
-fun rememberChannelNoInputState(onChannelNoConfirm: (String) -> Unit = {}) =
-    remember { ChannelNoInputState(onChannelNoConfirm) }.also { LaunchedEffect(it) { it.observe() } }
+fun rememberDigitChannelSelectState(onChannelNoConfirm: (String) -> Unit = {}) =
+    remember { DigitChannelSelectState(onChannelNoConfirm) }.also { LaunchedEffect(it) { it.observe() } }

@@ -36,25 +36,7 @@ fun MonitorScreen(
     modifier: Modifier = Modifier,
 ) {
     val childPadding = rememberChildPadding()
-
-    var fpsCount by remember { mutableIntStateOf(0) }
-    var lastUpdate by remember { mutableLongStateOf(0L) }
-    var fps by remember { mutableIntStateOf(0) }
-    var fpsList by remember { mutableStateOf(emptyList<Int>()) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            withFrameMillis { ms ->
-                fpsCount++
-                if (fpsCount == 5) {
-                    fps = (5_000 / (ms - lastUpdate)).toInt()
-                    fpsList = fpsList.takeLast(30) + fps
-                    lastUpdate = ms
-                    fpsCount = 0
-                }
-            }
-        }
-    }
+    val fpsState = rememberFpsState()
 
     Box(
         modifier = modifier
@@ -70,28 +52,61 @@ fun MonitorScreen(
                 )
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
-            Text(
-                text = "FPS: $fps",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-
+            MonitorFps(fps = fpsState.current)
             Spacer(modifier = Modifier.height(4.dp))
-
-            FpsBar(fpsList = fpsList)
+            MonitorFpsBar(fpsList = fpsState.history)
         }
     }
 }
 
+data class FpsState(
+    val current: Int = 0,
+    val history: List<Int> = emptyList(),
+)
+
 @Composable
-fun FpsBar(
+fun rememberFpsState(): FpsState {
+    var state by remember { mutableStateOf(FpsState()) }
+
+    var fpsCount by remember { mutableIntStateOf(0) }
+    var lastUpdate by remember { mutableLongStateOf(0L) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            withFrameMillis { ms ->
+                fpsCount++
+                if (fpsCount == 5) {
+                    val fps = (5_000 / (ms - lastUpdate)).toInt()
+                    state = state.copy(current = fps, history = state.history.takeLast(30) + fps)
+                    lastUpdate = ms
+                    fpsCount = 0
+                }
+            }
+        }
+    }
+
+    return state
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+fun MonitorFps(modifier: Modifier = Modifier, fps: Int = 0) {
+    Text(
+        text = "FPS: $fps",
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onBackground,
+    )
+}
+
+@Composable
+fun MonitorFpsBar(
     modifier: Modifier = Modifier,
     fpsList: List<Int> = emptyList(),
 ) {
     Canvas(
         modifier = modifier
             .width(140.dp)
-            .height(40.dp)
+            .height(40.dp),
     ) {
         val barWidth = size.width / 60 // 每个柱状条的宽度
         val barSpacing = 2.dp.toPx() // 柱状条之间的间距
@@ -120,11 +135,9 @@ fun FpsBar(
 
 @Preview
 @Composable
-private fun FpsBarPreview() {
+private fun MonitorFpsBarPreview() {
     MyTVTheme {
-        FpsBar(
-            fpsList = List(30) { it * 2 },
-        )
+        MonitorFpsBar(fpsList = List(30) { it * 2 })
     }
 }
 

@@ -39,7 +39,7 @@ fun ToastScreen(
         Popup {
             AnimatedVisibility(
                 visible = state.visible,
-                // * 1.2 防止在手机上未完全隐藏
+                // TODO * 1.2 暂时防止在手机上未完全隐藏
                 enter = slideInHorizontally(
                     initialOffsetX = { -(it * 1.2).toInt() },
                     animationSpec = tween(durationMillis = 300)
@@ -103,6 +103,7 @@ class ToastState {
     val current get() = _current
 
     private fun showToast(toast: ToastProperty) {
+        // TODO 消息变化较生硬
         _current = toast
         _visible = true
         channel.trySend(toast.duration.toMs())
@@ -112,12 +113,7 @@ class ToastState {
         message: String,
         duration: ToastProperty.Duration = ToastProperty.Duration.Default,
     ) {
-        showToast(
-            ToastProperty(
-                message = message,
-                duration = duration,
-            )
-        )
+        showToast(ToastProperty(message = message, duration = duration))
     }
 
     private val channel = Channel<Int>(Channel.CONFLATED)
@@ -128,6 +124,7 @@ class ToastState {
     }
 
     companion object {
+        // TODO 这种方法可能违反了 Compose 的规则
         lateinit var I: ToastState
     }
 }
@@ -135,9 +132,7 @@ class ToastState {
 @Composable
 fun rememberToastState() = remember { ToastState() }.also {
     ToastState.I = it
-    LaunchedEffect(it) {
-        it.observe()
-    }
+    LaunchedEffect(it) { it.observe() }
 }
 
 data class ToastProperty(

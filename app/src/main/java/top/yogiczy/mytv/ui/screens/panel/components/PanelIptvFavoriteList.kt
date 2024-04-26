@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
@@ -17,6 +18,7 @@ import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
+import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -27,8 +29,9 @@ fun PanelIptvFavoriteList(
     iptvList: IptvList = IptvList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
-    onIptvFavoriteChange: (Iptv) -> Unit = {},
+    onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
+    showProgrammeProgress: Boolean = false,
 ) {
     val favoriteListSize = 6
     val childPadding = rememberChildPadding()
@@ -58,13 +61,23 @@ fun PanelIptvFavoriteList(
                         Modifier.handleDPadKeyEvents(onUp = { onClose() })
                     } else Modifier,
                     iptv = it,
-                    epg = epgList.firstOrNull { epg -> epg.channel == it.channelName },
                     onIptvSelected = { onIptvSelected(it) },
+                    epg = epgList.firstOrNull { epg -> epg.channel == it.channelName },
+                    onIptvFavoriteToggle = { onIptvFavoriteToggle(it) },
+                    showProgrammeProgress = showProgrammeProgress,
                     initialFocused = if (index == 0 && !iptvList.contains(currentIptv)) true else it == currentIptv,
-                    onFavoriteChange = { onIptvFavoriteChange(it) },
                 )
             }
         }
     }
+}
 
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun PanelIptvFavoriteListPreview() {
+    MyTVTheme {
+        PanelIptvFavoriteList(
+            iptvList = IptvList.EXAMPLE,
+        )
+    }
 }

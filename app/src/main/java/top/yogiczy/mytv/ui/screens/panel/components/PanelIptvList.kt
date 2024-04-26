@@ -22,10 +22,11 @@ fun PanelIptvList(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
     iptvList: IptvList = IptvList(),
-    epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
+    epgList: EpgList = EpgList(),
+    onIptvFavoriteToggle: (Iptv) -> Unit = {},
+    showProgrammeProgress: Boolean = false,
     state: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
-    onIptvFavoriteChange: (Iptv) -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -43,14 +44,15 @@ fun PanelIptvList(
                 iptv = it,
                 epg = epgList.firstOrNull { epg -> epg.channel == it.channelName },
                 onIptvSelected = { onIptvSelected(it) },
+                onIptvFavoriteToggle = { onIptvFavoriteToggle(it) },
+                showProgrammeProgress = showProgrammeProgress,
                 initialFocused = it == currentIptv,
-                onFavoriteChange = { onIptvFavoriteChange(it) },
             )
         }
     }
 }
 
-@Preview
+@Preview(device = "id:Android TV (720p)")
 @Composable
 private fun PanelIptvListPreview() {
     MyTVTheme {

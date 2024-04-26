@@ -62,18 +62,6 @@ class HomeScreeViewModel : ViewModel() {
                         emit(EpgList())
                         SP.epgXmlUrlHistoryList -= SP.epgXmlUrl
                     }
-                    // .map { epgList ->
-                    //     // 移除过期节目
-                    //     epgList.copy(value = epgList.map { epg ->
-                    //         epg.copy(
-                    //             programmes = EpgProgrammeList(
-                    //                 epg.programmes.filter { programme ->
-                    //                     System.currentTimeMillis() < programme.endAt
-                    //                 },
-                    //             )
-                    //         )
-                    //     })
-                    // }
                     .map { epgList ->
                         _uiState.value =
                             (_uiState.value as HomeScreenUiState.Ready).copy(epgList = epgList)

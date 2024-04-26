@@ -1,8 +1,8 @@
 package top.yogiczy.mytv.ui.screens.settings.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
@@ -43,8 +44,9 @@ fun SettingsCustomIptvItem(
     SettingsIptvSourceHistoryDialog(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
-        iptvSourceList = settingsState.iptvSourceUrlHistoryList.toList(),
-        currentIptvSource = settingsState.iptvSourceUrl,
+        currentIptvSourceUrl = settingsState.iptvSourceUrl,
+        defaultIptvSourceUrl = Constants.IPTV_SOURCE_URL,
+        iptvSourceUrlList = settingsState.iptvSourceUrlHistoryList.toList(),
         onSelected = {
             if (settingsState.iptvSourceUrl != it) {
                 settingsState.iptvSourceCachedAt = 0
@@ -70,38 +72,40 @@ private fun SettingsIptvSourceHistoryDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    iptvSourceList: List<String> = emptyList(),
-    currentIptvSource: String = "",
+    currentIptvSourceUrl: String = "",
+    defaultIptvSourceUrl: String = Constants.IPTV_SOURCE_URL,
+    iptvSourceUrlList: List<String> = emptyList(),
     onSelected: (String) -> Unit = {},
     onDeleted: (String) -> Unit = {},
 ) {
     StandardDialog(
-        modifier = modifier,
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
-        confirmButton = { Text(text = "点按切换；长按删除历史记录") },
         title = { Text(text = "历史直播源") },
+        confirmButton = { Text(text = "点按切换；长按删除历史记录") },
     ) {
-        TvLazyColumn {
-            items(iptvSourceList) { source ->
+        TvLazyColumn(modifier = modifier, contentPadding = PaddingValues(vertical = 4.dp)) {
+            val filteredIptvSourceUrlList =
+                listOf(defaultIptvSourceUrl) + iptvSourceUrlList.filter { it != defaultIptvSourceUrl }
+
+            items(filteredIptvSourceUrlList) { source ->
                 ListItem(
-                    modifier = Modifier
-                        .padding(vertical = 1.dp)
-                        .handleDPadKeyEvents(
-                            onSelect = { onSelected(source) },
-                            onLongSelect = { onDeleted(source) },
-                        ),
-                    selected = source == currentIptvSource,
+                    modifier = Modifier.handleDPadKeyEvents(
+                        onSelect = { onSelected(source) },
+                        onLongSelect = { onDeleted(source) },
+                    ),
+                    selected = source == currentIptvSourceUrl,
                     onClick = { },
                     headlineContent = {
                         Text(
-                            text = if (source == Constants.IPTV_SOURCE_URL) "默认直播源（网络需要支持ipv6）" else source,
+                            text = if (source == defaultIptvSourceUrl) "默认直播源（网络需要支持ipv6）" else source,
                             modifier = Modifier.fillMaxWidth(),
                             maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     },
                     trailingContent = {
-                        if (currentIptvSource == source) {
+                        if (currentIptvSourceUrl == source) {
                             Icon(Icons.Default.CheckCircle, contentDescription = "checked")
                         }
                     },
@@ -117,8 +121,12 @@ private fun SettingsIptvSourceHistoryDialogPreview() {
     MyTVTheme {
         SettingsIptvSourceHistoryDialog(
             showDialog = true,
-            iptvSourceList = listOf("默认直播源", "自定义直播源", "自定义直播源1"),
-            currentIptvSource = "自定义直播源",
+            iptvSourceUrlList = listOf(
+                "https://mirror.ghproxy.com/https://raw.githubusercontent.com/joevess/IPTV/main/home.m3u8",
+                Constants.IPTV_SOURCE_URL,
+                "http://127.0.0.1:8080/iptv.m3u"
+            ),
+            currentIptvSourceUrl = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/joevess/IPTV/main/home.m3u8",
         )
     }
 }

@@ -47,7 +47,7 @@ fun SettingsUpdateItem(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
         release = updateState.latestRelease,
-        onUpdate = {
+        onUpdateAndInstall = {
             showDialog = false
             GlobalScope.launch(Dispatchers.IO) {
                 updateState.downloadAndUpdate()
@@ -67,24 +67,20 @@ private fun SettingsUpdateInfoDialog(
     showDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
     release: GithubRelease = GithubRelease(),
-    onUpdate: () -> Unit = {},
+    onUpdateAndInstall: () -> Unit = {},
 ) {
     StandardDialog(
         modifier = modifier,
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
         title = { Text(text = release.tagName) },
-        text = {
-            TvLazyColumn {
-                item { Text(text = release.description) }
-            }
-        },
+        text = { TvLazyColumn { item { Text(text = release.description) } } },
         confirmButton = {
             Button(
-                onClick = onUpdate,
+                onClick = onUpdateAndInstall,
                 modifier = Modifier.pointerInput(Unit) {
                     detectTapGestures(
-                        onTap = { onUpdate() },
+                        onTap = { onUpdateAndInstall() },
                     )
                 },
             ) {

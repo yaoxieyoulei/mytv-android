@@ -47,9 +47,7 @@ import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.tvmaterial.StandardDialog
-import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
-import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -63,14 +61,13 @@ fun PanelIptvItem(
     onIptvSelected: () -> Unit = {},
     epg: Epg? = null,
     currentProgramme: EpgProgramme? = epg?.currentProgrammes()?.now,
+    onIptvFavoriteToggle: () -> Unit = {},
+    showProgrammeProgress: Boolean = false,
     initialFocused: Boolean = false,
-    onFavoriteChange: () -> Unit = {},
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     var hasFocused by rememberSaveable { mutableStateOf(false) }
-
-    var showEpgDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (initialFocused && !hasFocused) {
@@ -78,6 +75,8 @@ fun PanelIptvItem(
             hasFocused = true
         }
     }
+
+    var showEpgDialog by remember { mutableStateOf(false) }
 
     Card(
         onClick = { },
@@ -93,14 +92,7 @@ fun PanelIptvItem(
                 },
                 onLongSelect = {
                     focusRequester.requestFocus()
-                    if (SP.iptvChannelFavoriteList.contains(iptv.channelName)) {
-                        SP.iptvChannelFavoriteList -= iptv.channelName
-                        ToastState.I.showToast("取消收藏: ${iptv.channelName}")
-                    } else {
-                        SP.iptvChannelFavoriteList += iptv.channelName
-                        ToastState.I.showToast("已收藏: ${iptv.channelName}")
-                    }
-                    onFavoriteChange()
+                    onIptvFavoriteToggle()
                 },
                 onSettings = {
                     focusRequester.requestFocus()
@@ -114,6 +106,7 @@ fun PanelIptvItem(
             contentColor = MaterialTheme.colorScheme.onBackground,
             focusedContainerColor = MaterialTheme.colorScheme.onBackground,
             focusedContentColor = MaterialTheme.colorScheme.background,
+            pressedContentColor = MaterialTheme.colorScheme.background,
         ),
     ) {
         Box {
@@ -139,7 +132,7 @@ fun PanelIptvItem(
             }
 
             // 节目进度条
-            if (SP.uiShowEpgProgrammeProgress && currentProgramme != null) {
+            if (showProgrammeProgress && currentProgramme != null) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
@@ -147,9 +140,9 @@ fun PanelIptvItem(
                         .height(3.dp)
                         .background(
                             if (isFocused)
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
                             else
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
                         ),
                 )
             }
@@ -177,6 +170,7 @@ private fun PanelIptvItemPreview() {
                     endAt = System.currentTimeMillis() + 200000,
                     title = "新闻联播",
                 ),
+                showProgrammeProgress = true,
             )
 
             PanelIptvItem(
@@ -186,6 +180,7 @@ private fun PanelIptvItemPreview() {
                     endAt = System.currentTimeMillis() + 200000,
                     title = "新闻联播",
                 ),
+                showProgrammeProgress = true,
                 initialFocused = true,
             )
         }
@@ -270,18 +265,18 @@ private fun PanelIptvItemEpgDialogPreview() {
                 EpgProgrammeList(
                     listOf(
                         EpgProgramme(
-                            startAt = System.currentTimeMillis() - 200000,
-                            endAt = System.currentTimeMillis() - 100000,
+                            startAt = System.currentTimeMillis() - 2000000,
+                            endAt = System.currentTimeMillis() - 1000000,
                             title = "新闻联播"
                         ),
                         EpgProgramme(
-                            startAt = System.currentTimeMillis() - 100000,
-                            endAt = System.currentTimeMillis() + 100000,
+                            startAt = System.currentTimeMillis() - 1000000,
+                            endAt = System.currentTimeMillis() + 1000000,
                             title = "新闻联播1"
                         ),
                         EpgProgramme(
-                            startAt = System.currentTimeMillis() + 100000,
-                            endAt = System.currentTimeMillis() + 200000,
+                            startAt = System.currentTimeMillis() + 1000000,
+                            endAt = System.currentTimeMillis() + 2000000,
                             title = "新闻联播2"
                         ),
                     )

@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.ui.screens.settings
 
+import android.content.pm.PackageInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -24,25 +26,26 @@ import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsAppInfo
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsMain
+import top.yogiczy.mytv.ui.screens.settings.components.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.UpdateState
+import top.yogiczy.mytv.ui.screens.settings.components.rememberPackageInfo
+import top.yogiczy.mytv.ui.screens.settings.components.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
-import top.yogiczy.mytv.ui.utils.SP
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
+    settingsState: SettingsState = rememberSettingsState(),
     updateState: UpdateState = rememberUpdateState(),
+    packageInfo: PackageInfo = rememberPackageInfo(),
     onClose: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
-
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Box(
         modifier = modifier
@@ -52,11 +55,12 @@ fun SettingsScreen(
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
-            SettingsAppInfo(modifier = Modifier.padding(start = childPadding.start))
-
+            SettingsAppInfo(
+                modifier = Modifier.padding(start = childPadding.start),
+                packageInfo = packageInfo,
+            )
             Spacer(modifier = Modifier.height(20.dp))
-
-            SettingsMain(updateState = updateState)
+            SettingsMain(settingsState = settingsState, updateState = updateState)
         }
     }
 }
@@ -64,8 +68,15 @@ fun SettingsScreen(
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun SettingsScreenPreview() {
-    SP.init(LocalContext.current)
     MyTVTheme {
-        SettingsScreen()
+        SettingsScreen(
+            settingsState = SettingsState(),
+            updateState = UpdateState(
+                context = LocalContext.current,
+                packageInfo = PackageInfo(),
+                coroutineScope = rememberCoroutineScope(),
+            ),
+            packageInfo = PackageInfo().apply { versionName = "1.0.0" }
+        )
     }
 }

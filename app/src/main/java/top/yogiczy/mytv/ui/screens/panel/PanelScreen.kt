@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.screens.panel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,11 +41,12 @@ import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvFavoriteList
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvInfo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelPlayerInfo
+import top.yogiczy.mytv.ui.screens.settings.components.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.components.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.toast.ToastState
-import top.yogiczy.mytv.ui.screens.video.ExoPlayerState
-import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
+import top.yogiczy.mytv.ui.screens.video.PlayerState
+import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
-import top.yogiczy.mytv.ui.utils.SP
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -52,19 +54,17 @@ fun PanelScreen(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
     currentIptvUrlIdx: Int = 0,
-    playerState: ExoPlayerState = rememberExoPlayerState(),
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
-    onClose: () -> Unit = {},
     onIptvSelected: (Iptv) -> Unit = {},
     showFavoriteList: Boolean = false,
-    changeShowFavoriteList: (Boolean) -> Unit = {},
+    onChangeShowFavoriteList: (Boolean) -> Unit = {},
+    settingsState: SettingsState = rememberSettingsState(),
+    playerState: PlayerState = rememberPlayerState(),
+    onClose: () -> Unit = {},
 ) {
     val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Box(
         modifier = modifier
@@ -80,12 +80,23 @@ fun PanelScreen(
         PanelBottom(
             currentIptv = currentIptv,
             currentIptvUrlIdx = currentIptvUrlIdx,
-            playerState = playerState,
             iptvGroupList = iptvGroupList,
             epgList = epgList,
+            iptvChannelFavoriteList = settingsState.iptvChannelFavoriteList,
             onIptvSelected = onIptvSelected,
             showFavoriteList = showFavoriteList,
-            changeShowFavoriteList = changeShowFavoriteList,
+            onChangeShowFavoriteList = onChangeShowFavoriteList,
+            showProgrammeProgress = settingsState.uiShowEpgProgrammeProgress,
+            playerState = playerState,
+            onIptvFavoriteToggle = {
+                if (settingsState.iptvChannelFavoriteList.contains(it.channelName)) {
+                    settingsState.iptvChannelFavoriteList -= it.channelName
+                    ToastState.I.showToast("取消收藏: ${it.channelName}")
+                } else {
+                    settingsState.iptvChannelFavoriteList += it.channelName
+                    ToastState.I.showToast("已收藏: ${it.channelName}")
+                }
+            }
         )
     }
 }
@@ -126,9 +137,7 @@ fun PanelTopRight(
 @Composable
 private fun PanelTopRightPreview() {
     MyTVTheme {
-        PanelTopRight(
-            channelNo = "01",
-        )
+        PanelTopRight(channelNo = "01")
     }
 }
 
@@ -137,17 +146,23 @@ fun PanelBottom(
     modifier: Modifier = Modifier,
     currentIptv: Iptv = Iptv.EMPTY,
     currentIptvUrlIdx: Int = 0,
-    playerState: ExoPlayerState = rememberExoPlayerState(),
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
+    iptvChannelFavoriteList: Set<String> = emptySet(),
     onIptvSelected: (Iptv) -> Unit = {},
     showFavoriteList: Boolean = false,
-    changeShowFavoriteList: (Boolean) -> Unit = {},
+    onChangeShowFavoriteList: (Boolean) -> Unit = {},
+    onIptvFavoriteToggle: (Iptv) -> Unit = {},
+    showProgrammeProgress: Boolean = false,
+    playerState: PlayerState = rememberPlayerState(),
 ) {
     val childPadding = rememberChildPadding()
 
     Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.align(Alignment.BottomStart)) {
+        Column(
+            modifier = Modifier.align(Alignment.BottomStart),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
             PanelIptvInfo(
                 iptv = currentIptv,
                 iptvUrlIdx = currentIptvUrlIdx,
@@ -157,56 +172,60 @@ fun PanelBottom(
                     .padding(start = childPadding.start)
                     .pointerInput(showFavoriteList) {
                         detectTapGestures(onLongPress = {
-                            changeShowFavoriteList(!showFavoriteList)
+                            onChangeShowFavoriteList(!showFavoriteList)
                         })
                     },
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
-
             PanelPlayerInfo(
-                playerState = playerState,
                 modifier = Modifier.padding(start = childPadding.start),
+                playerState = playerState,
             )
-
-            Spacer(modifier = Modifier.height(20.dp))
 
             Box(modifier = Modifier.height(150.dp)) {
                 var key by remember { mutableIntStateOf(0) }
                 val favoriteList by remember(key) {
                     mutableStateOf(iptvGroupList.flatMap { it.iptvs }
-                        .filter { SP.iptvChannelFavoriteList.contains(it.channelName) })
+                        .filter { iptvChannelFavoriteList.contains(it.channelName) })
                 }
 
                 LaunchedEffect(favoriteList) {
                     if (favoriteList.isEmpty()) {
-                        changeShowFavoriteList(false)
+                        onChangeShowFavoriteList(false)
                     }
                 }
 
                 if (showFavoriteList) {
                     PanelIptvFavoriteList(
-                        iptvList = IptvList(favoriteList),
                         currentIptv = currentIptv,
-                        onIptvSelected = onIptvSelected,
+                        iptvList = IptvList(favoriteList),
                         epgList = epgList,
-                        onClose = { changeShowFavoriteList(false) },
-                        onIptvFavoriteChange = { key++ },
+                        onIptvSelected = onIptvSelected,
+                        onIptvFavoriteToggle = {
+                            onIptvFavoriteToggle(it)
+                            key++
+                        },
+                        showProgrammeProgress = showProgrammeProgress,
+                        onClose = { onChangeShowFavoriteList(false) },
                     )
                 } else {
                     PanelIptvGroupList(
-                        iptvGroupList = iptvGroupList,
                         currentIptv = currentIptv,
-                        onIptvSelected = onIptvSelected,
+                        iptvGroupList = iptvGroupList,
                         epgList = epgList,
+                        onIptvSelected = onIptvSelected,
+                        onIptvFavoriteToggle = {
+                            onIptvFavoriteToggle(it)
+                            key++
+                        },
+                        showProgrammeProgress = showProgrammeProgress,
                         onChangeToFavoriteList = {
                             if (favoriteList.isNotEmpty()) {
-                                changeShowFavoriteList(true)
+                                onChangeShowFavoriteList(true)
                             } else {
                                 ToastState.I.showToast("没有收藏的频道")
                             }
                         },
-                        onIptvFavoriteChange = { key++ },
                     )
                 }
             }
@@ -220,8 +239,8 @@ private fun PanelBottomPreview() {
     MyTVTheme {
         PanelBottom(
             currentIptv = Iptv.EXAMPLE,
-            playerState = ExoPlayerState(),
             iptvGroupList = IptvGroupList.EXAMPLE,
+            playerState = PlayerState(),
         )
     }
 }
@@ -232,8 +251,9 @@ private fun PanelScreenPreview() {
     MyTVTheme {
         PanelScreen(
             currentIptv = Iptv.EXAMPLE,
-            playerState = ExoPlayerState(),
             iptvGroupList = IptvGroupList.EXAMPLE,
+            settingsState = SettingsState(),
+            playerState = PlayerState(),
         )
     }
 }

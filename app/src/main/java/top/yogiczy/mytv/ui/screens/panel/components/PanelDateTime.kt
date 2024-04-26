@@ -24,31 +24,39 @@ fun PanelDateTime(
     modifier: Modifier = Modifier,
 ) {
     val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-    val dateFormat = SimpleDateFormat("MM月dd日 EEE", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("MM/dd EEE", Locale.getDefault())
 
-    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1000)
-            now = System.currentTimeMillis()
-        }
-    }
+    val timestamp = rememberTimestamp()
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = dateFormat.format(now),
+            text = dateFormat.format(timestamp),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Text(
-            text = timeFormat.format(now),
+            text = timeFormat.format(timestamp),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
     }
+}
+
+@Composable
+fun rememberTimestamp(): Long {
+    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            timestamp = System.currentTimeMillis()
+        }
+    }
+
+    return timestamp
 }
 
 @Preview

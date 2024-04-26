@@ -17,7 +17,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.home.components.HomeContent
 import top.yogiczy.mytv.ui.theme.MyTVTheme
@@ -48,23 +47,10 @@ fun HomeScreen(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun AppBanner(modifier: Modifier = Modifier) {
-    Text(
-        text = Constants.APP_TITLE,
-        style = MaterialTheme.typography.headlineLarge,
-        color = MaterialTheme.colorScheme.onBackground,
-        modifier = modifier,
-    )
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
 private fun HomeScreenLoading(message: String?) {
     val childPadding = rememberChildPadding()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        AppBanner(modifier = Modifier.align(Alignment.Center))
-
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -102,8 +88,6 @@ private fun HomeScreenError(message: String?) {
     val childPadding = rememberChildPadding()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        AppBanner(modifier = Modifier.align(Alignment.Center))
-
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)

@@ -19,8 +19,8 @@ import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
-import top.yogiczy.mytv.ui.screens.video.ExoPlayerState
-import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
+import top.yogiczy.mytv.ui.screens.video.PlayerState
+import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import java.text.DecimalFormat
 
@@ -28,8 +28,8 @@ import java.text.DecimalFormat
 @Composable
 fun PanelPlayerInfo(
     modifier: Modifier = Modifier,
-    playerState: ExoPlayerState = rememberExoPlayerState(),
-    netSpeed: Long = rememberNetSpeed(),
+    playerState: PlayerState = rememberPlayerState(),
+    netSpeed: Long = rememberNetSpeed()
 ) {
     CompositionLocalProvider(
         LocalTextStyle provides MaterialTheme.typography.bodyLarge,
@@ -96,7 +96,7 @@ private fun rememberNetSpeed(): Long {
 private fun PanelPlayerInfoPreview() {
     MyTVTheme {
         PanelPlayerInfo(
-            playerState = ExoPlayerState().apply {
+            playerState = PlayerState().apply {
                 resolution = Pair(1920, 1080)
             },
             netSpeed = 242313,

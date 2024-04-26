@@ -14,15 +14,15 @@ import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import top.yogiczy.mytv.ui.screens.video.ExoPlayerState
-import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
+import top.yogiczy.mytv.ui.screens.video.PlayerState
+import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun VideoDetailInfo(
     modifier: Modifier = Modifier,
-    playerState: ExoPlayerState = rememberExoPlayerState(),
+    playerState: PlayerState = rememberPlayerState(),
 ) {
     CompositionLocalProvider(
         LocalTextStyle provides MaterialTheme.typography.labelMedium,
@@ -66,8 +66,8 @@ fun VideoDetailInfo(
 @Composable
 private fun VideoDetailInfoPreview() {
     MyTVTheme {
-        VideoDetailInfo(playerState = ExoPlayerState().apply {
-            metadata = ExoPlayerState.Metadata(
+        VideoDetailInfo(playerState = PlayerState().apply {
+            metadata = PlayerState.Metadata(
                 videoWidth = 1920,
                 videoHeight = 1080,
                 videoMimeType = "video/hevc",

@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.LocalContentColor
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
@@ -39,12 +42,14 @@ fun PanelIptvInfo(
 
             Spacer(modifier = Modifier.width(6.dp))
 
+            // 多线路标识
             if (iptv.urlList.size > 1) {
                 Text(
                     text = "${iptvUrlIdx + 1}/${iptv.urlList.size}",
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
+                        // FIXME 没对齐，临时解决
                         .padding(bottom = 6.dp)
                         .background(
                             MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
@@ -66,18 +71,20 @@ fun PanelIptvInfo(
                 )
             }
         }
-        Text(
-            text = "正在播放：${currentProgrammes?.now?.title ?: "无节目"}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-            maxLines = 1,
-        )
-        Text(
-            text = "稍后播放：${currentProgrammes?.next?.title ?: "无节目"}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-            maxLines = 1,
-        )
+
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.bodyLarge,
+            LocalContentColor provides MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+        ) {
+            Text(
+                text = "正在播放：${currentProgrammes?.now?.title ?: "无节目"}",
+                maxLines = 1,
+            )
+            Text(
+                text = "稍后播放：${currentProgrammes?.next?.title ?: "无节目"}",
+                maxLines = 1,
+            )
+        }
     }
 }
 

@@ -10,15 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
@@ -38,21 +33,13 @@ fun SettingsItem(
     description: String = "",
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
-    initialFocus: Boolean = false,
+    focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
-    var isFocused by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        if (initialFocus) focusRequester.requestFocus()
-    }
-    
     Card(
         modifier = modifier
             .width(190.dp)
             .height(90.dp)
             .focusRequester(focusRequester)
-            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleDPadKeyEvents(
                 onSelect = {
                     focusRequester.requestFocus()
@@ -63,19 +50,18 @@ fun SettingsItem(
                     onLongClick()
                 },
             ),
-        scale = CardDefaults.scale(focusedScale = 1.05f),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
             contentColor = MaterialTheme.colorScheme.onBackground,
             focusedContainerColor = MaterialTheme.colorScheme.onBackground,
             focusedContentColor = MaterialTheme.colorScheme.background,
+            pressedContentColor = MaterialTheme.colorScheme.background,
         ),
         onClick = {}
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Start)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -97,6 +83,7 @@ fun SettingsItem(
             Text(
                 text = description,
                 style = MaterialTheme.typography.labelMedium,
+                maxLines = 2,
             )
         }
     }
@@ -106,18 +93,24 @@ fun SettingsItem(
 @Composable
 private fun SettingsItemPreview() {
     MyTVTheme {
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            val focusRequester = remember { FocusRequester() }
+            LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
             SettingsItem(
                 title = "开机自启",
                 value = "启用",
-                description = "App will launch on boot App will launch on boot",
+                description = "App will launch on boot App will launch on bootl launch on boot",
             )
 
             SettingsItem(
                 title = "开机自启",
                 value = "启用",
                 description = "App will launch on boot App will launch on boot",
-                initialFocus = true,
+                focusRequester = focusRequester,
             )
         }
     }

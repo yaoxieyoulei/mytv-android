@@ -27,7 +27,7 @@ data class Iptv(
         )
 
         val EXAMPLE = Iptv(
-            name = "CCTV-1 综合",
+            name = "CCTV-1",
             channelName = "cctv1",
             urlList = listOf("url1", "url2"),
         )

@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -18,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -41,11 +39,7 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.dash.DashMediaSource
-import androidx.media3.exoplayer.dash.DefaultDashChunkSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
-import androidx.media3.exoplayer.smoothstreaming.DefaultSsChunkSource
-import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.CoroutineScope
@@ -58,13 +52,20 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.monitor.MonitorScreen
+import top.yogiczy.mytv.ui.screens.panel.DigitChannelSelectState
+import top.yogiczy.mytv.ui.screens.panel.PanelDigitChannelSelectScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelScreen
+import top.yogiczy.mytv.ui.screens.panel.PanelTempScreen
+import top.yogiczy.mytv.ui.screens.panel.rememberDigitChannelSelectState
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
+import top.yogiczy.mytv.ui.screens.settings.components.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.components.UpdateState
+import top.yogiczy.mytv.ui.screens.settings.components.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
+import top.yogiczy.mytv.ui.screens.video.PlayerState
 import top.yogiczy.mytv.ui.screens.video.VideoScreen
-import top.yogiczy.mytv.ui.screens.video.rememberExoPlayerState
+import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.utils.Loggable
-import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import top.yogiczy.mytv.ui.utils.handleDragGestures
 import kotlin.math.max
@@ -76,38 +77,39 @@ fun HomeContent(
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onBackPressed: () -> Unit = {},
-    state: HomeContentState = rememberHomeContentState(
+    settingsState: SettingsState = rememberSettingsState(),
+    updateState: UpdateState = rememberUpdateState(),
+    homeState: HomeContentState = rememberHomeContentState(
         iptvGroupList = iptvGroupList,
+        settingsState = settingsState,
     ),
+    playerState: PlayerState = rememberPlayerState(homeState.exoPlayer),
+    digitChannelSelectState: DigitChannelSelectState = rememberDigitChannelSelectState { channelNo ->
+        if (channelNo.toInt() - 1 in 0..<iptvGroupList.flatMap { it.iptvs }.size) {
+            homeState.changeCurrentIptv(iptvGroupList.flatMap { it.iptvs }[channelNo.toInt() - 1])
+        }
+    },
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val focusRequester = remember { FocusRequester() }
-
-    val updateState = rememberUpdateState()
-    val playerState = rememberExoPlayerState(state.exoPlayer)
-    val channelNoInputState = rememberChannelNoInputState { channelNo ->
-        if (channelNo.toInt() - 1 in 0..<iptvGroupList.flatMap { it.iptvs }.size) {
-            state.changeCurrentIptv(iptvGroupList.flatMap { it.iptvs }[channelNo.toInt() - 1])
-        }
-    }
 
     LaunchedEffect(Unit) {
         delay(3000)
         updateState.checkUpdate()
     }
 
-    LaunchedEffect(state.isPanelVisible, state.isSettingsVisible) {
-        if (!state.isPanelVisible && !state.isSettingsVisible) {
+    LaunchedEffect(homeState.isPanelVisible, homeState.isSettingsVisible) {
+        if (!homeState.isPanelVisible && !homeState.isSettingsVisible) {
             focusRequester.requestFocus()
         }
     }
 
-    DisposableEffect(key1 = lifecycleOwner) {
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                state.exoPlayer.play()
+                homeState.exoPlayer.play()
             } else if (event == Lifecycle.Event.ON_STOP) {
-                state.exoPlayer.pause()
+                homeState.exoPlayer.pause()
             }
         }
 
@@ -121,8 +123,8 @@ fun HomeContent(
     BackPressHandledArea(
         modifier = modifier,
         onBackPressed = {
-            if (state.isPanelVisible) state.changePanelVisible(false)
-            else if (state.isSettingsVisible) state.changeSettingsVisible(false)
+            if (homeState.isPanelVisible) homeState.changePanelVisible(false)
+            else if (homeState.isSettingsVisible) homeState.changeSettingsVisible(false)
             else onBackPressed()
         },
     ) {
@@ -130,99 +132,107 @@ fun HomeContent(
             modifier = Modifier
                 .handleDPadKeyEvents(
                     onUp = {
-                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
-                        else state.changeCurrentIptvToPrev()
+                        if (settingsState.iptvChannelChangeFlip) homeState.changeCurrentIptvToNext()
+                        else homeState.changeCurrentIptvToPrev()
                     },
                     onDown = {
-                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToPrev()
-                        else state.changeCurrentIptvToNext()
+                        if (settingsState.iptvChannelChangeFlip) homeState.changeCurrentIptvToPrev()
+                        else homeState.changeCurrentIptvToNext()
                     },
                     onLeft = {
-                        if (state.currentIptv.urlList.size > 1) {
-                            state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx - 1)
+                        if (homeState.currentIptv.urlList.size > 1) {
+                            homeState.changeCurrentIptv(
+                                homeState.currentIptv, homeState.currentIptvUrlIdx - 1
+                            )
                         }
                     },
                     onRight = {
-                        if (state.currentIptv.urlList.size > 1) {
-                            state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx + 1)
+                        if (homeState.currentIptv.urlList.size > 1) {
+                            homeState.changeCurrentIptv(
+                                homeState.currentIptv, homeState.currentIptvUrlIdx + 1
+                            )
                         }
                     },
-                    onSelect = { state.changePanelVisible(true) },
-                    onLongSelect = { state.changeSettingsVisible(true) },
-                    onSettings = { state.changeSettingsVisible(true) },
+                    onSelect = { homeState.changePanelVisible(true) },
+                    onLongSelect = { homeState.changeSettingsVisible(true) },
+                    onSettings = { homeState.changeSettingsVisible(true) },
                     onNumber = {
-                        state.changeTempPanelVisible(false)
-                        channelNoInputState.input(it)
+                        homeState.changeTempPanelVisible(false)
+                        digitChannelSelectState.input(it)
                     },
                 )
                 .handleDragGestures(
                     onSwipeDown = {
-                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToNext()
-                        else state.changeCurrentIptvToPrev()
+                        if (settingsState.iptvChannelChangeFlip) homeState.changeCurrentIptvToNext()
+                        else homeState.changeCurrentIptvToPrev()
                     },
                     onSwipeUp = {
-                        if (SP.iptvChannelChangeFlip) state.changeCurrentIptvToPrev()
-                        else state.changeCurrentIptvToNext()
+                        if (settingsState.iptvChannelChangeFlip) homeState.changeCurrentIptvToPrev()
+                        else homeState.changeCurrentIptvToNext()
                     },
                     onSwipeRight = {
-                        if (state.currentIptv.urlList.size > 1) {
-                            state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx - 1)
+                        if (homeState.currentIptv.urlList.size > 1) {
+                            homeState.changeCurrentIptv(
+                                homeState.currentIptv, homeState.currentIptvUrlIdx - 1
+                            )
                         }
                     },
                     onSwipeLeft = {
-                        if (state.currentIptv.urlList.size > 1) {
-                            state.changeCurrentIptv(state.currentIptv, state.currentIptvUrlIdx + 1)
+                        if (homeState.currentIptv.urlList.size > 1) {
+                            homeState.changeCurrentIptv(
+                                homeState.currentIptv, homeState.currentIptvUrlIdx + 1
+                            )
                         }
                     },
                 )
                 .focusRequester(focusRequester)
                 .focusable(),
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                VideoScreen(
-                    exoPlayer = state.exoPlayer,
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-        }
-
-        if (state.isTempPanelVisible) {
-            IptvTempPanel(
-                channelNo = iptvGroupList.iptvIdx(state.currentIptv) + 1,
-                currentIptv = state.currentIptv,
-                currentIptvUrlIdx = state.currentIptvUrlIdx,
-                playerError = playerState.error,
-                currentProgrammes = epgList.currentProgrammes(state.currentIptv),
+            VideoScreen(
+                exoPlayer = homeState.exoPlayer,
+                state = playerState,
+                showPlayerInfo = settingsState.debugShowPlayerInfo,
             )
         }
 
-        ChannelNoInput(state = channelNoInputState)
+        if (homeState.isTempPanelVisible) {
+            PanelTempScreen(
+                channelNo = iptvGroupList.iptvIdx(homeState.currentIptv) + 1,
+                currentIptv = homeState.currentIptv,
+                currentIptvUrlIdx = homeState.currentIptvUrlIdx,
+                playerError = playerState.error,
+                currentProgrammes = epgList.currentProgrammes(homeState.currentIptv),
+                showProgrammeProgress = settingsState.uiShowEpgProgrammeProgress,
+            )
+        }
+
+        PanelDigitChannelSelectScreen(state = digitChannelSelectState)
 
         var showFavoriteList by remember { mutableStateOf(false) }
-        AnimatedVisibility(state.isPanelVisible, enter = fadeIn(), exit = fadeOut()) {
+        AnimatedVisibility(homeState.isPanelVisible, enter = fadeIn(), exit = fadeOut()) {
             PanelScreen(
-                currentIptv = state.currentIptv,
-                currentIptvUrlIdx = state.currentIptvUrlIdx,
-                playerState = playerState,
+                currentIptv = homeState.currentIptv,
+                currentIptvUrlIdx = homeState.currentIptvUrlIdx,
                 iptvGroupList = iptvGroupList,
                 epgList = epgList,
-                onClose = { state.changePanelVisible(false) },
-                onIptvSelected = {
-                    state.changeCurrentIptv(it)
-                },
+                onIptvSelected = { homeState.changeCurrentIptv(it) },
                 showFavoriteList = showFavoriteList,
-                changeShowFavoriteList = { showFavoriteList = it },
+                onChangeShowFavoriteList = { showFavoriteList = it },
+                settingsState = settingsState,
+                playerState = playerState,
+                onClose = { homeState.changePanelVisible(false) },
             )
         }
 
-        AnimatedVisibility(state.isSettingsVisible, enter = fadeIn(), exit = fadeOut()) {
+        AnimatedVisibility(homeState.isSettingsVisible, enter = fadeIn(), exit = fadeOut()) {
             SettingsScreen(
+                settingsState = settingsState,
                 updateState = updateState,
-                onClose = { state.changeSettingsVisible(false) },
+                onClose = { homeState.changeSettingsVisible(false) },
             )
         }
 
-        if (SP.debugShowFps) {
+        if (settingsState.debugShowFps) {
             MonitorScreen()
         }
     }
@@ -252,6 +262,7 @@ class HomeContentState(
     context: Context,
     coroutineScope: CoroutineScope,
     private val iptvGroupList: IptvGroupList,
+    private val settingsState: SettingsState,
 ) : Loggable() {
     private var _currentIptv by mutableStateOf(Iptv.EMPTY)
     val currentIptv get() = _currentIptv
@@ -283,8 +294,8 @@ class HomeContentState(
         })
 
     init {
-        if (SP.iptvLastIptvIdx in 0..<iptvGroupList.flatMap { it.iptvs }.size) {
-            changeCurrentIptv(iptvGroupList.flatMap { it.iptvs }[SP.iptvLastIptvIdx])
+        if (settingsState.iptvLastIptvIdx in 0..<iptvGroupList.flatMap { it.iptvs }.size) {
+            changeCurrentIptv(iptvGroupList.flatMap { it.iptvs }[settingsState.iptvLastIptvIdx])
         } else {
             changeCurrentIptv(iptvGroupList.firstOrNull()?.iptvs?.firstOrNull() ?: Iptv.EMPTY)
         }
@@ -301,7 +312,7 @@ class HomeContentState(
                     }
 
                     // 记忆可播放的域名
-                    SP.iptvPlayableHostList += Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
+                    settingsState.iptvPlayableHostList += Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
                         ?: ""
                 }
             }
@@ -312,7 +323,7 @@ class HomeContentState(
                 }
 
                 // 从记忆中删除不可播放的域名
-                SP.iptvPlayableHostList -= Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
+                settingsState.iptvPlayableHostList -= Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
                     ?: ""
             }
         })
@@ -354,13 +365,13 @@ class HomeContentState(
         if (iptv == _currentIptv && urlIdx == null) return
 
         _currentIptv = iptv
-        SP.iptvLastIptvIdx = iptvGroupList.iptvIdx(iptv)
+        settingsState.iptvLastIptvIdx = iptvGroupList.iptvIdx(iptv)
         _isTempPanelVisible = true
 
         _currentIptvUrlIdx = if (urlIdx == null) {
             // 优先从记忆中选择可播放的域名
             max(0, _currentIptv.urlList.indexOfLast {
-                SP.iptvPlayableHostList.contains(Uri.parse(it).host ?: "")
+                settingsState.iptvPlayableHostList.contains(Uri.parse(it).host ?: "")
             })
         } else {
             (urlIdx + _currentIptv.urlList.size) % _currentIptv.urlList.size
@@ -370,9 +381,12 @@ class HomeContentState(
         log.d("播放（${_currentIptvUrlIdx + 1}/${_currentIptv.urlList.size}）: $url")
 
         val uri = Uri.parse(url)
-        val contentType = if (uri.path?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
+        val contentType =
+            if (uri.lastPathSegment?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
 
-        exoPlayer.setMediaSource(getExoPlayerMediaSource(uri, dataSourceFactory, contentType))
+        exoPlayer.setMediaSource(
+            getExoPlayerMediaSource(uri, dataSourceFactory, contentType)
+        )
         exoPlayer.prepare()
     }
 
@@ -391,12 +405,14 @@ fun rememberHomeContentState(
     context: Context = LocalContext.current,
     iptvGroupList: IptvGroupList = IptvGroupList(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    settingsState: SettingsState = rememberSettingsState(),
 ): HomeContentState {
     val state = remember {
         HomeContentState(
             context = context,
             coroutineScope = coroutineScope,
             iptvGroupList = iptvGroupList,
+            settingsState = settingsState,
         )
     }
 
@@ -410,25 +426,19 @@ fun getExoPlayerMediaSource(
     contentType: Int?,
 ): MediaSource {
     val mediaItem = MediaItem.fromUri(uri)
-    when (val type = contentType ?: Util.inferContentType(uri)) {
+
+    // TODO 没有后缀的 URL 无法正确判断类型，目前强制hls；后期通过url正则匹配定义映射
+    if (uri.lastPathSegment?.contains(".") == false) {
+        return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
+    }
+
+    return when (val type = contentType ?: Util.inferContentType(uri)) {
         C.CONTENT_TYPE_HLS -> {
-            return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
-        }
-
-        C.CONTENT_TYPE_DASH -> {
-            return DashMediaSource.Factory(
-                DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory
-            ).createMediaSource(mediaItem)
-        }
-
-        C.CONTENT_TYPE_SS -> {
-            return SsMediaSource.Factory(
-                DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory
-            ).createMediaSource(mediaItem)
+            HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
 
         C.CONTENT_TYPE_OTHER -> {
-            return ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
+            ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
 
         else -> {

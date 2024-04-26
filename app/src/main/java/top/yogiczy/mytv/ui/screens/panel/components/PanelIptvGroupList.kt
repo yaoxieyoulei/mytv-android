@@ -34,11 +34,12 @@ fun PanelIptvGroupList(
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
     onIptvSelected: (Iptv) -> Unit = {},
+    onIptvFavoriteToggle: (Iptv) -> Unit = {},
+    onChangeToFavoriteList: () -> Unit = {},
+    showProgrammeProgress: Boolean = false,
     state: TvLazyListState = rememberTvLazyListState(
         max(0, iptvGroupList.iptvGroupIdx(currentIptv))
     ),
-    onIptvFavoriteChange: (Iptv) -> Unit = {},
-    onChangeToFavoriteList: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -64,7 +65,8 @@ fun PanelIptvGroupList(
                 iptvList = it.iptvs,
                 epgList = epgList,
                 onIptvSelected = onIptvSelected,
-                onIptvFavoriteChange = onIptvFavoriteChange,
+                onIptvFavoriteToggle = onIptvFavoriteToggle,
+                showProgrammeProgress = showProgrammeProgress,
             )
         }
     }

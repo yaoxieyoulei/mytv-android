@@ -1,8 +1,8 @@
 package top.yogiczy.mytv.ui.screens.settings.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
@@ -43,8 +44,9 @@ fun SettingsCustomEpgItem(
     SettingsEpgHistoryDialog(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
-        epgList = settingsState.epgXmlUrlHistoryList.toList(),
-        currentEpg = settingsState.epgXmlUrl,
+        currentEpgXmlUrl = settingsState.epgXmlUrl,
+        defaultEpgXmlUrl = Constants.EPG_XML_URL,
+        epgXmlUrlList = settingsState.epgXmlUrlHistoryList.toList(),
         onSelected = {
             if (settingsState.epgXmlUrl != it) {
                 settingsState.epgXmlCachedAt = 0
@@ -71,37 +73,42 @@ private fun SettingsEpgHistoryDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    epgList: List<String> = emptyList(),
-    currentEpg: String = "",
+    currentEpgXmlUrl: String = "",
+    defaultEpgXmlUrl: String = Constants.EPG_XML_URL,
+    epgXmlUrlList: List<String> = emptyList(),
     onSelected: (String) -> Unit = {},
     onDeleted: (String) -> Unit = {},
 ) {
     StandardDialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
-        confirmButton = { Text(text = "点按切换；长按删除历史记录") },
         title = { Text(text = "历史节目单") },
+        confirmButton = { Text(text = "点按切换；长按删除历史记录") },
     ) {
-        TvLazyColumn(modifier = modifier) {
-            items(epgList) { source ->
+        TvLazyColumn(modifier = modifier, contentPadding = PaddingValues(vertical = 4.dp)) {
+            // 保证默认节目单始终在最前
+            val filteredEpgXmlUrlList =
+                listOf(defaultEpgXmlUrl) + epgXmlUrlList.filter { it != defaultEpgXmlUrl }
+
+            items(filteredEpgXmlUrlList) { source ->
                 ListItem(
                     modifier = modifier
-                        .padding(vertical = 1.dp)
                         .handleDPadKeyEvents(
                             onSelect = { onSelected(source) },
                             onLongSelect = { onDeleted(source) },
                         ),
-                    selected = source == currentEpg,
+                    selected = source == currentEpgXmlUrl,
                     onClick = { },
                     headlineContent = {
                         Text(
-                            text = if (source == Constants.EPG_XML_URL) "默认节目单" else source,
+                            text = if (source == defaultEpgXmlUrl) "默认节目单" else source,
                             modifier = Modifier.fillMaxWidth(),
                             maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     },
                     trailingContent = {
-                        if (currentEpg == source) {
+                        if (currentEpgXmlUrl == source) {
                             Icon(Icons.Default.CheckCircle, contentDescription = "checked")
                         }
                     },
@@ -117,8 +124,12 @@ private fun SettingsEpgHistoryDialogPreview() {
     MyTVTheme {
         SettingsEpgHistoryDialog(
             showDialog = true,
-            epgList = listOf("默认节目单", "自定义节目单", "自定义节目单1"),
-            currentEpg = "自定义节目单",
+            epgXmlUrlList = listOf(
+                "http://epg.51zmt.top:8000/e.xml",
+                Constants.EPG_XML_URL,
+                "https://live.fanmingming.com/e.xml"
+            ),
+            currentEpgXmlUrl = "http://epg.51zmt.top:8000/e.xml",
         )
     }
 }
