@@ -3,8 +3,12 @@ package top.yogiczy.mytv.ui.screens.panel.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -12,6 +16,8 @@ import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.LocalContentColor
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.data.entities.EpgList
@@ -37,12 +43,19 @@ fun PanelIptvFavoriteList(
     val childPadding = rememberChildPadding()
 
     Column(modifier = modifier) {
-        Text(
-            text = "收藏",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(start = childPadding.start),
-        )
+        Row(modifier = Modifier.padding(start = childPadding.start)) {
+            CompositionLocalProvider(
+                LocalTextStyle provides MaterialTheme.typography.labelMedium,
+                LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+            ) {
+                Text(text = "收藏")
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "${iptvList.size}个频道",
+                    color = LocalContentColor.current.copy(alpha = 0.8f),
+                )
+            }
+        }
 
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(favoriteListSize),
