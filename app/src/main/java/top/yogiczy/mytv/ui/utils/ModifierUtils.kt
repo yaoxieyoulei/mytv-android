@@ -177,9 +177,24 @@ fun Modifier.handleDPadKeyEvents(
 }
 
 @Composable
-fun Modifier.focusOnInit(initialFocused: Boolean): Modifier {
+fun Modifier.focusOnInitSaveable(initialFocused: Boolean): Modifier {
     val focusRequester = remember { FocusRequester() }
     var hasFocused by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (initialFocused && !hasFocused) {
+            focusRequester.requestFocus()
+            hasFocused = true
+        }
+    }
+
+    return focusRequester(focusRequester)
+}
+
+@Composable
+fun Modifier.focusOnInit(initialFocused: Boolean): Modifier {
+    val focusRequester = remember { FocusRequester() }
+    var hasFocused by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (initialFocused && !hasFocused) {

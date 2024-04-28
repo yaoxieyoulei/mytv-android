@@ -10,15 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -30,8 +29,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.items
-import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import androidx.tv.material3.Card
 import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -49,6 +48,7 @@ import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.tvmaterial.StandardDialog
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.focusOnInit
+import top.yogiczy.mytv.ui.utils.focusOnInitSaveable
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -64,12 +64,11 @@ fun PanelIptvItem(
     currentProgramme: EpgProgramme? = epg?.currentProgrammes()?.now,
     onIptvFavoriteToggle: () -> Unit = {},
     showProgrammeProgress: Boolean = false,
+    onShowEpg: () -> Unit = {},
     initialFocused: Boolean = false,
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-
-    var showEpgDialog by remember { mutableStateOf(false) }
 
     Card(
         onClick = { },
@@ -89,12 +88,10 @@ fun PanelIptvItem(
                 },
                 onSettings = {
                     focusRequester.requestFocus()
-                    if (epg != null) {
-                        showEpgDialog = true
-                    }
+                    if (epg != null) onShowEpg()
                 },
             )
-            .focusOnInit(initialFocused),
+            .focusOnInitSaveable(initialFocused),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
             contentColor = MaterialTheme.colorScheme.onBackground,
@@ -140,12 +137,6 @@ fun PanelIptvItem(
             }
         }
     }
-
-    PanelIptvItemEpgDialog(
-        showDialog = showEpgDialog,
-        onDismissRequest = { showEpgDialog = false },
-        epg = epg ?: Epg.EMPTY,
-    )
 }
 
 @Preview
@@ -185,63 +176,75 @@ private fun PanelIptvItemPreview() {
     ExperimentalTvMaterial3Api::class
 )
 @Composable
-private fun PanelIptvItemEpgDialog(
+fun PanelIptvItemEpgDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
+    iptv: Iptv = Iptv.EMPTY,
     epg: Epg = Epg.EMPTY,
 ) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     StandardDialog(
+        modifier = modifier,
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
-        title = { Text(text = "节目单") },
+        title = { Text(text = iptv.channelName) },
+        confirmButton = { Text(text = "左右切换频道") },
     ) {
-        val listState = rememberTvLazyListState(
-            initialFirstVisibleItemIndex = max(0, epg.programmes.indexOfFirst { it.isLive() })
-        )
+        val listState = remember(iptv) {
+            TvLazyListState(
+                max(0, epg.programmes.indexOfFirst { it.isLive() })
+            )
+        }
 
         TvLazyColumn(
-            modifier = modifier,
+            modifier = Modifier.sizeIn(maxHeight = 300.dp),
             state = listState,
             contentPadding = PaddingValues(vertical = 4.dp),
         ) {
-            items(epg.programmes) { programme ->
-                val focusRequester = remember { FocusRequester() }
-                var hasFocused by rememberSaveable { mutableStateOf(false) }
-
-                LaunchedEffect(Unit) {
-                    if (programme.isLive() && !hasFocused) {
-                        focusRequester.requestFocus()
-                        hasFocused = true
-                    }
-                }
-
-                ListItem(
-                    modifier = Modifier.focusRequester(focusRequester),
-                    selected = programme.isLive(),
-                    onClick = { },
-                    headlineContent = {
-                        Text(
-                            text = programme.title,
-                            modifier = Modifier.fillMaxWidth(),
-                            maxLines = 1,
-                        )
-                    },
-                    overlineContent = {
-                        Text(
-                            text = timeFormat.format(programme.startAt) + " ~ " + timeFormat.format(
-                                programme.endAt
+            if (epg.programmes.isNotEmpty()) {
+                items(epg.programmes, key = { it.hashCode() }) { programme ->
+                    ListItem(
+                        modifier = Modifier.focusOnInit(programme.isLive()),
+                        selected = programme.isLive(),
+                        onClick = { },
+                        headlineContent = {
+                            Text(
+                                text = programme.title,
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = 1,
                             )
-                        )
-                    },
-                    trailingContent = {
-                        if (programme.isLive()) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = "playing")
-                        }
-                    },
-                )
+                        },
+                        overlineContent = {
+                            Text(
+                                text = timeFormat.format(programme.startAt) + " ~ " + timeFormat.format(
+                                    programme.endAt
+                                )
+                            )
+                        },
+                        trailingContent = {
+                            if (programme.isLive()) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = "playing")
+                            }
+                        },
+                    )
+                }
+            } else {
+                item {
+                    ListItem(
+                        modifier = Modifier.focusOnInit(true),
+                        selected = false,
+                        onClick = { },
+                        headlineContent = {
+                            Text(
+                                text = "当前频道暂无节目",
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = 1,
+                            )
+                        },
+                    )
+                }
             }
         }
     }
