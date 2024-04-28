@@ -33,7 +33,19 @@ fun SettingsList(
         ),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        item { SettingsUpdateItem(updateState = updateState) }
+        item {
+            SettingsItem(
+                modifier = modifier,
+                title = "应用更新",
+                value = if (updateState.isUpdateAvailable) "新版本" else "无更新",
+                description = "最新版本：${updateState.latestRelease.tagName}",
+                onClick = {
+                    if (updateState.isUpdateAvailable) {
+                        updateState.showDialog = true
+                    }
+                },
+            )
+        }
 
         item {
             SettingsItem(
@@ -108,6 +120,7 @@ fun SettingsList(
         }
 
         item { SettingsUIItem(settingsState = settingsState) }
+        item { SettingsUpdateItem(settingsState = settingsState) }
         item { SettingsDebugItem(settingsState = settingsState) }
         item { SettingsMoreItem() }
     }

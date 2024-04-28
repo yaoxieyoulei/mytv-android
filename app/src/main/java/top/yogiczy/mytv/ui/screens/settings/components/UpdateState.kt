@@ -33,6 +33,7 @@ data class UpdateState(
     private val packageInfo: PackageInfo,
     private val coroutineScope: CoroutineScope,
     val latestFile: File = File(context.cacheDir, "latest.apk"),
+    val forceRemind: Boolean = false,
 ) {
     private var _isChecking by mutableStateOf(false)
 
@@ -47,6 +48,8 @@ data class UpdateState(
     private var _latestRelease by mutableStateOf(GithubRelease())
     val latestRelease get() = _latestRelease
 
+    var showDialog by mutableStateOf(false)
+
     suspend fun checkUpdate() {
         if (_isChecking) return
         if (_isUpdateAvailable) return
@@ -59,8 +62,12 @@ data class UpdateState(
             ) > 0
 
             if (_isUpdateAvailable && _latestRelease.tagName != SP.appLastLatestVersion) {
-                ToastState.I.showToast("新版本: ${_latestRelease.tagName}")
                 SP.appLastLatestVersion = _latestRelease.tagName
+                if (forceRemind) {
+                    showDialog = true
+                } else {
+                    ToastState.I.showToast("新版本: ${_latestRelease.tagName}")
+                }
             }
         } catch (e: Exception) {
             ToastState.I.showToast("检查更新失败")
@@ -100,6 +107,7 @@ data class UpdateState(
 @Composable
 fun rememberUpdateState(
     context: Context = LocalContext.current,
+    forceRemind: Boolean = false,
 ): UpdateState {
     val coroutineScope = rememberCoroutineScope()
     val packageInfo = rememberPackageInfo()
@@ -109,6 +117,7 @@ fun rememberUpdateState(
             context = context,
             packageInfo = packageInfo,
             coroutineScope = coroutineScope,
+            forceRemind = forceRemind,
         )
     }
 

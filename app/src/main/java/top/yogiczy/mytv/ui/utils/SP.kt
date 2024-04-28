@@ -80,6 +80,10 @@ object SP {
         /** ==================== 界面 ==================== */
         /** 显示节目进度 */
         UI_SHOW_EPG_PROGRAMME_PROGRESS,
+
+        /** ==================== 更新 ==================== */
+        /** 更新强提醒（弹窗形式） */
+        UPDATE_FORCE_REMIND,
     }
 
     /** ==================== 应用 ==================== */
@@ -187,4 +191,10 @@ object SP {
     var uiShowEpgProgrammeProgress: Boolean
         get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, false)
         set(value) = sp.edit().putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value).apply()
+
+    /** ==================== 更新 ==================== */
+    /** 更新强提醒（弹窗形式） */
+    var updateForceRemind: Boolean
+        get() = sp.getBoolean(KEY.UPDATE_FORCE_REMIND.name, false)
+        set(value) = sp.edit().putBoolean(KEY.UPDATE_FORCE_REMIND.name, value).apply()
 }

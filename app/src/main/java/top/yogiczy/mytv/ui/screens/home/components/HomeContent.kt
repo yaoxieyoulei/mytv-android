@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.screens.home.components
 
 import android.content.Context
 import android.net.Uri
+import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -43,6 +44,7 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.entities.EpgList
@@ -59,6 +61,7 @@ import top.yogiczy.mytv.ui.screens.panel.PanelTempScreen
 import top.yogiczy.mytv.ui.screens.panel.rememberDigitChannelSelectState
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.ui.screens.settings.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.components.SettingsUpdaterDialog
 import top.yogiczy.mytv.ui.screens.settings.components.UpdateState
 import top.yogiczy.mytv.ui.screens.settings.components.rememberUpdateState
 import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
@@ -70,7 +73,7 @@ import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import top.yogiczy.mytv.ui.utils.handleDragGestures
 import kotlin.math.max
 
-@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(UnstableApi::class)
 @Composable
 fun HomeContent(
     modifier: Modifier = Modifier,
@@ -78,7 +81,7 @@ fun HomeContent(
     epgList: EpgList = EpgList(),
     onBackPressed: () -> Unit = {},
     settingsState: SettingsState = rememberSettingsState(),
-    updateState: UpdateState = rememberUpdateState(),
+    updateState: UpdateState = rememberUpdateState(forceRemind = settingsState.updateForceRemind),
     homeState: HomeContentState = rememberHomeContentState(
         iptvGroupList = iptvGroupList,
         settingsState = settingsState,
@@ -236,6 +239,19 @@ fun HomeContent(
             MonitorScreen()
         }
     }
+
+    val coroutineScope = rememberCoroutineScope()
+    SettingsUpdaterDialog(
+        showDialog = updateState.showDialog,
+        onDismissRequest = { updateState.showDialog = false },
+        release = updateState.latestRelease,
+        onUpdateAndInstall = {
+            updateState.showDialog = false
+            coroutineScope.launch(Dispatchers.IO) {
+                updateState.downloadAndUpdate()
+            }
+        },
+    )
 }
 
 @Composable
@@ -412,7 +428,7 @@ class HomeContentState(
     }
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(UnstableApi::class)
 @Composable
 fun rememberHomeContentState(
     context: Context = LocalContext.current,

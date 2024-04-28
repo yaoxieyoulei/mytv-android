@@ -157,7 +157,7 @@ fun StandardDialog(
                     })
                 }
             }
-            Box(modifier = Modifier.sizeIn(maxHeight = StandardDialogDefaults.ContentMaxHeight)) {
+            Column(modifier = Modifier.sizeIn(maxHeight = StandardDialogDefaults.ContentMaxHeight)) {
                 content?.let { nnContent ->
                     Spacer(modifier = Modifier.padding(StandardDialogDefaults.ContentPadding))
                     nnContent()

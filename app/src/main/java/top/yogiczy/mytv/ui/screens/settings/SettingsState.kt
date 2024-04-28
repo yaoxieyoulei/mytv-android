@@ -35,6 +35,8 @@ class SettingsState(
     epgXmlUrlHistoryList: Set<String> = emptySet(),
 
     uiShowEpgProgrammeProgress: Boolean = false,
+
+    updateForceRemind: Boolean = false
 ) {
     var appBootLaunch by mutableStateOf(appBootLaunch)
     var appLastLatestVersion by mutableStateOf(appLastLatestVersion)
@@ -60,6 +62,8 @@ class SettingsState(
     var epgXmlUrlHistoryList by mutableStateOf(epgXmlUrlHistoryList)
 
     var uiShowEpgProgrammeProgress by mutableStateOf(uiShowEpgProgrammeProgress)
+
+    var updateForceRemind by mutableStateOf(updateForceRemind)
 }
 
 @Composable
@@ -90,6 +94,8 @@ fun rememberSettingsState(): SettingsState {
             epgXmlUrlHistoryList = SP.epgXmlUrlHistoryList,
 
             uiShowEpgProgrammeProgress = SP.uiShowEpgProgrammeProgress,
+
+            updateForceRemind = SP.updateForceRemind
         )
     }
 
@@ -133,6 +139,8 @@ fun rememberSettingsState(): SettingsState {
     LaunchedEffect(state.uiShowEpgProgrammeProgress) {
         SP.uiShowEpgProgrammeProgress = state.uiShowEpgProgrammeProgress
     }
+
+    LaunchedEffect(state.updateForceRemind) { SP.updateForceRemind = state.updateForceRemind }
 
     return state
 }
