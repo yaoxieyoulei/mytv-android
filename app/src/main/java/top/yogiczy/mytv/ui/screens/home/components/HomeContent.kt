@@ -325,6 +325,25 @@ class HomeContentState(
                 // 从记忆中删除不可播放的域名
                 settingsState.iptvPlayableHostList -= Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
                     ?: ""
+
+                // 当解析容器不支持时，尝试使用 HLS 解析
+                if (error.errorCode == PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED) {
+                    val uri = _exoPlayer.currentMediaItem?.localConfiguration?.uri
+                    if (uri != null) {
+                        log.w("尝试使用 HLS 解析：$uri")
+                        val contentType = Util.inferContentType(uri)
+                        if (contentType == C.CONTENT_TYPE_OTHER) {
+                            exoPlayer.setMediaSource(
+                                getExoPlayerMediaSource(
+                                    uri,
+                                    dataSourceFactory,
+                                    C.CONTENT_TYPE_HLS,
+                                )
+                            )
+                            exoPlayer.prepare()
+                        }
+                    }
+                }
             }
         })
     }
@@ -380,13 +399,7 @@ class HomeContentState(
         val url = iptv.urlList[_currentIptvUrlIdx]
         log.d("播放（${_currentIptvUrlIdx + 1}/${_currentIptv.urlList.size}）: $url")
 
-        val uri = Uri.parse(url)
-        val contentType =
-            if (uri.lastPathSegment?.endsWith(".php") == true) C.CONTENT_TYPE_HLS else null
-
-        exoPlayer.setMediaSource(
-            getExoPlayerMediaSource(uri, dataSourceFactory, contentType)
-        )
+        exoPlayer.setMediaSource(getExoPlayerMediaSource(Uri.parse(url), dataSourceFactory))
         exoPlayer.prepare()
     }
 
@@ -423,14 +436,9 @@ fun rememberHomeContentState(
 fun getExoPlayerMediaSource(
     uri: Uri,
     dataSourceFactory: DataSource.Factory,
-    contentType: Int?,
+    contentType: Int? = null,
 ): MediaSource {
     val mediaItem = MediaItem.fromUri(uri)
-
-    // TODO 没有后缀的 URL 无法正确判断类型，目前强制hls；后期通过url正则匹配定义映射
-    if (uri.lastPathSegment?.contains(".") == false) {
-        return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
-    }
 
     return when (val type = contentType ?: Util.inferContentType(uri)) {
         C.CONTENT_TYPE_HLS -> {
