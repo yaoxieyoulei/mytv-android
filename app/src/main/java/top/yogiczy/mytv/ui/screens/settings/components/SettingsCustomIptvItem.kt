@@ -51,6 +51,7 @@ fun SettingsCustomIptvItem(
         iptvSourceUrlList = settingsState.iptvSourceUrlHistoryList.toList(),
         onSelected = {
             if (settingsState.iptvSourceUrl != it) {
+                settingsState.iptvLastIptvIdx = 0
                 settingsState.iptvSourceCachedAt = 0
                 settingsState.iptvSourceUrl = it
             }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -156,9 +157,11 @@ fun StandardDialog(
                     })
                 }
             }
-            content?.let { nnContent ->
-                Spacer(modifier = Modifier.padding(StandardDialogDefaults.ContentPadding))
-                nnContent()
+            Box(modifier = Modifier.sizeIn(maxHeight = StandardDialogDefaults.ContentMaxHeight)) {
+                content?.let { nnContent ->
+                    Spacer(modifier = Modifier.padding(StandardDialogDefaults.ContentPadding))
+                    nnContent()
+                }
             }
             confirmButton?.let { nnConfirmButton ->
                 Spacer(modifier = Modifier.padding(StandardDialogDefaults.ButtonsFlowRowPadding))
@@ -447,6 +450,7 @@ object StandardDialogDefaults {
     internal val DialogMaxWidth = 560.dp
 
     internal val TitleMaxHeight = 56.dp
+    internal val ContentMaxHeight = 300.dp
     internal val ButtonsMainAxisSpacing = 16.dp
     internal val ButtonsCrossAxisSpacing = 16.dp
 
