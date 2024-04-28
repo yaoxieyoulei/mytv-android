@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,18 +93,22 @@ private fun SettingsIptvSourceHistoryDialog(
                 listOf(defaultIptvSourceUrl) + iptvSourceUrlList.filter { it != defaultIptvSourceUrl }
 
             items(filteredIptvSourceUrlList) { source ->
+                var isFocused by remember { mutableStateOf(false) }
+
                 ListItem(
-                    modifier = Modifier.handleDPadKeyEvents(
-                        onSelect = { onSelected(source) },
-                        onLongSelect = { onDeleted(source) },
-                    ),
+                    modifier = Modifier
+                        .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
+                        .handleDPadKeyEvents(
+                            onSelect = { onSelected(source) },
+                            onLongSelect = { onDeleted(source) },
+                        ),
                     selected = source == currentIptvSourceUrl,
                     onClick = { },
                     headlineContent = {
                         Text(
                             text = if (source == defaultIptvSourceUrl) "默认直播源（网络需要支持ipv6）" else source,
                             modifier = Modifier.fillMaxWidth(),
-                            maxLines = 2,
+                            maxLines = if (isFocused) Int.MAX_VALUE else 2,
                             overflow = TextOverflow.Ellipsis
                         )
                     },

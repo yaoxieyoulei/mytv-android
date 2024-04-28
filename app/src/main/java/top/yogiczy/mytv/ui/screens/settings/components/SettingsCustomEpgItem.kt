@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,8 +94,11 @@ private fun SettingsEpgHistoryDialog(
                 listOf(defaultEpgXmlUrl) + epgXmlUrlList.filter { it != defaultEpgXmlUrl }
 
             items(filteredEpgXmlUrlList) { source ->
+                var isFocused by remember { mutableStateOf(false) }
+
                 ListItem(
                     modifier = modifier
+                        .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
                         .handleDPadKeyEvents(
                             onSelect = { onSelected(source) },
                             onLongSelect = { onDeleted(source) },
@@ -105,7 +109,7 @@ private fun SettingsEpgHistoryDialog(
                         Text(
                             text = if (source == defaultEpgXmlUrl) "默认节目单" else source,
                             modifier = Modifier.fillMaxWidth(),
-                            maxLines = 2,
+                            maxLines = if (isFocused) Int.MAX_VALUE else 2,
                             overflow = TextOverflow.Ellipsis
                         )
                     },

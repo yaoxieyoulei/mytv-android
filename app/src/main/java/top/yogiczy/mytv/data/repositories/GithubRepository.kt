@@ -30,7 +30,7 @@ class GithubRepository : Loggable() {
                     downloadUrl = (json["assets"] as JSONArray).getJSONObject(0)["browser_download_url"] as String,
                     description = json["body"] as String
                 )
-                log.i("最新release: $release")
+                log.i("最新release: ${release.tagName}")
 
                 return@with release
             }
