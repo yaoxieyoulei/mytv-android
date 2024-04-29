@@ -120,6 +120,7 @@ fun SettingsList(
         }
 
         item { SettingsUIItem(settingsState = settingsState) }
+        item { SettingsFavoriteItem(settingsState = settingsState) }
         item { SettingsUpdateItem(settingsState = settingsState) }
         item { SettingsDebugItem(settingsState = settingsState) }
         item { SettingsMoreItem() }
