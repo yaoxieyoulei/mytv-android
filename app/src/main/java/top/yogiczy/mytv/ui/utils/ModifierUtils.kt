@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -213,3 +214,14 @@ fun Modifier.ifElse(
 fun Modifier.ifElse(
     condition: Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
 ): Modifier = ifElse({ condition }, ifTrueModifier, ifFalseModifier)
+
+fun Modifier.handleUserAction(onHandle: () -> Unit) = onPreviewKeyEvent { onHandle(); false }
+    .pointerInput(Unit) { detectDragGestures { _, _ -> onHandle() } }
+    .pointerInput(Unit) {
+        detectTapGestures(
+            onTap = { onHandle() },
+            onDoubleTap = { onHandle() },
+            onLongPress = { onHandle() },
+            onPress = { onHandle() },
+        )
+    }

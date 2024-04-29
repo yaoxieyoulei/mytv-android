@@ -9,23 +9,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.grid.TvGridCells
+import androidx.tv.foundation.lazy.grid.TvLazyGridState
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
+import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
+import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
+import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
+import top.yogiczy.mytv.ui.utils.handleUserAction
+import kotlin.math.max
+import kotlin.math.min
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -38,9 +51,20 @@ fun PanelIptvFavoriteList(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
     showProgrammeProgress: Boolean = false,
+    state: TvLazyGridState = rememberTvLazyGridState(max(0, iptvList.indexOf(currentIptv))),
+    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
     val favoriteListSize = 6
     val childPadding = rememberChildPadding()
+    LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
+
+    var showEpgDialog by remember { mutableStateOf(false) }
+    var currentShowEpgIptv by remember { mutableStateOf(Iptv.EMPTY) }
+    val currentEpg = remember(currentShowEpgIptv) {
+        epgList.firstOrNull { epg ->
+            epg.channel == currentShowEpgIptv.channelName
+        }
+    }
 
     Column(modifier = modifier) {
         Row(modifier = Modifier.padding(start = childPadding.start)) {
@@ -58,6 +82,7 @@ fun PanelIptvFavoriteList(
         }
 
         TvLazyVerticalGrid(
+            state = state,
             columns = TvGridCells.Fixed(favoriteListSize),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -79,10 +104,32 @@ fun PanelIptvFavoriteList(
                     onIptvFavoriteToggle = { onIptvFavoriteToggle(it) },
                     showProgrammeProgress = showProgrammeProgress,
                     initialFocused = if (index == 0 && !iptvList.contains(currentIptv)) true else it == currentIptv,
+                    onShowEpg = {
+                        currentShowEpgIptv = it
+                        showEpgDialog = true
+                    }
                 )
             }
         }
     }
+
+    PanelIptvItemEpgDialog(
+        showDialog = showEpgDialog,
+        onDismissRequest = { showEpgDialog = false },
+        iptv = currentShowEpgIptv,
+        epg = currentEpg ?: Epg.EMPTY,
+        modifier = Modifier
+            .handleDPadKeyEvents(
+                onLeft = {
+                    currentShowEpgIptv = iptvList[max(0, iptvList.indexOf(currentShowEpgIptv) - 1)]
+                },
+                onRight = {
+                    currentShowEpgIptv =
+                        iptvList[min(iptvList.size - 1, iptvList.indexOf(currentShowEpgIptv) + 1)]
+                },
+            )
+            .handleUserAction { panelAutoCloseState.active() },
+    )
 }
 
 @Preview(device = "id:Android TV (720p)")

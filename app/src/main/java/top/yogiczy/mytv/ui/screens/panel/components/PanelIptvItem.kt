@@ -185,7 +185,6 @@ fun PanelIptvItemEpgDialog(
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     StandardDialog(
-        modifier = modifier,
         showDialog = showDialog,
         onDismissRequest = onDismissRequest,
         title = { Text(text = iptv.channelName) },
@@ -198,6 +197,7 @@ fun PanelIptvItemEpgDialog(
         }
 
         TvLazyColumn(
+            modifier = modifier,
             state = listState,
             contentPadding = PaddingValues(vertical = 4.dp),
         ) {

@@ -55,10 +55,12 @@ import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.monitor.MonitorScreen
 import top.yogiczy.mytv.ui.screens.panel.DigitChannelSelectState
+import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.panel.PanelDigitChannelSelectScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelTempScreen
 import top.yogiczy.mytv.ui.screens.panel.rememberDigitChannelSelectState
+import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.ui.screens.settings.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.components.SettingsUpdaterDialog
@@ -92,6 +94,11 @@ fun HomeContent(
             homeState.changeCurrentIptv(iptvGroupList.flatMap { it.iptvs }[channelNo.toInt() - 1])
         }
     },
+    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(
+        timeout = Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY,
+        onTimeout = { homeState.changePanelVisible(false) },
+        isPanelVisible = homeState.isPanelVisible,
+    ),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val focusRequester = remember { FocusRequester() }
@@ -223,6 +230,7 @@ fun HomeContent(
                 onChangeShowFavoriteList = { showFavoriteList = it },
                 settingsState = settingsState,
                 playerState = playerState,
+                panelAutoCloseState = panelAutoCloseState,
                 onClose = { homeState.changePanelVisible(false) },
             )
         }
@@ -448,7 +456,7 @@ fun rememberHomeContentState(
     return state
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(UnstableApi::class)
 fun getExoPlayerMediaSource(
     uri: Uri,
     dataSourceFactory: DataSource.Factory,

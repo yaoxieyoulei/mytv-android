@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,8 @@ import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvGroupIdx
 import top.yogiczy.mytv.ui.rememberChildPadding
+import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
+import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import kotlin.math.max
@@ -45,8 +48,10 @@ fun PanelIptvGroupList(
     state: TvLazyListState = rememberTvLazyListState(
         max(0, iptvGroupList.iptvGroupIdx(currentIptv))
     ),
+    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
     val childPadding = rememberChildPadding()
+    LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
 
     TvLazyColumn(
         state = state,
@@ -81,6 +86,7 @@ fun PanelIptvGroupList(
                 onIptvSelected = onIptvSelected,
                 onIptvFavoriteToggle = onIptvFavoriteToggle,
                 showProgrammeProgress = showProgrammeProgress,
+                panelAutoCloseState = panelAutoCloseState,
             )
         }
     }
