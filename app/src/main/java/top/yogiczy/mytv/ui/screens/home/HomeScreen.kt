@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
@@ -19,6 +22,8 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.home.components.HomeContent
+import top.yogiczy.mytv.ui.screens.settings.SettingsState
+import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -27,21 +32,30 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
     homeScreeViewModel: HomeScreeViewModel = viewModel(),
+    settingsState: SettingsState = rememberSettingsState(),
 ) {
     val uiState by homeScreeViewModel.uiState.collectAsState()
 
-    when (val s = uiState) {
-        is HomeScreenUiState.Ready -> {
-            HomeContent(
-                modifier = modifier,
-                iptvGroupList = s.iptvGroupList,
-                epgList = s.epgList,
-                onBackPressed = onBackPressed,
-            )
-        }
+    CompositionLocalProvider(
+        LocalDensity provides Density(
+            density = LocalDensity.current.density * settingsState.uiDensityScaleRatio,
+            fontScale = LocalDensity.current.fontScale * settingsState.uiFontScaleRatio,
+        )
+    ) {
+        when (val s = uiState) {
+            is HomeScreenUiState.Ready -> {
+                HomeContent(
+                    modifier = modifier,
+                    iptvGroupList = s.iptvGroupList,
+                    epgList = s.epgList,
+                    onBackPressed = onBackPressed,
+                    settingsState = settingsState,
+                )
+            }
 
-        is HomeScreenUiState.Loading -> HomeScreenLoading(s.message)
-        is HomeScreenUiState.Error -> HomeScreenError(s.message)
+            is HomeScreenUiState.Loading -> HomeScreenLoading(s.message)
+            is HomeScreenUiState.Error -> HomeScreenError(s.message)
+        }
     }
 }
 

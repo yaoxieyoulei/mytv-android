@@ -3,6 +3,7 @@ package top.yogiczy.mytv.ui.screens.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,8 @@ class SettingsState(
     epgXmlUrlHistoryList: Set<String> = emptySet(),
 
     uiShowEpgProgrammeProgress: Boolean = false,
+    uiDensityScaleRatio: Float = 1f,
+    uiFontScaleRatio: Float = 1f,
 
     updateForceRemind: Boolean = false
 ) {
@@ -62,6 +65,8 @@ class SettingsState(
     var epgXmlUrlHistoryList by mutableStateOf(epgXmlUrlHistoryList)
 
     var uiShowEpgProgrammeProgress by mutableStateOf(uiShowEpgProgrammeProgress)
+    var uiDensityScaleRatio by mutableFloatStateOf(uiDensityScaleRatio)
+    var uiFontScaleRatio by mutableFloatStateOf(uiFontScaleRatio)
 
     var updateForceRemind by mutableStateOf(updateForceRemind)
 }
@@ -94,6 +99,8 @@ fun rememberSettingsState(): SettingsState {
             epgXmlUrlHistoryList = SP.epgXmlUrlHistoryList,
 
             uiShowEpgProgrammeProgress = SP.uiShowEpgProgrammeProgress,
+            uiDensityScaleRatio = SP.uiDensityScaleRatio,
+            uiFontScaleRatio = SP.uiFontScaleRatio,
 
             updateForceRemind = SP.updateForceRemind
         )
@@ -139,6 +146,8 @@ fun rememberSettingsState(): SettingsState {
     LaunchedEffect(state.uiShowEpgProgrammeProgress) {
         SP.uiShowEpgProgrammeProgress = state.uiShowEpgProgrammeProgress
     }
+    LaunchedEffect(state.uiDensityScaleRatio) { SP.uiDensityScaleRatio = state.uiDensityScaleRatio }
+    LaunchedEffect(state.uiFontScaleRatio) { SP.uiFontScaleRatio = state.uiFontScaleRatio }
 
     LaunchedEffect(state.updateForceRemind) { SP.updateForceRemind = state.updateForceRemind }
 

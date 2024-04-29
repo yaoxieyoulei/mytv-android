@@ -21,6 +21,7 @@ import top.yogiczy.mytv.ui.screens.settings.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
+import java.text.DecimalFormat
 
 @Composable
 fun SettingsUIItem(
@@ -79,6 +80,64 @@ fun SettingsUIDialog(
                             checked = settingsState.uiShowEpgProgrammeProgress,
                             onCheckedChange = null,
                         )
+                    },
+                )
+            }
+
+            item {
+                val defaultScale = 1f
+                val minScale = 1f
+                val maxScale = 2f
+                val stepScale = 0.1f
+
+                ListItem(
+                    modifier = modifier.handleDPadKeyEvents(
+                        onSelect = {
+                            if (settingsState.uiDensityScaleRatio >= maxScale) {
+                                settingsState.uiDensityScaleRatio = minScale
+                            } else {
+                                settingsState.uiDensityScaleRatio =
+                                    (settingsState.uiDensityScaleRatio + stepScale)
+                                        .coerceIn(minScale, maxScale)
+                            }
+                        },
+                        onLongSelect = { settingsState.uiDensityScaleRatio = defaultScale },
+                    ),
+                    selected = false,
+                    onClick = { },
+                    headlineContent = { Text(text = "界面整体缩放比例") },
+                    supportingContent = { Text(text = "短按切换缩放比例，长按恢复默认") },
+                    trailingContent = {
+                        Text(text = "×${DecimalFormat("#.#").format(settingsState.uiDensityScaleRatio)}")
+                    },
+                )
+            }
+
+            item {
+                val defaultScale = 1f
+                val minScale = 1f
+                val maxScale = 2f
+                val stepScale = 0.1f
+
+                ListItem(
+                    modifier = modifier.handleDPadKeyEvents(
+                        onSelect = {
+                            if (settingsState.uiFontScaleRatio >= maxScale) {
+                                settingsState.uiFontScaleRatio = minScale
+                            } else {
+                                settingsState.uiFontScaleRatio =
+                                    (settingsState.uiFontScaleRatio + stepScale)
+                                        .coerceIn(minScale, maxScale)
+                            }
+                        },
+                        onLongSelect = { settingsState.uiFontScaleRatio = defaultScale },
+                    ),
+                    selected = false,
+                    onClick = { },
+                    headlineContent = { Text(text = "界面字体缩放比例") },
+                    supportingContent = { Text(text = "短按切换缩放比例，长按恢复默认") },
+                    trailingContent = {
+                        Text(text = "×${DecimalFormat("#.#").format(settingsState.uiFontScaleRatio)}")
                     },
                 )
             }

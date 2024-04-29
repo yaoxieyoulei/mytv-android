@@ -72,8 +72,8 @@ fun SettingsUpdateDialog(
                     headlineContent = { Text(text = "更新强提醒") },
                     supportingContent = {
                         Text(
-                            text = if (settingsState.updateForceRemind) "在检测到新版本时会弹窗提醒"
-                            else "在检测到新版本时仅在左上角提示",
+                            text = if (settingsState.updateForceRemind) "检测到新版本时会弹窗提醒"
+                            else "检测到新版本时仅在左上角提示",
                         )
                     },
                     trailingContent = {

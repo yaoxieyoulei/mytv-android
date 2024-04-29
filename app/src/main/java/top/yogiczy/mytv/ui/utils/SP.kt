@@ -81,6 +81,12 @@ object SP {
         /** 显示节目进度 */
         UI_SHOW_EPG_PROGRAMME_PROGRESS,
 
+        /** 界面密度缩放比例 */
+        UI_DENSITY_SCALE_RATIO,
+
+        /** 界面字体缩放比例 */
+        UI_FONT_SCALE_RATIO,
+
         /** ==================== 更新 ==================== */
         /** 更新强提醒（弹窗形式） */
         UPDATE_FORCE_REMIND,
@@ -191,6 +197,16 @@ object SP {
     var uiShowEpgProgrammeProgress: Boolean
         get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, false)
         set(value) = sp.edit().putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value).apply()
+
+    /** 界面密度缩放比例 */
+    var uiDensityScaleRatio: Float
+        get() = sp.getFloat(KEY.UI_DENSITY_SCALE_RATIO.name, 1f)
+        set(value) = sp.edit().putFloat(KEY.UI_DENSITY_SCALE_RATIO.name, value).apply()
+
+    /** 界面字体缩放比例 */
+    var uiFontScaleRatio: Float
+        get() = sp.getFloat(KEY.UI_FONT_SCALE_RATIO.name, 1f)
+        set(value) = sp.edit().putFloat(KEY.UI_FONT_SCALE_RATIO.name, value).apply()
 
     /** ==================== 更新 ==================== */
     /** 更新强提醒（弹窗形式） */
