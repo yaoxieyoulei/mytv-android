@@ -7,7 +7,7 @@ data class IptvGroupList(
     val value: List<IptvGroup> = emptyList(),
 ) : List<IptvGroup> by value {
     companion object {
-        val EXAMPLE = IptvGroupList(List(10) { groupIdx ->
+        val EXAMPLE = IptvGroupList(List(5) { groupIdx ->
             IptvGroup(
                 name = "频道分组${groupIdx + 1}",
                 iptvs = IptvList(

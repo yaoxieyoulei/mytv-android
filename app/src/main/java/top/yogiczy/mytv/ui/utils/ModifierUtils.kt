@@ -13,8 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
@@ -184,8 +186,8 @@ fun Modifier.focusOnInitSaveable(initialFocused: Boolean): Modifier {
 
     LaunchedEffect(Unit) {
         if (initialFocused && !hasFocused) {
-            focusRequester.requestFocus()
             hasFocused = true
+            focusRequester.requestFocus()
         }
     }
 
@@ -214,6 +216,24 @@ fun Modifier.ifElse(
 fun Modifier.ifElse(
     condition: Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
 ): Modifier = ifElse({ condition }, ifTrueModifier, ifFalseModifier)
+
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun Modifier.restoreFocusedChild(
+    focusRequester: FocusRequester = FocusRequester(),
+): Modifier {
+    return focusRequester(focusRequester).focusProperties {
+        exit = {
+            focusRequester.saveFocusedChild()
+            FocusRequester.Default
+        }
+        enter = {
+            if (focusRequester.restoreFocusedChild()) FocusRequester.Cancel
+            else FocusRequester.Default
+        }
+    }
+}
 
 fun Modifier.handleUserAction(onHandle: () -> Unit) = onPreviewKeyEvent { onHandle(); false }
     .pointerInput(Unit) { detectDragGestures { _, _ -> onHandle() } }

@@ -13,4 +13,8 @@ data class IptvGroup(
      * 直播源列表
      */
     val iptvs: IptvList,
-)
+) {
+    companion object {
+        val EMPTY = IptvGroup("", IptvList())
+    }
+}

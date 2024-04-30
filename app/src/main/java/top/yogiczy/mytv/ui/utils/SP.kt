@@ -81,6 +81,9 @@ object SP {
         /** 显示节目进度 */
         UI_SHOW_EPG_PROGRAMME_PROGRESS,
 
+        /** 使用经典选台界面 */
+        UI_USE_CLASSIC_PANEL_SCREEN,
+
         /** 界面密度缩放比例 */
         UI_DENSITY_SCALE_RATIO,
 
@@ -197,6 +200,11 @@ object SP {
     var uiShowEpgProgrammeProgress: Boolean
         get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, false)
         set(value) = sp.edit().putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value).apply()
+
+    /** 使用经典选台界面 */
+    var uiUseClassicPanelScreen: Boolean
+        get() = sp.getBoolean(KEY.UI_USE_CLASSIC_PANEL_SCREEN.name, false)
+        set(value) = sp.edit().putBoolean(KEY.UI_USE_CLASSIC_PANEL_SCREEN.name, value).apply()
 
     /** 界面密度缩放比例 */
     var uiDensityScaleRatio: Float

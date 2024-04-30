@@ -323,7 +323,6 @@ fun Dialog(
             properties = properties,
         ) {
             Box(modifier = Modifier
-                .fillMaxSize()
                 .semantics {
                     dismiss {
                         onDismissRequest()

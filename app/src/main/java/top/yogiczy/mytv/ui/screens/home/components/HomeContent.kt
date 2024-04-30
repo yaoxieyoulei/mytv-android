@@ -53,6 +53,7 @@ import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.data.utils.Constants
+import top.yogiczy.mytv.ui.screens.classicpanel.ClassicPanelScreen
 import top.yogiczy.mytv.ui.screens.monitor.MonitorScreen
 import top.yogiczy.mytv.ui.screens.panel.DigitChannelSelectState
 import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
@@ -110,6 +111,8 @@ fun HomeContent(
 
     LaunchedEffect(homeState.isPanelVisible, homeState.isSettingsVisible) {
         if (!homeState.isPanelVisible && !homeState.isSettingsVisible) {
+            focusRequester.requestFocus()
+            delay(1)
             focusRequester.requestFocus()
         }
     }
@@ -220,19 +223,33 @@ fun HomeContent(
 
         var showFavoriteList by remember { mutableStateOf(false) }
         AnimatedVisibility(homeState.isPanelVisible, enter = fadeIn(), exit = fadeOut()) {
-            PanelScreen(
-                currentIptv = homeState.currentIptv,
-                currentIptvUrlIdx = homeState.currentIptvUrlIdx,
-                iptvGroupList = iptvGroupList,
-                epgList = epgList,
-                onIptvSelected = { homeState.changeCurrentIptv(it) },
-                showFavoriteList = showFavoriteList,
-                onChangeShowFavoriteList = { showFavoriteList = it },
-                settingsState = settingsState,
-                playerState = playerState,
-                panelAutoCloseState = panelAutoCloseState,
-                onClose = { homeState.changePanelVisible(false) },
-            )
+            if (settingsState.uiUseClassicPanelScreen) {
+                ClassicPanelScreen(
+                    currentIptv = homeState.currentIptv,
+                    currentIptvUrlIdx = homeState.currentIptvUrlIdx,
+                    iptvGroupList = iptvGroupList,
+                    epgList = epgList,
+                    onIptvSelected = { homeState.changeCurrentIptv(it) },
+                    settingsState = settingsState,
+                    playerState = playerState,
+                    panelAutoCloseState = panelAutoCloseState,
+                    onClose = { homeState.changePanelVisible(false) },
+                )
+            } else {
+                PanelScreen(
+                    currentIptv = homeState.currentIptv,
+                    currentIptvUrlIdx = homeState.currentIptvUrlIdx,
+                    iptvGroupList = iptvGroupList,
+                    epgList = epgList,
+                    onIptvSelected = { homeState.changeCurrentIptv(it) },
+                    showFavoriteList = showFavoriteList,
+                    onChangeShowFavoriteList = { showFavoriteList = it },
+                    settingsState = settingsState,
+                    playerState = playerState,
+                    panelAutoCloseState = panelAutoCloseState,
+                    onClose = { homeState.changePanelVisible(false) },
+                )
+            }
         }
 
         AnimatedVisibility(homeState.isSettingsVisible, enter = fadeIn(), exit = fadeOut()) {

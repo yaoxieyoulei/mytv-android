@@ -36,6 +36,7 @@ class SettingsState(
     epgXmlUrlHistoryList: Set<String> = emptySet(),
 
     uiShowEpgProgrammeProgress: Boolean = false,
+    uiUseClassicPanelScreen: Boolean = false,
     uiDensityScaleRatio: Float = 1f,
     uiFontScaleRatio: Float = 1f,
 
@@ -65,6 +66,7 @@ class SettingsState(
     var epgXmlUrlHistoryList by mutableStateOf(epgXmlUrlHistoryList)
 
     var uiShowEpgProgrammeProgress by mutableStateOf(uiShowEpgProgrammeProgress)
+    var uiUseClassicPanelScreen by mutableStateOf(uiUseClassicPanelScreen)
     var uiDensityScaleRatio by mutableFloatStateOf(uiDensityScaleRatio)
     var uiFontScaleRatio by mutableFloatStateOf(uiFontScaleRatio)
 
@@ -99,6 +101,7 @@ fun rememberSettingsState(): SettingsState {
             epgXmlUrlHistoryList = SP.epgXmlUrlHistoryList,
 
             uiShowEpgProgrammeProgress = SP.uiShowEpgProgrammeProgress,
+            uiUseClassicPanelScreen = SP.uiUseClassicPanelScreen,
             uiDensityScaleRatio = SP.uiDensityScaleRatio,
             uiFontScaleRatio = SP.uiFontScaleRatio,
 
@@ -145,6 +148,9 @@ fun rememberSettingsState(): SettingsState {
 
     LaunchedEffect(state.uiShowEpgProgrammeProgress) {
         SP.uiShowEpgProgrammeProgress = state.uiShowEpgProgrammeProgress
+    }
+    LaunchedEffect(state.uiUseClassicPanelScreen) {
+        SP.uiUseClassicPanelScreen = state.uiUseClassicPanelScreen
     }
     LaunchedEffect(state.uiDensityScaleRatio) { SP.uiDensityScaleRatio = state.uiDensityScaleRatio }
     LaunchedEffect(state.uiFontScaleRatio) { SP.uiFontScaleRatio = state.uiFontScaleRatio }

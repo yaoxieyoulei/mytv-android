@@ -85,6 +85,27 @@ fun SettingsUIDialog(
             }
 
             item {
+                ListItem(
+                    modifier = modifier.handleDPadKeyEvents(
+                        onSelect = {
+                            settingsState.uiUseClassicPanelScreen =
+                                !settingsState.uiUseClassicPanelScreen
+                        },
+                    ),
+                    selected = false,
+                    onClick = { },
+                    headlineContent = { Text(text = "经典选台界面") },
+                    supportingContent = { Text(text = "将选台界面替换为经典三段式结构") },
+                    trailingContent = {
+                        Switch(
+                            checked = settingsState.uiUseClassicPanelScreen,
+                            onCheckedChange = null,
+                        )
+                    },
+                )
+            }
+
+            item {
                 val defaultScale = 1f
                 val minScale = 1f
                 val maxScale = 2f
