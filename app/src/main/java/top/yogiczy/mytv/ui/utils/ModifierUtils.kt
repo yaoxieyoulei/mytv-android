@@ -111,6 +111,7 @@ fun Modifier.handleDragGestures(
  * 监听全方位的DPad按键事件（兼容触摸屏）
  */
 fun Modifier.handleDPadKeyEvents(
+    key: Any = Unit,
     onLeft: () -> Unit = {},
     onLongLeft: () -> Unit = {},
     onRight: () -> Unit = {},
@@ -171,7 +172,7 @@ fun Modifier.handleDPadKeyEvents(
         KeyEvent.KEYCODE_NUMPAD_ENTER to onLongSelect,
         KeyEvent.KEYCODE_DPAD_CENTER to onLongSelect,
     ),
-).pointerInput(Unit) {
+).pointerInput(key) {
     detectTapGestures(
         onTap = { onSelect() },
         onLongPress = { onLongSelect() },

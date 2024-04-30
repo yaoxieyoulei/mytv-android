@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui.screens.classicpanel
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -101,21 +99,14 @@ fun ClassicPanelScreen(
         iptvListState.scrollToItem(0)
     }
 
-    var offsetX by remember { mutableStateOf(0.dp) }
-    val animatedOffsetX by animateDpAsState(targetValue = offsetX, label = "")
     var inIptvGroupTab by remember { mutableStateOf(false) }
-    LaunchedEffect(inIptvGroupTab) {
-        offsetX = if (inIptvGroupTab) 0.dp else (-200).dp
-    }
-    LaunchedEffect(Unit) { offsetX = (-200).dp }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .focusRequester(focusRequester)
             .handleUserAction { panelAutoCloseState.active() }
-            .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) }
-            .offset(x = animatedOffsetX),
+            .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
         Box(
             modifier = Modifier
@@ -139,9 +130,11 @@ fun ClassicPanelScreen(
                     exitFocusRequester = focusedIptvFocusRequester,
                     onEnter = { inIptvGroupTab = true },
                     onExit = { inIptvGroupTab = false },
+                    panelAutoCloseState = panelAutoCloseState,
                 )
 
-                ClassicPanelIptvList(iptvList = iptvGroupListWithFavorite[focusedIptvGroupIdx].iptvs,
+                ClassicPanelIptvList(
+                    iptvList = iptvGroupListWithFavorite[focusedIptvGroupIdx].iptvs,
                     currentIptv = focusedIptv,
                     onChangeFocused = { iptv, focusRequester ->
                         focusedIptv = iptv
@@ -159,13 +152,16 @@ fun ClassicPanelScreen(
                             ToastState.I.showToast("已收藏: ${it.channelName}")
                         }
                         favoriteKey++
-                    })
+                    },
+                    panelAutoCloseState = panelAutoCloseState,
+                )
 
                 val epg = epgList.firstOrNull { it.channel == focusedIptv.channelName }
                 if (!inIptvGroupTab && epg != null) {
                     ClassicPanelEpgList(
                         epg = epg,
                         exitFocusRequester = focusedIptvFocusRequester,
+                        panelAutoCloseState = panelAutoCloseState,
                     )
                 }
             }
