@@ -35,6 +35,7 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
+import top.yogiczy.mytv.ui.screens.panel.components.PanelAutoCloseIndicator
 import top.yogiczy.mytv.ui.screens.panel.components.PanelChannelNo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelDateTime
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvFavoriteList
@@ -65,17 +66,22 @@ fun PanelScreen(
     panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
     onClose: () -> Unit = {},
 ) {
+    val childPadding = rememberChildPadding()
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
-            .focusRequester(focusRequester)
-            .handleUserAction { panelAutoCloseState.active() }
-            .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) }
-    ) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
+        .focusRequester(focusRequester)
+        .handleUserAction { panelAutoCloseState.active() }
+        .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) }) {
+
+        PanelAutoCloseIndicator(
+            panelAutoCloseState = panelAutoCloseState,
+            modifier = Modifier.padding(start = childPadding.start, top = childPadding.top),
+        )
+
         PanelTopRight(
             channelNo = (iptvGroupList.iptvIdx(currentIptv) + 1).toString().padStart(2, '0'),
         )

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -85,6 +86,7 @@ import kotlin.math.max
  * darker color in light theme and lighter color in dark theme..
  * @param properties typically platform specific properties to further configure the dialog.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalTvMaterial3Api
@@ -165,15 +167,18 @@ fun StandardDialog(
             }
             confirmButton?.let { nnConfirmButton ->
                 Spacer(modifier = Modifier.padding(StandardDialogDefaults.ButtonsFlowRowPadding))
-                ProvideTextStyle(value = StandardDialogDefaults.buttonsTextStyle, content = {
-                    DialogFlowRow(
-                        mainAxisSpacing = StandardDialogDefaults.ButtonsMainAxisSpacing,
-                        crossAxisSpacing = StandardDialogDefaults.ButtonsCrossAxisSpacing
-                    ) {
-                        nnConfirmButton()
-                        dismissButton?.invoke()
-                    }
-                })
+                ProvideTextStyle(
+                    value = StandardDialogDefaults.buttonsTextStyle,
+                    content = {
+                        DialogFlowRow(
+                            mainAxisSpacing = StandardDialogDefaults.ButtonsMainAxisSpacing,
+                            crossAxisSpacing = StandardDialogDefaults.ButtonsCrossAxisSpacing
+                        ) {
+                            nnConfirmButton()
+                            dismissButton?.invoke()
+                        }
+                    },
+                )
             }
         }
     }
@@ -449,7 +454,7 @@ object StandardDialogDefaults {
     internal val DialogMaxWidth = 560.dp
 
     internal val TitleMaxHeight = 56.dp
-    internal val ContentMaxHeight = 300.dp
+    internal val ContentMaxHeight = 260.dp
     internal val ButtonsMainAxisSpacing = 16.dp
     internal val ButtonsCrossAxisSpacing = 16.dp
 

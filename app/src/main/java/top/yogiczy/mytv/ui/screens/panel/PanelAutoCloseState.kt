@@ -3,10 +3,7 @@ package top.yogiczy.mytv.ui.screens.panel
 import androidx.annotation.IntRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -16,10 +13,15 @@ class PanelAutoCloseState internal constructor(
     @IntRange(from = 0) private val timeout: Long,
     private val onTimeout: () -> Unit = {},
 ) {
-    private var _paused by mutableStateOf(false)
+    private val _onActive = mutableListOf<() -> Unit>()
 
     fun active() {
         channel.trySend(timeout)
+        _onActive.forEach { it() }
+    }
+
+    fun onActive(block: () -> Unit) {
+        _onActive.add(block)
     }
 
     private val channel = Channel<Long>(Channel.CONFLATED)
@@ -27,7 +29,7 @@ class PanelAutoCloseState internal constructor(
     @OptIn(FlowPreview::class)
     suspend fun observe() {
         channel.consumeAsFlow().debounce { it }.collect {
-            if (!_paused) onTimeout()
+            onTimeout()
         }
     }
 }

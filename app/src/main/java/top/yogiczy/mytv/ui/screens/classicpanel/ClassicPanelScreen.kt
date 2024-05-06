@@ -37,6 +37,7 @@ import top.yogiczy.mytv.ui.screens.classicpanel.components.ClassicPanelEpgList
 import top.yogiczy.mytv.ui.screens.classicpanel.components.ClassicPanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.classicpanel.components.ClassicPanelIptvList
 import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
+import top.yogiczy.mytv.ui.screens.panel.components.PanelAutoCloseIndicator
 import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.settings.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
@@ -108,6 +109,13 @@ fun ClassicPanelScreen(
             .handleUserAction { panelAutoCloseState.active() }
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
+        PanelAutoCloseIndicator(
+            panelAutoCloseState = panelAutoCloseState,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = childPadding.end, top = childPadding.top),
+        )
+
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
