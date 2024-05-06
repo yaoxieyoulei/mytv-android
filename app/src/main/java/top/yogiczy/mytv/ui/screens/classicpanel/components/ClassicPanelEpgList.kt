@@ -35,6 +35,7 @@ import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.max
@@ -70,7 +71,9 @@ fun ClassicPanelEpgList(
                 var isFocused by remember { mutableStateOf(false) }
 
                 ListItem(
-                    modifier = Modifier.onFocusChanged { isFocused = it.isFocused || it.hasFocus },
+                    modifier = Modifier
+                        .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
+                        .handleDPadKeyEvents(),
                     selected = programme.isLive(),
                     onClick = { },
                     headlineContent = {

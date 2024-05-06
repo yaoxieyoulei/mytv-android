@@ -1,8 +1,13 @@
 package top.yogiczy.mytv.ui.screens.classicpanel.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,7 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -21,6 +28,7 @@ import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import androidx.tv.material3.ListItem
+import androidx.tv.material3.ListItemDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.data.entities.EpgList
@@ -49,6 +57,7 @@ fun ClassicPanelIptvList(
     },
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
+    showProgrammeProgress: Boolean = false,
 ) {
     val childPadding = rememberChildPadding()
 
@@ -68,38 +77,68 @@ fun ClassicPanelIptvList(
         TvLazyColumn(
             state = state,
             contentPadding = PaddingValues(top = 8.dp, bottom = childPadding.bottom),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             itemsIndexed(iptvList) { index, iptv ->
+                var isFocused by remember { mutableStateOf(false) }
+                val focusRequester = focusRequesterList[index]
+
+                val currentProgramme = epgList.currentProgrammes(iptv)?.now
+
                 LaunchedEffect(Unit) {
                     if (index == currentIptvIdx && !hasFocused) {
                         hasFocused = true
-                        focusRequesterList[index].requestFocus()
+                        focusRequester.requestFocus()
                     }
                 }
 
-                ListItem(
-                    modifier = Modifier
-                        .focusRequester(focusRequesterList[index])
-                        .onFocusChanged {
-                            if (it.isFocused || it.hasFocus) {
-                                onChangeFocused(iptv, focusRequesterList[index])
+                Box(
+                    modifier = Modifier.clip(ListItemDefaults.shape().shape),
+                ) {
+                    ListItem(
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .onFocusChanged {
+                                isFocused = it.isFocused || it.hasFocus
+                                if (it.isFocused || it.hasFocus) {
+                                    onChangeFocused(iptv, focusRequester)
+                                }
                             }
-                        }
-                        .handleDPadKeyEvents(
-                            key = iptv.hashCode(),
-                            onSelect = { onIptvSelected(iptv) },
-                            onLongSelect = { onIptvFavoriteToggle(iptv) },
-                        ),
-                    selected = index == currentIptvIdx,
-                    onClick = { },
-                    headlineContent = { Text(text = iptv.name, maxLines = 2) },
-                    supportingContent = {
-                        Text(
-                            text = epgList.currentProgrammes(iptv)?.now?.title ?: "无节目",
-                            maxLines = 1,
+                            .handleDPadKeyEvents(
+                                key = iptv.hashCode(),
+                                onSelect = {
+                                    if (isFocused) onIptvSelected(iptv)
+                                    else focusRequester.requestFocus()
+                                },
+                                onLongSelect = {
+                                    if (isFocused) onIptvFavoriteToggle(iptv)
+                                    else focusRequester.requestFocus()
+                                },
+                            ),
+                        selected = index == currentIptvIdx,
+                        onClick = { },
+                        headlineContent = { Text(text = iptv.name, maxLines = 2) },
+                        supportingContent = {
+                            Text(
+                                text = currentProgramme?.title ?: "无节目",
+                                maxLines = 1,
+                            )
+                        },
+                    )
+
+                    if (showProgrammeProgress && currentProgramme != null) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth(0.6f)
+                                .height(3.dp)
+                                .background(
+                                    if (isFocused) MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+                                ),
                         )
-                    },
-                )
+                    }
+                }
             }
         }
     }
@@ -110,6 +149,7 @@ fun ClassicPanelIptvList(
 private fun ClassicPanelIptvListPreview() {
     MyTVTheme {
         ClassicPanelIptvList(
+            modifier = Modifier.padding(10.dp),
             iptvList = IptvList.EXAMPLE,
         )
     }

@@ -110,7 +110,7 @@ fun ClassicPanelScreen(
         PanelAutoCloseIndicator(
             panelAutoCloseState = panelAutoCloseState,
             modifier = Modifier
-                .align(Alignment.TopEnd)
+                .align(Alignment.BottomEnd)
                 .padding(end = childPadding.end, top = childPadding.top),
         )
 
@@ -160,6 +160,7 @@ fun ClassicPanelScreen(
                         favoriteKey++
                     },
                     panelAutoCloseState = panelAutoCloseState,
+                    showProgrammeProgress = settingsState.uiShowEpgProgrammeProgress,
                 )
 
                 val epg = epgList.firstOrNull { it.channel == focusedIptv.channelName }
