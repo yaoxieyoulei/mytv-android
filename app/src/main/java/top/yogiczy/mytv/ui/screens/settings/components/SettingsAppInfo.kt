@@ -11,13 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun SettingsAppInfo(
     modifier: Modifier = Modifier,

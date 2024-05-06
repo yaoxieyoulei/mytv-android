@@ -53,7 +53,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.max
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelIptvItem(
     modifier: Modifier = Modifier,

@@ -16,7 +16,6 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.progress
@@ -27,7 +26,6 @@ import top.yogiczy.mytv.ui.screens.panel.components.PanelChannelNo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvInfo
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelTempScreen(
     modifier: Modifier = Modifier,

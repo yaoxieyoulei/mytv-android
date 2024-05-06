@@ -2,12 +2,10 @@ package top.yogiczy.mytv.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 private val darkColorScheme
     @Composable get() = darkColorScheme(
         primary = Primary,
@@ -35,7 +33,6 @@ private val darkColorScheme
         border = Border,
     )
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MyTVTheme(
     content: @Composable () -> Unit,

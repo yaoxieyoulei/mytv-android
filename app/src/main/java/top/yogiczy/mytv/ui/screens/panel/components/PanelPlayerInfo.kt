@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
@@ -24,7 +23,6 @@ import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import java.text.DecimalFormat
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelPlayerInfo(
     modifier: Modifier = Modifier,
@@ -43,7 +41,6 @@ fun PanelPlayerInfo(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelPlayerInfoResolution(
     resolution: Pair<Int, Int>,
@@ -55,7 +52,6 @@ fun PanelPlayerInfoResolution(
     )
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelPlayerInfoNetSpeed(
     modifier: Modifier = Modifier,

@@ -23,7 +23,6 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.foundation.lazy.list.rememberTvLazyListState
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.MaterialTheme
@@ -40,7 +39,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.max
 
-@OptIn(ExperimentalTvMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ClassicPanelEpgList(
     modifier: Modifier = Modifier,
@@ -52,7 +51,7 @@ fun ClassicPanelEpgList(
 ) {
     val childPadding = rememberChildPadding()
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    
+
     LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
     LaunchedEffect(currentIdx) { state.scrollToItem(currentIdx) }
 

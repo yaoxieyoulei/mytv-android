@@ -12,7 +12,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.ui.App
 import top.yogiczy.mytv.ui.theme.MyTVTheme
@@ -22,7 +21,6 @@ import kotlin.system.exitProcess
 
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         UnsafeTrustManager.enableUnsafeTrustManager()
         installSplashScreen()

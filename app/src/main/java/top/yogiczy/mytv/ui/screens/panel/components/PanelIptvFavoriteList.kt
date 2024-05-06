@@ -22,7 +22,6 @@ import androidx.tv.foundation.lazy.grid.TvLazyGridState
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
@@ -40,7 +39,6 @@ import top.yogiczy.mytv.ui.utils.handleUserAction
 import kotlin.math.max
 import kotlin.math.min
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelIptvFavoriteList(
     modifier: Modifier = Modifier,

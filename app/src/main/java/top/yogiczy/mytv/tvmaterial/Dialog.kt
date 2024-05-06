@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -86,7 +85,6 @@ import kotlin.math.max
  * darker color in light theme and lighter color in dark theme..
  * @param properties typically platform specific properties to further configure the dialog.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalTvMaterial3Api
@@ -557,7 +555,6 @@ private object Elevation {
     val Level5 = 12.0.dp
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun ColorScheme.applyTonalElevation(backgroundColor: Color, elevation: Dp): Color {
     return if (backgroundColor == surface) {
         surfaceColorAtElevation(elevation)

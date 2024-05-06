@@ -15,21 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import kotlinx.coroutines.launch
-import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PanelAutoCloseIndicator(
     modifier: Modifier = Modifier,
     panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
-    val childPadding = rememberChildPadding()
     val coroutineScope = rememberCoroutineScope()
 
     val animatedProgress = remember { Animatable(initialValue = 1f) }

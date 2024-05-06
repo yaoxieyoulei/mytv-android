@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.ui.rememberChildPadding
@@ -59,7 +58,6 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun HomeScreenLoading(message: String?) {
     val childPadding = rememberChildPadding()
@@ -96,7 +94,6 @@ private fun HomeScreenLoadingPreview() {
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun HomeScreenError(message: String?) {
     val childPadding = rememberChildPadding()
