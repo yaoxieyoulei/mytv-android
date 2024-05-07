@@ -36,8 +36,6 @@ import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
-import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
-import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import kotlin.math.max
@@ -56,12 +54,9 @@ fun ClassicPanelIptvList(
         List(iptvList.size) { FocusRequester() }
     },
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
     showProgrammeProgress: Boolean = false,
 ) {
     val childPadding = rememberChildPadding()
-
-    LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
 
     var hasFocused by remember { mutableStateOf(false) }
     LaunchedEffect(iptvList) {

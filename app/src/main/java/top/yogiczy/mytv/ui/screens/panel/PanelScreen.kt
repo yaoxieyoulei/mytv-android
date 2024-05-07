@@ -34,7 +34,6 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
-import top.yogiczy.mytv.ui.screens.panel.components.PanelAutoCloseIndicator
 import top.yogiczy.mytv.ui.screens.panel.components.PanelChannelNo
 import top.yogiczy.mytv.ui.screens.panel.components.PanelDateTime
 import top.yogiczy.mytv.ui.screens.panel.components.PanelIptvFavoriteList
@@ -47,7 +46,6 @@ import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.screens.video.PlayerState
 import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
-import top.yogiczy.mytv.ui.utils.handleUserAction
 
 @Composable
 fun PanelScreen(
@@ -61,10 +59,8 @@ fun PanelScreen(
     onChangeShowFavoriteList: (Boolean) -> Unit = {},
     settingsState: SettingsState = rememberSettingsState(),
     playerState: PlayerState = rememberPlayerState(),
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
     onClose: () -> Unit = {},
 ) {
-    val childPadding = rememberChildPadding()
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
@@ -72,13 +68,7 @@ fun PanelScreen(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
         .focusRequester(focusRequester)
-        .handleUserAction { panelAutoCloseState.active() }
         .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) }) {
-
-        PanelAutoCloseIndicator(
-            panelAutoCloseState = panelAutoCloseState,
-            modifier = Modifier.padding(start = childPadding.start, top = childPadding.top),
-        )
 
         PanelTopRight(
             channelNo = (iptvGroupList.iptvIdx(currentIptv) + 1).toString().padStart(2, '0'),
@@ -95,7 +85,6 @@ fun PanelScreen(
             onChangeShowFavoriteList = onChangeShowFavoriteList,
             showProgrammeProgress = settingsState.uiShowEpgProgrammeProgress,
             playerState = playerState,
-            panelAutoCloseState = panelAutoCloseState,
             onIptvFavoriteToggle = {
                 if (settingsState.iptvChannelFavoriteList.contains(it.channelName)) {
                     settingsState.iptvChannelFavoriteList -= it.channelName
@@ -163,7 +152,6 @@ fun PanelBottom(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     showProgrammeProgress: Boolean = false,
     playerState: PlayerState = rememberPlayerState(),
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
     val childPadding = rememberChildPadding()
 
@@ -216,7 +204,6 @@ fun PanelBottom(
                         },
                         showProgrammeProgress = showProgrammeProgress,
                         onClose = { onChangeShowFavoriteList(false) },
-                        panelAutoCloseState = panelAutoCloseState,
                     )
                 } else {
                     PanelIptvGroupList(
@@ -236,7 +223,6 @@ fun PanelBottom(
                                 ToastState.I.showToast("没有收藏的频道")
                             }
                         },
-                        panelAutoCloseState = panelAutoCloseState,
                     )
                 }
             }

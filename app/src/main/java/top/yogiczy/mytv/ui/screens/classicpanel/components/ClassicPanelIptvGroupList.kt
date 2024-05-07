@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,8 +25,6 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.data.entities.IptvGroup
 import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.ui.rememberChildPadding
-import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
-import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.focusOnInitSaveable
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
@@ -45,12 +42,9 @@ fun ClassicPanelIptvGroupList(
     exitFocusRequester: FocusRequester = FocusRequester.Cancel,
     onEnter: () -> Unit = {},
     onExit: () -> Unit = {},
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
     val childPadding = rememberChildPadding()
     val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
 
     Column(
         modifier = modifier.width(200.dp),
@@ -85,7 +79,6 @@ fun ClassicPanelIptvGroupList(
                         .focusOnInitSaveable(index == currentIptvGroupIdx)
                         .onFocusChanged { if (it.isFocused || it.hasFocus) onChangeFocused(group) }
                         .handleDPadKeyEvents(onSelect = {
-                            panelAutoCloseState.active()
                             itemFocusRequester.requestFocus()
                         }),
                     selected = index == currentIptvGroupIdx,

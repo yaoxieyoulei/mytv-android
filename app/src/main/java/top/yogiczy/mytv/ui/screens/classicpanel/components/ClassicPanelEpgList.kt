@@ -32,8 +32,6 @@ import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.isLive
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.ui.rememberChildPadding
-import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
-import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.SimpleDateFormat
@@ -48,12 +46,10 @@ fun ClassicPanelEpgList(
     currentIdx: Int = max(0, epg.programmes.indexOfFirst { it.isLive() }),
     state: TvLazyListState = rememberTvLazyListState(currentIdx),
     exitFocusRequester: FocusRequester = FocusRequester.Default,
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
     val childPadding = rememberChildPadding()
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
     LaunchedEffect(currentIdx) { state.scrollToItem(currentIdx) }
 
     Column(

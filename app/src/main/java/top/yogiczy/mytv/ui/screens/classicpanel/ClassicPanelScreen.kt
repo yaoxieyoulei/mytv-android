@@ -35,16 +35,12 @@ import top.yogiczy.mytv.ui.rememberChildPadding
 import top.yogiczy.mytv.ui.screens.classicpanel.components.ClassicPanelEpgList
 import top.yogiczy.mytv.ui.screens.classicpanel.components.ClassicPanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.classicpanel.components.ClassicPanelIptvList
-import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
-import top.yogiczy.mytv.ui.screens.panel.components.PanelAutoCloseIndicator
-import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.settings.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.screens.toast.ToastState
 import top.yogiczy.mytv.ui.screens.video.PlayerState
 import top.yogiczy.mytv.ui.screens.video.rememberPlayerState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
-import top.yogiczy.mytv.ui.utils.handleUserAction
 import kotlin.math.max
 
 @Composable
@@ -57,7 +53,6 @@ fun ClassicPanelScreen(
     onIptvSelected: (Iptv) -> Unit = {},
     settingsState: SettingsState = rememberSettingsState(),
     playerState: PlayerState = rememberPlayerState(),
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
     onClose: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
@@ -75,11 +70,10 @@ fun ClassicPanelScreen(
         else iptvGroupList
     }
 
-    var focusedIptvGroup by remember {
-        mutableStateOf(
-            iptvGroupListWithFavorite[max(0, iptvGroupListWithFavorite.iptvGroupIdx(currentIptv))]
-        )
+    val currentIptvGroup = remember {
+        iptvGroupListWithFavorite[max(0, iptvGroupListWithFavorite.iptvGroupIdx(currentIptv))]
     }
+    var focusedIptvGroup by remember { mutableStateOf(currentIptvGroup) }
     val focusedIptvGroupIdx = max(0, iptvGroupListWithFavorite.indexOf(focusedIptvGroup))
 
     var focusedIptv by remember { mutableStateOf(currentIptv) }
@@ -104,16 +98,8 @@ fun ClassicPanelScreen(
         modifier = modifier
             .fillMaxSize()
             .focusRequester(focusRequester)
-            .handleUserAction { panelAutoCloseState.active() }
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
-        PanelAutoCloseIndicator(
-            panelAutoCloseState = panelAutoCloseState,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = childPadding.end, top = childPadding.top),
-        )
-
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -136,7 +122,6 @@ fun ClassicPanelScreen(
                     exitFocusRequester = focusedIptvFocusRequester,
                     onEnter = { inIptvGroupTab = true },
                     onExit = { inIptvGroupTab = false },
-                    panelAutoCloseState = panelAutoCloseState,
                 )
 
                 ClassicPanelIptvList(
@@ -159,7 +144,6 @@ fun ClassicPanelScreen(
                         }
                         favoriteKey++
                     },
-                    panelAutoCloseState = panelAutoCloseState,
                     showProgrammeProgress = settingsState.uiShowEpgProgrammeProgress,
                 )
 
@@ -168,7 +152,6 @@ fun ClassicPanelScreen(
                     ClassicPanelEpgList(
                         epg = epg,
                         exitFocusRequester = focusedIptvFocusRequester,
-                        panelAutoCloseState = panelAutoCloseState,
                     )
                 }
             }

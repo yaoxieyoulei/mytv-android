@@ -3,7 +3,6 @@ package top.yogiczy.mytv.ui.screens.panel.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,11 +19,8 @@ import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.ui.rememberChildPadding
-import top.yogiczy.mytv.ui.screens.panel.PanelAutoCloseState
-import top.yogiczy.mytv.ui.screens.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
-import top.yogiczy.mytv.ui.utils.handleUserAction
 import kotlin.math.max
 import kotlin.math.min
 
@@ -38,10 +34,8 @@ fun PanelIptvList(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     showProgrammeProgress: Boolean = false,
     state: TvLazyListState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptv))),
-    panelAutoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(),
 ) {
     val childPadding = rememberChildPadding()
-    LaunchedEffect(state.firstVisibleItemIndex) { panelAutoCloseState.active() }
 
     var showEpgDialog by remember { mutableStateOf(false) }
     var currentShowEpgIptv by remember { mutableStateOf(Iptv.EMPTY) }
@@ -91,7 +85,6 @@ fun PanelIptvList(
                         iptvList[min(iptvList.size - 1, iptvList.indexOf(currentShowEpgIptv) + 1)]
                 },
             )
-            .handleUserAction { panelAutoCloseState.active() },
     )
 }
 
