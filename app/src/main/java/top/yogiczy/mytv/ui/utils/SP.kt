@@ -90,6 +90,9 @@ object SP {
         /** 界面字体缩放比例 */
         UI_FONT_SCALE_RATIO,
 
+        /** 时间显示模式 */
+        UI_TIME_SHOW_MODE,
+
         /** ==================== 更新 ==================== */
         /** 更新强提醒（弹窗形式） */
         UPDATE_FORCE_REMIND,
@@ -216,9 +219,34 @@ object SP {
         get() = sp.getFloat(KEY.UI_FONT_SCALE_RATIO.name, 1f)
         set(value) = sp.edit().putFloat(KEY.UI_FONT_SCALE_RATIO.name, value).apply()
 
+    /** 时间显示模式 */
+    var uiTimeShowMode: UiTimeShowMode
+        get() = UiTimeShowMode.fromValue(sp.getInt(KEY.UI_TIME_SHOW_MODE.name, 0))
+        set(value) = sp.edit().putInt(KEY.UI_TIME_SHOW_MODE.name, value.value).apply()
+
     /** ==================== 更新 ==================== */
     /** 更新强提醒（弹窗形式） */
     var updateForceRemind: Boolean
         get() = sp.getBoolean(KEY.UPDATE_FORCE_REMIND.name, false)
         set(value) = sp.edit().putBoolean(KEY.UPDATE_FORCE_REMIND.name, value).apply()
+
+    enum class UiTimeShowMode(val value: Int) {
+        /** 隐藏 */
+        HIDDEN(0),
+
+        /** 常显 */
+        ALWAYS(1),
+
+        /** 整点 */
+        EVERY_HOUR(2),
+
+        /** 半点 */
+        HALF_HOUR(3);
+
+        companion object {
+            fun fromValue(value: Int): UiTimeShowMode {
+                return entries.firstOrNull { it.value == value } ?: ALWAYS
+            }
+        }
+    }
 }

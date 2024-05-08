@@ -39,6 +39,7 @@ class SettingsState(
     uiUseClassicPanelScreen: Boolean = false,
     uiDensityScaleRatio: Float = 1f,
     uiFontScaleRatio: Float = 1f,
+    uiTimeShowMode: SP.UiTimeShowMode = SP.UiTimeShowMode.HIDDEN,
 
     updateForceRemind: Boolean = false
 ) {
@@ -69,6 +70,7 @@ class SettingsState(
     var uiUseClassicPanelScreen by mutableStateOf(uiUseClassicPanelScreen)
     var uiDensityScaleRatio by mutableFloatStateOf(uiDensityScaleRatio)
     var uiFontScaleRatio by mutableFloatStateOf(uiFontScaleRatio)
+    var uiTimeShowMode by mutableStateOf(uiTimeShowMode)
 
     var updateForceRemind by mutableStateOf(updateForceRemind)
 }
@@ -104,6 +106,7 @@ fun rememberSettingsState(): SettingsState {
             uiUseClassicPanelScreen = SP.uiUseClassicPanelScreen,
             uiDensityScaleRatio = SP.uiDensityScaleRatio,
             uiFontScaleRatio = SP.uiFontScaleRatio,
+            uiTimeShowMode = SP.uiTimeShowMode,
 
             updateForceRemind = SP.updateForceRemind
         )
@@ -154,6 +157,7 @@ fun rememberSettingsState(): SettingsState {
     }
     LaunchedEffect(state.uiDensityScaleRatio) { SP.uiDensityScaleRatio = state.uiDensityScaleRatio }
     LaunchedEffect(state.uiFontScaleRatio) { SP.uiFontScaleRatio = state.uiFontScaleRatio }
+    LaunchedEffect(state.uiTimeShowMode) { SP.uiTimeShowMode = state.uiTimeShowMode }
 
     LaunchedEffect(state.updateForceRemind) { SP.updateForceRemind = state.updateForceRemind }
 

@@ -59,6 +59,7 @@ import top.yogiczy.mytv.ui.screens.panel.DigitChannelSelectState
 import top.yogiczy.mytv.ui.screens.panel.PanelDigitChannelSelectScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelScreen
 import top.yogiczy.mytv.ui.screens.panel.PanelTempScreen
+import top.yogiczy.mytv.ui.screens.panel.PanelTimeScreen
 import top.yogiczy.mytv.ui.screens.panel.rememberDigitChannelSelectState
 import top.yogiczy.mytv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.ui.screens.settings.SettingsState
@@ -197,6 +198,8 @@ fun HomeContent(
             state = playerState,
             showPlayerInfo = settingsState.debugShowPlayerInfo,
         )
+
+        PanelTimeScreen(showMode = settingsState.uiTimeShowMode)
 
         if (homeState.isTempPanelVisible) {
             PanelTempScreen(

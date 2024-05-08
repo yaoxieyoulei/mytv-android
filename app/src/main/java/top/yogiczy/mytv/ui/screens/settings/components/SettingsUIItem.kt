@@ -16,10 +16,12 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.tvmaterial.StandardDialog
 import top.yogiczy.mytv.ui.screens.settings.SettingsState
 import top.yogiczy.mytv.ui.screens.settings.rememberSettingsState
 import top.yogiczy.mytv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleDPadKeyEvents
 import java.text.DecimalFormat
 
@@ -106,6 +108,40 @@ fun SettingsUIDialog(
             }
 
             item {
+                val timeShowRangeSeconds = Constants.UI_TIME_SHOW_RANGE / 1000
+
+                ListItem(
+                    modifier = modifier.handleDPadKeyEvents(
+                        onSelect = {
+                            settingsState.uiTimeShowMode =
+                                SP.UiTimeShowMode.entries.let { it[(it.indexOf(settingsState.uiTimeShowMode) + 1) % it.size] }
+                        },
+                    ),
+                    selected = false,
+                    onClick = { },
+                    headlineContent = { Text(text = "时间显示") },
+                    supportingContent = {
+                        Text(
+                            text = when (settingsState.uiTimeShowMode) {
+                                SP.UiTimeShowMode.HIDDEN -> "不显示时间"
+                                SP.UiTimeShowMode.ALWAYS -> "总是显示时间"
+                                SP.UiTimeShowMode.EVERY_HOUR -> "整点前后${timeShowRangeSeconds}s显示时间"
+                                SP.UiTimeShowMode.HALF_HOUR -> "半点前后${timeShowRangeSeconds}s显示时间"
+                            }
+                        )
+                    },
+                    trailingContent = {
+                        when (settingsState.uiTimeShowMode) {
+                            SP.UiTimeShowMode.HIDDEN -> Text(text = "隐藏")
+                            SP.UiTimeShowMode.ALWAYS -> Text(text = "常显")
+                            SP.UiTimeShowMode.EVERY_HOUR -> Text(text = "整点")
+                            SP.UiTimeShowMode.HALF_HOUR -> Text(text = "半点")
+                        }
+                    },
+                )
+            }
+
+            item {
                 val defaultScale = 1f
                 val minScale = 1f
                 val maxScale = 2f
@@ -118,8 +154,9 @@ fun SettingsUIDialog(
                                 settingsState.uiDensityScaleRatio = minScale
                             } else {
                                 settingsState.uiDensityScaleRatio =
-                                    (settingsState.uiDensityScaleRatio + stepScale)
-                                        .coerceIn(minScale, maxScale)
+                                    (settingsState.uiDensityScaleRatio + stepScale).coerceIn(
+                                        minScale, maxScale
+                                    )
                             }
                         },
                         onLongSelect = { settingsState.uiDensityScaleRatio = defaultScale },
@@ -147,8 +184,9 @@ fun SettingsUIDialog(
                                 settingsState.uiFontScaleRatio = minScale
                             } else {
                                 settingsState.uiFontScaleRatio =
-                                    (settingsState.uiFontScaleRatio + stepScale)
-                                        .coerceIn(minScale, maxScale)
+                                    (settingsState.uiFontScaleRatio + stepScale).coerceIn(
+                                        minScale, maxScale
+                                    )
                             }
                         },
                         onLongSelect = { settingsState.uiFontScaleRatio = defaultScale },
