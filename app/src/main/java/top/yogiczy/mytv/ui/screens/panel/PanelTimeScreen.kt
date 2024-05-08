@@ -30,13 +30,17 @@ fun PanelTimeScreen(
     showMode: SP.UiTimeShowMode = SP.UiTimeShowMode.HIDDEN,
 ) {
     val childPadding = rememberChildPadding()
-    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+    var timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
     val timestamp = rememberTimestamp()
 
     var visible by remember { mutableStateOf(false) }
     when (showMode) {
         SP.UiTimeShowMode.HIDDEN -> visible = false
-        SP.UiTimeShowMode.ALWAYS -> visible = true
+        SP.UiTimeShowMode.ALWAYS -> {
+            timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            visible = true
+        }
+
         SP.UiTimeShowMode.EVERY_HOUR -> {
             LaunchedEffect(timestamp) {
                 visible = timestamp % 3600000 <= Constants.UI_TIME_SHOW_RANGE

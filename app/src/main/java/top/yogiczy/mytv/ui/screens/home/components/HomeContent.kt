@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -163,10 +164,7 @@ fun HomeContent(
                     onSelect = { homeState.changePanelVisible(true) },
                     onLongSelect = { homeState.changeSettingsVisible(true) },
                     onSettings = { homeState.changeSettingsVisible(true) },
-                    onNumber = {
-                        homeState.changeTempPanelVisible(false)
-                        digitChannelSelectState.input(it)
-                    },
+                    onNumber = { digitChannelSelectState.input(it) },
                 )
                 .handleDragGestures(
                     onSwipeDown = {
@@ -199,9 +197,11 @@ fun HomeContent(
             showPlayerInfo = settingsState.debugShowPlayerInfo,
         )
 
-        PanelTimeScreen(showMode = settingsState.uiTimeShowMode)
+        if (homeState.isTimePanelVisible && digitChannelSelectState.channelNo.isEmpty()) {
+            PanelTimeScreen(showMode = settingsState.uiTimeShowMode)
+        }
 
-        if (homeState.isTempPanelVisible) {
+        if (homeState.isTempPanelVisible && !homeState.isSettingsVisible && !homeState.isPanelVisible && digitChannelSelectState.channelNo.isEmpty()) {
             PanelTempScreen(
                 channelNo = iptvGroupList.iptvIdx(homeState.currentIptv) + 1,
                 currentIptv = homeState.currentIptv,
@@ -311,6 +311,8 @@ class HomeContentState(
     private var _isTempPanelVisible by mutableStateOf(false)
     val isTempPanelVisible get() = _isTempPanelVisible
 
+    val isTimePanelVisible by derivedStateOf { !_isSettingsVisible && !_isPanelVisible && !_isTempPanelVisible }
+
     private var _exoPlayer = ExoPlayer.Builder(context).build().apply {
         playWhenReady = true
     }
@@ -386,10 +388,6 @@ class HomeContentState(
 
     fun changeSettingsVisible(visible: Boolean) {
         _isSettingsVisible = visible
-    }
-
-    fun changeTempPanelVisible(visible: Boolean) {
-        _isTempPanelVisible = visible
     }
 
     private fun getPrevIptv(): Iptv {
