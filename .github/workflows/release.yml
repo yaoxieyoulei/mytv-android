@@ -48,7 +48,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir artifacts
-          cp app/release/mytv-android-*.apk artifacts/
+          cp app/release/*.apk artifacts/
 
       - name: Upload Release
         uses: ncipollo/release-action@v1
