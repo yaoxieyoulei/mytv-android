@@ -470,7 +470,7 @@ fun getExoPlayerMediaSource(
 ): MediaSource {
     val mediaItem = MediaItem.fromUri(uri)
 
-    return when (val type = contentType ?: Util.inferContentType(uri)) {
+    return when (contentType ?: Util.inferContentType(uri)) {
         C.CONTENT_TYPE_HLS -> {
             HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
@@ -480,7 +480,7 @@ fun getExoPlayerMediaSource(
         }
 
         else -> {
-            throw IllegalStateException("Unsupported type: $type")
+            HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
     }
 }
