@@ -54,6 +54,7 @@ fun SettingsCustomIptvItem(
             if (settingsState.iptvSourceUrl != it) {
                 settingsState.iptvLastIptvIdx = 0
                 settingsState.iptvSourceCachedAt = 0
+                settingsState.iptvPlayableHostList = emptySet()
                 settingsState.iptvSourceUrl = it
             }
             showDialog = false
