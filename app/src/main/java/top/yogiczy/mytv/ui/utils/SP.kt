@@ -8,11 +8,15 @@ import top.yogiczy.mytv.data.utils.Constants
  * 应用配置存储
  */
 object SP {
-    const val SP_NAME = "mytv"
-    const val SP_MODE = Context.MODE_PRIVATE
+    private const val SP_NAME = "mytv"
+    private const val SP_MODE = Context.MODE_PRIVATE
     private lateinit var sp: SharedPreferences
+
+    fun getInstance(context: Context): SharedPreferences =
+        context.getSharedPreferences(SP_NAME, SP_MODE)
+
     fun init(context: Context) {
-        sp = context.getSharedPreferences(SP_NAME, SP_MODE)
+        sp = getInstance(context)
     }
 
     enum class KEY {
@@ -23,12 +27,15 @@ object SP {
         /** 上一次最新版本 */
         APP_LAST_LATEST_VERSION,
 
+        /** 设备显示类型 */
+        APP_DEVICE_DISPLAY_TYPE,
+
         /** ==================== 调式 ==================== */
         /** 显示fps */
         DEBUG_SHOW_FPS,
 
         /** 播放器详细信息 */
-        DEBUG_SHOW_PLAYER_INFO,
+        DEBUG_SHOW_VIDEO_PLAYER_METADATA,
 
         /** ==================== 直播源 ==================== */
         /** 上一次直播源序号 */
@@ -39,9 +46,6 @@ object SP {
 
         /** 直播源精简 */
         IPTV_SOURCE_SIMPLIFY,
-
-        /** 直播源最近缓存时间 */
-        IPTV_SOURCE_CACHED_AT,
 
         /** 直播源url */
         IPTV_SOURCE_URL,
@@ -55,26 +59,29 @@ object SP {
         /** 直播源历史列表 */
         IPTV_SOURCE_URL_HISTORY_LIST,
 
+        /** 是否启用数字选台 */
+        IPTV_CHANNEL_NO_SELECT_ENABLE,
+
+        /** 是否启用直播源频道收藏 */
+        IPTV_CHANNEL_FAVORITE_ENABLE,
+
+        /** 显示直播源频道收藏列表 */
+        IPTV_CHANNEL_FAVORITE_LIST_VISIBLE,
+
         /** 直播源频道收藏列表 */
         IPTV_CHANNEL_FAVORITE_LIST,
 
         /** ==================== 节目单 ==================== */
-        /** 启用epg */
+        /** 启用节目单 */
         EPG_ENABLE,
 
-        /** epg最近缓存时间 */
-        EPG_XLM_CACHED_AT,
-
-        /** epg解析最近缓存hash */
-        EPG_CACHED_HASH,
-
-        /** epg xml url */
+        /** 节目单 xml url */
         EPG_XML_URL,
 
-        /** epg刷新时间阈值（小时） */
+        /** 节目单刷新时间阈值（小时） */
         EPG_REFRESH_TIME_THRESHOLD,
 
-        /** epg历史列表 */
+        /** 节目单历史列表 */
         EPG_XML_URL_HISTORY_LIST,
 
         /** ==================== 界面 ==================== */
@@ -109,6 +116,11 @@ object SP {
         get() = sp.getString(KEY.APP_LAST_LATEST_VERSION.name, "")!!
         set(value) = sp.edit().putString(KEY.APP_LAST_LATEST_VERSION.name, value).apply()
 
+    /** 设备显示类型 */
+    var appDeviceDisplayType: AppDeviceDisplayType
+        get() = AppDeviceDisplayType.fromValue(sp.getInt(KEY.APP_DEVICE_DISPLAY_TYPE.name, 0))
+        set(value) = sp.edit().putInt(KEY.APP_DEVICE_DISPLAY_TYPE.name, value.value).apply()
+
     /** ==================== 调式 ==================== */
     /** 显示fps */
     var debugShowFps: Boolean
@@ -116,9 +128,9 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_FPS.name, value).apply()
 
     /** 播放器详细信息 */
-    var debugShowPlayerInfo: Boolean
-        get() = sp.getBoolean(KEY.DEBUG_SHOW_PLAYER_INFO.name, false)
-        set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_PLAYER_INFO.name, value).apply()
+    var debugShowVideoPlayerMetadata: Boolean
+        get() = sp.getBoolean(KEY.DEBUG_SHOW_VIDEO_PLAYER_METADATA.name, false)
+        set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_VIDEO_PLAYER_METADATA.name, value).apply()
 
     /** ==================== 直播源 ==================== */
     /** 上一次直播源序号 */
@@ -135,11 +147,6 @@ object SP {
     var iptvSourceSimplify: Boolean
         get() = sp.getBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, false)
         set(value) = sp.edit().putBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, value).apply()
-
-    /** 直播源最近缓存时间 */
-    var iptvSourceCachedAt: Long
-        get() = sp.getLong(KEY.IPTV_SOURCE_CACHED_AT.name, 0)
-        set(value) = sp.edit().putLong(KEY.IPTV_SOURCE_CACHED_AT.name, value).apply()
 
     /** 直播源 url */
     var iptvSourceUrl: String
@@ -162,38 +169,44 @@ object SP {
         get() = sp.getStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, value).apply()
 
+    /** 是否启用数字选台 */
+    var iptvChannelNoSelectEnable: Boolean
+        get() = sp.getBoolean(KEY.IPTV_CHANNEL_NO_SELECT_ENABLE.name, true)
+        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_NO_SELECT_ENABLE.name, value).apply()
+
+    /** 是否启用直播源频道收藏 */
+    var iptvChannelFavoriteEnable: Boolean
+        get() = sp.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_ENABLE.name, true)
+        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_FAVORITE_ENABLE.name, value).apply()
+
+    /** 显示直播源频道收藏列表 */
+    var iptvChannelFavoriteListVisible: Boolean
+        get() = sp.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, false)
+        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, value)
+            .apply()
+
     /** 直播源频道收藏列表 */
     var iptvChannelFavoriteList: Set<String>
         get() = sp.getStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, value).apply()
 
     /** ==================== 节目单 ==================== */
-    /** 启用epg */
+    /** 启用节目单 */
     var epgEnable: Boolean
         get() = sp.getBoolean(KEY.EPG_ENABLE.name, true)
         set(value) = sp.edit().putBoolean(KEY.EPG_ENABLE.name, value).apply()
 
-    /** epg最近缓存时间 */
-    var epgXmlCachedAt: Long
-        get() = sp.getLong(KEY.EPG_XLM_CACHED_AT.name, 0)
-        set(value) = sp.edit().putLong(KEY.EPG_XLM_CACHED_AT.name, value).apply()
-
-    /** epg解析最近缓存hash */
-    var epgCachedHash: Int
-        get() = sp.getInt(KEY.EPG_CACHED_HASH.name, 0)
-        set(value) = sp.edit().putInt(KEY.EPG_CACHED_HASH.name, value).apply()
-
-    /** epg xml url */
+    /** 节目单 xml url */
     var epgXmlUrl: String
         get() = (sp.getString(KEY.EPG_XML_URL.name, "") ?: "").ifBlank { Constants.EPG_XML_URL }
         set(value) = sp.edit().putString(KEY.EPG_XML_URL.name, value).apply()
 
-    /** epg刷新时间阈值（小时） */
+    /** 节目单刷新时间阈值（小时） */
     var epgRefreshTimeThreshold: Int
         get() = sp.getInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, Constants.EPG_REFRESH_TIME_THRESHOLD)
         set(value) = sp.edit().putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value).apply()
 
-    /** epg历史列表 */
+    /** 节目单历史列表 */
     var epgXmlUrlHistoryList: Set<String>
         get() = sp.getStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, value).apply()
@@ -201,7 +214,7 @@ object SP {
     /** ==================== 界面 ==================== */
     /** 显示节目进度 */
     var uiShowEpgProgrammeProgress: Boolean
-        get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, false)
+        get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, true)
         set(value) = sp.edit().putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value).apply()
 
     /** 使用经典选台界面 */
@@ -246,6 +259,23 @@ object SP {
         companion object {
             fun fromValue(value: Int): UiTimeShowMode {
                 return entries.firstOrNull { it.value == value } ?: ALWAYS
+            }
+        }
+    }
+
+    enum class AppDeviceDisplayType(val value: Int) {
+        /** tv端 */
+        LEANBACK(0),
+
+        /** 手机端 */
+        MOBILE(1),
+
+        /** 平板端 */
+        PAD(2);
+
+        companion object {
+            fun fromValue(value: Int): AppDeviceDisplayType {
+                return entries.firstOrNull { it.value == value } ?: LEANBACK
             }
         }
     }

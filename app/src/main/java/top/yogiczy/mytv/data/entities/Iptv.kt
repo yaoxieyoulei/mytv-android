@@ -1,31 +1,28 @@
 package top.yogiczy.mytv.data.entities
 
+import androidx.compose.runtime.Immutable
+
 /**
  * 直播源
  */
+@Immutable
 data class Iptv(
     /**
      * 直播源名称
      */
-    val name: String,
+    val name: String = "",
 
     /**
      * 频道名称，用于查询节目单
      */
-    val channelName: String,
+    val channelName: String = "",
 
     /**
      * 播放地址
      */
-    val urlList: List<String>,
+    val urlList: List<String> = emptyList(),
 ) {
     companion object {
-        val EMPTY = Iptv(
-            name = "",
-            channelName = "",
-            urlList = emptyList(),
-        )
-
         val EXAMPLE = Iptv(
             name = "CCTV-1",
             channelName = "cctv1",

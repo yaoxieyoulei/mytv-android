@@ -10,7 +10,7 @@ object Constants {
     const val APP_TITLE = "我的电视"
 
     /**
-     * 应用 代码repository
+     * 应用 代码仓库
      */
     const val APP_REPO = "https://github.com/yaoxieyoulei/mytv-android"
 
@@ -28,7 +28,7 @@ object Constants {
     /**
      * 节目单XML地址
      */
-    const val EPG_XML_URL = "https://epg.erw.cc/e.xml"
+    const val EPG_XML_URL = "http://epg.51zmt.top:8000/e.xml.gz"
 
     /**
      * 节目单刷新时间阈值（小时）
@@ -36,9 +36,9 @@ object Constants {
     const val EPG_REFRESH_TIME_THRESHOLD = 2 // 不到2点不刷新
 
     /**
-     * GitHub最新版本信息
+     * Git最新版本信息
      */
-    const val GITHUB_RELEASE_LATEST_URL =
+    const val GIT_RELEASE_LATEST_URL =
         "https://api.github.com/repos/yaoxieyoulei/mytv-android/releases/latest"
 
     /**
@@ -57,9 +57,14 @@ object Constants {
     const val HTTP_RETRY_INTERVAL = 3000L
 
     /**
-     * 播放器http userAgent
+     * 播放器 http userAgent
      */
     const val VIDEO_PLAYER_HTTP_USER_AGENT = "ExoPlayer"
+
+    /**
+     * 播放器加载超时
+     */
+    const val VIDEO_PLAYER_LOAD_TIMEOUT = 1000L * 15 // 15秒
 
     /**
      * 界面 超时未操作自动关闭选台界面
@@ -70,4 +75,9 @@ object Constants {
      * 界面 时间显示前后范围
      */
     const val UI_TIME_SHOW_RANGE = 1000L * 30 // 前后30秒
+
+    /**
+     * 界面 临时面板界面显示时间
+     */
+    const val UI_TEMP_PANEL_SCREEN_SHOW_DURATION = 1500L // 1.5秒
 }

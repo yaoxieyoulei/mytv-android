@@ -2,6 +2,9 @@ package top.yogiczy.mytv.data.entities
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * 直播源列表
+ */
 @Immutable
 data class IptvList(
     val value: List<Iptv> = emptyList(),

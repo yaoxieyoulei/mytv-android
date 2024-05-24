@@ -7,14 +7,10 @@ data class IptvGroup(
     /**
      * 分组名称
      */
-    val name: String,
+    val name: String = "",
 
     /**
      * 直播源列表
      */
-    val iptvs: IptvList,
-) {
-    companion object {
-        val EMPTY = IptvGroup("", IptvList())
-    }
-}
+    val iptvList: IptvList = IptvList(),
+)

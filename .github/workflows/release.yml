@@ -38,9 +38,9 @@ jobs:
 
       - name: 重命名应用
         run: |
-          for file in app/release/app-*.apk; do
+          for file in app/build/outputs/apk/release/app-*.apk; do
             if [[ $file =~ app-(.?*)release.apk ]]; then
-              new_file_name="app/release/mytv-android-${BASH_REMATCH[1]}${{ steps.version.outputs.version }}.apk"
+              new_file_name="app/build/outputs/apk/release/mytv-android-${BASH_REMATCH[1]}${{ steps.version.outputs.version }}.apk"
               mv "$file" "$new_file_name"
             fi
           done
@@ -48,7 +48,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir artifacts
-          cp app/release/*.apk artifacts/
+          cp app/build/outputs/apk/release/*.apk artifacts/
 
       - name: Upload Release
         uses: ncipollo/release-action@v1

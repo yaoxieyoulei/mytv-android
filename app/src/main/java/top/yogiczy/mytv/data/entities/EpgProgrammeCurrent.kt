@@ -1,15 +1,18 @@
 package top.yogiczy.mytv.data.entities
 
+/**
+ * 当前节目/下一个节目
+ */
 data class EpgProgrammeCurrent(
     /**
      * 当前正在播放
      */
-    val now: EpgProgramme?,
+    val now: EpgProgramme? = null,
 
     /**
      * 稍后播放
      */
-    val next: EpgProgramme?,
+    val next: EpgProgramme? = null,
 ) {
     companion object {
         val EXAMPLE = EpgProgrammeCurrent(

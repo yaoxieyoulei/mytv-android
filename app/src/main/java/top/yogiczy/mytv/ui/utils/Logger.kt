@@ -2,9 +2,11 @@ package top.yogiczy.mytv.ui.utils
 
 import android.util.Log
 
-
+/**
+ * 日志工具类
+ */
 class Logger private constructor(
-    private val tag: String? = null,
+    private val tag: String
 ) {
 
     fun d(message: String, throwable: Throwable? = null) {
@@ -28,10 +30,13 @@ class Logger private constructor(
     }
 
     companion object {
-        fun create(tag: String?) = Logger(tag)
+        fun create(tag: String) = Logger(tag)
     }
 }
 
+/**
+ * 注入日志
+ */
 abstract class Loggable(private val tag: String? = null) {
     protected val log: Logger
         get() = Logger.create("L|${tag ?: javaClass.simpleName}")

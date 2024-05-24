@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.AppGlobal
 import top.yogiczy.mytv.R
 import top.yogiczy.mytv.data.utils.Constants
-import top.yogiczy.mytv.ui.screens.toast.ToastState
+import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import java.io.File
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -28,6 +28,10 @@ object HttpServer : Loggable() {
 
     private val uploadedApkFile = File(AppGlobal.cacheDir, "uploaded_apk.apk").apply {
         deleteOnExit()
+    }
+
+    val serverUrl: String by lazy {
+        "http://${getLocalIpAddress()}:${SERVER_PORT}/"
     }
 
     fun start(context: Context) {
@@ -87,25 +91,8 @@ object HttpServer : Loggable() {
                     AllSettings(
                         appTitle = Constants.APP_TITLE,
                         appRepo = Constants.APP_REPO,
-
-                        appBootLaunch = SP.appBootLaunch,
-
-                        debugShowFps = SP.debugShowFps,
-                        debugShowPlayerInfo = SP.debugShowPlayerInfo,
-
-                        iptvChannelChangeFlip = SP.iptvChannelChangeFlip,
-                        iptvSourceSimplify = SP.iptvSourceSimplify,
-                        iptvSourceCachedAt = SP.iptvSourceCachedAt,
                         iptvSourceUrl = SP.iptvSourceUrl,
-                        iptvSourceCacheTime = SP.iptvSourceCacheTime,
-
-                        epgEnable = SP.epgEnable,
-                        epgXmlCachedAt = SP.epgXmlCachedAt,
-                        epgCachedHash = SP.epgCachedHash,
                         epgXmlUrl = SP.epgXmlUrl,
-                        epgRefreshTimeThreshold = SP.epgRefreshTimeThreshold,
-
-                        uiShowEpgProgrammeProgress = SP.uiShowEpgProgrammeProgress,
                     )
                 )
             )
@@ -117,25 +104,8 @@ object HttpServer : Loggable() {
         response: AsyncHttpServerResponse,
     ) {
         val body = request.getBody<JSONObjectBody>().get()
-        SP.appBootLaunch = body.get("appBootLaunch") as Boolean
-
-        SP.debugShowFps = body.get("debugShowFps").toString().toBoolean()
-        SP.debugShowPlayerInfo = body.get("debugShowPlayerInfo").toString().toBoolean()
-
-        SP.iptvChannelChangeFlip = body.get("iptvChannelChangeFlip").toString().toBoolean()
-        SP.iptvSourceSimplify = body.get("iptvSourceSimplify").toString().toBoolean()
-        SP.iptvSourceCachedAt = body.get("iptvSourceCachedAt").toString().toLong()
         SP.iptvSourceUrl = body.get("iptvSourceUrl").toString()
-        SP.iptvSourceCacheTime = body.get("iptvSourceCacheTime").toString().toLong()
-
-        SP.epgEnable = body.get("epgEnable").toString().toBoolean()
-        SP.epgXmlCachedAt = body.get("epgXmlCachedAt").toString().toLong()
-        SP.epgCachedHash = body.get("epgCachedHash").toString().toInt()
         SP.epgXmlUrl = body.get("epgXmlUrl").toString()
-        SP.epgRefreshTimeThreshold = body.get("epgRefreshTimeThreshold").toString().toInt()
-
-        SP.uiShowEpgProgrammeProgress =
-            body.get("uiShowEpgProgrammeProgress").toString().toBoolean()
 
         wrapResponse(response).send("success")
     }
@@ -156,14 +126,14 @@ object HttpServer : Loggable() {
                 body.setDataCallback { _, bb ->
                     val byteArray = bb.allByteArray
                     hasReceived += byteArray.size
-                    ToastState.I.showToast("正在接收文件: ${(hasReceived * 100f / contentLength).toInt()}%")
+                    LeanbackToastState.I.showToast("正在接收文件: ${(hasReceived * 100f / contentLength).toInt()}%")
                     os.write(byteArray)
                 }
             }
         }
 
         body.setEndCallback {
-            ToastState.I.showToast("文件接收完成")
+            LeanbackToastState.I.showToast("文件接收完成")
             body.dataEmitter.close()
             os.flush()
             os.close()
@@ -173,7 +143,7 @@ object HttpServer : Loggable() {
         wrapResponse(response).send("success")
     }
 
-    fun getLocalIpAddress(): String {
+    private fun getLocalIpAddress(): String {
         val defaultIp = "0.0.0.0"
 
         try {
@@ -200,23 +170,6 @@ object HttpServer : Loggable() {
 private data class AllSettings(
     val appTitle: String,
     val appRepo: String,
-
-    val appBootLaunch: Boolean,
-
-    val debugShowFps: Boolean,
-    val debugShowPlayerInfo: Boolean,
-
-    val iptvChannelChangeFlip: Boolean,
-    val iptvSourceSimplify: Boolean,
-    val iptvSourceCachedAt: Long,
     val iptvSourceUrl: String,
-    val iptvSourceCacheTime: Long,
-
-    val epgEnable: Boolean,
-    val epgXmlCachedAt: Long,
-    val epgCachedHash: Int,
     val epgXmlUrl: String,
-    val epgRefreshTimeThreshold: Int,
-
-    val uiShowEpgProgrammeProgress: Boolean,
 )

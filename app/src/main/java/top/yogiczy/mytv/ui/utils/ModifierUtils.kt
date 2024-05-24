@@ -2,32 +2,17 @@ package top.yogiczy.mytv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.dp
 import kotlin.math.absoluteValue
 
-/**
- * 监听短按、长按按键事件
- */
-fun Modifier.handleKeyEvents(
+fun Modifier.handleLeanbackKeyEvents(
     onKeyTap: Map<Int, () -> Unit> = emptyMap(),
     onKeyLongTap: Map<Int, () -> Unit> = emptyMap(),
 ): Modifier {
@@ -56,10 +41,7 @@ fun Modifier.handleKeyEvents(
     }
 }
 
-/**
- * 监听手势滑动事件
- */
-fun Modifier.handleDragGestures(
+fun Modifier.handleLeanbackDragGestures(
     onSwipeUp: () -> Unit = {},
     onSwipeDown: () -> Unit = {},
     onSwipeLeft: () -> Unit = {},
@@ -107,10 +89,7 @@ fun Modifier.handleDragGestures(
     }
 }
 
-/**
- * 监听全方位的DPad按键事件（兼容触摸屏）
- */
-fun Modifier.handleDPadKeyEvents(
+fun Modifier.handleLeanbackKeyEvents(
     key: Any = Unit,
     onLeft: () -> Unit = {},
     onLongLeft: () -> Unit = {},
@@ -124,7 +103,7 @@ fun Modifier.handleDPadKeyEvents(
     onLongSelect: () -> Unit = {},
     onSettings: () -> Unit = {},
     onNumber: (Int) -> Unit = {},
-) = this then handleKeyEvents(
+) = this then handleLeanbackKeyEvents(
     onKeyTap = mapOf(
         KeyEvent.KEYCODE_DPAD_LEFT to onLeft,
         KeyEvent.KEYCODE_DPAD_RIGHT to onRight,
@@ -179,70 +158,3 @@ fun Modifier.handleDPadKeyEvents(
         onDoubleTap = { onSettings() },
     )
 }
-
-@Composable
-fun Modifier.focusOnInitSaveable(initialFocused: Boolean): Modifier {
-    val focusRequester = remember { FocusRequester() }
-    var hasFocused by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (initialFocused && !hasFocused) {
-            hasFocused = true
-            focusRequester.requestFocus()
-        }
-    }
-
-    return focusRequester(focusRequester)
-}
-
-@Composable
-fun Modifier.focusOnInit(initialFocused: Boolean): Modifier {
-    val focusRequester = remember { FocusRequester() }
-    var hasFocused by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (initialFocused && !hasFocused) {
-            focusRequester.requestFocus()
-            hasFocused = true
-        }
-    }
-
-    return focusRequester(focusRequester)
-}
-
-fun Modifier.ifElse(
-    condition: () -> Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
-): Modifier = then(if (condition()) ifTrueModifier else ifFalseModifier)
-
-fun Modifier.ifElse(
-    condition: Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
-): Modifier = ifElse({ condition }, ifTrueModifier, ifFalseModifier)
-
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun Modifier.restoreFocusedChild(
-    focusRequester: FocusRequester = FocusRequester(),
-): Modifier {
-    return focusRequester(focusRequester).focusProperties {
-        exit = {
-            focusRequester.saveFocusedChild()
-            FocusRequester.Default
-        }
-        enter = {
-            if (focusRequester.restoreFocusedChild()) FocusRequester.Cancel
-            else FocusRequester.Default
-        }
-    }
-}
-
-fun Modifier.handleUserAction(onHandle: () -> Unit) = onPreviewKeyEvent { onHandle(); false }
-    .pointerInput(Unit) { detectDragGestures { _, _ -> onHandle() } }
-    .pointerInput(Unit) {
-        detectTapGestures(
-            onTap = { onHandle() },
-            onDoubleTap = { onHandle() },
-            onLongPress = { onHandle() },
-            onPress = { onHandle() },
-        )
-    }
