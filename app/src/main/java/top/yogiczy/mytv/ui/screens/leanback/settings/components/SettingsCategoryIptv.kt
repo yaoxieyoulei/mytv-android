@@ -179,7 +179,8 @@ private fun LeanbackSettingsIptvSourceHistoryDialog(
     val currentIptvSource = currentIptvSourceProvider()
 
     if (showDialogProvider()) {
-        AlertDialog(modifier = modifier,
+        AlertDialog(
+            modifier = modifier,
             onDismissRequest = onDismissRequest,
             confirmButton = { Text(text = "短按切换；长按删除历史记录") },
             title = { Text("历史直播源") },
@@ -207,13 +208,16 @@ private fun LeanbackSettingsIptvSourceHistoryDialog(
                             modifier = Modifier
                                 .focusRequester(focusRequester)
                                 .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-                                .handleLeanbackKeyEvents(onSelect = {
-                                    if (isFocused) onSelected(source)
-                                    else focusRequester.requestFocus()
-                                }, onLongSelect = {
-                                    if (isFocused) onDeleted(source)
-                                    else focusRequester.requestFocus()
-                                }),
+                                .handleLeanbackKeyEvents(
+                                    onSelect = {
+                                        if (isFocused) onSelected(source)
+                                        else focusRequester.requestFocus()
+                                    },
+                                    onLongSelect = {
+                                        if (isFocused) onDeleted(source)
+                                        else focusRequester.requestFocus()
+                                    },
+                                ),
                             selected = currentIptvSource == source,
                             onClick = { },
                             headlineContent = {
@@ -234,7 +238,8 @@ private fun LeanbackSettingsIptvSourceHistoryDialog(
                         )
                     }
                 }
-            })
+            },
+        )
     }
 }
 

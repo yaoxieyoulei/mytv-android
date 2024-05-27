@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,11 +42,11 @@ fun LeanbackPanelDateTimeScreen(
                 SP.UiTimeShowMode.ALWAYS -> true
 
                 SP.UiTimeShowMode.EVERY_HOUR -> {
-                    timestamp % 3600000 <= Constants.UI_TIME_SHOW_RANGE || timestamp % 3600000 >= 3600000 - Constants.UI_TIME_SHOW_RANGE
+                    timestamp % 3600000 <= (Constants.UI_TIME_SHOW_RANGE + 1000) || timestamp % 3600000 >= 3600000 - Constants.UI_TIME_SHOW_RANGE
                 }
 
                 SP.UiTimeShowMode.HALF_HOUR -> {
-                    timestamp % 1800000 <= Constants.UI_TIME_SHOW_RANGE || timestamp % 1800000 >= 1800000 - Constants.UI_TIME_SHOW_RANGE
+                    timestamp % 1800000 <= (Constants.UI_TIME_SHOW_RANGE + 1000) || timestamp % 1800000 >= 1800000 - Constants.UI_TIME_SHOW_RANGE
                 }
             }
 
@@ -71,27 +70,13 @@ fun LeanbackPanelDateTimeScreen(
                     .align(Alignment.TopEnd)
                     .padding(top = childPadding.top, end = childPadding.end)
                     .background(
-                        color = MaterialTheme.colorScheme.surface.copy(0.5f),
+                        color = MaterialTheme.colorScheme.surface.copy(0.8f),
                         shape = MaterialTheme.shapes.small,
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             )
         }
     }
-}
-
-@Composable
-private fun rememberTimestamp(): Long {
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1000)
-            timestamp = System.currentTimeMillis()
-        }
-    }
-
-    return timestamp
 }
 
 @Preview(device = "id:Android TV (720p)")

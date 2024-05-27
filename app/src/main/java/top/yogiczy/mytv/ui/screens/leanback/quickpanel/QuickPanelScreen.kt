@@ -67,7 +67,7 @@ fun LeanbackQuickPanelScreen(
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
                 .background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
                     shape = MaterialTheme.shapes.large.copy(
                         bottomStart = CornerSize(0.0.dp),
                         bottomEnd = CornerSize(0.0.dp),
