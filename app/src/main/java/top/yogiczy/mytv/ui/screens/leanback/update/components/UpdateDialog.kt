@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import top.yogiczy.mytv.data.entities.GitRelease
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 
@@ -29,6 +30,7 @@ fun LeanbackUpdateDialog(
         }
 
         AlertDialog(
+            properties = DialogProperties(usePlatformDefaultWidth = false),
             modifier = modifier,
             onDismissRequest = onDismissRequest,
             confirmButton = {
