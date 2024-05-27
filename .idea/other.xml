@@ -236,17 +236,6 @@
           <option name="screenY" value="2400" />
         </PersistentDeviceSelectionData>
         <PersistentDeviceSelectionData>
-          <option name="api" value="35" />
-          <option name="brand" value="google" />
-          <option name="codename" value="shiba_beta" />
-          <option name="id" value="shiba_beta" />
-          <option name="manufacturer" value="Google" />
-          <option name="name" value="Pixel 8" />
-          <option name="screenDensity" value="420" />
-          <option name="screenX" value="1080" />
-          <option name="screenY" value="2400" />
-        </PersistentDeviceSelectionData>
-        <PersistentDeviceSelectionData>
           <option name="api" value="33" />
           <option name="brand" value="google" />
           <option name="codename" value="tangorpro" />

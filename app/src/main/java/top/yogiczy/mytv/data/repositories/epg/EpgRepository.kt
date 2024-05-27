@@ -96,20 +96,17 @@ class EpgRepository : FileCacheRepository("epg.json") {
         refreshTimeThreshold: Int,
     ) = withContext(Dispatchers.Default) {
         try {
-            val xmlJson = getOrRefresh({ lastModified, cacheData ->
-                if (epgXmlRepository.cacheFileLastModified() > lastModified)
-                    return@getOrRefresh true
+            if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < refreshTimeThreshold) {
+                log.d("未到时间点，不刷新节目单")
+                return@withContext EpgList()
+            }
 
-//                if (!cacheData.isNullOrBlank()) {
-//                    val epgList = Json.decodeFromString<List<Epg>>(cacheData)
-//                    val oldHashCode = epgList.map { it.channel }.hashCode()
-//                    return@getOrRefresh oldHashCode != filteredChannels.hashCode()
-//                }
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-//                true
-                false
+            val xmlJson = getOrRefresh({ lastModified, _ ->
+                dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
             }) {
-                val xmlString = epgXmlRepository.getEpgXml(xmlUrl, refreshTimeThreshold)
+                val xmlString = epgXmlRepository.getEpgXml(xmlUrl)
                 Json.encodeToString(parseFromXml(xmlString, filteredChannels).value)
             }
 
@@ -154,20 +151,9 @@ private class EpgXmlRepository : FileCacheRepository("epg.xml") {
     /**
      * 获取xml
      */
-    suspend fun getEpgXml(url: String, refreshTimeThreshold: Int): String {
-        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < refreshTimeThreshold) {
-            log.d("未到时间点，不刷新节目单")
-            return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-        }
-
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        return getOrRefresh({ lastModified, _ ->
-            dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
-        }) {
+    suspend fun getEpgXml(url: String): String {
+        return getOrRefresh(0) {
             fetchXml(url)
         }
     }
-
-    fun cacheFileLastModified() = getCacheFile().lastModified()
 }
