@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +33,7 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.material3.ListItemDefaults
+import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.data.entities.EpgList
 import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.progress
@@ -53,6 +55,7 @@ fun LeanbackClassicPanelIptvList(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onIptvFocused: (Iptv, FocusRequester) -> Unit = { _, _ -> },
     showProgrammeProgressProvider: () -> Boolean = { false },
+    onUserAction: () -> Unit = {},
 ) {
     val iptvList = iptvListProvider()
     val initialIptv = initialIptvProvider()
@@ -80,6 +83,12 @@ fun LeanbackClassicPanelIptvList(
             if (hasFocused) 0
             else max(0, iptvList.indexOf(initialIptv) - 2)
         )
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { _ -> onUserAction() }
     }
 
     Column(

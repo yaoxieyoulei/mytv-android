@@ -12,10 +12,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -28,6 +30,7 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.ListItemDefaults
+import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.isLive
@@ -45,6 +48,7 @@ fun LeanbackClassicPanelEpgList(
     modifier: Modifier = Modifier,
     epgProvider: () -> Epg? = { Epg() },
     exitFocusRequesterProvider: () -> FocusRequester = { FocusRequester.Default },
+    onUserAction: () -> Unit = {},
 ) {
     val epg = epgProvider()
 
@@ -53,6 +57,12 @@ fun LeanbackClassicPanelEpgList(
     if (epg != null) {
         val listState = remember(epg) {
             TvLazyListState(max(0, epg.programmes.indexOfFirst { it.isLive() } - 2))
+        }
+
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.isScrollInProgress }
+                .distinctUntilChanged()
+                .collect { _ -> onUserAction() }
         }
 
         Column(

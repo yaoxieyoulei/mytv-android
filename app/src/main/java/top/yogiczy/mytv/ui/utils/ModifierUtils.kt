@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -158,3 +159,15 @@ fun Modifier.handleLeanbackKeyEvents(
         onDoubleTap = { onSettings() },
     )
 }
+
+fun Modifier.handleLeanbackUserAction(onHandle: () -> Unit) =
+    onPreviewKeyEvent { onHandle(); false }
+        .pointerInput(Unit) { detectDragGestures { _, _ -> onHandle() } }
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onTap = { onHandle() },
+                onDoubleTap = { onHandle() },
+                onLongPress = { onHandle() },
+                onPress = { onHandle() },
+            )
+        }

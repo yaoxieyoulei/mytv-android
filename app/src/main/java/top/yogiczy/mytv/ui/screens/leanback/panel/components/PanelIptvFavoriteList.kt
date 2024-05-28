@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
+import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.Epg.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.EpgList
@@ -47,6 +49,7 @@ fun LeanbackPanelIptvFavoriteList(
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
+    onUserAction: () -> Unit = {},
 ) {
     val favoriteListSize = 6
     val childPadding = rememberLeanbackChildPadding()
@@ -60,6 +63,12 @@ fun LeanbackPanelIptvFavoriteList(
 
     LaunchedEffect(iptvList) {
         if (iptvList.isEmpty()) onClose()
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { _ -> onUserAction() }
     }
 
     Column(modifier = modifier) {
@@ -135,7 +144,8 @@ fun LeanbackPanelIptvFavoriteList(
                     currentShowEpgIptv =
                         iptvList[min(iptvList.size - 1, iptvList.indexOf(currentShowEpgIptv) + 1)]
                 },
-            )
+            ),
+        onUserAction = onUserAction,
     )
 }
 

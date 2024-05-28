@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvIdx
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvList
 import top.yogiczy.mytv.data.entities.IptvList
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackPanelChannelNo
 import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackPanelDateTime
@@ -58,14 +60,21 @@ fun LeanbackPanelScreen(
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
+    autoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(
+        timeout = Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY,
+        onTimeout = onClose,
+    ),
 ) {
+    LaunchedEffect(Unit) {
+        autoCloseState.active()
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
-
         LeanbackPanelScreenTopRight(
             channelNoProvider = {
                 (iptvGroupList.iptvIdx(currentIptvProvider()) + 1).toString().padStart(2, '0')
@@ -84,6 +93,7 @@ fun LeanbackPanelScreen(
             onIptvFavoriteListVisibleChange = onIptvFavoriteListVisibleChange,
             onIptvSelected = onIptvSelected,
             onIptvFavoriteToggle = onIptvFavoriteToggle,
+            onUserAction = { autoCloseState.active() },
         )
     }
 }
@@ -134,6 +144,7 @@ private fun LeanbackPanelScreenBottom(
     onIptvFavoriteListVisibleChange: (Boolean) -> Unit = {},
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
+    onUserAction: () -> Unit = {},
 ) {
     val childPadding = rememberLeanbackChildPadding()
 
@@ -167,6 +178,7 @@ private fun LeanbackPanelScreenBottom(
                 onIptvFavoriteListVisibleChange = onIptvFavoriteListVisibleChange,
                 onIptvSelected = onIptvSelected,
                 onIptvFavoriteToggle = onIptvFavoriteToggle,
+                onUserAction = onUserAction,
             )
         }
     }
@@ -184,6 +196,7 @@ fun LeanbackPanelScreenBottomIptvList(
     onIptvFavoriteListVisibleChange: (Boolean) -> Unit = {},
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
+    onUserAction: () -> Unit = {},
 ) {
     var favoriteListVisible by remember { mutableStateOf(iptvFavoriteListVisibleProvider()) }
 
@@ -203,6 +216,7 @@ fun LeanbackPanelScreenBottomIptvList(
                     favoriteListVisible = false
                     onIptvFavoriteListVisibleChange(false)
                 },
+                onUserAction = onUserAction,
             )
         else
             LeanbackPanelIptvGroupList(
@@ -223,6 +237,7 @@ fun LeanbackPanelScreenBottomIptvList(
                         LeanbackToastState.I.showToast("没有收藏的频道")
                     }
                 },
+                onUserAction = onUserAction,
             )
     }
 }

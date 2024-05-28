@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -27,6 +28,7 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.ListItemDefaults
+import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.isLive
@@ -45,6 +47,7 @@ fun LeanbackPanelIptvEpgDialog(
     onDismissRequest: () -> Unit = {},
     iptvProvider: () -> Iptv = { Iptv() },
     epgProvider: () -> Epg = { Epg() },
+    onUserAction: () -> Unit = {}
 ) {
     if (showDialogProvider()) {
         val iptv = iptvProvider()
@@ -60,11 +63,17 @@ fun LeanbackPanelIptvEpgDialog(
                 val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
                 var hasFocused by remember(iptv) { mutableStateOf(false) }
 
+                val listState = TvLazyListState(
+                    max(0, epg.programmes.indexOfFirst { it.isLive() } - 2))
+
+                LaunchedEffect(listState) {
+                    snapshotFlow { listState.isScrollInProgress }
+                        .distinctUntilChanged()
+                        .collect { _ -> onUserAction() }
+                }
+
                 TvLazyColumn(
-                    state = TvLazyListState(
-                        max(
-                            0,
-                            epg.programmes.indexOfFirst { it.isLive() } - 2)),
+                    state = listState,
                     contentPadding = PaddingValues(vertical = 4.dp),
                 ) {
                     if (epg.programmes.isNotEmpty()) {

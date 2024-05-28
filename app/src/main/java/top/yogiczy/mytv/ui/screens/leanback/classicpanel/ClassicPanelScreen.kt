@@ -36,10 +36,13 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvGroupIdx
 import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvList
 import top.yogiczy.mytv.data.entities.IptvList
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.screens.leanback.classicpanel.components.LeanbackClassicPanelEpgList
 import top.yogiczy.mytv.ui.screens.leanback.classicpanel.components.LeanbackClassicPanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.leanback.classicpanel.components.LeanbackClassicPanelIptvList
+import top.yogiczy.mytv.ui.screens.leanback.panel.PanelAutoCloseState
+import top.yogiczy.mytv.ui.screens.leanback.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
@@ -58,8 +61,16 @@ fun LeanbackClassicPanelScreen(
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
+    autoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(
+        timeout = Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY,
+        onTimeout = onClose,
+    ),
 ) {
     val childPadding = rememberLeanbackChildPadding()
+
+    LaunchedEffect(Unit) {
+        autoCloseState.active()
+    }
 
     Box(
         modifier = modifier
@@ -99,6 +110,7 @@ fun LeanbackClassicPanelScreen(
                         favoriteListVisible = false
                         onIptvFavoriteListVisibleChange(false)
                     },
+                    onUserAction = { autoCloseState.active() },
                 )
             else
                 LeanbackClassicPanelIptvGroup(
@@ -119,6 +131,7 @@ fun LeanbackClassicPanelScreen(
                             LeanbackToastState.I.showToast("没有收藏的频道")
                         }
                     },
+                    onUserAction = { autoCloseState.active() },
                 )
         }
     }
@@ -134,6 +147,7 @@ private fun LeanbackClassicPanelIptvGroup(
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onToFavorite: () -> Unit = {},
+    onUserAction: () -> Unit = {},
 ) {
     var focusedIptvGroup by remember {
         mutableStateOf(
@@ -149,7 +163,10 @@ private fun LeanbackClassicPanelIptvGroup(
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(
             modifier = Modifier
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { onToFavorite() })
+                },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -171,6 +188,7 @@ private fun LeanbackClassicPanelIptvGroup(
             exitFocusRequesterProvider = { focusedIptvFocusRequester },
             onFocusEnter = { inIptvGroupTab = true },
             onFocusExit = { inIptvGroupTab = false },
+            onUserAction = onUserAction,
         )
 
         LeanbackClassicPanelIptvList(
@@ -184,6 +202,7 @@ private fun LeanbackClassicPanelIptvGroup(
                 focusedIptvFocusRequester = focusRequester
             },
             showProgrammeProgressProvider = showProgrammeProgressProvider,
+            onUserAction = onUserAction,
         )
 
         LeanbackClassicPanelEpgList(
@@ -192,6 +211,7 @@ private fun LeanbackClassicPanelIptvGroup(
                 else epgList.firstOrNull { it.channel == focusedIptv.channelName }
             },
             exitFocusRequesterProvider = { focusedIptvFocusRequester },
+            onUserAction = onUserAction,
         )
     }
 }
@@ -206,6 +226,7 @@ fun LeanbackClassicPanelFavoriteIptv(
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
+    onUserAction: () -> Unit = {},
 ) {
     var key by remember { mutableIntStateOf(0) }
     val iptvList = remember(key) { iptvListProvider() }
@@ -220,7 +241,10 @@ fun LeanbackClassicPanelFavoriteIptv(
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(
             modifier = Modifier
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { onClose() })
+                },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -259,11 +283,13 @@ fun LeanbackClassicPanelFavoriteIptv(
                 focusedIptvFocusRequester = focusRequester
             },
             showProgrammeProgressProvider = showProgrammeProgressProvider,
+            onUserAction = onUserAction,
         )
 
         LeanbackClassicPanelEpgList(
             epgProvider = { epgList.firstOrNull { it.channel == focusedIptv.channelName } },
             exitFocusRequesterProvider = { focusedIptvFocusRequester },
+            onUserAction = onUserAction,
         )
     }
 }

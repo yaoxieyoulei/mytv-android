@@ -29,12 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ButtonDefaults
 import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
+import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
+import top.yogiczy.mytv.ui.screens.leanback.panel.PanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackPanelIptvInfo
 import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackPanelPlayerInfo
+import top.yogiczy.mytv.ui.screens.leanback.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.leanback.video.player.LeanbackVideoPlayer
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
+import top.yogiczy.mytv.ui.utils.handleLeanbackUserAction
 
 @Composable
 fun LeanbackQuickPanelScreen(
@@ -48,18 +52,24 @@ fun LeanbackQuickPanelScreen(
     onClearCache: () -> Unit = {},
     onMoreSettings: () -> Unit = {},
     onClose: () -> Unit = {},
+    autoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(
+        timeout = Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY,
+        onTimeout = onClose,
+    ),
 ) {
     val childPadding = rememberLeanbackChildPadding()
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+        autoCloseState.active()
     }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .focusRequester(focusRequester)
+            .handleLeanbackUserAction { autoCloseState.active() }
             .pointerInput(Unit) { detectTapGestures(onTap = { onClose() }) },
     ) {
         Box(
