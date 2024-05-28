@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,6 +29,7 @@ import io.github.alexzhirkevich.qrose.options.QrShapes
 import io.github.alexzhirkevich.qrose.options.circle
 import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import kotlinx.coroutines.delay
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
 
@@ -45,32 +51,41 @@ fun LeanbackSettingsCategoryMore(
         }
 
         item {
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(200.dp)
-                        .background(
-                            MaterialTheme.colorScheme.onBackground,
-                            MaterialTheme.shapes.medium,
-                        )
-                        .padding(10.dp),
+            var show by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                delay(100)
+                show = true
+            }
+
+            if (show) {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Image(
-                        modifier = modifier.fillMaxSize(),
-                        painter = rememberQrCodePainter(
-                            data = serverUrl,
-                            shapes = QrShapes(
-                                ball = QrBallShape.circle(),
-                                darkPixel = QrPixelShape.roundCorners(),
-                                frame = QrFrameShape.roundCorners(.25f),
+                    Box(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(200.dp)
+                            .background(
+                                MaterialTheme.colorScheme.onBackground,
+                                MaterialTheme.shapes.medium,
+                            )
+                            .padding(10.dp),
+                    ) {
+                        Image(
+                            modifier = modifier.fillMaxSize(),
+                            painter = rememberQrCodePainter(
+                                data = serverUrl,
+                                shapes = QrShapes(
+                                    ball = QrBallShape.circle(),
+                                    darkPixel = QrPixelShape.roundCorners(),
+                                    frame = QrFrameShape.roundCorners(.25f),
+                                ),
                             ),
-                        ),
-                        contentDescription = serverUrl,
-                    )
+                            contentDescription = serverUrl,
+                        )
+                    }
                 }
             }
         }

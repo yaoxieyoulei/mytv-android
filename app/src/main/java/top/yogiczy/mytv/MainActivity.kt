@@ -15,6 +15,7 @@ class MainActivity : ComponentActivity() {
             SP.AppDeviceDisplayType.PAD -> PadActivity::class.java
         }
 
+        // TODO 切换时变化生硬
         startActivity(Intent(this, activityClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })

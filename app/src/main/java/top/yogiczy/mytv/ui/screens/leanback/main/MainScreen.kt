@@ -123,8 +123,8 @@ private fun LeanbackMainScreenError(message: String?, serverUrl: String = HttpSe
                 .width(100.dp)
                 .height(100.dp)
                 .background(
-                    androidx.tv.material3.MaterialTheme.colorScheme.onBackground,
-                    androidx.tv.material3.MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    shape = MaterialTheme.shapes.medium,
                 ),
         ) {
             Image(
