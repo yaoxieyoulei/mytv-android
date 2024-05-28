@@ -267,6 +267,12 @@ fun LeanbackMainContent(
                 videoPlayerMetadataProvider = { videoPlayerState.metadata },
                 videoPlayerAspectRatioProvider = { videoPlayerState.aspectRatio },
                 onChangeVideoPlayerAspectRatio = { videoPlayerState.aspectRatio = it },
+                onIptvUrlIdxChange = {
+                    mainContentState.changeCurrentIptv(
+                        iptv = mainContentState.currentIptv,
+                        urlIdx = it,
+                    )
+                },
                 onClearCache = {
                     settingsViewModel.iptvPlayableHostList = emptySet()
                     coroutineScope.launch {

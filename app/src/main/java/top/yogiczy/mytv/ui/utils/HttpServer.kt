@@ -24,14 +24,14 @@ import java.net.NetworkInterface
 import java.net.SocketException
 
 object HttpServer : Loggable() {
-    const val SERVER_PORT = 10481
+    private const val SERVER_PORT = 10481
 
     private val uploadedApkFile = File(AppGlobal.cacheDir, "uploaded_apk.apk").apply {
         deleteOnExit()
     }
 
     val serverUrl: String by lazy {
-        "http://${getLocalIpAddress()}:${SERVER_PORT}/"
+        "http://${getLocalIpAddress()}:${SERVER_PORT}"
     }
 
     fun start(context: Context) {

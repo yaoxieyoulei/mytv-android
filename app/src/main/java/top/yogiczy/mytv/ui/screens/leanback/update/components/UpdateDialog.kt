@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.screens.leanback.update.components
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -47,12 +48,12 @@ fun LeanbackUpdateDialog(
                 }
             },
             title = {
-                androidx.tv.material3.Text(text = "新版本：v${release.version}")
+                Text(text = "新版本：v${release.version}")
             },
             text = {
                 LazyColumn {
                     item {
-                        androidx.tv.material3.Text(text = release.description)
+                        Text(text = release.description)
                     }
                 }
             }

@@ -31,8 +31,12 @@ abstract class FileCacheRepository(
         )
     }
 
-    suspend fun clearCache() {
-        getCacheFile().deleteOnExit()
+    fun clearCache() {
+        try {
+            getCacheFile().delete()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
     }
 
     protected suspend fun getOrRefresh(

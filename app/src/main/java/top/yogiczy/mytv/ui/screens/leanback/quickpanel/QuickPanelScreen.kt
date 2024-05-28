@@ -35,6 +35,7 @@ import top.yogiczy.mytv.ui.screens.leanback.panel.PanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackPanelIptvInfo
 import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackPanelPlayerInfo
 import top.yogiczy.mytv.ui.screens.leanback.panel.rememberPanelAutoCloseState
+import top.yogiczy.mytv.ui.screens.leanback.quickpanel.components.LeanbackQuickPanelIptvChannelsDialog
 import top.yogiczy.mytv.ui.screens.leanback.video.player.LeanbackVideoPlayer
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
@@ -49,6 +50,7 @@ fun LeanbackQuickPanelScreen(
     videoPlayerMetadataProvider: () -> LeanbackVideoPlayer.Metadata = { LeanbackVideoPlayer.Metadata() },
     videoPlayerAspectRatioProvider: () -> Float = { 16f / 9f },
     onChangeVideoPlayerAspectRatio: (Float) -> Unit = {},
+    onIptvUrlIdxChange: (Int) -> Unit = {},
     onClearCache: () -> Unit = {},
     onMoreSettings: () -> Unit = {},
     onClose: () -> Unit = {},
@@ -105,6 +107,22 @@ fun LeanbackQuickPanelScreen(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
+                    if (currentIptvProvider().urlList.size > 1) {
+                        var showChannelsDialog by remember { mutableStateOf(false) }
+                        LeanbackQuickPanelButton(
+                            titleProvider = { "多线路" },
+                            onSelect = { showChannelsDialog = true },
+                        )
+                        LeanbackQuickPanelIptvChannelsDialog(
+                            showDialogProvider = { showChannelsDialog },
+                            onDismissRequest = { showChannelsDialog = false },
+                            iptvProvider = currentIptvProvider,
+                            iptvUrlIdxProvider = currentIptvUrlIdxProvider,
+                            onIptvUrlIdxChange = onIptvUrlIdxChange,
+                            onUserAction = { autoCloseState.active() },
+                        )
+                    }
+
                     LeanbackQuickPanelButton(
                         titleProvider = { "清除缓存" },
                         onSelect = onClearCache,
@@ -178,15 +196,13 @@ private fun LeanbackQuickPanelButton(
 @Composable
 private fun LeanbackQuickPanelScreenPreview() {
     LeanbackTheme {
-        LeanbackQuickPanelScreen(
-            currentIptvProvider = { Iptv.EXAMPLE },
+        LeanbackQuickPanelScreen(currentIptvProvider = { Iptv.EXAMPLE },
             currentProgrammesProvider = { EpgProgrammeCurrent.EXAMPLE },
             videoPlayerMetadataProvider = {
                 LeanbackVideoPlayer.Metadata(
                     videoWidth = 1920,
                     videoHeight = 1080,
                 )
-            }
-        )
+            })
     }
 }

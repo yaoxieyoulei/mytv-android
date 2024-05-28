@@ -42,7 +42,7 @@ fun LeanbackPanelIptvInfo(
     val iptvUrlIdx = iptvUrlIdxProvider()
     val currentProgrammes = currentProgrammesProvider()
 
-    val urlType = rememberUrlType(iptv.urlList[iptvUrlIdx])
+    val urlType = rememberLeanbackIptvUrlType(iptv.urlList[iptvUrlIdx])
 
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.Bottom) {
@@ -80,9 +80,9 @@ fun LeanbackPanelIptvInfo(
                     }
 
                     // ipv4、iptv6标识
-                    if (urlType != UrlType.UNKNOWN) {
+                    if (urlType != LeanbackUrlType.UNKNOWN) {
                         Text(
-                            text = if (urlType == UrlType.IPV6) "IPV6" else "IPV4",
+                            text = if (urlType == LeanbackUrlType.IPV6) "IPV6" else "IPV4",
                             modifier = textModifier,
                         )
                     }
@@ -107,17 +107,17 @@ fun LeanbackPanelIptvInfo(
 }
 
 @Composable
-private fun rememberUrlType(url: String): UrlType {
-    var urlType by remember { mutableStateOf(UrlType.UNKNOWN) }
+fun rememberLeanbackIptvUrlType(url: String): LeanbackUrlType {
+    var urlType by remember { mutableStateOf(LeanbackUrlType.UNKNOWN) }
 
     LaunchedEffect(url) {
         withContext(Dispatchers.IO) {
-            urlType = UrlType.UNKNOWN
+            urlType = LeanbackUrlType.UNKNOWN
             try {
                 val uri = Uri.parse(url)
                 urlType =
-                    if (InetAddress.getByName(uri.host) is Inet6Address) UrlType.IPV6
-                    else UrlType.IPV4
+                    if (InetAddress.getByName(uri.host) is Inet6Address) LeanbackUrlType.IPV6
+                    else LeanbackUrlType.IPV4
             } catch (_: Exception) {
             }
         }
@@ -126,7 +126,7 @@ private fun rememberUrlType(url: String): UrlType {
     return urlType
 }
 
-private enum class UrlType {
+enum class LeanbackUrlType {
     UNKNOWN,
     IPV4,
     IPV6;
