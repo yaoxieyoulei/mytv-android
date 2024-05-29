@@ -163,13 +163,18 @@ private fun LeanbackPanelIptvItemPreview() {
                 showProgrammeProgressProvider = { true },
             )
 
-            LeanbackPanelIptvItem(iptvProvider = { Iptv.EXAMPLE }, currentProgrammeProvider = {
-                EpgProgramme(
-                    startAt = System.currentTimeMillis() - 100000,
-                    endAt = System.currentTimeMillis() + 200000,
-                    title = "新闻联播",
-                )
-            }, showProgrammeProgressProvider = { true }, initialFocusedProvider = { true })
+            LeanbackPanelIptvItem(
+                iptvProvider = { Iptv.EXAMPLE },
+                currentProgrammeProvider = {
+                    EpgProgramme(
+                        startAt = System.currentTimeMillis() - 100000,
+                        endAt = System.currentTimeMillis() + 200000,
+                        title = "新闻联播",
+                    )
+                },
+                showProgrammeProgressProvider = { true },
+                initialFocusedProvider = { true },
+            )
         }
     }
 }

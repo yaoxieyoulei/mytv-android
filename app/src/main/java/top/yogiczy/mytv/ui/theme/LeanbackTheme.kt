@@ -2,150 +2,10 @@ package top.yogiczy.mytv.ui.theme
 
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextMotion
-import androidx.compose.ui.unit.sp
-import top.yogiczy.mytv.R
-
-private val HarmonyOSSans = FontFamily(
-    Font(R.font.harmonyos_sans_black, FontWeight.Black),
-    Font(R.font.harmonyos_sans_bold, FontWeight.Bold),
-    Font(R.font.harmonyos_sans_light, FontWeight.Light),
-    Font(R.font.harmonyos_sans_medium, FontWeight.Medium),
-    Font(R.font.harmonyos_sans_regular, FontWeight.Normal),
-    Font(R.font.harmonyos_sans_thin, FontWeight.Thin)
-)
-
-private val Typography = Typography(
-    displayLarge = TextStyle(
-        fontSize = 57.sp,
-        lineHeight = 64.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = (-0.25).sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    displayMedium = TextStyle(
-        fontSize = 45.sp,
-        lineHeight = 52.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    displaySmall = TextStyle(
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    headlineLarge = TextStyle(
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    headlineMedium = TextStyle(
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    headlineSmall = TextStyle(
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    titleLarge = TextStyle(
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    titleMedium = TextStyle(
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.15.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    titleSmall = TextStyle(
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.1.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    labelLarge = TextStyle(
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.1.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    labelMedium = TextStyle(
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.25.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    labelSmall = TextStyle(
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.1.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    bodyLarge = TextStyle(
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.5.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    bodyMedium = TextStyle(
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.25.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-    bodySmall = TextStyle(
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.2.sp,
-        textMotion = TextMotion.Animated,
-        fontFamily = HarmonyOSSans,
-    ),
-)
 
 private val darkColorScheme
     @Composable get() = darkColorScheme(
@@ -179,7 +39,6 @@ fun LeanbackTheme(
 ) {
     MaterialTheme(
         colorScheme = darkColorScheme,
-        typography = Typography,
     ) {
         androidx.tv.material3.MaterialTheme(
             androidx.tv.material3.darkColorScheme(
@@ -205,7 +64,7 @@ fun LeanbackTheme(
                 onError = MaterialTheme.colorScheme.onError,
                 errorContainer = MaterialTheme.colorScheme.errorContainer,
                 onErrorContainer = MaterialTheme.colorScheme.onErrorContainer,
-            )
+            ),
         ) {
             CompositionLocalProvider(
                 LocalContentColor provides MaterialTheme.colorScheme.onBackground,

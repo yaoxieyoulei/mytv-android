@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,10 +113,10 @@ private fun LeanbackQuickPanelIptvChannelItem(
     isSelected: Boolean = false,
     focusRequester: FocusRequester = remember { FocusRequester() },
     onSelect: () -> Unit = {},
+    urlType: LeanbackUrlType = rememberLeanbackIptvUrlType(url),
+    urlDelay: Long = rememberIptvUrlDelay(url),
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val urlType = rememberLeanbackIptvUrlType(url)
-    val delay = rememberIptvUrlDelay(url)
 
     androidx.tv.material3.ListItem(
         modifier = modifier
@@ -145,8 +143,8 @@ private fun LeanbackQuickPanelIptvChannelItem(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     CompositionLocalProvider(
-                        LocalTextStyle provides MaterialTheme.typography.labelSmall,
-                        LocalContentColor provides androidx.tv.material3.LocalContentColor.current.copy(
+                        androidx.tv.material3.LocalTextStyle provides MaterialTheme.typography.labelSmall,
+                        androidx.tv.material3.LocalContentColor provides androidx.tv.material3.LocalContentColor.current.copy(
                             alpha = 0.8f
                         ),
                     ) {
@@ -157,14 +155,14 @@ private fun LeanbackQuickPanelIptvChannelItem(
                             )
                             .padding(vertical = 2.dp, horizontal = 4.dp)
 
-                        Text(
+                        androidx.tv.material3.Text(
                             text = if (urlType == LeanbackUrlType.IPV6) "IPV6" else "IPV4",
                             modifier = textModifier,
                         )
 
-                        if (delay != 0L) {
-                            Text(
-                                text = "$delay ms",
+                        if (urlDelay != 0L) {
+                            androidx.tv.material3.Text(
+                                text = "$urlDelay ms",
                                 modifier = textModifier,
                             )
                         }
@@ -221,6 +219,9 @@ private fun LeanbackQuickPanelIptvChannelItemPreview() {
         LeanbackQuickPanelIptvChannelItem(
             url = "http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8",
             urlIndex = 0,
+            urlType = LeanbackUrlType.IPV6,
+            urlDelay = 123,
+            isSelected = true,
         )
     }
 }
