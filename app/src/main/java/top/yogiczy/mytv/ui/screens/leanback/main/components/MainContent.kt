@@ -286,9 +286,7 @@ fun LeanbackMainContent(
         }
 
         LeanbackVisible({ mainContentState.isSettingsVisible }) {
-            LeanbackSettingsScreen(
-                onClose = { mainContentState.isSettingsVisible = false },
-            )
+            LeanbackSettingsScreen()
         }
 
         LeanbackVisible({ settingsViewModel.debugShowFps }) {
@@ -300,7 +298,7 @@ fun LeanbackMainContent(
 }
 
 @Composable
-private fun LeanbackBackPressHandledArea(
+fun LeanbackBackPressHandledArea(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,

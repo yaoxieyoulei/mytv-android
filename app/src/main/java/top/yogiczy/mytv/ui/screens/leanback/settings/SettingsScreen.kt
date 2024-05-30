@@ -29,7 +29,6 @@ import top.yogiczy.mytv.ui.theme.LeanbackTheme
 @Composable
 fun LeanbackSettingsScreen(
     modifier: Modifier = Modifier,
-    onClose: () -> Unit = {},
 ) {
     val childPadding = rememberLeanbackChildPadding()
     val focusRequester = remember { FocusRequester() }
