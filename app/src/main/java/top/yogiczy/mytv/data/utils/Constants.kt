@@ -57,6 +57,11 @@ object Constants {
     const val HTTP_RETRY_INTERVAL = 3000L
 
     /**
+     * 日志历史最大保留条数
+     */
+    const val LOG_HISTORY_MAX_SIZE = 50
+
+    /**
      * 播放器 http userAgent
      */
     const val VIDEO_PLAYER_HTTP_USER_AGENT = "ExoPlayer"

@@ -36,7 +36,7 @@ object DownloadUtil : Loggable() {
                 }
             } catch (ex: Exception) {
                 log.e("下载文件失败", ex)
-                throw Exception("下载文件失败，请检查网络连接", ex.cause)
+                throw Exception("下载文件失败，请检查网络连接", ex)
             }
         }
 

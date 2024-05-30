@@ -36,8 +36,8 @@ class IptvRepository : FileCacheRepository("iptv.txt") {
                 return@with body!!.string()
             }
         } catch (ex: Exception) {
-            log.e("获取远程直播源失败", ex.cause)
-            throw Exception("获取远程直播源失败，请检查网络连接", ex.cause)
+            log.e("获取远程直播源失败", ex)
+            throw Exception("获取远程直播源失败，请检查网络连接", ex)
         }
     }
 
@@ -77,7 +77,7 @@ class IptvRepository : FileCacheRepository("iptv.txt") {
 
             return groupList
         } catch (ex: Exception) {
-            log.e("获取直播源失败", ex.cause)
+            log.e("获取直播源失败", ex)
             throw Exception(ex)
         }
     }

@@ -16,6 +16,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.AppGlobal
 import top.yogiczy.mytv.R
+import top.yogiczy.mytv.data.repositories.epg.EpgRepository
+import top.yogiczy.mytv.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import java.io.File
@@ -58,7 +60,7 @@ object HttpServer : Loggable() {
 
                 log.i("服务已启动: 0.0.0.0:${SERVER_PORT}")
             } catch (ex: Exception) {
-                log.e("服务启动失败: ${ex.message}", ex.cause)
+                log.e("服务启动失败: ${ex.message}", ex)
                 launch(Dispatchers.Main) {
                     Toast.makeText(context, "设置服务启动失败", Toast.LENGTH_SHORT).show()
                 }
@@ -93,6 +95,7 @@ object HttpServer : Loggable() {
                         appRepo = Constants.APP_REPO,
                         iptvSourceUrl = SP.iptvSourceUrl,
                         epgXmlUrl = SP.epgXmlUrl,
+                        logHistory = Logger.history,
                     )
                 )
             )
@@ -104,8 +107,18 @@ object HttpServer : Loggable() {
         response: AsyncHttpServerResponse,
     ) {
         val body = request.getBody<JSONObjectBody>().get()
-        SP.iptvSourceUrl = body.get("iptvSourceUrl").toString()
-        SP.epgXmlUrl = body.get("epgXmlUrl").toString()
+        val iptvSourceUrl = body.get("iptvSourceUrl").toString()
+        val epgXmlUrl = body.get("epgXmlUrl").toString()
+
+        if (SP.iptvSourceUrl != iptvSourceUrl) {
+            SP.iptvSourceUrl = iptvSourceUrl
+            IptvRepository().clearCache()
+        }
+
+        if (SP.epgXmlUrl != epgXmlUrl) {
+            SP.epgXmlUrl = epgXmlUrl
+            EpgRepository().clearCache()
+        }
 
         wrapResponse(response).send("success")
     }
@@ -172,4 +185,6 @@ private data class AllSettings(
     val appRepo: String,
     val iptvSourceUrl: String,
     val epgXmlUrl: String,
+
+    val logHistory: List<Logger.HistoryItem>,
 )

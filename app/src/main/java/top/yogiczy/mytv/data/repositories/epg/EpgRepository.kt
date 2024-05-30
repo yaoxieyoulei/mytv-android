@@ -144,7 +144,7 @@ private class EpgXmlRepository : FileCacheRepository("epg.xml") {
                 return@with fetcher.fetch(this)
             }
         } catch (ex: Exception) {
-            throw Exception("获取远程节目单xml失败，请检查网络连接", ex.cause)
+            throw Exception("获取远程节目单xml失败，请检查网络连接", ex)
         }
     }
 

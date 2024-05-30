@@ -25,8 +25,8 @@ class GitRepository : Loggable() {
                 return@with parser.parse(body!!.string())
             }
         } catch (ex: Exception) {
-            log.e("获取最新发行版失败", ex.cause)
-            throw Exception("获取最新发行版失败，请检查网络连接", ex.cause)
+            log.e("获取最新发行版失败", ex)
+            throw Exception("获取最新发行版失败，请检查网络连接", ex)
         }
     }
 }
