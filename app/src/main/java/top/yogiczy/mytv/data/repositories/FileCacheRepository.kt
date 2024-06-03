@@ -11,7 +11,7 @@ import java.io.File
 abstract class FileCacheRepository(
     private val fileName: String,
 ) {
-    protected fun getCacheFile() = File(AppGlobal.cacheDir, fileName)
+    private fun getCacheFile() = File(AppGlobal.cacheDir, fileName)
 
     private suspend fun getCacheData(): String? = withContext(Dispatchers.IO) {
         val file = getCacheFile()

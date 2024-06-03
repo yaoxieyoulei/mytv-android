@@ -14,6 +14,8 @@ import androidx.media3.common.util.Util
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DecoderReuseEvaluation
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -22,10 +24,14 @@ import androidx.media3.exoplayer.util.EventLogger
 import top.yogiczy.mytv.data.utils.Constants
 import androidx.media3.common.PlaybackException as Media3PlaybackException
 
+@UnstableApi
 class LeanbackMedia3VideoPlayer(
     private val context: Context,
 ) : LeanbackVideoPlayer() {
-    private val videoPlayer = ExoPlayer.Builder(context).build().apply {
+    private val videoPlayer = ExoPlayer.Builder(
+        context,
+        DefaultRenderersFactory(context).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
+    ).build().apply {
         playWhenReady = true
     }
 

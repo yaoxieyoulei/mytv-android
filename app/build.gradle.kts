@@ -28,6 +28,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
+        }
     }
 
     buildTypes {
@@ -107,6 +111,8 @@ dependencies {
 
     // 二维码
     implementation(libs.qrose)
+
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
