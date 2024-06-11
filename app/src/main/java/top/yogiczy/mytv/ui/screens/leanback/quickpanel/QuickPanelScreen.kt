@@ -137,7 +137,7 @@ fun LeanbackQuickPanelScreen(
                                 16f / 9f -> "16:9"
                                 4f / 3f -> "4:3"
                                 screenAspectRatio -> "自动拉伸"
-                                else -> "其他"
+                                else -> "原始"
                             }
                         },
                         onSelect = {

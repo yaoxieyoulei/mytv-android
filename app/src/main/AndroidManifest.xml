@@ -28,22 +28,23 @@
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.MyTV">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             </intent-filter>
         </activity>
 
         <activity
             android:name=".LeanbackActivity"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme.MyTV"
+            android:theme="@style/Theme.MyTV.Leanback"
             tools:ignore="DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>

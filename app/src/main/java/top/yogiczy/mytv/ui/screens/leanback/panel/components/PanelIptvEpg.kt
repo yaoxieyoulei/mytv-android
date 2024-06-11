@@ -23,7 +23,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.TvLazyListState
 import androidx.tv.foundation.lazy.list.items
@@ -54,7 +53,6 @@ fun LeanbackPanelIptvEpgDialog(
         val epg = epgProvider()
 
         AlertDialog(
-            properties = DialogProperties(usePlatformDefaultWidth = false),
             modifier = modifier,
             onDismissRequest = onDismissRequest,
             confirmButton = { Text(text = "左右切换频道") },
