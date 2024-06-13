@@ -19,7 +19,7 @@ class TvboxIptvParser : IptvParser {
         lines.forEach { line ->
             if (line.isBlank() || line.startsWith("#")) return@forEach
 
-            if (line.endsWith("#genre#")) {
+            if (line.contains("#genre#")) {
                 groupName = line.split(",").first()
             } else {
                 val res = line.replace("，", ",").split(",")
@@ -27,10 +27,10 @@ class TvboxIptvParser : IptvParser {
 
                 iptvList.add(
                     IptvResponseItem(
-                        name = res[0],
-                        channelName = res[0],
-                        groupName = groupName ?: "其他",
-                        url = res[1],
+                        name = res[0].trim(),
+                        channelName = res[0].trim(),
+                        groupName = groupName?.trim() ?: "其他",
+                        url = res[1].trim(),
                     )
                 )
             }

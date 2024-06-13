@@ -24,10 +24,10 @@ class M3uIptvParser : IptvParser {
 
             iptvList.add(
                 IptvResponseItem(
-                    name = name,
-                    channelName = channelName,
-                    groupName = groupName,
-                    url = lines[index + 1],
+                    name = name.trim(),
+                    channelName = channelName.trim(),
+                    groupName = groupName.trim(),
+                    url = lines[index + 1].trim(),
                 )
             )
         }
