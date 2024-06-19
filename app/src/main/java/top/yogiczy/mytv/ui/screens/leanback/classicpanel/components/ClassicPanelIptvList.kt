@@ -199,6 +199,7 @@ private fun LeanbackClassicPanelIptvItem(
                 supportingContent = {
                     Text(
                         text = currentProgramme?.title ?: "无节目",
+                        style = MaterialTheme.typography.labelLarge,
                         maxLines = 1,
                     )
                 },

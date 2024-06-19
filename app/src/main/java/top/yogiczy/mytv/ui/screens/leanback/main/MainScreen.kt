@@ -175,6 +175,17 @@ private fun LeanbackMainScreenErrorPreview() {
     }
 }
 
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun LeanbackMainScreenErrorLongPreview() {
+    LeanbackTheme {
+        LeanbackMainScreenError(
+            { "Caused by: androidx.media3.datasource.HttpDataSource\$HttpDataSourceException:" + " java.io.IOException: unexpected end of stream on com.android.okhttp.Address@2f10c24d" },
+            "http://244.178.44.111:8080",
+        )
+    }
+}
+
 @Composable
 private fun LeanbackMainSettingsHandle(
     modifier: Modifier = Modifier,
@@ -205,16 +216,5 @@ private fun LeanbackMainSettingsHandle(
                 LeanbackSettingsScreen()
             }
         }
-    }
-}
-
-@Preview(device = "id:Android TV (720p)")
-@Composable
-private fun LeanbackMainScreenErrorLongPreview() {
-    LeanbackTheme {
-        LeanbackMainScreenError(
-            { "Caused by: androidx.media3.datasource.HttpDataSource\$HttpDataSourceException:" + " java.io.IOException: unexpected end of stream on com.android.okhttp.Address@2f10c24d" },
-            "http://244.178.44.111:8080",
-        )
     }
 }

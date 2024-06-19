@@ -159,6 +159,7 @@ private fun LeanbackClassicPanelIptvGroup(
     var focusedIptvFocusRequester by remember { mutableStateOf(FocusRequester.Default) }
 
     var inIptvGroupTab by remember { mutableStateOf(true) }
+    var epgListVisible by remember { mutableStateOf(false) }
 
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(
@@ -186,12 +187,18 @@ private fun LeanbackClassicPanelIptvGroup(
             },
             onIptvGroupFocused = { focusedIptvGroup = it },
             exitFocusRequesterProvider = { focusedIptvFocusRequester },
-            onFocusEnter = { inIptvGroupTab = true },
+            onFocusEnter = {
+                inIptvGroupTab = true
+                epgListVisible = false
+            },
             onFocusExit = { inIptvGroupTab = false },
             onUserAction = onUserAction,
         )
 
         LeanbackClassicPanelIptvList(
+            modifier = Modifier.handleLeanbackKeyEvents(
+                onRight = { epgListVisible = true },
+            ),
             iptvListProvider = { focusedIptvGroup.iptvList },
             epgListProvider = { epgList },
             initialIptvProvider = currentIptvProvider,
@@ -206,6 +213,8 @@ private fun LeanbackClassicPanelIptvGroup(
         )
 
         LeanbackClassicPanelEpgList(
+            visibleProvider = { epgListVisible },
+            onVisibleChanged = { epgListVisible = it },
             epgProvider = {
                 if (inIptvGroupTab) null
                 else epgList.firstOrNull { it.channel == focusedIptv.channelName }
@@ -234,6 +243,8 @@ fun LeanbackClassicPanelFavoriteIptv(
     var focusedIptvFocusRequester by remember { mutableStateOf(FocusRequester.Default) }
     val focusManager = LocalFocusManager.current
 
+    var epgListVisible by remember { mutableStateOf(false) }
+
     LaunchedEffect(iptvList) {
         if (iptvList.isEmpty()) onClose()
     }
@@ -256,12 +267,14 @@ fun LeanbackClassicPanelFavoriteIptv(
         LeanbackClassicPanelIptvList(
             modifier = Modifier.handleLeanbackKeyEvents(
                 onLeft = onClose,
+                onRight = { epgListVisible = true },
             ),
             iptvListProvider = { iptvList },
             epgListProvider = { epgList },
             initialIptvProvider = {
                 val currentIptv = currentIptvProvider()
-                if (iptvList.contains(currentIptv)) currentIptv else iptvList.first()
+                if (iptvList.contains(currentIptv)) currentIptv
+                else iptvList.firstOrNull() ?: Iptv()
             },
             onIptvSelected = onIptvSelected,
             onIptvFavoriteToggle = {
@@ -287,6 +300,8 @@ fun LeanbackClassicPanelFavoriteIptv(
         )
 
         LeanbackClassicPanelEpgList(
+            visibleProvider = { epgListVisible },
+            onVisibleChanged = { epgListVisible = it },
             epgProvider = { epgList.firstOrNull { it.channel == focusedIptv.channelName } },
             exitFocusRequesterProvider = { focusedIptvFocusRequester },
             onUserAction = onUserAction,
