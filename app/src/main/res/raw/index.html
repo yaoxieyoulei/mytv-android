@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css" rel="stylesheet">
 
     <!-- 核心 -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.23/dist/vue.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.23/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
 
     <!-- 日期格式化 -->
@@ -20,9 +20,6 @@
     <!-- vant -->
     <link href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css" rel="stylesheet" />
     <script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
-
-    <!-- 工具 -->
-    <script src="https://cdn.jsdelivr.net/npm/humanize-duration@3.32.0/humanize-duration.min.js"></script>
 
     <style>
         .van-theme-dark body {
@@ -126,7 +123,8 @@
     <script>
         const { createApp, ref, onMounted, watch, nextTick } = Vue
 
-        const baseUrl = "http://127.0.0.1:10481"
+        // const baseUrl = "http://127.0.0.1:10481"
+        const baseUrl = ""
 
         async function requestApi(url, config) {
             const resp = await fetch(`${baseUrl}${url}`, config)
@@ -180,10 +178,6 @@
                     await refreshSettings()
                 })
 
-                function foramtDuration(ms) {
-                    return humanizeDuration(ms, { language: 'zh_CN', round: true, largest: 2 })
-                }
-
                 async function uploaderAfterRead(file) {
                     try {
                         vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
@@ -199,7 +193,6 @@
 
                 return {
                     dayjs,
-                    foramtDuration,
                     isDark,
                     tabActive,
                     settings,
