@@ -3,6 +3,7 @@ package top.yogiczy.mytv.ui.screens.leanback.settings
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -73,7 +74,7 @@ class LeanbackSettingsViewModel : ViewModel() {
             SP.iptvSourceSimplify = value
         }
 
-    private var _iptvSourceCacheTime by mutableStateOf(SP.iptvSourceCacheTime)
+    private var _iptvSourceCacheTime by mutableLongStateOf(SP.iptvSourceCacheTime)
     var iptvSourceCacheTime: Long
         get() = _iptvSourceCacheTime
         set(value) {

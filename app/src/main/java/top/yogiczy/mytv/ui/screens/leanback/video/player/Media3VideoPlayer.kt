@@ -24,7 +24,7 @@ import androidx.media3.exoplayer.util.EventLogger
 import top.yogiczy.mytv.data.utils.Constants
 import androidx.media3.common.PlaybackException as Media3PlaybackException
 
-@UnstableApi
+@OptIn(UnstableApi::class)
 class LeanbackMedia3VideoPlayer(
     private val context: Context,
 ) : LeanbackVideoPlayer() {
