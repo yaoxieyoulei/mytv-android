@@ -2,6 +2,7 @@ package top.yogiczy.mytv.ui.screens.leanback.settings.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -33,6 +34,7 @@ fun LeanbackSettingsCategoryList(
     onFocused: (LeanbackSettingsCategories) -> Unit = {},
 ) {
     TvLazyColumn(
+        contentPadding = PaddingValues(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier.focusRestorer()
     ) {

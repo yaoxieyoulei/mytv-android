@@ -175,6 +175,7 @@ fun LeanbackMainContent(
                 !mainContentState.isTempPanelVisible
                         && !mainContentState.isSettingsVisible
                         && !mainContentState.isPanelVisible
+                        && !mainContentState.isQuickPanelVisible
                         && panelChannelNoSelectState.channelNo.isEmpty()
             }) {
                 LeanbackPanelDateTimeScreen(
@@ -255,6 +256,7 @@ fun LeanbackMainContent(
                         settingsViewModel.iptvChannelFavoriteListVisible = it
                     },
                     onClose = { mainContentState.isPanelVisible = false },
+                    iptvFavoriteEnableProvider = { settingsViewModel.iptvChannelFavoriteEnable }
                 )
             }
         }
@@ -264,6 +266,10 @@ fun LeanbackMainContent(
                 currentIptvProvider = { mainContentState.currentIptv },
                 currentIptvUrlIdxProvider = { mainContentState.currentIptvUrlIdx },
                 currentProgrammesProvider = { epgList.currentProgrammes(mainContentState.currentIptv) },
+                currentIptvChannelNoProvider = {
+                    (iptvGroupList.iptvIdx(mainContentState.currentIptv) + 1).toString()
+                        .padStart(2, '0')
+                },
                 videoPlayerMetadataProvider = { videoPlayerState.metadata },
                 videoPlayerAspectRatioProvider = { videoPlayerState.aspectRatio },
                 onChangeVideoPlayerAspectRatio = { videoPlayerState.aspectRatio = it },

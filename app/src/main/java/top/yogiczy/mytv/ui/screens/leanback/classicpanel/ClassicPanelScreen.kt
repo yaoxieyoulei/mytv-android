@@ -20,9 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +43,7 @@ import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.screens.leanback.classicpanel.components.LeanbackClassicPanelEpgList
 import top.yogiczy.mytv.ui.screens.leanback.classicpanel.components.LeanbackClassicPanelIptvGroupList
 import top.yogiczy.mytv.ui.screens.leanback.classicpanel.components.LeanbackClassicPanelIptvList
+import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackVisible
 import top.yogiczy.mytv.ui.screens.leanback.panel.PanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.leanback.panel.rememberPanelAutoCloseState
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
@@ -55,6 +58,7 @@ fun LeanbackClassicPanelScreen(
     epgList: EpgList = EpgList(),
     currentIptvProvider: () -> Iptv = { Iptv() },
     showProgrammeProgressProvider: () -> Boolean = { false },
+    iptvFavoriteEnableProvider: () -> Boolean = { true },
     iptvFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
     iptvFavoriteListVisibleProvider: () -> Boolean = { false },
     onIptvFavoriteListVisibleChange: (Boolean) -> Unit = {},
@@ -90,7 +94,7 @@ fun LeanbackClassicPanelScreen(
                 .padding(
                     top = childPadding.top,
                     start = childPadding.start / 2,
-                    end = childPadding.end,
+                    end = childPadding.end / 2,
                 ),
         ) {
             var favoriteListVisible by remember { mutableStateOf(iptvFavoriteListVisibleProvider()) }
@@ -132,11 +136,13 @@ fun LeanbackClassicPanelScreen(
                         }
                     },
                     onUserAction = { autoCloseState.active() },
+                    iptvFavoriteEnableProvider = iptvFavoriteEnableProvider,
                 )
         }
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun LeanbackClassicPanelIptvGroup(
     modifier: Modifier = Modifier,
@@ -148,7 +154,9 @@ private fun LeanbackClassicPanelIptvGroup(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onToFavorite: () -> Unit = {},
     onUserAction: () -> Unit = {},
+    iptvFavoriteEnableProvider: () -> Boolean = { true },
 ) {
+    val iptvFavoriteEnable = iptvFavoriteEnableProvider()
     var focusedIptvGroup by remember {
         mutableStateOf(
             iptvGroupList[max(0, iptvGroupList.iptvGroupIdx(currentIptvProvider()))]
@@ -158,27 +166,19 @@ private fun LeanbackClassicPanelIptvGroup(
     var focusedIptv by remember { mutableStateOf(currentIptvProvider()) }
     var focusedIptvFocusRequester by remember { mutableStateOf(FocusRequester.Default) }
 
-    var inIptvGroupTab by remember { mutableStateOf(true) }
     var epgListVisible by remember { mutableStateOf(false) }
 
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { onToFavorite() })
-                },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            "向左查看收藏列表".map {
-                Text(text = it.toString(), style = MaterialTheme.typography.labelSmall)
-            }
+        if (iptvFavoriteEnable) {
+            LeanbackClassicPanelVerticalTip(
+                text = "向左查看收藏列表",
+                onTap = onToFavorite,
+            )
         }
 
         LeanbackClassicPanelIptvGroupList(
             modifier = Modifier.handleLeanbackKeyEvents(
-                onLeft = onToFavorite,
+                onLeft = { if (iptvFavoriteEnable) onToFavorite() },
             ),
             iptvGroupListProvider = { iptvGroupList },
             initialIptvGroupProvider = {
@@ -187,18 +187,26 @@ private fun LeanbackClassicPanelIptvGroup(
             },
             onIptvGroupFocused = { focusedIptvGroup = it },
             exitFocusRequesterProvider = { focusedIptvFocusRequester },
-            onFocusEnter = {
-                inIptvGroupTab = true
-                epgListVisible = false
-            },
-            onFocusExit = { inIptvGroupTab = false },
+            onFocusEnter = { epgListVisible = false },
             onUserAction = onUserAction,
         )
 
         LeanbackClassicPanelIptvList(
-            modifier = Modifier.handleLeanbackKeyEvents(
-                onRight = { epgListVisible = true },
-            ),
+            modifier = Modifier
+                .handleLeanbackKeyEvents(
+                    onRight = { epgListVisible = true },
+                    onLeft = { epgListVisible = false }
+                )
+                .focusProperties {
+                    exit = {
+                        if (epgListVisible && it == FocusDirection.Left) {
+                            epgListVisible = false
+                            FocusRequester.Cancel
+                        } else {
+                            FocusRequester.Default
+                        }
+                    }
+                },
             iptvListProvider = { focusedIptvGroup.iptvList },
             epgListProvider = { epgList },
             initialIptvProvider = currentIptvProvider,
@@ -212,16 +220,19 @@ private fun LeanbackClassicPanelIptvGroup(
             onUserAction = onUserAction,
         )
 
-        LeanbackClassicPanelEpgList(
-            visibleProvider = { epgListVisible },
-            onVisibleChanged = { epgListVisible = it },
-            epgProvider = {
-                if (inIptvGroupTab) null
-                else epgList.firstOrNull { it.channel == focusedIptv.channelName }
-            },
-            exitFocusRequesterProvider = { focusedIptvFocusRequester },
-            onUserAction = onUserAction,
-        )
+        LeanbackVisible({ epgListVisible }) {
+            LeanbackClassicPanelEpgList(
+                epgProvider = { epgList.firstOrNull { it.channel == focusedIptv.channelName } },
+                exitFocusRequesterProvider = { focusedIptvFocusRequester },
+                onUserAction = onUserAction,
+            )
+        }
+        LeanbackVisible({ !epgListVisible }) {
+            LeanbackClassicPanelVerticalTip(
+                text = "向右查看节目单",
+                onTap = { epgListVisible = true },
+            )
+        }
     }
 }
 
@@ -266,9 +277,13 @@ fun LeanbackClassicPanelFavoriteIptv(
 
         LeanbackClassicPanelIptvList(
             modifier = Modifier.handleLeanbackKeyEvents(
-                onLeft = onClose,
+                onLeft = {
+                    if (epgListVisible) epgListVisible = false
+                    else onClose()
+                },
                 onRight = { epgListVisible = true },
             ),
+            title = "收藏列表",
             iptvListProvider = { iptvList },
             epgListProvider = { epgList },
             initialIptvProvider = {
@@ -299,17 +314,44 @@ fun LeanbackClassicPanelFavoriteIptv(
             onUserAction = onUserAction,
         )
 
-        LeanbackClassicPanelEpgList(
-            visibleProvider = { epgListVisible },
-            onVisibleChanged = { epgListVisible = it },
-            epgProvider = { epgList.firstOrNull { it.channel == focusedIptv.channelName } },
-            exitFocusRequesterProvider = { focusedIptvFocusRequester },
-            onUserAction = onUserAction,
-        )
+        LeanbackVisible({ epgListVisible }) {
+            LeanbackClassicPanelEpgList(
+                epgProvider = { epgList.firstOrNull { it.channel == focusedIptv.channelName } },
+                exitFocusRequesterProvider = { focusedIptvFocusRequester },
+                onUserAction = onUserAction,
+            )
+        }
+        LeanbackVisible({ !epgListVisible }) {
+            LeanbackClassicPanelVerticalTip(
+                text = "向右查看节目单",
+                onTap = { epgListVisible = true },
+            )
+        }
     }
 }
 
-@Preview
+@Composable
+private fun LeanbackClassicPanelVerticalTip(
+    modifier: Modifier = Modifier,
+    text: String,
+    onTap: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier
+            .fillMaxHeight()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { onTap() })
+            },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        text.map {
+            Text(text = it.toString(), style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@Preview(device = "id:Android TV (720p)")
 @Composable
 private fun LeanbackClassicPanelScreenPreview() {
     LeanbackTheme {

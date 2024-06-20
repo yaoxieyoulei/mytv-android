@@ -35,6 +35,9 @@ fun LeanbackSettingsCategoryFavorite(
                 onSelected = {
                     settingsViewModel.iptvChannelFavoriteEnable =
                         !settingsViewModel.iptvChannelFavoriteEnable
+                    if (!settingsViewModel.iptvChannelFavoriteEnable) {
+                        settingsViewModel.iptvChannelFavoriteListVisible = false
+                    }
                 },
             )
         }
@@ -53,6 +56,7 @@ fun LeanbackSettingsCategoryFavorite(
                 supportingContent = "短按立即清空全部收藏",
                 onSelected = {
                     settingsViewModel.iptvChannelFavoriteList = emptySet()
+                    settingsViewModel.iptvChannelFavoriteListVisible = false
                 }
             )
         }

@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -48,6 +49,7 @@ import kotlin.math.max
 @Composable
 fun LeanbackClassicPanelIptvList(
     modifier: Modifier = Modifier,
+    title: String = "频道列表",
     iptvListProvider: () -> IptvList = { IptvList() },
     epgListProvider: () -> EpgList = { EpgList() },
     initialIptvProvider: () -> Iptv = { Iptv() },
@@ -68,13 +70,15 @@ fun LeanbackClassicPanelIptvList(
     var focusedIptv by remember(iptvList) { mutableStateOf(initialIptv) }
 
     LaunchedEffect(itemFocusRequesterList) {
-        if (hasFocused) {
-            onIptvFocused(iptvList[0], itemFocusRequesterList[0])
-        } else {
-            onIptvFocused(
-                initialIptv,
-                itemFocusRequesterList[max(0, iptvList.indexOf(initialIptv))],
-            )
+        if (iptvList.isNotEmpty()) {
+            if (hasFocused) {
+                onIptvFocused(iptvList[0], itemFocusRequesterList[0])
+            } else {
+                onIptvFocused(
+                    initialIptv,
+                    itemFocusRequesterList[max(0, iptvList.indexOf(initialIptv))],
+                )
+            }
         }
     }
 
@@ -95,7 +99,7 @@ fun LeanbackClassicPanelIptvList(
         modifier = modifier.width(220.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(text = "频道列表", style = MaterialTheme.typography.titleMedium)
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
 
         TvLazyColumn(
             state = listState,
@@ -192,15 +196,14 @@ private fun LeanbackClassicPanelIptvItem(
                 selected = isSelectedProvider(),
                 onClick = { },
                 headlineContent = {
-                    Text(
-                        text = iptv.name, maxLines = 2
-                    )
+                    Text(text = iptv.name, maxLines = 2)
                 },
                 supportingContent = {
                     Text(
                         text = currentProgramme?.title ?: "无节目",
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.labelMedium,
                         maxLines = 1,
+                        modifier = Modifier.alpha(0.8f),
                     )
                 },
             )

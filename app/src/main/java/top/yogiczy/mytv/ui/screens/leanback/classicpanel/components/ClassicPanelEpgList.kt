@@ -1,10 +1,8 @@
 package top.yogiczy.mytv.ui.screens.leanback.classicpanel.components
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -20,14 +18,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
@@ -50,33 +47,15 @@ import kotlin.math.max
 @Composable
 fun LeanbackClassicPanelEpgList(
     modifier: Modifier = Modifier,
-    visibleProvider: () -> Boolean = { true },
     epgProvider: () -> Epg? = { Epg() },
     exitFocusRequesterProvider: () -> FocusRequester = { FocusRequester.Default },
-    onVisibleChanged: (Boolean) -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
     val childPadding = rememberLeanbackChildPadding()
 
     val epg = epgProvider()
-    val visible = visibleProvider()
 
-    if (!visible && epg != null && epg.programmes.isNotEmpty()) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { onVisibleChanged(true) })
-                },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            "向右查看节目单".map {
-                Text(text = it.toString(), style = MaterialTheme.typography.labelSmall)
-            }
-        }
-
-    } else if (epg != null && epg.programmes.isNotEmpty()) {
+    if (epg != null && epg.programmes.isNotEmpty()) {
         val listState = remember(epg) {
             TvLazyListState(max(0, epg.programmes.indexOfFirst { it.isLive() } - 2))
         }
@@ -157,7 +136,11 @@ private fun LeanbackClassicPanelEpgItem(
             overlineContent = {
                 val start = timeFormat.format(programme.startAt)
                 val end = timeFormat.format(programme.endAt)
-                Text(text = "$start  ~ $end")
+                Text(
+                    text = "$start  ~ $end",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.alpha(0.8f),
+                )
             },
             trailingContent = {
                 if (programme.isLive()) {

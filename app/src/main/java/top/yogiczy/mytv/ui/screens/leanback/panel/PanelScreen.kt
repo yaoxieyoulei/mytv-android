@@ -54,6 +54,7 @@ fun LeanbackPanelScreen(
     currentIptvUrlIdxProvider: () -> Int = { 0 },
     videoPlayerMetadataProvider: () -> LeanbackVideoPlayer.Metadata = { LeanbackVideoPlayer.Metadata() },
     showProgrammeProgressProvider: () -> Boolean = { false },
+    iptvFavoriteEnableProvider: () -> Boolean = { true },
     iptvFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
     iptvFavoriteListVisibleProvider: () -> Boolean = { false },
     onIptvFavoriteListVisibleChange: (Boolean) -> Unit = {},
@@ -88,6 +89,7 @@ fun LeanbackPanelScreen(
             currentIptvUrlIdxProvider = currentIptvUrlIdxProvider,
             videoPlayerMetadataProvider = videoPlayerMetadataProvider,
             showProgrammeProgressProvider = showProgrammeProgressProvider,
+            iptvFavoriteEnableProvider = iptvFavoriteEnableProvider,
             iptvFavoriteListProvider = iptvFavoriteListProvider,
             iptvFavoriteListVisibleProvider = iptvFavoriteListVisibleProvider,
             onIptvFavoriteListVisibleChange = onIptvFavoriteListVisibleChange,
@@ -99,7 +101,7 @@ fun LeanbackPanelScreen(
 }
 
 @Composable
-private fun LeanbackPanelScreenTopRight(
+fun LeanbackPanelScreenTopRight(
     modifier: Modifier = Modifier,
     channelNoProvider: () -> String = { "" },
 ) {
@@ -139,6 +141,7 @@ private fun LeanbackPanelScreenBottom(
     currentIptvUrlIdxProvider: () -> Int = { 0 },
     videoPlayerMetadataProvider: () -> LeanbackVideoPlayer.Metadata = { LeanbackVideoPlayer.Metadata() },
     showProgrammeProgressProvider: () -> Boolean = { false },
+    iptvFavoriteEnableProvider: () -> Boolean = { true },
     iptvFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
     iptvFavoriteListVisibleProvider: () -> Boolean = { false },
     onIptvFavoriteListVisibleChange: (Boolean) -> Unit = {},
@@ -173,6 +176,7 @@ private fun LeanbackPanelScreenBottom(
                 epgList = epgList,
                 currentIptvProvider = currentIptvProvider,
                 showProgrammeProgressProvider = showProgrammeProgressProvider,
+                iptvFavoriteEnableProvider = iptvFavoriteEnableProvider,
                 iptvFavoriteListProvider = iptvFavoriteListProvider,
                 iptvFavoriteListVisibleProvider = iptvFavoriteListVisibleProvider,
                 onIptvFavoriteListVisibleChange = onIptvFavoriteListVisibleChange,
@@ -191,6 +195,7 @@ fun LeanbackPanelScreenBottomIptvList(
     epgList: EpgList = EpgList(),
     currentIptvProvider: () -> Iptv = { Iptv() },
     showProgrammeProgressProvider: () -> Boolean = { false },
+    iptvFavoriteEnableProvider: () -> Boolean = { true },
     iptvFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
     iptvFavoriteListVisibleProvider: () -> Boolean = { false },
     onIptvFavoriteListVisibleChange: (Boolean) -> Unit = {},
@@ -198,6 +203,7 @@ fun LeanbackPanelScreenBottomIptvList(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
+    val iptvFavoriteEnable = iptvFavoriteEnableProvider()
     var favoriteListVisible by remember { mutableStateOf(iptvFavoriteListVisibleProvider()) }
 
     Box(modifier = modifier.height(150.dp)) {
@@ -227,6 +233,8 @@ fun LeanbackPanelScreenBottomIptvList(
                 onIptvSelected = onIptvSelected,
                 onIptvFavoriteToggle = onIptvFavoriteToggle,
                 onToFavorite = {
+                    if (iptvFavoriteEnable) return@LeanbackPanelIptvGroupList
+
                     val favoriteList = iptvGroupList.iptvList
                         .filter { iptvFavoriteListProvider().contains(it.channelName) }
 
