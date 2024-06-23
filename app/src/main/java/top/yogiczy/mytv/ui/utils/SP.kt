@@ -103,6 +103,10 @@ object SP {
         /** ==================== 更新 ==================== */
         /** 更新强提醒（弹窗形式） */
         UPDATE_FORCE_REMIND,
+
+        /** ==================== 网络 ==================== */
+        /** 自定义ua */
+        HTTP_USER_AGENT,
     }
 
     /** ==================== 应用 ==================== */
@@ -242,6 +246,14 @@ object SP {
     var updateForceRemind: Boolean
         get() = sp.getBoolean(KEY.UPDATE_FORCE_REMIND.name, false)
         set(value) = sp.edit().putBoolean(KEY.UPDATE_FORCE_REMIND.name, value).apply()
+
+    /** ==================== 网络 ==================== */
+    /** 自定义ua */
+    var httpUserAgent: String
+        get() = (sp.getString(KEY.HTTP_USER_AGENT.name, "") ?: "").ifBlank {
+            Constants.HTTP_USER_AGENT
+        }
+        set(value) = sp.edit().putString(KEY.HTTP_USER_AGENT.name, value).apply()
 
     enum class UiTimeShowMode(val value: Int) {
         /** 隐藏 */

@@ -22,6 +22,7 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.util.EventLogger
 import top.yogiczy.mytv.data.utils.Constants
+import top.yogiczy.mytv.ui.utils.SP
 import androidx.media3.common.PlaybackException as Media3PlaybackException
 
 @OptIn(UnstableApi::class)
@@ -41,7 +42,7 @@ class LeanbackMedia3VideoPlayer(
     private fun prepare(uri: Uri, contentType: Int? = null) {
         val dataSourceFactory =
             DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory().apply {
-                setUserAgent(Constants.VIDEO_PLAYER_HTTP_USER_AGENT)
+                setUserAgent(SP.httpUserAgent)
                 setConnectTimeoutMs(Constants.VIDEO_PLAYER_LOAD_TIMEOUT.toInt())
                 setReadTimeoutMs(Constants.VIDEO_PLAYER_LOAD_TIMEOUT.toInt())
                 setKeepPostFor302Redirects(true)

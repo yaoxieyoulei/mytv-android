@@ -30,6 +30,7 @@ fun LeanbackSettingsCategoryContent(
             LeanbackSettingsCategories.UI -> LeanbackSettingsCategoryUI()
             LeanbackSettingsCategories.FAVORITE -> LeanbackSettingsCategoryFavorite()
             LeanbackSettingsCategories.UPDATE -> LeanbackSettingsCategoryUpdate()
+            LeanbackSettingsCategories.HTTP -> LeanbackSettingsCategoryHttp()
             LeanbackSettingsCategories.DEBUG -> LeanbackSettingsCategoryDebug()
             LeanbackSettingsCategories.MORE -> LeanbackSettingsCategoryMore()
         }

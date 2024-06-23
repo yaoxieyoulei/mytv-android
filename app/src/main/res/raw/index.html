@@ -50,7 +50,7 @@
                                 <van-space class="w-full" direction="vertical" size="small">
                                     <span>支持m3u链接与tvbox链接</span>
                                     <van-field class="!p-0" placeholder="置为空时，将恢复默认"
-                                        v-model="settings.iptvSourceUrl"></van-field>
+                                        v-model="settings.iptvSourceUrl" type="textarea" rows="2"></van-field>
                                 </van-space>
                             </template>
 
@@ -68,7 +68,7 @@
                                 <van-space class="w-full" direction="vertical" size="small">
                                     <span>支持xml、xml.gz格式</span>
                                     <van-field class="!p-0" placeholder="置为空时，将恢复默认"
-                                        v-model="settings.epgXmlUrl"></van-field>
+                                        v-model="settings.epgXmlUrl" type="textarea" rows="2"></van-field>
                                 </van-space>
                             </template>
 
@@ -76,6 +76,24 @@
                                 <van-button
                                     @click="settings.epgXmlCachedAt = 0; settings.epgCachedHash = 0; confirmSettings()"
                                     size="small" type="primary">推送链接
+                                </van-button>
+                            </template>
+                        </van-cell>
+                    </van-cell-group>
+
+                    <van-cell-group inset title="网络">
+                        <van-cell title="自定义UA">
+                            <template #label>
+                                <van-space class="w-full" direction="vertical" size="small">
+                                    <van-field class="!p-0" placeholder="置为空时，将恢复默认"
+                                            v-model="settings.httpUserAgent" type="textarea" rows="2"></van-field>
+                                </van-space>
+                            </template>
+
+                            <template #extra>
+                                <van-button
+                                        @click="settings.epgXmlCachedAt = 0; settings.epgCachedHash = 0; confirmSettings()"
+                                        size="small" type="primary">推送
                                 </van-button>
                             </template>
                         </van-cell>
@@ -123,8 +141,8 @@
     <script>
         const { createApp, ref, onMounted, watch, nextTick } = Vue
 
-        // const baseUrl = "http://127.0.0.1:10481"
-        const baseUrl = ""
+        const baseUrl = "http://127.0.0.1:10481"
+        //const baseUrl = ""
 
         async function requestApi(url, config) {
             const resp = await fetch(`${baseUrl}${url}`, config)

@@ -217,4 +217,12 @@ class LeanbackSettingsViewModel : ViewModel() {
             _updateForceRemind = value
             SP.updateForceRemind = value
         }
+
+    private var _httpUserAgent by mutableStateOf(SP.httpUserAgent)
+    var httpUserAgent: String
+        get() = _httpUserAgent
+        set(value) {
+            _httpUserAgent = value
+            SP.httpUserAgent = value
+        }
 }
