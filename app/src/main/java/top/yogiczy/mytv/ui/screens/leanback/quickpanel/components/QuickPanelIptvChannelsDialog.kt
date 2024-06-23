@@ -37,9 +37,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.IOException
 import top.yogiczy.mytv.data.entities.Iptv
-import top.yogiczy.mytv.ui.screens.leanback.panel.components.LeanbackUrlType
-import top.yogiczy.mytv.ui.screens.leanback.panel.components.rememberLeanbackIptvUrlType
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
+import top.yogiczy.mytv.ui.utils.IpUtil.isIPv6
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
@@ -113,7 +112,6 @@ private fun LeanbackQuickPanelIptvChannelItem(
     isSelected: Boolean = false,
     focusRequester: FocusRequester = remember { FocusRequester() },
     onSelect: () -> Unit = {},
-    urlType: LeanbackUrlType = rememberLeanbackIptvUrlType(url),
     urlDelay: Long = rememberIptvUrlDelay(url),
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -156,7 +154,7 @@ private fun LeanbackQuickPanelIptvChannelItem(
                             .padding(vertical = 2.dp, horizontal = 4.dp)
 
                         androidx.tv.material3.Text(
-                            text = if (urlType == LeanbackUrlType.IPV6) "IPV6" else "IPV4",
+                            text = if (url.isIPv6()) "IPV6" else "IPV4",
                             modifier = textModifier,
                         )
 
@@ -219,7 +217,6 @@ private fun LeanbackQuickPanelIptvChannelItemPreview() {
         LeanbackQuickPanelIptvChannelItem(
             url = "http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8",
             urlIndex = 0,
-            urlType = LeanbackUrlType.IPV6,
             urlDelay = 123,
             isSelected = true,
         )

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -113,7 +114,11 @@ fun LeanbackPanelIptvEpgDialog(
                                     overlineContent = {
                                         val start = timeFormat.format(programme.startAt)
                                         val end = timeFormat.format(programme.endAt)
-                                        Text(text = "$start  ~ $end")
+                                        Text(
+                                            text = "$start  ~ $end",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            modifier = Modifier.alpha(0.8f),
+                                        )
                                     },
                                     trailingContent = {
                                         if (programme.isLive()) {

@@ -43,18 +43,6 @@ fun LeanbackSettingsCategoryApp(
         }
 
         item {
-            LeanbackSettingsCategoryListItem(
-                headlineContent = "应用更新",
-                supportingContent = "最新版本：v${updateViewModel.latestRelease.version}",
-                trailingContent = if (updateViewModel.isUpdateAvailable) "发现新版本" else "无更新",
-                onSelected = {
-                    if (updateViewModel.isUpdateAvailable)
-                        updateViewModel.showDialog = true
-                },
-            )
-        }
-
-        item {
             val context = LocalContext.current
 
             LeanbackSettingsCategoryListItem(
@@ -70,6 +58,18 @@ fun LeanbackSettingsCategoryApp(
 //                    settingsViewModel.appDeviceDisplayType = SP.AppDeviceDisplayType.entries[
 //                        (settingsViewModel.appDeviceDisplayType.ordinal + 1) % SP.AppDeviceDisplayType.entries.size
 //                    ]
+                },
+            )
+        }
+
+        item {
+            LeanbackSettingsCategoryListItem(
+                headlineContent = "应用更新",
+                supportingContent = "最新版本：v${updateViewModel.latestRelease.version}",
+                trailingContent = if (updateViewModel.isUpdateAvailable) "发现新版本" else "无更新",
+                onSelected = {
+                    if (updateViewModel.isUpdateAvailable)
+                        updateViewModel.showDialog = true
                 },
             )
         }

@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui.screens.leanback.main.components
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -79,8 +78,7 @@ class LeanbackMainContentState(
             }
 
             // 记忆可播放的域名
-            SP.iptvPlayableHostList += Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
-                ?: ""
+            SP.iptvPlayableHostList += getUrlHost(_currentIptv.urlList[_currentIptvUrlIdx])
         }
 
         videoPlayerState.onError {
@@ -89,8 +87,7 @@ class LeanbackMainContentState(
             }
 
             // 从记忆中删除不可播放的域名
-            SP.iptvPlayableHostList -= Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
-                ?: ""
+            SP.iptvPlayableHostList -= getUrlHost(_currentIptv.urlList[_currentIptvUrlIdx])
         }
     }
 
@@ -113,8 +110,7 @@ class LeanbackMainContentState(
         _isSettingsVisible = false
 
         if (iptv == _currentIptv && urlIdx != _currentIptvUrlIdx) {
-            SP.iptvPlayableHostList -= Uri.parse(_currentIptv.urlList[_currentIptvUrlIdx]).host
-                ?: ""
+            SP.iptvPlayableHostList -= getUrlHost(_currentIptv.urlList[_currentIptvUrlIdx])
         }
 
         if (iptv == _currentIptv && urlIdx == null) return
@@ -126,8 +122,8 @@ class LeanbackMainContentState(
 
         _currentIptvUrlIdx = if (urlIdx == null) {
             // 优先从记忆中选择可播放的域名
-            max(0, _currentIptv.urlList.indexOfLast {
-                SP.iptvPlayableHostList.contains(Uri.parse(it).host ?: "")
+            max(0, _currentIptv.urlList.indexOfFirst {
+                SP.iptvPlayableHostList.contains(getUrlHost(it))
             })
         } else {
             (urlIdx + _currentIptv.urlList.size) % _currentIptv.urlList.size
@@ -159,4 +155,8 @@ fun rememberLeanbackMainContentState(
         videoPlayerState = videoPlayerState,
         iptvGroupList = iptvGroupList,
     )
+}
+
+private fun getUrlHost(url: String): String {
+    return url.split("://").getOrElse(1) { "" }.split("/").firstOrNull() ?: url
 }
