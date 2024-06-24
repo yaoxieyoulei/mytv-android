@@ -62,7 +62,7 @@ fun LeanbackPanelScreen(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onClose: () -> Unit = {},
     autoCloseState: PanelAutoCloseState = rememberPanelAutoCloseState(
-        timeout = Constants.UI_PANEL_SCREEN_AUTO_CLOSE_DELAY,
+        timeout = Constants.UI_SCREEN_AUTO_CLOSE_DELAY,
         onTimeout = onClose,
     ),
 ) {

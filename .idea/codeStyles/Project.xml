@@ -121,6 +121,11 @@
     </codeStyleSettings>
     <codeStyleSettings language="kotlin">
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
+      <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="false" />
+      <option name="BLOCK_COMMENT_AT_FIRST_COLUMN" value="false" />
+      <option name="LINE_COMMENT_ADD_SPACE" value="true" />
+      <option name="BLOCK_COMMENT_ADD_SPACE" value="true" />
+      <option name="LINE_COMMENT_ADD_SPACE_ON_REFORMAT" value="true" />
     </codeStyleSettings>
   </code_scheme>
 </component>

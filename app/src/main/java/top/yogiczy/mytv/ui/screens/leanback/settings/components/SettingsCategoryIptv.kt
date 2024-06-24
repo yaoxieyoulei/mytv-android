@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -36,6 +37,8 @@ import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
+import top.yogiczy.mytv.ui.utils.ExtUtil.humanizeMs
+import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import kotlin.math.max
 
@@ -100,18 +103,10 @@ fun LeanbackSettingsCategoryIptv(
         }
 
         item {
-            fun formatDuration(ms: Long): String {
-                return when (ms) {
-                    in 0..<60_000 -> "${ms / 1000}秒"
-                    in 60_000..<3_600_000 -> "${ms / 60_000}分钟"
-                    else -> "${ms / 3_600_000}小时"
-                }
-            }
-
             LeanbackSettingsCategoryListItem(
                 headlineContent = "直播源缓存时间",
                 supportingContent = "短按增加1小时，长按设为0小时",
-                trailingContent = formatDuration(settingsViewModel.iptvSourceCacheTime),
+                trailingContent = settingsViewModel.iptvSourceCacheTime.humanizeMs,
                 onSelected = {
                     settingsViewModel.iptvSourceCacheTime =
                         (settingsViewModel.iptvSourceCacheTime + 1 * 1000 * 60 * 60) % (1000 * 60 * 60 * 24)
@@ -130,6 +125,7 @@ fun LeanbackSettingsCategoryIptv(
                 supportingContent = if (settingsViewModel.iptvSourceUrl != Constants.IPTV_SOURCE_URL) settingsViewModel.iptvSourceUrl else null,
                 trailingContent = if (settingsViewModel.iptvSourceUrl != Constants.IPTV_SOURCE_URL) "已启用" else "未启用",
                 onSelected = { showDialog = true },
+                remoteConfig = true,
             )
 
             LeanbackSettingsIptvSourceHistoryDialog(showDialogProvider = { showDialog },
@@ -248,6 +244,7 @@ private fun LeanbackSettingsIptvSourceHistoryDialog(
 @Preview
 @Composable
 private fun LeanbackSettingsCategoryIptvPreview() {
+    SP.init(LocalContext.current)
     LeanbackTheme {
         LeanbackSettingsCategoryIptv(
             modifier = Modifier.padding(20.dp),

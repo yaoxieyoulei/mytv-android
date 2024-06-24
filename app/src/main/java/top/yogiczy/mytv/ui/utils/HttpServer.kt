@@ -95,7 +95,7 @@ object HttpServer : Loggable() {
                         appRepo = Constants.APP_REPO,
                         iptvSourceUrl = SP.iptvSourceUrl,
                         epgXmlUrl = SP.epgXmlUrl,
-                        httpUserAgent = SP.httpUserAgent,
+                        videoPlayerUserAgent = SP.videoPlayerUserAgent,
                         logHistory = Logger.history,
                     )
                 )
@@ -110,7 +110,7 @@ object HttpServer : Loggable() {
         val body = request.getBody<JSONObjectBody>().get()
         val iptvSourceUrl = body.get("iptvSourceUrl").toString()
         val epgXmlUrl = body.get("epgXmlUrl").toString()
-        val httpUserAgent = body.get("httpUserAgent").toString()
+        val videoPlayerUserAgent = body.get("videoPlayerUserAgent").toString()
 
         if (SP.iptvSourceUrl != iptvSourceUrl) {
             SP.iptvSourceUrl = iptvSourceUrl
@@ -122,7 +122,7 @@ object HttpServer : Loggable() {
             EpgRepository().clearCache()
         }
 
-        SP.httpUserAgent = httpUserAgent
+        SP.videoPlayerUserAgent = videoPlayerUserAgent
 
         wrapResponse(response).send("success")
     }
@@ -189,7 +189,7 @@ private data class AllSettings(
     val appRepo: String,
     val iptvSourceUrl: String,
     val epgXmlUrl: String,
-    val httpUserAgent: String,
+    val videoPlayerUserAgent: String,
 
     val logHistory: List<Logger.HistoryItem>,
 )

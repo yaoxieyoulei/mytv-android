@@ -12,10 +12,12 @@ class Logger private constructor(
 ) {
     fun d(message: String, throwable: Throwable? = null) {
         Log.d(tag, message, throwable)
+        // addHistoryItem(HistoryItem(LevelType.DEBUG, tag, message, throwable?.message))
     }
 
     fun i(message: String, throwable: Throwable? = null) {
         Log.i(tag, message, throwable)
+        addHistoryItem(HistoryItem(LevelType.INFO, tag, message, throwable?.message))
     }
 
     fun w(message: String, throwable: Throwable? = null) {

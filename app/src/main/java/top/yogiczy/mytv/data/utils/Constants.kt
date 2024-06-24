@@ -57,9 +57,9 @@ object Constants {
     const val HTTP_RETRY_INTERVAL = 3000L
 
     /**
-     * HTTP userAgent
+     * 播放器 userAgent
      */
-    const val HTTP_USER_AGENT = "ExoPlayer"
+    const val VIDEO_PLAYER_USER_AGENT = "ExoPlayer"
 
     /**
      * 日志历史最大保留条数
@@ -72,9 +72,9 @@ object Constants {
     const val VIDEO_PLAYER_LOAD_TIMEOUT = 1000L * 15 // 15秒
 
     /**
-     * 界面 超时未操作自动关闭选台界面
+     * 界面 超时未操作自动关闭界面
      */
-    const val UI_PANEL_SCREEN_AUTO_CLOSE_DELAY = 1000L * 15 // 15秒
+    const val UI_SCREEN_AUTO_CLOSE_DELAY = 1000L * 15 // 15秒
 
     /**
      * 界面 时间显示前后范围

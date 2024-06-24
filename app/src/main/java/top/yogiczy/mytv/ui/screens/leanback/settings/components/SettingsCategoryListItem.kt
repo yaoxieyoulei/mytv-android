@@ -1,5 +1,11 @@
 package top.yogiczy.mytv.ui.screens.leanback.settings.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -12,6 +18,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItemDefaults
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 
@@ -23,6 +30,8 @@ fun LeanbackSettingsCategoryListItem(
     trailingContent: @Composable () -> Unit = {},
     onSelected: () -> Unit = {},
     onLongSelected: () -> Unit = {},
+    locK: Boolean = false,
+    remoteConfig: Boolean = false,
 ) {
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -36,7 +45,29 @@ fun LeanbackSettingsCategoryListItem(
         headlineContent = {
             androidx.tv.material3.Text(text = headlineContent)
         },
-        trailingContent = trailingContent,
+        trailingContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            ) {
+                trailingContent()
+                if (locK) {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+
+                if (remoteConfig) {
+                    Icon(
+                        Icons.AutoMirrored.Default.OpenInNew,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+        },
         supportingContent = { supportingContent?.let { androidx.tv.material3.Text(it) } },
         modifier = modifier
             .focusRequester(focusRequester)
@@ -62,6 +93,8 @@ fun LeanbackSettingsCategoryListItem(
     trailingContent: String,
     onSelected: () -> Unit = {},
     onLongSelected: () -> Unit = {},
+    locK: Boolean = false,
+    remoteConfig: Boolean = false,
 ) {
     LeanbackSettingsCategoryListItem(
         modifier = modifier,
@@ -70,5 +103,7 @@ fun LeanbackSettingsCategoryListItem(
         trailingContent = { androidx.tv.material3.Text(trailingContent) },
         onSelected = onSelected,
         onLongSelected = onLongSelected,
+        locK = locK,
+        remoteConfig = remoteConfig,
     )
 }

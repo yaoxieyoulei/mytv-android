@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -36,6 +37,7 @@ import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
+import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import kotlin.math.max
 
@@ -88,6 +90,7 @@ fun LeanbackSettingsCategoryEpg(
                     settingsViewModel.epgXmlUrl else null,
                 trailingContent = if (settingsViewModel.epgXmlUrl != Constants.EPG_XML_URL) "已启用" else "未启用",
                 onSelected = { showDialog = true },
+                remoteConfig = true,
             )
 
             LeanbackSettingsEpgSourceHistoryDialog(
@@ -207,6 +210,7 @@ private fun LeanbackSettingsEpgSourceHistoryDialog(
 @Preview
 @Composable
 private fun LeanbackSettingsCategoryEpgPreview() {
+    SP.init(LocalContext.current)
     LeanbackTheme {
         LeanbackSettingsCategoryEpg(
             modifier = Modifier.padding(20.dp),

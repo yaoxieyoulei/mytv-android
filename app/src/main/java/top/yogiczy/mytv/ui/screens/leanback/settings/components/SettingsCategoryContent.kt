@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsCategories
+import top.yogiczy.mytv.ui.utils.Logger
 
 @Composable
 fun LeanbackSettingsCategoryContent(
@@ -30,8 +31,12 @@ fun LeanbackSettingsCategoryContent(
             LeanbackSettingsCategories.UI -> LeanbackSettingsCategoryUI()
             LeanbackSettingsCategories.FAVORITE -> LeanbackSettingsCategoryFavorite()
             LeanbackSettingsCategories.UPDATE -> LeanbackSettingsCategoryUpdate()
+            LeanbackSettingsCategories.VIDEO_PLAYER -> LeanbackSettingsCategoryVideoPlayer()
             LeanbackSettingsCategories.HTTP -> LeanbackSettingsCategoryHttp()
             LeanbackSettingsCategories.DEBUG -> LeanbackSettingsCategoryDebug()
+            LeanbackSettingsCategories.LOG -> LeanbackSettingsCategoryLog(
+                history = Logger.history,
+            )
             LeanbackSettingsCategories.MORE -> LeanbackSettingsCategoryMore()
         }
     }

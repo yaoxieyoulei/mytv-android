@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -13,6 +14,7 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
+import top.yogiczy.mytv.ui.utils.ExtUtil.humanizeMs
 import top.yogiczy.mytv.ui.utils.SP
 import java.text.DecimalFormat
 
@@ -85,6 +87,15 @@ fun LeanbackSettingsCategoryUI(
         }
 
         item {
+            LeanbackSettingsCategoryListItem(
+                headlineContent = "超时自动关闭界面",
+                supportingContent = "影响选台界面，快捷操作界面",
+                trailingContent = Constants.UI_SCREEN_AUTO_CLOSE_DELAY.humanizeMs,
+                locK = true,
+            )
+        }
+
+        item {
             val defaultScale = 1f
             val minScale = 1f
             val maxScale = 2f
@@ -141,6 +152,7 @@ fun LeanbackSettingsCategoryUI(
 @Preview
 @Composable
 private fun LeanbackSettingsCategoryUIPreview() {
+    SP.init(LocalContext.current)
     LeanbackTheme {
         LeanbackSettingsCategoryUI(
             modifier = Modifier.padding(20.dp),

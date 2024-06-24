@@ -17,7 +17,7 @@ import top.yogiczy.mytv.ui.utils.ExtUtil.humanizeMs
 import top.yogiczy.mytv.ui.utils.SP
 
 @Composable
-fun LeanbackSettingsCategoryHttp(
+fun LeanbackSettingsCategoryVideoPlayer(
     modifier: Modifier = Modifier,
     settingsViewModel: LeanbackSettingsViewModel = viewModel(),
 ) {
@@ -28,19 +28,17 @@ fun LeanbackSettingsCategoryHttp(
     ) {
         item {
             LeanbackSettingsCategoryListItem(
-                headlineContent = "HTTP请求重试次数",
-                supportingContent = "影响直播源、节目单数据获取",
-                trailingContent = Constants.HTTP_RETRY_COUNT.toString(),
+                headlineContent = "播放器加载超时",
+                trailingContent = Constants.VIDEO_PLAYER_LOAD_TIMEOUT.humanizeMs,
                 locK = true,
             )
         }
 
         item {
             LeanbackSettingsCategoryListItem(
-                headlineContent = "HTTP请求重试间隔时间",
-                supportingContent = "影响直播源、节目单数据获取",
-                trailingContent = Constants.HTTP_RETRY_INTERVAL.humanizeMs,
-                locK = true,
+                headlineContent = "播放器自定义UA",
+                supportingContent = settingsViewModel.videoPlayerUserAgent,
+                remoteConfig = true,
             )
         }
     }
@@ -51,7 +49,7 @@ fun LeanbackSettingsCategoryHttp(
 private fun LeanbackSettingsCategoryHttpPreview() {
     SP.init(LocalContext.current)
     LeanbackTheme {
-        LeanbackSettingsCategoryHttp(
+        LeanbackSettingsCategoryVideoPlayer(
             modifier = Modifier.padding(20.dp),
         )
     }

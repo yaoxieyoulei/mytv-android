@@ -218,11 +218,11 @@ class LeanbackSettingsViewModel : ViewModel() {
             SP.updateForceRemind = value
         }
 
-    private var _httpUserAgent by mutableStateOf(SP.httpUserAgent)
-    var httpUserAgent: String
-        get() = _httpUserAgent
+    private var _videoPlayerUserAgent by mutableStateOf(SP.videoPlayerUserAgent)
+    var videoPlayerUserAgent: String
+        get() = _videoPlayerUserAgent
         set(value) {
-            _httpUserAgent = value
-            SP.httpUserAgent = value
+            _videoPlayerUserAgent = value
+            SP.videoPlayerUserAgent = value
         }
 }
