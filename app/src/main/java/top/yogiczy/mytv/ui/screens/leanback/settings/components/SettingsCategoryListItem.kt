@@ -20,6 +20,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItemDefaults
+import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackQrcodeDialog
+import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 
 @Composable
@@ -28,13 +30,15 @@ fun LeanbackSettingsCategoryListItem(
     headlineContent: String,
     supportingContent: String? = null,
     trailingContent: @Composable () -> Unit = {},
-    onSelected: () -> Unit = {},
+    onSelected: (() -> Unit)? = null,
     onLongSelected: () -> Unit = {},
     locK: Boolean = false,
     remoteConfig: Boolean = false,
 ) {
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
+
+    var showServerUrlDialog by remember { mutableStateOf(false) }
 
     androidx.tv.material3.ListItem(
         selected = false,
@@ -74,14 +78,23 @@ fun LeanbackSettingsCategoryListItem(
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleLeanbackKeyEvents(
                 onSelect = {
-                    if (isFocused) onSelected()
-                    else focusRequester.requestFocus()
+                    if (isFocused) {
+                        if (onSelected != null) onSelected()
+                        else if (remoteConfig) showServerUrlDialog = true
+                    } else focusRequester.requestFocus()
                 },
                 onLongSelect = {
                     if (isFocused) onLongSelected()
                     else focusRequester.requestFocus()
                 },
             ),
+    )
+
+    LeanbackQrcodeDialog(
+        text = HttpServer.serverUrl,
+        description = "扫码前往设置页面",
+        showDialogProvider = { showServerUrlDialog },
+        onDismissRequest = { showServerUrlDialog = false },
     )
 }
 

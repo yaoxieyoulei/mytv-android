@@ -76,6 +76,7 @@ fun LeanbackQuickPanelIptvChannelsDialog(
                 TvLazyColumn(
                     state = listState,
                     contentPadding = PaddingValues(vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     itemsIndexed(iptv.urlList) { index, url ->
                         val focusRequester = remember { FocusRequester() }

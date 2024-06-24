@@ -34,9 +34,11 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.data.utils.Constants
+import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackQrcodeDialog
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
+import top.yogiczy.mytv.ui.utils.HttpServer
 import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import kotlin.math.max
@@ -156,6 +158,7 @@ private fun LeanbackSettingsEpgSourceHistoryDialog(
                         max(0, epgXmlUrlHistory.indexOf(currentEpgXmlUrl) - 2),
                     ),
                     contentPadding = PaddingValues(vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(epgXmlUrlHistory) { url ->
                         val focusRequester = remember { FocusRequester() }
@@ -199,6 +202,36 @@ private fun LeanbackSettingsEpgSourceHistoryDialog(
                                     )
                                 }
                             },
+                        )
+                    }
+
+                    item {
+                        val focusRequester = remember { FocusRequester() }
+                        var isFocused by remember { mutableStateOf(false) }
+                        var showDialog by remember { mutableStateOf(false) }
+
+                        androidx.tv.material3.ListItem(
+                            modifier = Modifier
+                                .focusRequester(focusRequester)
+                                .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
+                                .handleLeanbackKeyEvents(
+                                    onSelect = {
+                                        if (isFocused) showDialog = true
+                                        else focusRequester.requestFocus()
+                                    },
+                                ),
+                            selected = false,
+                            onClick = {},
+                            headlineContent = {
+                                androidx.tv.material3.Text("添加其他节目单")
+                            },
+                        )
+
+                        LeanbackQrcodeDialog(
+                            text = HttpServer.serverUrl,
+                            description = "扫码前往设置页面",
+                            showDialogProvider = { showDialog },
+                            onDismissRequest = { showDialog = false },
                         )
                     }
                 }
