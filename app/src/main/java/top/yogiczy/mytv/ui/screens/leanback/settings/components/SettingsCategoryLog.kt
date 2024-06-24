@@ -11,7 +11,7 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
 import kotlinx.collections.immutable.persistentListOf
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
-import top.yogiczy.mytv.ui.utils.Logger
+import top.yogiczy.mytv.utils.Logger
 import java.text.SimpleDateFormat
 import java.util.Locale
 

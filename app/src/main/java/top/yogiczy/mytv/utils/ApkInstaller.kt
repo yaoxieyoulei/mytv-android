@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.ui.utils
+package top.yogiczy.mytv.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,15 +20,11 @@ object ApkInstaller {
                 setReadable(true, false)
             }
 
-            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                FileProvider.getUriForFile(
-                    context,
-                    context.packageName + ".FileProvider",
-                    cachedApkFile
+            val uri =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) FileProvider.getUriForFile(
+                    context, context.packageName + ".FileProvider", cachedApkFile
                 )
-            } else {
-                Uri.fromFile(cachedApkFile)
-            }
+                else Uri.fromFile(cachedApkFile)
 
             val installIntent = Intent(Intent.ACTION_VIEW).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION

@@ -10,7 +10,7 @@ import top.yogiczy.mytv.data.entities.IptvGroupList
 import top.yogiczy.mytv.data.entities.IptvList
 import top.yogiczy.mytv.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.data.repositories.iptv.parser.IptvParser
-import top.yogiczy.mytv.ui.utils.Logger
+import top.yogiczy.mytv.utils.Logger
 
 /**
  * 直播源获取

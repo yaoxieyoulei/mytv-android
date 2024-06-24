@@ -1,4 +1,4 @@
-package top.yogiczy.mytv
+package top.yogiczy.mytv.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.ui.utils
+package top.yogiczy.mytv.utils
 
 import android.util.Log
 import kotlinx.serialization.Serializable

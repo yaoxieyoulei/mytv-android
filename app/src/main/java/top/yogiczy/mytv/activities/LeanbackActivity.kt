@@ -1,4 +1,4 @@
-package top.yogiczy.mytv
+package top.yogiczy.mytv.activities
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -14,6 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import top.yogiczy.mytv.ui.LeanbackApp
+import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
 import kotlin.system.exitProcess
@@ -51,6 +52,6 @@ class LeanbackActivity : ComponentActivity() {
             }
         }
 
-        HttpServer.start(applicationContext)
+        HttpServer.start(applicationContext, showToast = { LeanbackToastState.I.showToast(it) })
     }
 }

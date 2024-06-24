@@ -20,7 +20,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
-import top.yogiczy.mytv.material.LeanbackPadding
+import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackPadding
 import top.yogiczy.mytv.ui.screens.leanback.main.LeanbackMainScreen
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastScreen
 

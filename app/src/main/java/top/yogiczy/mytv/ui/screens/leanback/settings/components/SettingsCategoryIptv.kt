@@ -37,9 +37,9 @@ import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
-import top.yogiczy.mytv.ui.utils.ExtUtil.humanizeMs
 import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
+import top.yogiczy.mytv.utils.humanizeMs
 import kotlin.math.max
 
 @Composable
@@ -106,7 +106,7 @@ fun LeanbackSettingsCategoryIptv(
             LeanbackSettingsCategoryListItem(
                 headlineContent = "直播源缓存时间",
                 supportingContent = "短按增加1小时，长按设为0小时",
-                trailingContent = settingsViewModel.iptvSourceCacheTime.humanizeMs,
+                trailingContent = settingsViewModel.iptvSourceCacheTime.humanizeMs(),
                 onSelected = {
                     settingsViewModel.iptvSourceCacheTime =
                         (settingsViewModel.iptvSourceCacheTime + 1 * 1000 * 60 * 60) % (1000 * 60 * 60 * 24)

@@ -38,8 +38,8 @@ import okhttp3.Request
 import okio.IOException
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
-import top.yogiczy.mytv.ui.utils.IpUtil.isIPv6
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
+import top.yogiczy.mytv.utils.isIPv6
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 

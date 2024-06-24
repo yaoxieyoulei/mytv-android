@@ -13,8 +13,8 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
-import top.yogiczy.mytv.ui.utils.ExtUtil.humanizeMs
 import top.yogiczy.mytv.ui.utils.SP
+import top.yogiczy.mytv.utils.humanizeMs
 
 @Composable
 fun LeanbackSettingsCategoryVideoPlayer(
@@ -29,7 +29,7 @@ fun LeanbackSettingsCategoryVideoPlayer(
         item {
             LeanbackSettingsCategoryListItem(
                 headlineContent = "播放器加载超时",
-                trailingContent = Constants.VIDEO_PLAYER_LOAD_TIMEOUT.humanizeMs,
+                trailingContent = Constants.VIDEO_PLAYER_LOAD_TIMEOUT.humanizeMs(),
                 locK = true,
             )
         }

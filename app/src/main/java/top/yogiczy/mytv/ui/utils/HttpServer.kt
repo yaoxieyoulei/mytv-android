@@ -19,7 +19,9 @@ import top.yogiczy.mytv.R
 import top.yogiczy.mytv.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.data.utils.Constants
-import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
+import top.yogiczy.mytv.utils.ApkInstaller
+import top.yogiczy.mytv.utils.Loggable
+import top.yogiczy.mytv.utils.Logger
 import java.io.File
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -32,11 +34,13 @@ object HttpServer : Loggable() {
         deleteOnExit()
     }
 
+    private var showToast: (String) -> Unit = { }
+
     val serverUrl: String by lazy {
         "http://${getLocalIpAddress()}:${SERVER_PORT}"
     }
 
-    fun start(context: Context) {
+    fun start(context: Context, showToast: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val server = AsyncHttpServer()
@@ -58,6 +62,7 @@ object HttpServer : Loggable() {
                     handleUploadApk(request, response, context)
                 }
 
+                HttpServer.showToast = showToast
                 log.i("服务已启动: 0.0.0.0:${SERVER_PORT}")
             } catch (ex: Exception) {
                 log.e("服务启动失败: ${ex.message}", ex)
@@ -143,14 +148,14 @@ object HttpServer : Loggable() {
                 body.setDataCallback { _, bb ->
                     val byteArray = bb.allByteArray
                     hasReceived += byteArray.size
-                    LeanbackToastState.I.showToast("正在接收文件: ${(hasReceived * 100f / contentLength).toInt()}%")
+                    showToast("正在接收文件: ${(hasReceived * 100f / contentLength).toInt()}%")
                     os.write(byteArray)
                 }
             }
         }
 
         body.setEndCallback {
-            LeanbackToastState.I.showToast("文件接收完成")
+            showToast("文件接收完成")
             body.dataEmitter.close()
             os.flush()
             os.close()

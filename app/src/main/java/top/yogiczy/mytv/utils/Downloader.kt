@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.ui.utils
+package top.yogiczy.mytv.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,7 @@ import okio.buffer
 import java.io.File
 import java.io.FileOutputStream
 
-object DownloadUtil : Loggable() {
+object Downloader : Loggable() {
     suspend fun downloadTo(url: String, filePath: String, onProgressCb: ((Int) -> Unit)?) =
         withContext(Dispatchers.IO) {
             log.d("下载文件: $url")
@@ -63,6 +63,5 @@ object DownloadUtil : Loggable() {
                 }
             }.buffer()
         }
-
     }
 }

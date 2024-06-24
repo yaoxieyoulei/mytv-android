@@ -18,8 +18,8 @@ import top.yogiczy.mytv.data.entities.IptvGroupList.Companion.iptvList
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.video.LeanbackVideoPlayerState
 import top.yogiczy.mytv.ui.screens.leanback.video.rememberLeanbackVideoPlayerState
-import top.yogiczy.mytv.ui.utils.Loggable
 import top.yogiczy.mytv.ui.utils.SP
+import top.yogiczy.mytv.utils.Loggable
 import kotlin.math.max
 
 @Stable

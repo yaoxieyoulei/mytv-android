@@ -14,7 +14,7 @@ import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
 import top.yogiczy.mytv.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.data.repositories.epg.fetcher.EpgFetcher
-import top.yogiczy.mytv.ui.utils.Logger
+import top.yogiczy.mytv.utils.Logger
 import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.Calendar

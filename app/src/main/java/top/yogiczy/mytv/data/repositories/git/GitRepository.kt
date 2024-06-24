@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import top.yogiczy.mytv.data.repositories.git.parser.GitReleaseParser
-import top.yogiczy.mytv.ui.utils.Loggable
+import top.yogiczy.mytv.utils.Loggable
 
 class GitRepository : Loggable() {
 

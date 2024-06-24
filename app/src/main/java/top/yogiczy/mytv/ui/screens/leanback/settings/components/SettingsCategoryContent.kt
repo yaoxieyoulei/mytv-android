@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsCategories
-import top.yogiczy.mytv.ui.utils.Logger
+import top.yogiczy.mytv.utils.Logger
 
 @Composable
 fun LeanbackSettingsCategoryContent(

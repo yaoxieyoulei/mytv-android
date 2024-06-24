@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.material
+package top.yogiczy.mytv.ui.screens.leanback.components
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp

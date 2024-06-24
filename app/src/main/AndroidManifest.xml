@@ -27,7 +27,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.MyTV">
             <intent-filter>
@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name=".LeanbackActivity"
+            android:name=".activities.LeanbackActivity"
             android:exported="true"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.MyTV.Leanback"
@@ -50,7 +50,7 @@
         </activity>
 
         <activity
-            android:name=".MobileActivity"
+            android:name=".activities.MobileActivity"
             android:exported="false"
             android:theme="@style/Theme.MyTV">
             <intent-filter>
@@ -59,7 +59,7 @@
         </activity>
 
         <activity
-            android:name=".PadActivity"
+            android:name=".activities.PadActivity"
             android:exported="false"
             android:theme="@style/Theme.MyTV">
             <intent-filter>

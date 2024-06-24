@@ -9,8 +9,8 @@ import top.yogiczy.mytv.data.repositories.git.GitRepository
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastProperty
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
-import top.yogiczy.mytv.ui.utils.DownloadUtil
-import top.yogiczy.mytv.ui.utils.VersionUtil.compareVersion
+import top.yogiczy.mytv.utils.Downloader
+import top.yogiczy.mytv.utils.compareVersion
 import java.io.File
 
 class LeanBackUpdateViewModel : ViewModel() {
@@ -35,7 +35,7 @@ class LeanBackUpdateViewModel : ViewModel() {
         try {
             _isChecking = true
             _latestRelease = GitRepository().latestRelease(Constants.GIT_RELEASE_LATEST_URL)
-            _isUpdateAvailable = compareVersion(_latestRelease.version, currentVersion) > 0
+            _isUpdateAvailable = _latestRelease.version.compareVersion(currentVersion) > 0
         } catch (e: Exception) {
             LeanbackToastState.I.showToast("检查更新失败")
         } finally {
@@ -55,7 +55,7 @@ class LeanBackUpdateViewModel : ViewModel() {
         )
 
         try {
-            DownloadUtil.downloadTo(_latestRelease.downloadUrl, latestFile.path) {
+            Downloader.downloadTo(_latestRelease.downloadUrl, latestFile.path) {
                 LeanbackToastState.I.showToast(
                     "正在下载更新: $it%",
                     LeanbackToastProperty.Duration.Custom(10_000),

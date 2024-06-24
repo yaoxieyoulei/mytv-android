@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
-import top.yogiczy.mytv.ui.utils.IpUtil.isIPv6
+import top.yogiczy.mytv.utils.isIPv6
 
 @Composable
 fun LeanbackPanelIptvInfo(

@@ -21,7 +21,7 @@ import top.yogiczy.mytv.AppGlobal
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.screens.leanback.update.components.LeanbackUpdateDialog
-import top.yogiczy.mytv.ui.utils.ApkInstaller
+import top.yogiczy.mytv.utils.ApkInstaller
 import java.io.File
 
 @Composable

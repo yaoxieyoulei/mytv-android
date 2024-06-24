@@ -14,8 +14,8 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
-import top.yogiczy.mytv.ui.utils.ExtUtil.humanizeMs
 import top.yogiczy.mytv.ui.utils.SP
+import top.yogiczy.mytv.utils.humanizeMs
 import java.text.DecimalFormat
 
 @Composable
@@ -90,7 +90,7 @@ fun LeanbackSettingsCategoryUI(
             LeanbackSettingsCategoryListItem(
                 headlineContent = "超时自动关闭界面",
                 supportingContent = "影响选台界面，快捷操作界面",
-                trailingContent = Constants.UI_SCREEN_AUTO_CLOSE_DELAY.humanizeMs,
+                trailingContent = Constants.UI_SCREEN_AUTO_CLOSE_DELAY.humanizeMs(),
                 locK = true,
             )
         }
