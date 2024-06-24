@@ -22,7 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.grid.TvGridCells
@@ -55,7 +54,6 @@ fun LeanbackPanelIptvFavoriteList(
 ) {
     val favoriteListSize = 6
     val childPadding = rememberLeanbackChildPadding()
-    val focusManager = LocalFocusManager.current
 
     var key by remember { mutableIntStateOf(0) }
     val iptvList = remember(key) { iptvListProvider() }
