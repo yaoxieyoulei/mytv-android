@@ -3,8 +3,8 @@ package top.yogiczy.mytv.ui.screens.leanback.classicpanel.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,15 +19,18 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
@@ -40,8 +43,8 @@ import top.yogiczy.mytv.data.entities.EpgList.Companion.currentProgrammes
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.data.entities.EpgProgrammeCurrent
 import top.yogiczy.mytv.data.entities.Iptv
+import top.yogiczy.mytv.data.entities.IptvGroup
 import top.yogiczy.mytv.data.entities.IptvList
-import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import kotlin.math.max
@@ -49,7 +52,7 @@ import kotlin.math.max
 @Composable
 fun LeanbackClassicPanelIptvList(
     modifier: Modifier = Modifier,
-    title: String = "频道列表",
+    iptvGroupProvider: () -> IptvGroup = { IptvGroup() },
     iptvListProvider: () -> IptvList = { IptvList() },
     epgListProvider: () -> EpgList = { EpgList() },
     initialIptvProvider: () -> Iptv = { Iptv() },
@@ -57,19 +60,20 @@ fun LeanbackClassicPanelIptvList(
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onIptvFocused: (Iptv, FocusRequester) -> Unit = { _, _ -> },
     showProgrammeProgressProvider: () -> Boolean = { false },
+    isFavoriteListProvider: () -> Boolean = { false },
     onUserAction: () -> Unit = {},
 ) {
+    val focusManager = LocalFocusManager.current
     val iptvList = iptvListProvider()
     val initialIptv = initialIptvProvider()
 
-    val childPadding = rememberLeanbackChildPadding()
-    var hasFocused by remember(iptvList) { mutableStateOf(false) }
+    var hasFocused by rememberSaveable { mutableStateOf(!iptvList.contains(initialIptv)) }
     val itemFocusRequesterList = remember(iptvList) {
         List(iptvList.size) { FocusRequester() }
     }
     var focusedIptv by remember(iptvList) { mutableStateOf(initialIptv) }
 
-    LaunchedEffect(itemFocusRequesterList) {
+    LaunchedEffect(iptvList) {
         if (iptvList.isNotEmpty()) {
             if (hasFocused) {
                 onIptvFocused(iptvList[0], itemFocusRequesterList[0])
@@ -82,7 +86,7 @@ fun LeanbackClassicPanelIptvList(
         }
     }
 
-    val listState = remember(iptvList) {
+    val listState = remember(iptvGroupProvider()) {
         TvLazyListState(
             if (hasFocused) 0
             else max(0, iptvList.indexOf(initialIptv) - 2)
@@ -95,39 +99,49 @@ fun LeanbackClassicPanelIptvList(
             .collect { _ -> onUserAction() }
     }
 
-    Column(
-        modifier = modifier.width(220.dp),
+    TvLazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxHeight()
+            .width(220.dp)
+            .background(MaterialTheme.colorScheme.background.copy(0.8f)),
     ) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
-
-        TvLazyColumn(
-            state = listState,
-            contentPadding = PaddingValues(top = 8.dp, bottom = childPadding.bottom),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            itemsIndexed(iptvList, key = { _, iptv -> iptv.hashCode() }) { index, iptv ->
-                val isSelected by remember { derivedStateOf { iptv == focusedIptv } }
-                val initialFocused by remember {
-                    derivedStateOf { !hasFocused && iptv == initialIptv }
-                }
-
-                LeanbackClassicPanelIptvItem(
-                    iptvProvider = { iptv },
-                    epgProgrammeCurrentProvider = { epgListProvider().currentProgrammes(iptv) },
-                    focusRequesterProvider = { itemFocusRequesterList[index] },
-                    isSelectedProvider = { isSelected },
-                    initialFocusedProvider = { initialFocused },
-                    onInitialFocused = { hasFocused = true },
-                    onFocused = {
-                        focusedIptv = iptv
-                        onIptvFocused(iptv, itemFocusRequesterList[index])
-                    },
-                    onSelected = { onIptvSelected(iptv) },
-                    onFavoriteToggle = { onIptvFavoriteToggle(iptv) },
-                    showProgrammeProgressProvider = showProgrammeProgressProvider,
-                )
+        itemsIndexed(iptvList, key = { _, iptv -> iptv.hashCode() }) { index, iptv ->
+            val isSelected by remember { derivedStateOf { iptv == focusedIptv } }
+            val initialFocused by remember {
+                derivedStateOf { !hasFocused && iptv == initialIptv }
             }
+
+            LeanbackClassicPanelIptvItem(
+                iptvProvider = { iptv },
+                epgProgrammeCurrentProvider = { epgListProvider().currentProgrammes(iptv) },
+                focusRequesterProvider = { itemFocusRequesterList[index] },
+                isSelectedProvider = { isSelected },
+                initialFocusedProvider = { initialFocused },
+                onInitialFocused = { hasFocused = true },
+                onFocused = {
+                    focusedIptv = iptv
+                    onIptvFocused(iptv, itemFocusRequesterList[index])
+                },
+                onSelected = { onIptvSelected(iptv) },
+                onFavoriteToggle = {
+                    if (isFavoriteListProvider()) {
+                        if (iptvList.size == 1) {
+                            focusManager.moveFocus(FocusDirection.Left)
+                        } else if (iptvList.first() == iptv) {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        } else if (iptvList.last() == iptv) {
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    }
+                    onIptvFavoriteToggle(iptv)
+                },
+                showProgrammeProgressProvider = showProgrammeProgressProvider,
+            )
         }
     }
 }

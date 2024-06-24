@@ -43,7 +43,7 @@ import kotlin.math.min
 fun LeanbackPanelIptvFavoriteList(
     modifier: Modifier = Modifier,
     iptvListProvider: () -> IptvList = { IptvList() },
-    epgList: EpgList = EpgList(),
+    epgListProvider: () -> EpgList = { EpgList() },
     currentIptvProvider: () -> Iptv = { Iptv() },
     showProgrammeProgressProvider: () -> Boolean = { false },
     onIptvSelected: (Iptv) -> Unit = {},
@@ -104,7 +104,7 @@ fun LeanbackPanelIptvFavoriteList(
                     } else Modifier,
                     iptvProvider = { iptv },
                     currentProgrammeProvider = {
-                        epgList.firstOrNull { epg -> epg.channel == iptv.channelName }
+                        epgListProvider().firstOrNull { epg -> epg.channel == iptv.channelName }
                             ?.currentProgrammes()?.now
                     },
                     showProgrammeProgressProvider = { showProgrammeProgressProvider() },
@@ -131,7 +131,7 @@ fun LeanbackPanelIptvFavoriteList(
         onDismissRequest = { showEpgDialog = false },
         iptvProvider = { currentShowEpgIptv },
         epgProvider = {
-            epgList.firstOrNull { epg ->
+            epgListProvider().firstOrNull { epg ->
                 epg.channel == currentShowEpgIptv.channelName
             } ?: Epg()
         },

@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -31,16 +32,20 @@ import kotlin.math.min
 @Composable
 fun LeanbackPanelIptvList(
     modifier: Modifier = Modifier,
-    iptvList: IptvList = IptvList(),
-    epgList: EpgList = EpgList(),
+    iptvListProvider: () -> IptvList = { IptvList() },
+    epgListProvider: () -> EpgList = { EpgList() },
     currentIptvProvider: () -> Iptv = { Iptv() },
     showProgrammeProgressProvider: () -> Boolean = { false },
     onIptvSelected: (Iptv) -> Unit = {},
     onIptvFavoriteToggle: (Iptv) -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
+    val iptvList = iptvListProvider()
+
     val listState = rememberTvLazyListState(max(0, iptvList.indexOf(currentIptvProvider()) - 2))
     val childPadding = rememberLeanbackChildPadding()
+
+    var hasFocused by rememberSaveable { mutableStateOf(false) }
 
     var showEpgDialog by remember { mutableStateOf(false) }
     var currentShowEpgIptv by remember { mutableStateOf(Iptv()) }
@@ -64,7 +69,7 @@ fun LeanbackPanelIptvList(
             LeanbackPanelIptvItem(
                 iptvProvider = { iptv },
                 currentProgrammeProvider = {
-                    epgList.firstOrNull { epg -> epg.channel == iptv.channelName }
+                    epgListProvider().firstOrNull { epg -> epg.channel == iptv.channelName }
                         ?.currentProgrammes()?.now
                 },
                 showProgrammeProgressProvider = { showProgrammeProgressProvider() },
@@ -74,7 +79,8 @@ fun LeanbackPanelIptvList(
                     currentShowEpgIptv = iptv
                     showEpgDialog = true
                 },
-                initialFocusedProvider = { iptv == currentIptvProvider() },
+                initialFocusedProvider = { iptv == currentIptvProvider() && !hasFocused },
+                onHasFocused = { hasFocused = true },
             )
         }
     }
@@ -84,7 +90,7 @@ fun LeanbackPanelIptvList(
         onDismissRequest = { showEpgDialog = false },
         iptvProvider = { currentShowEpgIptv },
         epgProvider = {
-            epgList.firstOrNull { epg ->
+            epgListProvider().firstOrNull { epg ->
                 epg.channel == currentShowEpgIptv.channelName
             } ?: Epg()
         },
@@ -108,7 +114,7 @@ private fun LeanbackPanelIptvListPreview() {
     LeanbackTheme {
         LeanbackPanelIptvList(
             modifier = Modifier.padding(20.dp),
-            iptvList = IptvList.EXAMPLE,
+            iptvListProvider = { IptvList.EXAMPLE },
             currentIptvProvider = { Iptv.EXAMPLE },
         )
     }

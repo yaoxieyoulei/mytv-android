@@ -109,11 +109,11 @@ class LeanbackMainContentState(
         _isPanelVisible = false
         _isSettingsVisible = false
 
+        if (iptv == _currentIptv && urlIdx == null) return
+
         if (iptv == _currentIptv && urlIdx != _currentIptvUrlIdx) {
             SP.iptvPlayableHostList -= getUrlHost(_currentIptv.urlList[_currentIptvUrlIdx])
         }
-
-        if (iptv == _currentIptv && urlIdx == null) return
 
         _isTempPanelVisible = true
 

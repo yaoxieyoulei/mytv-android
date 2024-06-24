@@ -1,8 +1,9 @@
 package top.yogiczy.mytv.ui.screens.leanback.classicpanel.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -36,7 +37,6 @@ import top.yogiczy.mytv.data.entities.Epg
 import top.yogiczy.mytv.data.entities.EpgProgramme
 import top.yogiczy.mytv.data.entities.EpgProgramme.Companion.isLive
 import top.yogiczy.mytv.data.entities.EpgProgrammeList
-import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import java.text.SimpleDateFormat
@@ -51,8 +51,6 @@ fun LeanbackClassicPanelEpgList(
     exitFocusRequesterProvider: () -> FocusRequester = { FocusRequester.Default },
     onUserAction: () -> Unit = {},
 ) {
-    val childPadding = rememberLeanbackChildPadding()
-
     val epg = epgProvider()
 
     if (epg != null && epg.programmes.isNotEmpty()) {
@@ -66,28 +64,25 @@ fun LeanbackClassicPanelEpgList(
                 .collect { _ -> onUserAction() }
         }
 
-        Column(
-            modifier = modifier.width(240.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(text = "节目单", style = MaterialTheme.typography.titleMedium)
 
-            TvLazyColumn(
-                state = listState,
-                contentPadding = PaddingValues(top = 8.dp, bottom = childPadding.bottom),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .focusProperties {
-                        exit = {
-                            exitFocusRequesterProvider()
-                        }
-                    },
-            ) {
-                items(epg.programmes) { programme ->
-                    LeanbackClassicPanelEpgItem(
-                        epgProgrammeProvider = { programme },
-                    )
-                }
+        TvLazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxHeight()
+                .width(240.dp)
+                .background(MaterialTheme.colorScheme.background.copy(0.7f))
+                .focusProperties {
+                    exit = {
+                        exitFocusRequesterProvider()
+                    }
+                },
+        ) {
+            items(epg.programmes) { programme ->
+                LeanbackClassicPanelEpgItem(
+                    epgProgrammeProvider = { programme },
+                )
             }
         }
     }

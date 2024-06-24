@@ -48,8 +48,8 @@ import top.yogiczy.mytv.ui.theme.LeanbackTheme
 @Composable
 fun LeanbackPanelScreen(
     modifier: Modifier = Modifier,
-    iptvGroupList: IptvGroupList = IptvGroupList(),
-    epgList: EpgList = EpgList(),
+    iptvGroupListProvider: () -> IptvGroupList = { IptvGroupList() },
+    epgListProvider: () -> EpgList = { EpgList() },
     currentIptvProvider: () -> Iptv = { Iptv() },
     currentIptvUrlIdxProvider: () -> Int = { 0 },
     videoPlayerMetadataProvider: () -> LeanbackVideoPlayer.Metadata = { LeanbackVideoPlayer.Metadata() },
@@ -78,13 +78,14 @@ fun LeanbackPanelScreen(
     ) {
         LeanbackPanelScreenTopRight(
             channelNoProvider = {
-                (iptvGroupList.iptvIdx(currentIptvProvider()) + 1).toString().padStart(2, '0')
+                (iptvGroupListProvider().iptvIdx(currentIptvProvider()) + 1).toString()
+                    .padStart(2, '0')
             }
         )
 
         LeanbackPanelScreenBottom(
-            iptvGroupList = iptvGroupList,
-            epgList = epgList,
+            iptvGroupListProvider = iptvGroupListProvider,
+            epgListProvider = epgListProvider,
             currentIptvProvider = currentIptvProvider,
             currentIptvUrlIdxProvider = currentIptvUrlIdxProvider,
             videoPlayerMetadataProvider = videoPlayerMetadataProvider,
@@ -135,8 +136,8 @@ fun LeanbackPanelScreenTopRight(
 @Composable
 private fun LeanbackPanelScreenBottom(
     modifier: Modifier = Modifier,
-    iptvGroupList: IptvGroupList = IptvGroupList(),
-    epgList: EpgList = EpgList(),
+    iptvGroupListProvider: () -> IptvGroupList = { IptvGroupList() },
+    epgListProvider: () -> EpgList = { EpgList() },
     currentIptvProvider: () -> Iptv = { Iptv() },
     currentIptvUrlIdxProvider: () -> Int = { 0 },
     videoPlayerMetadataProvider: () -> LeanbackVideoPlayer.Metadata = { LeanbackVideoPlayer.Metadata() },
@@ -162,7 +163,7 @@ private fun LeanbackPanelScreenBottom(
                 iptvProvider = currentIptvProvider,
                 iptvUrlIdxProvider = currentIptvUrlIdxProvider,
                 currentProgrammesProvider = {
-                    epgList.currentProgrammes(currentIptvProvider())
+                    epgListProvider().currentProgrammes(currentIptvProvider())
                 }
             )
 
@@ -172,8 +173,8 @@ private fun LeanbackPanelScreenBottom(
             )
 
             LeanbackPanelScreenBottomIptvList(
-                iptvGroupList = iptvGroupList,
-                epgList = epgList,
+                iptvGroupListProvider = iptvGroupListProvider,
+                epgListProvider = epgListProvider,
                 currentIptvProvider = currentIptvProvider,
                 showProgrammeProgressProvider = showProgrammeProgressProvider,
                 iptvFavoriteEnableProvider = iptvFavoriteEnableProvider,
@@ -191,8 +192,8 @@ private fun LeanbackPanelScreenBottom(
 @Composable
 fun LeanbackPanelScreenBottomIptvList(
     modifier: Modifier = Modifier,
-    iptvGroupList: IptvGroupList = IptvGroupList(),
-    epgList: EpgList = EpgList(),
+    iptvGroupListProvider: () -> IptvGroupList = { IptvGroupList() },
+    epgListProvider: () -> EpgList = { EpgList() },
     currentIptvProvider: () -> Iptv = { Iptv() },
     showProgrammeProgressProvider: () -> Boolean = { false },
     iptvFavoriteEnableProvider: () -> Boolean = { true },
@@ -210,10 +211,10 @@ fun LeanbackPanelScreenBottomIptvList(
         if (favoriteListVisible)
             LeanbackPanelIptvFavoriteList(
                 iptvListProvider = {
-                    IptvList(iptvGroupList.iptvList
+                    IptvList(iptvGroupListProvider().iptvList
                         .filter { iptvFavoriteListProvider().contains(it.channelName) })
                 },
-                epgList = epgList,
+                epgListProvider = epgListProvider,
                 currentIptvProvider = currentIptvProvider,
                 showProgrammeProgressProvider = showProgrammeProgressProvider,
                 onIptvSelected = onIptvSelected,
@@ -226,16 +227,16 @@ fun LeanbackPanelScreenBottomIptvList(
             )
         else
             LeanbackPanelIptvGroupList(
-                iptvGroupList = iptvGroupList,
-                epgList = epgList,
+                iptvGroupListProvider = iptvGroupListProvider,
+                epgListProvider = epgListProvider,
                 currentIptvProvider = currentIptvProvider,
                 showProgrammeProgressProvider = showProgrammeProgressProvider,
                 onIptvSelected = onIptvSelected,
                 onIptvFavoriteToggle = onIptvFavoriteToggle,
                 onToFavorite = {
-                    if (iptvFavoriteEnable) return@LeanbackPanelIptvGroupList
+                    if (!iptvFavoriteEnable) return@LeanbackPanelIptvGroupList
 
-                    val favoriteList = iptvGroupList.iptvList
+                    val favoriteList = iptvGroupListProvider().iptvList
                         .filter { iptvFavoriteListProvider().contains(it.channelName) }
 
                     if (favoriteList.isNotEmpty()) {
@@ -267,7 +268,7 @@ private fun LeanbackPanelScreenBottomPreview() {
         LeanbackPanelScreenBottom(
             currentIptvProvider = { Iptv.EXAMPLE },
             currentIptvUrlIdxProvider = { 0 },
-            iptvGroupList = IptvGroupList.EXAMPLE,
+            iptvGroupListProvider = { IptvGroupList.EXAMPLE },
         )
     }
 }
@@ -279,7 +280,7 @@ private fun LeanbackPanelScreenPreview() {
         LeanbackPanelScreen(
             currentIptvProvider = { Iptv.EXAMPLE },
             currentIptvUrlIdxProvider = { 0 },
-            iptvGroupList = IptvGroupList.EXAMPLE,
+            iptvGroupListProvider = { IptvGroupList.EXAMPLE },
         )
     }
 }

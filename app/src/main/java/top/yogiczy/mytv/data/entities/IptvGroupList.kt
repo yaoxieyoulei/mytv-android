@@ -17,7 +17,7 @@ data class IptvGroupList(
                     List(10) { idx ->
                         Iptv(
                             name = "频道${groupIdx + 1}-${idx + 1}",
-                            channelName = "",
+                            channelName = "频道${groupIdx + 1}-${idx + 1}",
                             urlList = emptyList(),
                         )
                     },

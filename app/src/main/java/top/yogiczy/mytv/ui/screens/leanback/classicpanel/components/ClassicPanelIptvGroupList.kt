@@ -1,8 +1,10 @@
 package top.yogiczy.mytv.ui.screens.leanback.classicpanel.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalContentColor
@@ -15,6 +17,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -23,6 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
@@ -32,7 +36,6 @@ import androidx.tv.material3.ListItemDefaults
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.data.entities.IptvGroup
 import top.yogiczy.mytv.data.entities.IptvGroupList
-import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 import kotlin.math.max
@@ -45,22 +48,15 @@ fun LeanbackClassicPanelIptvGroupList(
     initialIptvGroupProvider: () -> IptvGroup = { IptvGroup() },
     exitFocusRequesterProvider: () -> FocusRequester = { FocusRequester.Default },
     onIptvGroupFocused: (IptvGroup) -> Unit = {},
-    onFocusEnter: () -> Unit = {},
-    onFocusExit: () -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
     val iptvGroupList = iptvGroupListProvider()
     val initialIptvGroup = initialIptvGroupProvider()
 
-    val childPadding = rememberLeanbackChildPadding()
     val focusRequester = remember { FocusRequester() }
-    var hasFocused by remember { mutableStateOf(false) }
     var focusedIptvGroup by remember { mutableStateOf(initialIptvGroup) }
 
-    val listState =
-        rememberTvLazyListState(
-            max(0, iptvGroupList.indexOf(initialIptvGroup) - 2)
-        )
+    val listState = rememberTvLazyListState(max(0, iptvGroupList.indexOf(initialIptvGroup) - 2))
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }
@@ -68,48 +64,38 @@ fun LeanbackClassicPanelIptvGroupList(
             .collect { _ -> onUserAction() }
     }
 
-    Column(
-        modifier = modifier.width(200.dp),
+    TvLazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(text = "频道分类", style = MaterialTheme.typography.titleMedium)
-
-        TvLazyColumn(
-            state = listState,
-            contentPadding = PaddingValues(top = 8.dp, bottom = childPadding.bottom),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .focusProperties {
-                    exit = {
-                        onFocusExit()
-                        focusRequester.saveFocusedChild()
-                        exitFocusRequesterProvider()
-                    }
-                    enter = {
-                        onFocusEnter()
-                        if (focusRequester.restoreFocusedChild()) FocusRequester.Cancel
-                        else FocusRequester.Default
-                    }
-                },
-        ) {
-            items(iptvGroupList) { iptvGroup ->
-                val isSelected by remember { derivedStateOf { iptvGroup == focusedIptvGroup } }
-                val initialFocused by remember {
-                    derivedStateOf { !hasFocused && iptvGroup == initialIptvGroup }
+        modifier = modifier
+            .width(120.dp)
+            .fillMaxHeight()
+            .background(MaterialTheme.colorScheme.background.copy(0.9f))
+            .focusRequester(focusRequester)
+            .focusProperties {
+                exit = {
+                    focusRequester.saveFocusedChild()
+                    exitFocusRequesterProvider()
                 }
+                enter = {
+                    if (focusRequester.restoreFocusedChild()) FocusRequester.Cancel
+                    else FocusRequester.Default
+                }
+            },
+    ) {
+        items(iptvGroupList) { iptvGroup ->
+            val isSelected by remember { derivedStateOf { iptvGroup == focusedIptvGroup } }
 
-                LeanbackClassicPanelIptvGroupItem(
-                    iptvGroupProvider = { iptvGroup },
-                    isSelectedProvider = { isSelected },
-                    initialFocusedProvider = { initialFocused },
-                    onInitialFocused = { hasFocused = true },
-                    onFocused = {
-                        focusedIptvGroup = it
-                        onIptvGroupFocused(it)
-                    },
-                )
-            }
+            LeanbackClassicPanelIptvGroupItem(
+                iptvGroupProvider = { iptvGroup },
+                isSelectedProvider = { isSelected },
+                initialFocusedProvider = { iptvGroup == initialIptvGroup },
+                onFocused = {
+                    focusedIptvGroup = it
+                    onIptvGroupFocused(it)
+                },
+            )
         }
     }
 }
@@ -120,19 +106,19 @@ private fun LeanbackClassicPanelIptvGroupItem(
     iptvGroupProvider: () -> IptvGroup = { IptvGroup() },
     isSelectedProvider: () -> Boolean = { false },
     initialFocusedProvider: () -> Boolean = { false },
-    onInitialFocused: () -> Unit = {},
     onFocused: (IptvGroup) -> Unit = {},
 ) {
     val iptvGroup = iptvGroupProvider()
 
     val focusRequester = remember { FocusRequester() }
+    var hasFocused by rememberSaveable { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if (initialFocusedProvider()) {
-            onInitialFocused()
+        if (!hasFocused && initialFocusedProvider()) {
             focusRequester.requestFocus()
         }
+        hasFocused = true
     }
 
     CompositionLocalProvider(
@@ -165,13 +151,9 @@ private fun LeanbackClassicPanelIptvGroupItem(
             headlineContent = {
                 Text(
                     text = iptvGroup.name,
-                    maxLines = 2
-                )
-            },
-            trailingContent = {
-                Text(
-                    text = "${iptvGroup.iptvList.size}个频道",
-                    color = LocalContentColor.current.copy(0.8f),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             },
         )

@@ -34,8 +34,8 @@ import kotlin.math.max
 @Composable
 fun LeanbackPanelIptvGroupList(
     modifier: Modifier = Modifier,
-    iptvGroupList: IptvGroupList = IptvGroupList(),
-    epgList: EpgList = EpgList(),
+    iptvGroupListProvider: () -> IptvGroupList = { IptvGroupList() },
+    epgListProvider: () -> EpgList = { EpgList() },
     currentIptvProvider: () -> Iptv = { Iptv() },
     showProgrammeProgressProvider: () -> Boolean = { false },
     onIptvSelected: (Iptv) -> Unit = {},
@@ -43,6 +43,8 @@ fun LeanbackPanelIptvGroupList(
     onToFavorite: () -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
+    val iptvGroupList = iptvGroupListProvider()
+
     val listState =
         rememberTvLazyListState(max(0, iptvGroupList.iptvGroupIdx(currentIptvProvider())))
     val childPadding = rememberLeanbackChildPadding()
@@ -81,8 +83,8 @@ fun LeanbackPanelIptvGroupList(
                 modifier = if (index == 0) {
                     Modifier.handleLeanbackKeyEvents(onUp = { onToFavorite() })
                 } else Modifier,
-                iptvList = iptvGroup.iptvList,
-                epgList = epgList,
+                iptvListProvider = { iptvGroup.iptvList },
+                epgListProvider = epgListProvider,
                 currentIptvProvider = currentIptvProvider,
                 showProgrammeProgressProvider = showProgrammeProgressProvider,
                 onIptvSelected = onIptvSelected,
@@ -99,7 +101,7 @@ private fun LeanbackPanelIptvGroupListPreview() {
     LeanbackTheme {
         Box(modifier = Modifier.height(150.dp)) {
             LeanbackPanelIptvGroupList(
-                iptvGroupList = IptvGroupList.EXAMPLE,
+                iptvGroupListProvider = { IptvGroupList.EXAMPLE },
                 currentIptvProvider = { Iptv.EXAMPLE },
             )
         }

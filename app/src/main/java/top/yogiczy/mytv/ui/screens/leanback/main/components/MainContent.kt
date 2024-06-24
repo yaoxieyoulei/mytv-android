@@ -205,8 +205,8 @@ fun LeanbackMainContent(
 
             LeanbackVisible({ !settingsViewModel.uiUseClassicPanelScreen && mainContentState.isPanelVisible }) {
                 LeanbackPanelScreen(
-                    iptvGroupList = iptvGroupList,
-                    epgList = epgList,
+                    iptvGroupListProvider = { iptvGroupList },
+                    epgListProvider = { epgList },
                     currentIptvProvider = { mainContentState.currentIptv },
                     currentIptvUrlIdxProvider = { mainContentState.currentIptvUrlIdx },
                     videoPlayerMetadataProvider = { videoPlayerState.metadata },
@@ -234,8 +234,8 @@ fun LeanbackMainContent(
 
             LeanbackVisible({ settingsViewModel.uiUseClassicPanelScreen && mainContentState.isPanelVisible }) {
                 LeanbackClassicPanelScreen(
-                    iptvGroupList = iptvGroupList,
-                    epgList = epgList,
+                    iptvGroupListProvider = { iptvGroupList },
+                    epgListProvider = { epgList },
                     currentIptvProvider = { mainContentState.currentIptv },
                     showProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
                     onIptvSelected = { mainContentState.changeCurrentIptv(it) },

@@ -17,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,9 +45,9 @@ fun LeanbackPanelIptvItem(
     onIptvFavoriteToggle: () -> Unit = {},
     onShowEpg: () -> Unit = {},
     initialFocusedProvider: () -> Boolean = { false },
+    onHasFocused: () -> Unit = {},
     onFocused: () -> Unit = {},
 ) {
-    var hasFocused by rememberSaveable { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
@@ -57,8 +56,8 @@ fun LeanbackPanelIptvItem(
     val showProgrammeProgress = showProgrammeProgressProvider()
 
     LaunchedEffect(Unit) {
-        if (initialFocusedProvider() && !hasFocused) {
-            hasFocused = true
+        if (initialFocusedProvider()) {
+            onHasFocused()
             focusRequester.requestFocus()
         }
     }

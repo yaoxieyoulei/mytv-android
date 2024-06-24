@@ -122,6 +122,8 @@ fun Modifier.handleLeanbackKeyEvents(
         KeyEvent.KEYCODE_HELP to onSettings,
         KeyEvent.KEYCODE_H to onSettings,
 
+        KeyEvent.KEYCODE_L to onLongSelect,
+
         KeyEvent.KEYCODE_0 to { onNumber(0) },
         KeyEvent.KEYCODE_1 to { onNumber(1) },
         KeyEvent.KEYCODE_2 to { onNumber(2) },
