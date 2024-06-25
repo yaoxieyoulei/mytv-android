@@ -25,14 +25,14 @@ class TvboxIptvParser : IptvParser {
                 val res = line.replace("，", ",").split(",")
                 if (res.size < 2) return@forEach
 
-                iptvList.add(
+                iptvList.addAll(res[1].split("#").map { url ->
                     IptvResponseItem(
                         name = res[0].trim(),
                         channelName = res[0].trim(),
                         groupName = groupName?.trim() ?: "其他",
-                        url = res[1].trim(),
+                        url = url.trim(),
                     )
-                )
+                })
             }
         }
 
