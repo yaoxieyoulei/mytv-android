@@ -203,7 +203,7 @@ private fun LeanbackClassicPanelScreenContent(
                     focusedIptvGroup.iptvList
             },
             epgListProvider = epgListProvider,
-            initialIptvProvider = { focusedIptv },
+            initialIptvProvider = currentIptvProvider,
             onIptvSelected = onIptvSelected,
             onIptvFavoriteToggle = onIptvFavoriteToggle,
             onIptvFocused = { iptv, focusRequester ->
