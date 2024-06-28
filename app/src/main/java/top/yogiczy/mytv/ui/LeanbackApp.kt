@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.ui
 
-import android.widget.Toast
 import androidx.annotation.IntRange
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.debounce
 import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackPadding
 import top.yogiczy.mytv.ui.screens.leanback.main.LeanbackMainScreen
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastScreen
+import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 
 @Composable
 fun LeanbackApp(
@@ -40,7 +40,7 @@ fun LeanbackApp(
                 onBackPressed()
             } else {
                 doubleBackPressedExitState.backPress()
-                Toast.makeText(context, "再按一次退出", Toast.LENGTH_SHORT).show()
+                LeanbackToastState.I.showToast("再按一次退出")
             }
         },
     )

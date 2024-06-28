@@ -59,6 +59,7 @@ class LeanBackUpdateViewModel : ViewModel() {
                 LeanbackToastState.I.showToast(
                     "正在下载更新: $it%",
                     LeanbackToastProperty.Duration.Custom(10_000),
+                    "downloadProcess"
                 )
             }
 

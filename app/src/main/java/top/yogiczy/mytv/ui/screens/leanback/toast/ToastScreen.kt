@@ -1,22 +1,33 @@
 package top.yogiczy.mytv.ui.screens.leanback.toast
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.tv.material3.Icon
+import androidx.tv.material3.MaterialTheme
 import kotlinx.coroutines.delay
-import top.yogiczy.mytv.ui.rememberLeanbackChildPadding
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 
 @Composable
@@ -24,17 +35,19 @@ fun LeanbackToastScreen(
     modifier: Modifier = Modifier,
     state: LeanbackToastState = rememberLeanbackToastState(),
 ) {
-    val childPadding = rememberLeanbackChildPadding()
-
     Box(modifier = modifier.fillMaxSize()) {
-        Popup(
-            offset = IntOffset(
-                x = with(LocalDensity.current) { childPadding.start.toPx().toInt() },
-                y = with(LocalDensity.current) { childPadding.top.toPx().toInt() },
-            ),
-        ) {
-            AnimatedVisibility(visible = state.visible) {
-                LeanbackToastItem(property = state.current)
+        Popup {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AnimatedVisibility(
+                    visible = state.visible,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 28.dp),
+                ) {
+                    LeanbackToastItem(property = state.current)
+                }
             }
         }
     }
@@ -47,13 +60,50 @@ fun LeanbackToastItem(
 ) {
     Box(
         modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
-                shape = MaterialTheme.shapes.small,
-            )
-            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .sizeIn(maxWidth = 556.dp)
+            .background(MaterialTheme.colorScheme.inverseSurface, MaterialTheme.shapes.medium)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        Text(text = property.message)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            LeanbackToastContentIcon(
+                showIcon = true,
+                icon = Icons.Outlined.Info,
+                iconColor = MaterialTheme.colorScheme.inverseOnSurface,
+                iconContainerColors = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            androidx.tv.material3.Text(
+                property.message,
+                color = MaterialTheme.colorScheme.inverseOnSurface
+            )
+        }
+    }
+}
+
+@Composable
+private fun LeanbackToastContentIcon(
+    modifier: Modifier = Modifier,
+    showIcon: Boolean,
+    icon: ImageVector,
+    iconColor: Color,
+    iconContainerColors: Color,
+) {
+    if (showIcon) {
+        Box(
+            modifier = modifier
+                .background(iconContainerColors, CircleShape)
+                .padding(8.dp),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = iconColor,
+            )
+        }
     }
 }
 

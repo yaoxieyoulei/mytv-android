@@ -6,15 +6,20 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastProperty.Companion.toMs
+import java.util.UUID
 
 @Stable
-class LeanbackToastState {
+class LeanbackToastState(private val coroutineScope: CoroutineScope) {
     private var _visible by mutableStateOf(false)
     val visible get() = _visible
 
@@ -22,17 +27,24 @@ class LeanbackToastState {
     val current get() = _current
 
     private fun showToast(toast: LeanbackToastProperty) {
-        // TODO 消息变化较生硬
-        _current = toast
-        _visible = true
-        channel.trySend(toast.duration.toMs())
+        coroutineScope.launch {
+            if (_current.id != toast.id) {
+                _visible = false
+                delay(300)
+            }
+
+            _current = toast
+            _visible = true
+            channel.trySend(toast.duration.toMs())
+        }
     }
 
     fun showToast(
         message: String,
         duration: LeanbackToastProperty.Duration = LeanbackToastProperty.Duration.Default,
+        id: String = UUID.randomUUID().toString(),
     ) {
-        showToast(LeanbackToastProperty(message = message, duration = duration))
+        showToast(LeanbackToastProperty(message = message, duration = duration, id = id))
     }
 
     private val channel = Channel<Int>(Channel.CONFLATED)
@@ -49,14 +61,21 @@ class LeanbackToastState {
 }
 
 @Composable
-fun rememberLeanbackToastState() = remember { LeanbackToastState() }.also {
-    LeanbackToastState.I = it
-    LaunchedEffect(it) { it.observe() }
+fun rememberLeanbackToastState(): LeanbackToastState {
+    val coroutineScope = rememberCoroutineScope()
+
+    return remember {
+        LeanbackToastState(coroutineScope)
+    }.also {
+        LeanbackToastState.I = it
+        LaunchedEffect(it) { it.observe() }
+    }
 }
 
 data class LeanbackToastProperty(
     val message: String = "",
     val duration: Duration = Duration.Default,
+    val id: String = UUID.randomUUID().toString(),
 ) {
     sealed interface Duration {
         data object Default : Duration

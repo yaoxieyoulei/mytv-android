@@ -66,6 +66,8 @@ class LeanbackActivity : ComponentActivity() {
             }
         }
 
-        HttpServer.start(applicationContext, showToast = { LeanbackToastState.I.showToast(it) })
+        HttpServer.start(applicationContext, showToast = {
+            LeanbackToastState.I.showToast(it, id = "httpServer")
+        })
     }
 }
