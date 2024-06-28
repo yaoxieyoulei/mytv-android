@@ -28,7 +28,7 @@ class LeanbackToastState(private val coroutineScope: CoroutineScope) {
 
     private fun showToast(toast: LeanbackToastProperty) {
         coroutineScope.launch {
-            if (_current.id != toast.id) {
+            if (_visible && _current.id != toast.id) {
                 _visible = false
                 delay(300)
             }
