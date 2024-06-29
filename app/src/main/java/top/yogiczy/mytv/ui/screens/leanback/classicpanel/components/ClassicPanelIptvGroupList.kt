@@ -69,7 +69,7 @@ fun LeanbackClassicPanelIptvGroupList(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .width(120.dp)
+            .width(140.dp)
             .fillMaxHeight()
             .background(MaterialTheme.colorScheme.background.copy(0.9f))
             .focusRequester(focusRequester)
