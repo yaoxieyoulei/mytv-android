@@ -10,10 +10,13 @@ import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastProperty
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.utils.Downloader
+import top.yogiczy.mytv.utils.Logger
 import top.yogiczy.mytv.utils.compareVersion
 import java.io.File
 
 class LeanBackUpdateViewModel : ViewModel() {
+    private val log = Logger.create(javaClass.simpleName)
+
     private var _isChecking = false
     private var _isUpdating = false
 
@@ -37,7 +40,7 @@ class LeanBackUpdateViewModel : ViewModel() {
             _latestRelease = GitRepository().latestRelease(Constants.GIT_RELEASE_LATEST_URL)
             _isUpdateAvailable = _latestRelease.version.compareVersion(currentVersion) > 0
         } catch (e: Exception) {
-            LeanbackToastState.I.showToast("检查更新失败")
+            log.e("检查更新失败", e)
         } finally {
             _isChecking = false
         }
