@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.tv.material3.Icon
 import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackQrcodeDialog
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
@@ -47,7 +52,20 @@ fun LeanbackSettingsCategoryAbout(
 
             LeanbackSettingsCategoryListItem(
                 headlineContent = "代码仓库",
-                trailingContent = Constants.APP_REPO,
+                trailingContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    ) {
+                        androidx.tv.material3.Text(Constants.APP_REPO)
+
+                        Icon(
+                            Icons.AutoMirrored.Default.OpenInNew,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                },
                 onSelected = { showQrDialog = true },
             )
 
