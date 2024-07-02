@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -49,6 +50,7 @@ class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
 
     private val onReadyListeners = mutableListOf<() -> Unit>()
     private val onErrorListeners = mutableListOf<() -> Unit>()
+    private val onCutoffListeners = mutableListOf<() -> Unit>()
 
     fun onReady(listener: () -> Unit) {
         onReadyListeners.add(listener)
@@ -56,6 +58,10 @@ class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
 
     fun onError(listener: () -> Unit) {
         onErrorListeners.add(listener)
+    }
+
+    fun onCutoff(listener: () -> Unit) {
+        onCutoffListeners.add(listener)
     }
 
     fun initialize() {
@@ -69,20 +75,14 @@ class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
             error = if (ex != null) "${ex.errorCodeName}(${ex.errorCode})"
             else null
 
-            if (error != null) {
-                onErrorListeners.forEach { it.invoke() }
-            }
+            if (error != null) onErrorListeners.forEach { it.invoke() }
+
         }
-        instance.onReady {
-            onReadyListeners.forEach { it.invoke() }
-        }
-        instance.onBuffering {
-            if (it) {
-                error = null
-            }
-        }
+        instance.onReady { onReadyListeners.forEach { it.invoke() } }
+        instance.onBuffering { if (it) error = null }
         instance.onPrepared { }
         instance.onMetadata { metadata = it }
+        instance.onCutoff { onCutoffListeners.forEach { it.invoke() } }
     }
 
     fun release() {
@@ -96,8 +96,9 @@ class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
 fun rememberLeanbackVideoPlayerState(): LeanbackVideoPlayerState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val coroutineScope = rememberCoroutineScope()
     val state = remember {
-        LeanbackVideoPlayerState(LeanbackMedia3VideoPlayer(context))
+        LeanbackVideoPlayerState(LeanbackMedia3VideoPlayer(context, coroutineScope))
     }
 
     DisposableEffect(Unit) {

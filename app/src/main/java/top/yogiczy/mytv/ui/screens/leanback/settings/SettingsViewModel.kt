@@ -225,4 +225,12 @@ class LeanbackSettingsViewModel : ViewModel() {
             _videoPlayerUserAgent = value
             SP.videoPlayerUserAgent = value
         }
+
+    private var _videoPlayerLoadTimeout by mutableLongStateOf(SP.videoPlayerLoadTimeout)
+    var videoPlayerLoadTimeout: Long
+        get() = _videoPlayerLoadTimeout
+        set(value) {
+            _videoPlayerLoadTimeout = value
+            SP.videoPlayerLoadTimeout = value
+        }
 }

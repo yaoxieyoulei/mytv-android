@@ -89,6 +89,10 @@ class LeanbackMainContentState(
             // 从记忆中删除不可播放的域名
             SP.iptvPlayableHostList -= getUrlHost(_currentIptv.urlList[_currentIptvUrlIdx])
         }
+
+        videoPlayerState.onCutoff {
+            changeCurrentIptv(_currentIptv, _currentIptvUrlIdx)
+        }
     }
 
     private fun getPrevIptv(): Iptv {

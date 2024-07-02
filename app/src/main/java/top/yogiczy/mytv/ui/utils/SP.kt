@@ -107,6 +107,9 @@ object SP {
         /** ==================== 播放器 ==================== */
         /** 播放器 自定义ua */
         VIDEO_PLAYER_USER_AGENT,
+
+        /** 播放器 加载超时 */
+        VIDEO_PLAYER_LOAD_TIMEOUT,
     }
 
     /** ==================== 应用 ==================== */
@@ -254,6 +257,11 @@ object SP {
             Constants.VIDEO_PLAYER_USER_AGENT
         }
         set(value) = sp.edit().putString(KEY.VIDEO_PLAYER_USER_AGENT.name, value).apply()
+
+    /** 播放器 加载超时 */
+    var videoPlayerLoadTimeout: Long
+        get() = sp.getLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, Constants.VIDEO_PLAYER_LOAD_TIMEOUT)
+        set(value) = sp.edit().putLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, value).apply()
 
     enum class UiTimeShowMode(val value: Int) {
         /** 隐藏 */

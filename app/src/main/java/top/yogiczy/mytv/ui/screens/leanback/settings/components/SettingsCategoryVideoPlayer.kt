@@ -10,11 +10,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.foundation.lazy.list.TvLazyColumn
-import top.yogiczy.mytv.data.utils.Constants
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.utils.humanizeMs
+import kotlin.math.max
 
 @Composable
 fun LeanbackSettingsCategoryVideoPlayer(
@@ -27,10 +27,18 @@ fun LeanbackSettingsCategoryVideoPlayer(
         contentPadding = PaddingValues(vertical = 10.dp),
     ) {
         item {
+            val min = 1000 * 5L
+            val max = 1000 * 30L
+            val step = 1000 * 5L
+
             LeanbackSettingsCategoryListItem(
                 headlineContent = "播放器加载超时",
-                trailingContent = Constants.VIDEO_PLAYER_LOAD_TIMEOUT.humanizeMs(),
-                locK = true,
+                supportingContent = "影响超时换源、断线重连",
+                trailingContent = settingsViewModel.videoPlayerLoadTimeout.humanizeMs(),
+                onSelected = {
+                    settingsViewModel.videoPlayerLoadTimeout =
+                        max(min, (settingsViewModel.videoPlayerLoadTimeout + step) % (max + step))
+                },
             )
         }
 

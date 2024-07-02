@@ -1,8 +1,21 @@
 package top.yogiczy.mytv.ui.screens.leanback.video.player
 
 import android.view.SurfaceView
+import androidx.media3.common.PlaybackException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import top.yogiczy.mytv.ui.utils.SP
+import top.yogiczy.mytv.utils.Loggable
 
-abstract class LeanbackVideoPlayer {
+abstract class LeanbackVideoPlayer(
+    private val coroutineScope: CoroutineScope,
+) : Loggable() {
+    private var loadTimeoutJob: Job? = null
+    private var cutoffTimeoutJob: Job? = null
+    private var currentPosition = -1L
+
     protected var metadata = Metadata()
 
     open fun initialize() {
@@ -26,8 +39,8 @@ abstract class LeanbackVideoPlayer {
     private val onReadyListeners = mutableListOf<() -> Unit>()
     private val onBufferingListeners = mutableListOf<(buffering: Boolean) -> Unit>()
     private val onPreparedListeners = mutableListOf<() -> Unit>()
-    private val onMetadataListeners =
-        mutableListOf<(metadata: Metadata) -> Unit>()
+    private val onMetadataListeners = mutableListOf<(metadata: Metadata) -> Unit>()
+    private val onCutoffListeners = mutableListOf<() -> Unit>()
 
     private fun clearAllListeners() {
         onResolutionListeners.clear()
@@ -36,6 +49,7 @@ abstract class LeanbackVideoPlayer {
         onBufferingListeners.clear()
         onPreparedListeners.clear()
         onMetadataListeners.clear()
+        onCutoffListeners.clear()
     }
 
     protected fun triggerResolution(width: Int, height: Int) {
@@ -44,10 +58,15 @@ abstract class LeanbackVideoPlayer {
 
     protected fun triggerError(error: PlaybackException?) {
         onErrorListeners.forEach { it(error) }
+        if(error != PlaybackException.LOAD_TIMEOUT) {
+            loadTimeoutJob?.cancel()
+            loadTimeoutJob = null
+        }
     }
 
     protected fun triggerReady() {
         onReadyListeners.forEach { it() }
+        loadTimeoutJob?.cancel()
     }
 
     protected fun triggerBuffering(buffering: Boolean) {
@@ -56,10 +75,28 @@ abstract class LeanbackVideoPlayer {
 
     protected fun triggerPrepared() {
         onPreparedListeners.forEach { it() }
+        loadTimeoutJob?.cancel()
+        loadTimeoutJob = coroutineScope.launch {
+            delay(SP.videoPlayerLoadTimeout)
+            triggerError(PlaybackException.LOAD_TIMEOUT)
+        }
+        cutoffTimeoutJob?.cancel()
+        cutoffTimeoutJob = null
     }
 
     protected fun triggerMetadata(metadata: Metadata) {
         onMetadataListeners.forEach { it(metadata) }
+    }
+
+    protected fun triggerCurrentPosition(newPosition: Long) {
+        if (currentPosition != newPosition) {
+            cutoffTimeoutJob?.cancel()
+            cutoffTimeoutJob = coroutineScope.launch {
+                delay(SP.videoPlayerLoadTimeout)
+                onCutoffListeners.forEach { it() }
+            }
+        }
+        currentPosition = newPosition
     }
 
     fun onResolution(listener: (width: Int, height: Int) -> Unit) {
@@ -86,6 +123,10 @@ abstract class LeanbackVideoPlayer {
         onMetadataListeners.add(listener)
     }
 
+    fun onCutoff(listener: () -> Unit) {
+        onCutoffListeners.add(listener)
+    }
+
     data class PlaybackException(
         val errorCodeName: String,
         val errorCode: Int,
@@ -93,6 +134,8 @@ abstract class LeanbackVideoPlayer {
         companion object {
             val UNSUPPORTED_TYPE =
                 PlaybackException("UNSUPPORTED_TYPE", 10002)
+            val LOAD_TIMEOUT =
+                PlaybackException("LOAD_TIMEOUT", 10003)
         }
     }
 

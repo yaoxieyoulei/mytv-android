@@ -21,14 +21,18 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.util.EventLogger
-import top.yogiczy.mytv.data.utils.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import top.yogiczy.mytv.ui.utils.SP
 import androidx.media3.common.PlaybackException as Media3PlaybackException
 
 @OptIn(UnstableApi::class)
 class LeanbackMedia3VideoPlayer(
     private val context: Context,
-) : LeanbackVideoPlayer() {
+    private val coroutineScope: CoroutineScope,
+) : LeanbackVideoPlayer(coroutineScope) {
     private val videoPlayer = ExoPlayer.Builder(
         context,
         DefaultRenderersFactory(context).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
@@ -37,14 +41,15 @@ class LeanbackMedia3VideoPlayer(
     }
 
     private val contentTypeAttempts = mutableMapOf<Int, Boolean>()
+    private var updatePositionJob: Job? = null
 
     @OptIn(UnstableApi::class)
     private fun prepare(uri: Uri, contentType: Int? = null) {
         val dataSourceFactory =
             DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory().apply {
                 setUserAgent(SP.videoPlayerUserAgent)
-                setConnectTimeoutMs(Constants.VIDEO_PLAYER_LOAD_TIMEOUT.toInt())
-                setReadTimeoutMs(Constants.VIDEO_PLAYER_LOAD_TIMEOUT.toInt())
+                setConnectTimeoutMs(SP.videoPlayerLoadTimeout.toInt())
+                setReadTimeoutMs(SP.videoPlayerLoadTimeout.toInt())
                 setKeepPostFor302Redirects(true)
                 setAllowCrossProtocolRedirects(true)
             })
@@ -76,6 +81,8 @@ class LeanbackMedia3VideoPlayer(
             videoPlayer.prepare()
             triggerPrepared()
         }
+        updatePositionJob?.cancel()
+        updatePositionJob = null
     }
 
     private val playerListener = object : Player.Listener {
@@ -103,10 +110,7 @@ class LeanbackMedia3VideoPlayer(
                 }
             } else {
                 triggerError(
-                    PlaybackException(
-                        ex.errorCodeName.replace("ERROR_CODE_", ""),
-                        ex.errorCode,
-                    )
+                    PlaybackException(ex.errorCodeName, ex.errorCode)
                 )
             }
         }
@@ -117,6 +121,15 @@ class LeanbackMedia3VideoPlayer(
                 triggerBuffering(true)
             } else if (playbackState == Player.STATE_READY) {
                 triggerReady()
+
+                updatePositionJob?.cancel()
+                updatePositionJob = coroutineScope.launch {
+                    triggerCurrentPosition(-1)
+                    while (true) {
+                        triggerCurrentPosition(videoPlayer.currentPosition)
+                        delay(1000)
+                    }
+                }
             }
 
             if (playbackState != Player.STATE_BUFFERING) {
