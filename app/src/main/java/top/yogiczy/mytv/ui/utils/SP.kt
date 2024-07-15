@@ -100,6 +100,9 @@ object SP {
         /** 时间显示模式 */
         UI_TIME_SHOW_MODE,
 
+        /** 画中画模式 */
+        UI_PIP_MODE,
+
         /** ==================== 更新 ==================== */
         /** 更新强提醒（弹窗形式） */
         UPDATE_FORCE_REMIND,
@@ -243,6 +246,11 @@ object SP {
     var uiTimeShowMode: UiTimeShowMode
         get() = UiTimeShowMode.fromValue(sp.getInt(KEY.UI_TIME_SHOW_MODE.name, 0))
         set(value) = sp.edit().putInt(KEY.UI_TIME_SHOW_MODE.name, value.value).apply()
+
+    /** 画中画模式 */
+    var uiPipMode: Boolean
+        get() = sp.getBoolean(KEY.UI_PIP_MODE.name, false)
+        set(value) = sp.edit().putBoolean(KEY.UI_PIP_MODE.name, value).apply()
 
     /** ==================== 更新 ==================== */
     /** 更新强提醒（弹窗形式） */

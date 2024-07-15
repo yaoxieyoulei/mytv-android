@@ -20,11 +20,13 @@ import top.yogiczy.mytv.ui.LeanbackApp
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.theme.LeanbackTheme
 import top.yogiczy.mytv.ui.utils.HttpServer
+import top.yogiczy.mytv.ui.utils.SP
 import kotlin.system.exitProcess
 
 class LeanbackActivity : ComponentActivity() {
     override fun onUserLeaveHint() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        if (!SP.uiPipMode) return
 
         enterPictureInPictureMode(
             PictureInPictureParams.Builder()

@@ -111,7 +111,6 @@ class LeanbackMainContentState(
 
     fun changeCurrentIptv(iptv: Iptv, urlIdx: Int? = null) {
         _isPanelVisible = false
-        _isSettingsVisible = false
 
         if (iptv == _currentIptv && urlIdx == null) return
 

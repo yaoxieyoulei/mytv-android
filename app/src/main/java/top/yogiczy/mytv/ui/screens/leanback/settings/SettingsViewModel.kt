@@ -210,6 +210,14 @@ class LeanbackSettingsViewModel : ViewModel() {
             SP.uiTimeShowMode = value
         }
 
+    private var _uiPipMode by mutableStateOf(SP.uiPipMode)
+    var uiPipMode: Boolean
+        get() = _uiPipMode
+        set(value) {
+            _uiPipMode = value
+            SP.uiPipMode = value
+        }
+
     private var _updateForceRemind by mutableStateOf(SP.updateForceRemind)
     var updateForceRemind: Boolean
         get() = _updateForceRemind

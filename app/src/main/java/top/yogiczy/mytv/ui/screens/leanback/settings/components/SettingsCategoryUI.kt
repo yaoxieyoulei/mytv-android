@@ -88,6 +88,22 @@ fun LeanbackSettingsCategoryUI(
 
         item {
             LeanbackSettingsCategoryListItem(
+                headlineContent = "画中画模式",
+                trailingContent = {
+                    Switch(
+                        checked = settingsViewModel.uiPipMode,
+                        onCheckedChange = null
+                    )
+                },
+                onSelected = {
+                    settingsViewModel.uiPipMode =
+                        !settingsViewModel.uiPipMode
+                },
+            )
+        }
+
+        item {
+            LeanbackSettingsCategoryListItem(
                 headlineContent = "超时自动关闭界面",
                 supportingContent = "影响选台界面，快捷操作界面",
                 trailingContent = Constants.UI_SCREEN_AUTO_CLOSE_DELAY.humanizeMs(),
