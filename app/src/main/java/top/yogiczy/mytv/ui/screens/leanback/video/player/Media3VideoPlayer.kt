@@ -19,6 +19,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.rtsp.RtspMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.util.EventLogger
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +60,10 @@ class LeanbackMedia3VideoPlayer(
         val mediaSource = when (val type = contentType ?: Util.inferContentType(uri)) {
             C.CONTENT_TYPE_HLS -> {
                 HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
+            }
+
+            C.CONTENT_TYPE_RTSP -> {
+                RtspMediaSource.Factory().createMediaSource(mediaItem)
             }
 
             C.CONTENT_TYPE_OTHER -> {
@@ -102,6 +107,8 @@ class LeanbackMedia3VideoPlayer(
                 if (uri != null) {
                     if (contentTypeAttempts[C.CONTENT_TYPE_HLS] != true) {
                         prepare(uri, C.CONTENT_TYPE_HLS)
+                    } else if (contentTypeAttempts[C.CONTENT_TYPE_OTHER] != true) {
+                        prepare(uri, C.CONTENT_TYPE_OTHER)
                     } else if (contentTypeAttempts[C.CONTENT_TYPE_OTHER] != true) {
                         prepare(uri, C.CONTENT_TYPE_OTHER)
                     } else {
