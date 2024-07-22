@@ -241,4 +241,12 @@ class LeanbackSettingsViewModel : ViewModel() {
             _videoPlayerLoadTimeout = value
             SP.videoPlayerLoadTimeout = value
         }
+
+    private var _videoPlayerAspectRatio by mutableStateOf(SP.videoPlayerAspectRatio)
+    var videoPlayerAspectRatio: SP.VideoPlayerAspectRatio
+        get() = _videoPlayerAspectRatio
+        set(value) {
+            _videoPlayerAspectRatio = value
+            SP.videoPlayerAspectRatio = value
+        }
 }

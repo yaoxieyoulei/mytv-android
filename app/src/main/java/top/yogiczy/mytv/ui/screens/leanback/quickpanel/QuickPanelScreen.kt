@@ -197,7 +197,7 @@ private fun LeanbackQuickPanelActionVideoAspectRatio(
         configuration.screenWidthDp.toFloat() / configuration.screenHeightDp.toFloat()
     LeanbackQuickPanelButton(
         titleProvider = {
-            "画面模式 " + when (videoPlayerAspectRatioProvider()) {
+            "画面比例 " + when (videoPlayerAspectRatioProvider()) {
                 16f / 9f -> "16:9"
                 4f / 3f -> "4:3"
                 screenAspectRatio -> "自动拉伸"

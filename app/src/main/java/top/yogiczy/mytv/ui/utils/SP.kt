@@ -113,6 +113,9 @@ object SP {
 
         /** 播放器 加载超时 */
         VIDEO_PLAYER_LOAD_TIMEOUT,
+
+        /** 播放器 画面比例 */
+        VIDEO_PLAYER_ASPECT_RATIO,
     }
 
     /** ==================== 应用 ==================== */
@@ -271,6 +274,13 @@ object SP {
         get() = sp.getLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, Constants.VIDEO_PLAYER_LOAD_TIMEOUT)
         set(value) = sp.edit().putLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, value).apply()
 
+    /** 播放器 画面比例 */
+    var videoPlayerAspectRatio: VideoPlayerAspectRatio
+        get() = VideoPlayerAspectRatio.fromValue(
+            sp.getInt(KEY.VIDEO_PLAYER_ASPECT_RATIO.name, VideoPlayerAspectRatio.ORIGINAL.value)
+        )
+        set(value) = sp.edit().putInt(KEY.VIDEO_PLAYER_ASPECT_RATIO.name, value.value).apply()
+
     enum class UiTimeShowMode(val value: Int) {
         /** 隐藏 */
         HIDDEN(0),
@@ -304,6 +314,26 @@ object SP {
         companion object {
             fun fromValue(value: Int): AppDeviceDisplayType {
                 return entries.firstOrNull { it.value == value } ?: LEANBACK
+            }
+        }
+    }
+
+    enum class VideoPlayerAspectRatio(val value: Int) {
+        /** 原始 */
+        ORIGINAL(0),
+
+        /** 16:9 */
+        SIXTEEN_NINE(1),
+
+        /** 4:3 */
+        FOUR_THREE(2),
+
+        /** 自动拉伸 */
+        AUTO(3);
+
+        companion object {
+            fun fromValue(value: Int): VideoPlayerAspectRatio {
+                return entries.firstOrNull { it.value == value } ?: ORIGINAL
             }
         }
     }

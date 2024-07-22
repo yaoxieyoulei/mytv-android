@@ -21,7 +21,10 @@ import top.yogiczy.mytv.ui.screens.leanback.video.player.LeanbackVideoPlayer
  * 播放器状态
  */
 @Stable
-class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
+class LeanbackVideoPlayerState(
+    private val instance: LeanbackVideoPlayer,
+    private val defaultAspectRatioProvider: () -> Float? = { null },
+) {
     /** 视频宽高比 */
     var aspectRatio by mutableFloatStateOf(16f / 9f)
 
@@ -67,8 +70,12 @@ class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
     fun initialize() {
         instance.initialize()
         instance.onResolution { width, height ->
-            if (width > 0 && height > 0) {
-                aspectRatio = width.toFloat() / height
+            val defaultAspectRatio = defaultAspectRatioProvider()
+
+            if (defaultAspectRatio == null) {
+                if (width > 0 && height > 0) aspectRatio = width.toFloat() / height
+            } else {
+                aspectRatio = defaultAspectRatio
             }
         }
         instance.onError { ex ->
@@ -93,12 +100,17 @@ class LeanbackVideoPlayerState(private val instance: LeanbackVideoPlayer) {
 }
 
 @Composable
-fun rememberLeanbackVideoPlayerState(): LeanbackVideoPlayerState {
+fun rememberLeanbackVideoPlayerState(
+    defaultAspectRatioProvider: () -> Float? = { null },
+): LeanbackVideoPlayerState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
     val state = remember {
-        LeanbackVideoPlayerState(LeanbackMedia3VideoPlayer(context, coroutineScope))
+        LeanbackVideoPlayerState(
+            LeanbackMedia3VideoPlayer(context, coroutineScope),
+            defaultAspectRatioProvider = defaultAspectRatioProvider,
+        )
     }
 
     DisposableEffect(Unit) {

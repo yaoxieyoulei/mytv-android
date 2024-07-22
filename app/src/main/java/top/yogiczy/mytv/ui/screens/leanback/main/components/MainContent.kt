@@ -16,6 +16,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,7 +33,6 @@ import top.yogiczy.mytv.ui.screens.leanback.classicpanel.LeanbackClassicPanelScr
 import top.yogiczy.mytv.ui.screens.leanback.components.LeanbackVisible
 import top.yogiczy.mytv.ui.screens.leanback.monitor.LeanbackMonitorScreen
 import top.yogiczy.mytv.ui.screens.leanback.panel.LeanbackPanelChannelNoSelectScreen
-import top.yogiczy.mytv.ui.screens.leanback.panel.LeanbackPanelChannelNoSelectState
 import top.yogiczy.mytv.ui.screens.leanback.panel.LeanbackPanelDateTimeScreen
 import top.yogiczy.mytv.ui.screens.leanback.panel.LeanbackPanelScreen
 import top.yogiczy.mytv.ui.screens.leanback.panel.LeanbackPanelTempScreen
@@ -42,9 +42,9 @@ import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsScreen
 import top.yogiczy.mytv.ui.screens.leanback.settings.LeanbackSettingsViewModel
 import top.yogiczy.mytv.ui.screens.leanback.toast.LeanbackToastState
 import top.yogiczy.mytv.ui.screens.leanback.update.LeanbackUpdateScreen
-import top.yogiczy.mytv.ui.screens.leanback.video.LeanbackVideoPlayerState
 import top.yogiczy.mytv.ui.screens.leanback.video.LeanbackVideoScreen
 import top.yogiczy.mytv.ui.screens.leanback.video.rememberLeanbackVideoPlayerState
+import top.yogiczy.mytv.ui.utils.SP
 import top.yogiczy.mytv.ui.utils.handleLeanbackDragGestures
 import top.yogiczy.mytv.ui.utils.handleLeanbackKeyEvents
 
@@ -54,13 +54,28 @@ fun LeanbackMainContent(
     onBackPressed: () -> Unit = {},
     iptvGroupList: IptvGroupList = IptvGroupList(),
     epgList: EpgList = EpgList(),
-    videoPlayerState: LeanbackVideoPlayerState = rememberLeanbackVideoPlayerState(),
     settingsViewModel: LeanbackSettingsViewModel = viewModel(),
-    mainContentState: LeanbackMainContentState = rememberLeanbackMainContentState(
+) {
+    val configuration = LocalConfiguration.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val videoPlayerState = rememberLeanbackVideoPlayerState(
+        defaultAspectRatioProvider = {
+            when (settingsViewModel.videoPlayerAspectRatio) {
+                SP.VideoPlayerAspectRatio.ORIGINAL -> null
+                SP.VideoPlayerAspectRatio.SIXTEEN_NINE -> 16f / 9f
+                SP.VideoPlayerAspectRatio.FOUR_THREE -> 4f / 3f
+                SP.VideoPlayerAspectRatio.AUTO -> {
+                    configuration.screenHeightDp.toFloat() / configuration.screenWidthDp.toFloat()
+                }
+            }
+        }
+    )
+    val mainContentState = rememberLeanbackMainContentState(
         videoPlayerState = videoPlayerState,
         iptvGroupList = iptvGroupList,
-    ),
-    panelChannelNoSelectState: LeanbackPanelChannelNoSelectState = rememberLeanbackPanelChannelNoSelectState(
+    )
+    val panelChannelNoSelectState = rememberLeanbackPanelChannelNoSelectState(
         onChannelNoConfirm = {
             val channelNo = it.toInt() - 1
 
@@ -68,9 +83,8 @@ fun LeanbackMainContent(
                 mainContentState.changeCurrentIptv(iptvGroupList.iptvList[channelNo])
             }
         }
-    ),
-) {
-    val coroutineScope = rememberCoroutineScope()
+    )
+
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
         // 防止切换到其他界面时焦点丢失
