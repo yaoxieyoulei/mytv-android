@@ -2,9 +2,11 @@
     <h1>我的电视</h1>
 <div align="center">
 
-![GitHub repo size](https://img.shields.io/github/repo-size/yaoxieyoulei/mytv-android)
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/yaoxieyoulei/mytv-android)
 ![GitHub all releases](https://img.shields.io/github/downloads/yaoxieyoulei/mytv-android/total)
+[![Android Sdk Require](https://img.shields.io/badge/Android-5.0%2B-informational?logo=android)](https://apilevels.com/#:~:text=Jetpack%20Compose%20requires%20a%20minSdk%20of%2021%20or%20higher)
+[![GitHub](https://img.shields.io/github/license/yaoxieyoulei/mytv-android)](https://github.com/yaoxieyoulei/mytv-android)
 
 </div>
     <p>使用Android原生开发的电视直播软件</p>

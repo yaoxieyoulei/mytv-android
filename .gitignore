@@ -13,6 +13,8 @@
 /.idea/GrepConsole.xml
 /.idea/material_theme_project_new.xml
 /.idea/other.xml
+/.idea/git_toolbox_blame.xml
+/.idea/emulatorDisplays.xml
 .DS_Store
 /build
 /captures
@@ -20,3 +22,5 @@
 .cxx
 local.properties
 key.properties
+keystore.jks
+.kotlin

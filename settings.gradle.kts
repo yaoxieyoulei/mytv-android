@@ -19,6 +19,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My TV"
-include(":app")
- 
+rootProject.name = "我的电视"
+
+include(":core:data")
+include(":core:util")
+include(":core:designsystem")
+include(":tv")
