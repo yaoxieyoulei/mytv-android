@@ -19,6 +19,7 @@ import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceCacheTimeScreen
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -79,18 +80,38 @@ fun SettingsCategoryIptv(
         }
 
         item {
+            val popupManager = LocalPopupManager.current
+            val focusRequester = remember { FocusRequester() }
+            var visible by remember { mutableStateOf(false) }
+
             SettingsListItem(
+                modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "直播源缓存时间",
-                supportingContent = "短按增加1小时，长按设为0小时",
-                trailingContent = settingsViewModel.iptvSourceCacheTime.humanizeMs(),
+                trailingContent = when (settingsViewModel.iptvSourceCacheTime) {
+                    0L -> "不缓存"
+                    Long.MAX_VALUE -> "永久"
+                    else -> settingsViewModel.iptvSourceCacheTime.humanizeMs()
+                },
                 onSelected = {
-                    settingsViewModel.iptvSourceCacheTime =
-                        (settingsViewModel.iptvSourceCacheTime + 1 * 1000 * 60 * 60) % (1000 * 60 * 60 * 24)
+                    popupManager.push(focusRequester, true)
+                    visible = true
                 },
-                onLongSelected = {
-                    settingsViewModel.iptvSourceCacheTime = 0
-                },
+                remoteConfig = true,
             )
+
+            SimplePopup(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+            ) {
+                IptvSourceCacheTimeScreen(
+                    currentCacheTimeProvider = { settingsViewModel.iptvSourceCacheTime },
+                    onCacheTimeSelected = {
+                        settingsViewModel.iptvSourceCacheTime = it
+                        visible = false
+                    },
+                    onClose = { visible = false },
+                )
+            }
         }
 
         item {

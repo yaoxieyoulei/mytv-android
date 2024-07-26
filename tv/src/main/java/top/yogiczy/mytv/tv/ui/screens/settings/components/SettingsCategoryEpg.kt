@@ -18,6 +18,7 @@ import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceRefreshTimeScreen
 import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -44,18 +45,35 @@ fun SettingsCategoryEpg(
         }
 
         item {
+            val popupManager = LocalPopupManager.current
+            val focusRequester = remember { FocusRequester() }
+            var visible by remember { mutableStateOf(false) }
+
             SettingsListItem(
+                modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "节目单刷新时间阈值",
-                supportingContent = "短按增加1小时，长按设为0小时；时间不到${settingsViewModel.epgRefreshTimeThreshold}:00节目单将不会刷新",
-                trailingContent = "${settingsViewModel.epgRefreshTimeThreshold}小时",
+                supportingContent = "时间不到${settingsViewModel.epgRefreshTimeThreshold}:00节目单将不会刷新",
+                trailingContent = "${settingsViewModel.epgRefreshTimeThreshold}:00",
                 onSelected = {
-                    settingsViewModel.epgRefreshTimeThreshold =
-                        (settingsViewModel.epgRefreshTimeThreshold + 1) % 12
+                    popupManager.push(focusRequester, true)
+                    visible = true
                 },
-                onLongSelected = {
-                    settingsViewModel.epgRefreshTimeThreshold = 0
-                },
+                remoteConfig = true,
             )
+
+            SimplePopup(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+            ) {
+                EpgSourceRefreshTimeScreen(
+                    currentRefreshHourProvider = { settingsViewModel.epgRefreshTimeThreshold },
+                    onRefreshHourSelected = {
+                        settingsViewModel.epgRefreshTimeThreshold = it
+                        visible = false
+                    },
+                    onClose = { visible = false },
+                )
+            }
         }
 
         item {

@@ -148,8 +148,8 @@
     <script>
         const { createApp, ref, onMounted, watch, nextTick } = Vue
 
-        const baseUrl = "http://127.0.0.1:10481"
-        //const baseUrl = ""
+        //const baseUrl = "http://127.0.0.1:10481"
+        const baseUrl = ""
 
         async function requestApi(url, config) {
             const resp = await fetch(`${baseUrl}${url}`, config)
