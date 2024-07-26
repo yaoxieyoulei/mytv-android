@@ -95,37 +95,39 @@ fun Modifier.handleDragGestures(
     var horizontalDragOffset = 0f
 
 
-    return pointerInput(Unit) {
-        detectVerticalDragGestures(
-            onDragEnd = {
-                if (verticalDragOffset.absoluteValue > distanceThreshold.toPx()) {
-                    if (verticalTracker.calculateVelocity().y > speedThreshold.toPx()) {
-                        onSwipeDown()
-                    } else if (verticalTracker.calculateVelocity().y < -speedThreshold.toPx()) {
-                        onSwipeUp()
+    return this
+        .pointerInput(Unit) {
+            detectVerticalDragGestures(
+                onDragEnd = {
+                    if (verticalDragOffset.absoluteValue > distanceThreshold.toPx()) {
+                        if (verticalTracker.calculateVelocity().y > speedThreshold.toPx()) {
+                            onSwipeDown()
+                        } else if (verticalTracker.calculateVelocity().y < -speedThreshold.toPx()) {
+                            onSwipeUp()
+                        }
                     }
-                }
-            },
-        ) { change, dragAmount ->
-            verticalDragOffset += dragAmount
-            verticalTracker.addPosition(change.uptimeMillis, change.position)
+                },
+            ) { change, dragAmount ->
+                verticalDragOffset += dragAmount
+                verticalTracker.addPosition(change.uptimeMillis, change.position)
+            }
         }
-    }.pointerInput(Unit) {
-        detectHorizontalDragGestures(
-            onDragEnd = {
-                if (horizontalDragOffset.absoluteValue > distanceThreshold.toPx()) {
-                    if (horizontalTracker.calculateVelocity().x > speedThreshold.toPx()) {
-                        onSwipeRight()
-                    } else if (horizontalTracker.calculateVelocity().x < -speedThreshold.toPx()) {
-                        onSwipeLeft()
+        .pointerInput(Unit) {
+            detectHorizontalDragGestures(
+                onDragEnd = {
+                    if (horizontalDragOffset.absoluteValue > distanceThreshold.toPx()) {
+                        if (horizontalTracker.calculateVelocity().x > speedThreshold.toPx()) {
+                            onSwipeRight()
+                        } else if (horizontalTracker.calculateVelocity().x < -speedThreshold.toPx()) {
+                            onSwipeLeft()
+                        }
                     }
-                }
-            },
-        ) { change, dragAmount ->
-            horizontalDragOffset += dragAmount
-            horizontalTracker.addPosition(change.uptimeMillis, change.position)
+                },
+            ) { change, dragAmount ->
+                horizontalDragOffset += dragAmount
+                horizontalTracker.addPosition(change.uptimeMillis, change.position)
+            }
         }
-    }
 }
 
 fun Modifier.handleKeyEvents(

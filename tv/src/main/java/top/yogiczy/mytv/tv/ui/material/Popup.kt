@@ -19,7 +19,7 @@ import top.yogiczy.mytv.tv.ui.utils.captureBackKey
 import java.util.UUID
 
 class PopupManager {
-    val stack = mutableListOf<StackItem>()
+    private val stack = mutableListOf<StackItem>()
 
     fun push(focusRequester: FocusRequester, emitter: Boolean = false) {
         stack.add(StackItem(focusRequester, emitter))

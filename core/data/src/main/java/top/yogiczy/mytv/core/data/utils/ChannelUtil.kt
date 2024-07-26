@@ -305,7 +305,7 @@ object ChannelUtil {
         ),
     )
 
-    fun standardChannelName(name: String): String {
+    private fun standardChannelName(name: String): String {
         return standardChannelNameTest.entries.firstOrNull { it.value.invoke(name) }?.key
             ?: name
     }
