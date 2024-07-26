@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -18,9 +19,9 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Loggable
+import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerState
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.rememberVideoPlayerState
-import top.yogiczy.mytv.tv.ui.utils.Configs
 import kotlin.math.max
 
 @Stable
@@ -28,6 +29,7 @@ class MainContentState(
     private val coroutineScope: CoroutineScope,
     private val videoPlayerState: VideoPlayerState,
     private val channelGroupList: ChannelGroupList,
+    private val settingsViewModel: SettingsViewModel,
 ) : Loggable() {
     private var _currentChannel by mutableStateOf(Channel())
     val currentChannel get() = _currentChannel
@@ -77,34 +79,13 @@ class MainContentState(
             _isChannelUrlScreenVisible = value
         }
 
-    private var _isGuideScreenVisible by mutableStateOf(false)
-    var isGuideScreenVisible
-        get() = _isGuideScreenVisible
-        set(value) {
-            _isGuideScreenVisible = value
-        }
-
-    private var _isIptvSourceScreenVisible by mutableStateOf(false)
-    var isIptvSourceScreenVisible
-        get() = _isIptvSourceScreenVisible
-        set(value) {
-            _isIptvSourceScreenVisible = value
-        }
-
-    private var _isEpgSourceScreenVisible by mutableStateOf(false)
-    var isEpgSourceScreenVisible
-        get() = _isEpgSourceScreenVisible
-        set(value) {
-            _isEpgSourceScreenVisible = value
-        }
-
     init {
-        changeCurrentChannel(channelGroupList.channelList.getOrElse(Configs.iptvLastChannelIdx) {
+        changeCurrentChannel(channelGroupList.channelList.getOrElse(settingsViewModel.iptvLastChannelIdx) {
             channelGroupList.channelList.firstOrNull() ?: Channel()
         })
 
         videoPlayerState.onReady {
-            Configs.iptvPlayableHostList += getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
+            settingsViewModel.iptvPlayableHostList += getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
             coroutineScope.launch {
                 val name = _currentChannel.name
                 val urlIdx = _currentChannelUrlIdx
@@ -116,7 +97,7 @@ class MainContentState(
         }
 
         videoPlayerState.onError {
-            Configs.iptvPlayableHostList -= getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
+            settingsViewModel.iptvPlayableHostList -= getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
 
             if (_currentChannelUrlIdx < _currentChannel.urlList.size - 1) {
                 changeCurrentChannel(_currentChannel, _currentChannelUrlIdx + 1)
@@ -128,17 +109,58 @@ class MainContentState(
         }
     }
 
+    private fun getPrevFavoriteChannel(): Channel? {
+        if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
+
+        val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
+        val favoriteChannelList =
+            channelGroupList.channelList.filter { it.name in favoriteChannelNameList }
+
+        return if (_currentChannel in favoriteChannelList && _currentChannel != favoriteChannelList.first()) {
+            val currentIdx = favoriteChannelList.indexOf(_currentChannel)
+            favoriteChannelList[currentIdx - 1]
+        } else if (settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut) {
+            settingsViewModel.iptvChannelFavoriteListVisible = false
+            channelGroupList.channelList.lastOrNull()
+        } else {
+            favoriteChannelList.lastOrNull()
+        }
+
+    }
+
+    private fun getNextFavoriteChannel(): Channel? {
+        if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
+
+        val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
+        val favoriteChannelList =
+            channelGroupList.channelList.filter { it.name in favoriteChannelNameList }
+
+        return if (_currentChannel in favoriteChannelList && _currentChannel != favoriteChannelList.last()) {
+            val currentIdx = favoriteChannelList.indexOf(_currentChannel)
+            favoriteChannelList[currentIdx + 1]
+        } else if (settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut) {
+            settingsViewModel.iptvChannelFavoriteListVisible = false
+            channelGroupList.channelList.firstOrNull()
+        } else {
+            favoriteChannelList.firstOrNull()
+        }
+    }
+
     private fun getPrevChannel(): Channel {
-        val currentIdx = channelGroupList.channelIdx(_currentChannel)
-        return channelGroupList.channelList.getOrElse(currentIdx - 1) {
-            channelGroupList.channelList.lastOrNull() ?: Channel()
+        return getPrevFavoriteChannel() ?: run {
+            val currentIdx = channelGroupList.channelIdx(_currentChannel)
+            return channelGroupList.channelList.getOrElse(currentIdx - 1) {
+                channelGroupList.channelList.lastOrNull() ?: Channel()
+            }
         }
     }
 
     private fun getNextChannel(): Channel {
-        val currentIdx = channelGroupList.channelIdx(_currentChannel)
-        return channelGroupList.channelList.getOrElse(currentIdx + 1) {
-            channelGroupList.channelList.firstOrNull() ?: Channel()
+        return getNextFavoriteChannel() ?: run {
+            val currentIdx = channelGroupList.channelIdx(_currentChannel)
+            return channelGroupList.channelList.getOrElse(currentIdx + 1) {
+                channelGroupList.channelList.firstOrNull() ?: Channel()
+            }
         }
     }
 
@@ -146,17 +168,17 @@ class MainContentState(
         if (channel == _currentChannel && urlIdx == null) return
 
         if (channel == _currentChannel && urlIdx != _currentChannelUrlIdx) {
-            Configs.iptvPlayableHostList -= getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
+            settingsViewModel.iptvPlayableHostList -= getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
         }
 
         _isTempChannelScreenVisible = true
 
         _currentChannel = channel
-        Configs.iptvLastChannelIdx = channelGroupList.channelIdx(_currentChannel)
+        settingsViewModel.iptvLastChannelIdx = channelGroupList.channelIdx(_currentChannel)
 
         _currentChannelUrlIdx = if (urlIdx == null) {
             max(0, _currentChannel.urlList.indexOfFirst {
-                Configs.iptvPlayableHostList.contains(getUrlHost(it))
+                settingsViewModel.iptvPlayableHostList.contains(getUrlHost(it))
             })
         } else {
             (urlIdx + _currentChannel.urlList.size) % _currentChannel.urlList.size
@@ -186,11 +208,13 @@ fun rememberMainContentState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     videoPlayerState: VideoPlayerState = rememberVideoPlayerState(),
     channelGroupList: ChannelGroupList = ChannelGroupList(),
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) = remember {
     MainContentState(
         coroutineScope = coroutineScope,
         videoPlayerState = videoPlayerState,
         channelGroupList = channelGroupList,
+        settingsViewModel = settingsViewModel,
     )
 }
 

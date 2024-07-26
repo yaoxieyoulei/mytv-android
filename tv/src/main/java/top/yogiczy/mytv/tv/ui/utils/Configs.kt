@@ -63,6 +63,9 @@ object Configs {
         /** 直播源频道收藏列表 */
         IPTV_CHANNEL_FAVORITE_LIST,
 
+        /** 直播源频道收藏换台边界跳出 */
+        IPTV_CHANNEL_FAVORITE_CHANGE_BOUNDARY_JUMP_OUT,
+
         /** 混合模式 */
         IPTV_HYBRID_MODE,
 
@@ -195,6 +198,11 @@ object Configs {
     var iptvChannelFavoriteList: Set<String>
         get() = SP.getStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, emptySet())
         set(value) = SP.putStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, value)
+
+    /** 直播源频道收藏换台边界跳出 */
+    var iptvChannelFavoriteChangeBoundaryJumpOut: Boolean
+        get() = SP.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_CHANGE_BOUNDARY_JUMP_OUT.name, true)
+        set(value) = SP.putBoolean(KEY.IPTV_CHANNEL_FAVORITE_CHANGE_BOUNDARY_JUMP_OUT.name, value)
 
     /** 混合模式 */
     var iptvHybridMode: IptvHybridMode

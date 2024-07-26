@@ -49,5 +49,25 @@ fun SettingsCategoryFavorite(
                 }
             )
         }
+
+        item {
+            SettingsListItem(
+                headlineContent = "收藏换台边界跳出",
+                supportingContent = if (settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut)
+                    "当在收藏列表边界时，再次换台将跳出收藏列表"
+                else
+                    "在收藏列表可见情况下，将在收藏列表中循环换台",
+                trailingContent = {
+                    Switch(
+                        checked = settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut,
+                        onCheckedChange = null
+                    )
+                },
+                onSelected = {
+                    settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut =
+                        !settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut
+                },
+            )
+        }
     }
 }

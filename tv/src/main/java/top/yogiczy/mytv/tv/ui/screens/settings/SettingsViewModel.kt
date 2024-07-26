@@ -140,6 +140,14 @@ class SettingsViewModel : ViewModel() {
             Configs.iptvChannelFavoriteList = value
         }
 
+    private var _iptvChannelFavoriteChangeBoundaryJumpOut by mutableStateOf(Configs.iptvChannelFavoriteChangeBoundaryJumpOut)
+    var iptvChannelFavoriteChangeBoundaryJumpOut: Boolean
+        get() = _iptvChannelFavoriteChangeBoundaryJumpOut
+        set(value) {
+            _iptvChannelFavoriteChangeBoundaryJumpOut = value
+            Configs.iptvChannelFavoriteChangeBoundaryJumpOut = value
+        }
+
     private var _iptvHybridMode by mutableStateOf(Configs.iptvHybridMode)
     var iptvHybridMode: Configs.IptvHybridMode
         get() = _iptvHybridMode
