@@ -45,7 +45,6 @@ fun SettingsCategoryDebug(
         item {
             SettingsListItem(
                 headlineContent = "显示布局网格",
-                supportingContent = "重启应用后将自动关闭",
                 trailingContent = {
                     Switch(
                         checked = settingsViewModel.debugShowLayoutGrids,

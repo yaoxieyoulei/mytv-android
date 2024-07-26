@@ -11,8 +11,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.util.utils.humanizeMs
@@ -96,13 +96,15 @@ fun SettingsCategoryIptv(
         item {
             val popupManager = LocalPopupManager.current
             val focusRequester = remember { FocusRequester() }
+            val currentIptvSource =
+                settingsViewModel.iptvSourceList.let { Constants.IPTV_SOURCE_LIST + it }
+                    .firstOrNull { it.url == settingsViewModel.iptvSourceUrl }
             var isIptvSourceScreenVisible by remember { mutableStateOf(false) }
 
             SettingsListItem(
                 modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "自定义直播源",
-                supportingContent = if (settingsViewModel.iptvSourceUrl != Constants.IPTV_SOURCE_URL) settingsViewModel.iptvSourceUrl else null,
-                trailingContent = if (settingsViewModel.iptvSourceUrl != Constants.IPTV_SOURCE_URL) "已启用" else "未启用",
+                trailingContent = currentIptvSource?.name ?: "未知",
                 onSelected = {
                     popupManager.push(focusRequester, true)
                     isIptvSourceScreenVisible = true
@@ -115,21 +117,23 @@ fun SettingsCategoryIptv(
                 onDismissRequest = { isIptvSourceScreenVisible = false },
             ) {
                 IptvSourceScreen(
-                    iptvSourceUrlListProvider = {
-                        settingsViewModel.iptvSourceUrlHistoryList.toImmutableList()
+                    iptvSourceListProvider = {
+                        settingsViewModel.iptvSourceList = Configs.iptvSourceList
+                        settingsViewModel.iptvSourceList
                     },
                     currentIptvSourceUrlProvider = { settingsViewModel.iptvSourceUrl },
-                    onIptvSourceUrlSelected = {
+                    onIptvSourceSelected = {
                         isIptvSourceScreenVisible = false
-                        if (settingsViewModel.iptvSourceUrl != it) {
-                            settingsViewModel.iptvSourceUrl = it
+                        if (settingsViewModel.iptvSourceUrl != it.url) {
+                            settingsViewModel.iptvSourceUrl = it.url
                             coroutineScope.launch {
                                 IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
                             }
                         }
                     },
-                    onIptvSourceUrlDeleted = {
-                        settingsViewModel.iptvSourceUrlHistoryList -= it
+                    onIptvSourceDeleted = {
+                        settingsViewModel.iptvSourceList =
+                            IptvSourceList(settingsViewModel.iptvSourceList - it)
                     },
                 )
             }

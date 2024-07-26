@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.core.data.entities.epg
+package top.yogiczy.mytv.core.data.entities.epgsource
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
-import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -25,12 +25,13 @@ import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
 fun EpgSourceItem(
-    modifier: Modifier = Modifier, epgXmlUrlProvider: () -> String = { "" },
+    modifier: Modifier = Modifier,
+    epgSourceProvider: () -> EpgSource,
     selectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
     onDeleted: () -> Unit = {},
 ) {
-    val epgXmlUrl = epgXmlUrlProvider()
+    val epgSource = epgSourceProvider()
     val selected = selectedProvider()
 
     val focusRequester = remember { FocusRequester() }
@@ -49,9 +50,10 @@ fun EpgSourceItem(
             ),
         selected = false,
         onClick = {},
-        headlineContent = {
+        headlineContent = { Text(epgSource.name) },
+        supportingContent = {
             Text(
-                if (epgXmlUrl == Constants.EPG_XML_URL) "默认节目单" else epgXmlUrl,
+                epgSource.url,
                 maxLines = if (isFocused) Int.MAX_VALUE else 1,
             )
         },
@@ -70,11 +72,19 @@ private fun EpgSourceItemPreview() {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             EpgSourceItem(
-                epgXmlUrlProvider = { Constants.EPG_XML_URL },
+                epgSourceProvider = {
+                    EpgSource(
+                        name = "EPG源1", url = "https://iptv-org.github.io/epg.xml"
+                    )
+                },
                 selectedProvider = { true },
             )
             EpgSourceItem(
-                epgXmlUrlProvider = { "https://iptv-org.github.io/epg.xml" },
+                epgSourceProvider = {
+                    EpgSource(
+                        name = "EPG源1", url = "https://iptv-org.github.io/epg.xml"
+                    )
+                },
             )
         }
     }

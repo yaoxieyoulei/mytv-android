@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.screens.iptvsource.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -19,8 +21,9 @@ import androidx.tv.material3.ListItem
 import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
-import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
@@ -30,12 +33,12 @@ import top.yogiczy.mytv.tv.ui.utils.ifElse
 @Composable
 fun IptvSourceItem(
     modifier: Modifier = Modifier,
-    iptvSourceUrlProvider: () -> String = { "" },
+    iptvSourceProvider: () -> IptvSource,
     selectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
     onDeleted: () -> Unit = {},
 ) {
-    val iptvSourceUrl = iptvSourceUrlProvider()
+    val iptvSource = iptvSourceProvider()
     val selected = selectedProvider()
 
     val focusRequester = remember { FocusRequester() }
@@ -44,10 +47,12 @@ fun IptvSourceItem(
     var channelGroupList by remember { mutableStateOf(ChannelGroupList()) }
 
     LaunchedEffect(Unit) {
-        channelGroupList = try {
-            IptvRepository(iptvSourceUrl).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
-        } catch (ex: Exception) {
-            ChannelGroupList()
+        if (channelGroupList.isEmpty()) {
+            channelGroupList = try {
+                IptvRepository(iptvSource.url).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
+            } catch (ex: Exception) {
+                ChannelGroupList()
+            }
         }
     }
 
@@ -65,12 +70,22 @@ fun IptvSourceItem(
         selected = false,
         onClick = {},
         headlineContent = {
-            Text(
-                if (iptvSourceUrl == Constants.IPTV_SOURCE_URL) "默认直播源" else iptvSourceUrl,
-                maxLines = if (isFocused) Int.MAX_VALUE else 1,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(iptvSource.name)
+
+                if (iptvSource.isLocal) Tag("本地")
+                else Tag("远程")
+            }
         },
         supportingContent = {
+            Text(
+                iptvSource.url,
+                maxLines = if (isFocused) Int.MAX_VALUE else 1,
+            )
+
             if (channelGroupList.isNotEmpty()) {
                 val totalChannelGroupCount = channelGroupList.size
                 val totalChannelCount = channelGroupList.sumOf { it.channelList.size }
@@ -94,12 +109,22 @@ private fun IptvSourceItemPreview() {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             IptvSourceItem(
-                iptvSourceUrlProvider = { "https://iptv-org.github.io/epg.xml" },
+                iptvSourceProvider = {
+                    IptvSource(
+                        name = "直播源1",
+                        url = "https://gh.con.sh/https://raw.githubusercontent.com/yuanzl77/IPTV/main/live.m3u"
+                    )
+                },
                 selectedProvider = { true },
             )
 
             IptvSourceItem(
-                iptvSourceUrlProvider = { "https://iptv-org.github.io/epg.xml" },
+                iptvSourceProvider = {
+                    IptvSource(
+                        name = "直播源1",
+                        url = "https://gh.con.sh/https://raw.githubusercontent.com/yuanzl77/IPTV/main/live.m3u"
+                    )
+                },
             )
         }
     }

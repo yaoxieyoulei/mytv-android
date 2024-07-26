@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.core.data.entities.epg
+package top.yogiczy.mytv.core.data.entities.epgsource
 
 import kotlinx.serialization.Serializable
 
@@ -7,6 +7,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class EpgSource(
+    /**
+     * 名称
+     */
     val name: String,
+
+    /**
+     * 链接
+     */
     val url: String,
 )

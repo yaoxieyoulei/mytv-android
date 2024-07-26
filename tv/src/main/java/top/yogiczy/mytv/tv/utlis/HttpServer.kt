@@ -13,8 +13,10 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
-import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Loggable
@@ -54,6 +56,14 @@ object HttpServer : Loggable() {
                     handleSetSettings(request, response)
                 }
 
+                server.post("/api/iptv-source/push") { request, response ->
+                    handleIptvSourcePush(request, response)
+                }
+
+                server.post("/api/epg-source/push") { request, response ->
+                    handleEpgSourcePush(request, response)
+                }
+
                 server.post("/api/upload/apk") { request, response ->
                     handleUploadApk(request, response, context)
                 }
@@ -89,8 +99,6 @@ object HttpServer : Loggable() {
                     AllSettings(
                         appTitle = Constants.APP_TITLE,
                         appRepo = Constants.APP_REPO,
-                        iptvSourceUrl = Configs.iptvSourceUrl,
-                        epgXmlUrl = Configs.epgXmlUrl,
                         videoPlayerUserAgent = Configs.videoPlayerUserAgent,
                         logHistory = Logger.history,
                     )
@@ -104,21 +112,39 @@ object HttpServer : Loggable() {
         response: AsyncHttpServerResponse,
     ) {
         val body = request.getBody<JSONObjectBody>().get()
-        val iptvSourceUrl = body.get("iptvSourceUrl").toString()
-        val epgXmlUrl = body.get("epgXmlUrl").toString()
         val videoPlayerUserAgent = body.get("videoPlayerUserAgent").toString()
 
-        if (Configs.iptvSourceUrl != iptvSourceUrl) {
-            Configs.iptvSourceUrl = iptvSourceUrl
-            IptvRepository(Configs.iptvSourceUrl).clearCache()
-        }
-
-        if (Configs.epgXmlUrl != epgXmlUrl) {
-            Configs.epgXmlUrl = epgXmlUrl
-            EpgRepository(Configs.epgXmlUrl).clearCache()
-        }
-
         Configs.videoPlayerUserAgent = videoPlayerUserAgent
+
+        wrapResponse(response).send("success")
+    }
+
+    private fun handleIptvSourcePush(
+        request: AsyncHttpServerRequest,
+        response: AsyncHttpServerResponse,
+    ) {
+        val body = request.getBody<JSONObjectBody>().get()
+        val name = body.get("name").toString()
+        val url = body.get("url").toString()
+
+        Configs.iptvSourceList = IptvSourceList(Configs.iptvSourceList.toMutableList().apply {
+            add(IptvSource(name, url))
+        })
+
+        wrapResponse(response).send("success")
+    }
+
+    private fun handleEpgSourcePush(
+        request: AsyncHttpServerRequest,
+        response: AsyncHttpServerResponse,
+    ) {
+        val body = request.getBody<JSONObjectBody>().get()
+        val name = body.get("name").toString()
+        val url = body.get("url").toString()
+
+        Configs.epgSourceList = EpgSourceList(Configs.epgSourceList.toMutableList().apply {
+            add(EpgSource(name, url))
+        })
 
         wrapResponse(response).send("success")
     }
@@ -187,8 +213,6 @@ object HttpServer : Loggable() {
 private data class AllSettings(
     val appTitle: String,
     val appRepo: String,
-    val iptvSourceUrl: String,
-    val epgXmlUrl: String,
     val videoPlayerUserAgent: String,
 
     val logHistory: List<Logger.HistoryItem>,

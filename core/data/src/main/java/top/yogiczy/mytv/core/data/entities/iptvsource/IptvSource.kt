@@ -11,8 +11,14 @@ data class IptvSource(
      * 名称
      */
     val name: String,
+
     /**
      * 链接
      */
     val url: String,
+
+    /**
+     * 是否本地
+     */
+    val isLocal: Boolean = false,
 )

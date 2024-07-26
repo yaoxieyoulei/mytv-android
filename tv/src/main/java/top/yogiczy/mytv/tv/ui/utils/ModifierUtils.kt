@@ -6,7 +6,6 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,22 +25,12 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.dp
 import kotlin.math.absoluteValue
 
-/**
- * Used to apply modifiers conditionally.
- */
 fun Modifier.ifElse(
-    condition: () -> Boolean,
-    ifTrueModifier: Modifier,
-    ifFalseModifier: Modifier = Modifier
+    condition: () -> Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
 ): Modifier = then(if (condition()) ifTrueModifier else ifFalseModifier)
 
-/**
- * Used to apply modifiers conditionally.
- */
 fun Modifier.ifElse(
-    condition: Boolean,
-    ifTrueModifier: Modifier,
-    ifFalseModifier: Modifier = Modifier
+    condition: Boolean, ifTrueModifier: Modifier, ifFalseModifier: Modifier = Modifier
 ): Modifier = ifElse({ condition }, ifTrueModifier, ifFalseModifier)
 
 fun Modifier.focusOnLaunched(key: Any = Unit): Modifier = composed {
@@ -50,21 +39,15 @@ fun Modifier.focusOnLaunched(key: Any = Unit): Modifier = composed {
     focusRequester(focusRequester)
 }
 
-fun Modifier.focusOnLaunchedSaveable(): Modifier = composed {
+fun Modifier.focusOnLaunchedSaveable(key: Any = Unit): Modifier = composed {
     val focusRequester = remember { FocusRequester() }
-    var hasFocused by rememberSaveable { mutableStateOf(false) }
+    var hasFocused by rememberSaveable(key) { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (!hasFocused) {
             focusRequester.requestFocus()
             hasFocused = true
         }
     }
-    focusRequester(focusRequester)
-}
-
-fun Modifier.focusOnSide(): Modifier = composed {
-    val focusRequester = remember { FocusRequester() }
-    SideEffect { focusRequester.requestFocus() }
     focusRequester(focusRequester)
 }
 
@@ -112,7 +95,7 @@ fun Modifier.handleDragGestures(
     var horizontalDragOffset = 0f
 
 
-    return this then pointerInput(Unit) {
+    return pointerInput(Unit) {
         detectVerticalDragGestures(
             onDragEnd = {
                 if (verticalDragOffset.absoluteValue > distanceThreshold.toPx()) {
@@ -159,7 +142,7 @@ fun Modifier.handleKeyEvents(
     onLongSelect: () -> Unit = {},
     onSettings: () -> Unit = {},
     onNumber: (Int) -> Unit = {},
-) = this then handleKeyEvents(
+) = handleKeyEvents(
     onKeyTap = mapOf(
         KeyEvent.KEYCODE_DPAD_LEFT to onLeft,
         KeyEvent.KEYCODE_DPAD_RIGHT to onRight,
@@ -213,13 +196,14 @@ fun Modifier.handleKeyEvents(
         KeyEvent.KEYCODE_NUMPAD_ENTER to onLongSelect,
         KeyEvent.KEYCODE_DPAD_CENTER to onLongSelect,
     ),
-).pointerInput(key) {
-    detectTapGestures(
-        onTap = { onSelect() },
-        onLongPress = { onLongSelect() },
-        onDoubleTap = { onSettings() },
-    )
-}
+)
+    .pointerInput(key) {
+        detectTapGestures(
+            onTap = { onSelect() },
+            onLongPress = { onLongSelect() },
+            onDoubleTap = { onSettings() },
+        )
+    }
 
 fun Modifier.handleKeyEvents(
     key: Any = Unit,
@@ -237,7 +221,7 @@ fun Modifier.handleKeyEvents(
     onLongSelect: () -> Unit = {},
     onSettings: () -> Unit = {},
     onNumber: (Int) -> Unit = {},
-) = this.handleKeyEvents(
+) = handleKeyEvents(
     key = key,
     onLeft = { if (isFocused()) onLeft() else focusRequester.requestFocus() },
     onLongLeft = { if (isFocused()) onLongLeft() else focusRequester.requestFocus() },

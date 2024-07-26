@@ -68,12 +68,12 @@ fun ChannelUrlItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                Text("线路${urlIdx + 1}")
+
                 if (ChannelUtil.isHybridWebViewUrl(url)) {
-                    Text("混合webview")
+                    Tag("混合")
                     Tag(ChannelUtil.getHybridWebViewUrlProvider(url))
                 } else {
-                    Text("线路${urlIdx + 1}")
-
                     Tag(if (url.isIPv6()) "IPV6" else "IPV4")
                     if (urlDelay != 0L) Tag("$urlDelay ms")
                 }

@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
 class SettingsViewModel : ViewModel() {
@@ -90,6 +92,14 @@ class SettingsViewModel : ViewModel() {
             Configs.iptvSourceUrl = value
         }
 
+    private var _iptvSourceList by mutableStateOf(Configs.iptvSourceList)
+    var iptvSourceList: IptvSourceList
+        get() = _iptvSourceList
+        set(value) {
+            _iptvSourceList = value
+            Configs.iptvSourceList = value
+        }
+
     private var _iptvPlayableHostList by mutableStateOf(Configs.iptvPlayableHostList)
     var iptvPlayableHostList: Set<String>
         get() = _iptvPlayableHostList
@@ -104,14 +114,6 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelNoSelectEnable = value
             Configs.iptvChannelNoSelectEnable = value
-        }
-
-    private var _iptvSourceUrlHistoryList by mutableStateOf(Configs.iptvSourceUrlHistoryList)
-    var iptvSourceUrlHistoryList: Set<String>
-        get() = _iptvSourceUrlHistoryList
-        set(value) {
-            _iptvSourceUrlHistoryList = value
-            Configs.iptvSourceUrlHistoryList = value
         }
 
     private var _iptvChannelFavoriteEnable by mutableStateOf(Configs.iptvChannelFavoriteEnable)
@@ -162,20 +164,20 @@ class SettingsViewModel : ViewModel() {
             Configs.epgXmlUrl = value
         }
 
+    private var _epgSourceList by mutableStateOf(Configs.epgSourceList)
+    var epgSourceList: EpgSourceList
+        get() = _epgSourceList
+        set(value) {
+            _epgSourceList = value
+            Configs.epgSourceList = value
+        }
+
     private var _epgRefreshTimeThreshold by mutableIntStateOf(Configs.epgRefreshTimeThreshold)
     var epgRefreshTimeThreshold: Int
         get() = _epgRefreshTimeThreshold
         set(value) {
             _epgRefreshTimeThreshold = value
             Configs.epgRefreshTimeThreshold = value
-        }
-
-    private var _epgXmlUrlHistoryList by mutableStateOf(Configs.epgXmlUrlHistoryList)
-    var epgXmlUrlHistoryList: Set<String>
-        get() = _epgXmlUrlHistoryList
-        set(value) {
-            _epgXmlUrlHistoryList = value
-            Configs.epgXmlUrlHistoryList = value
         }
 
     private var _uiShowEpgProgrammeProgress by mutableStateOf(Configs.uiShowEpgProgrammeProgress)

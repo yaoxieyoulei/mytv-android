@@ -19,7 +19,7 @@ import top.yogiczy.mytv.tv.ui.utils.captureBackKey
 import java.util.UUID
 
 class PopupManager {
-    private val stack = mutableListOf<StackItem>()
+    val stack = mutableListOf<StackItem>()
 
     fun push(focusRequester: FocusRequester, emitter: Boolean = false) {
         stack.add(StackItem(focusRequester, emitter))
@@ -27,12 +27,13 @@ class PopupManager {
 
     fun pop() {
         stack.removeAt(stack.lastIndex)
+        val last = stack.lastOrNull()
         try {
-            stack.lastOrNull()?.let {
-                it.focusRequester.requestFocus()
-                if (it.emitter) stack.remove(it)
-            }
-        } catch (_: Exception) {
+            last?.focusRequester?.requestFocus()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        } finally {
+            if (last?.emitter == true) stack.remove(last)
         }
     }
 

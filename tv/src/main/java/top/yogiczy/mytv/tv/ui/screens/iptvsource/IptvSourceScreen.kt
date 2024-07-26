@@ -12,15 +12,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.material.Drawer
 import top.yogiczy.mytv.tv.ui.material.DrawerPosition
@@ -29,31 +31,33 @@ import top.yogiczy.mytv.tv.ui.screens.components.QrcodeDialog
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.components.IptvSourceItem
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 import top.yogiczy.mytv.tv.utlis.HttpServer
 import kotlin.math.max
 
 @Composable
 fun IptvSourceScreen(
     modifier: Modifier = Modifier,
-    iptvSourceUrlListProvider: () -> ImmutableList<String> = { persistentListOf() },
+    iptvSourceListProvider: () -> IptvSourceList = { IptvSourceList() },
     currentIptvSourceUrlProvider: () -> String = { "" },
-    onIptvSourceUrlSelected: (String) -> Unit = {},
-    onIptvSourceUrlDeleted: (String) -> Unit = {},
+    onIptvSourceSelected: (IptvSource) -> Unit = {},
+    onIptvSourceDeleted: (IptvSource) -> Unit = {},
     onClose: () -> Unit = {},
 ) {
-    val iptvSourceUrlList = iptvSourceUrlListProvider()
-        .filter { it != Constants.IPTV_SOURCE_URL }
-        .let { listOf(Constants.IPTV_SOURCE_URL).plus(it) }
+    val iptvSourceList = iptvSourceListProvider().let { Constants.IPTV_SOURCE_LIST + it }
     val currentIptvSourceUrl = currentIptvSourceUrlProvider()
+    val currentIptvSourceIdx = iptvSourceList.indexOfFirst { it.url == currentIptvSourceUrl }
+
+    val focusManager = LocalFocusManager.current
 
     Drawer(
         position = DrawerPosition.Bottom,
         onDismissRequest = onClose,
         header = { Text("自定义直播源") },
     ) {
-        val listState =
-            rememberLazyListState(max(0, iptvSourceUrlList.indexOf(currentIptvSourceUrl) - 2))
+        val listState = rememberLazyListState(max(0, currentIptvSourceIdx - 2))
 
         LazyColumn(
             modifier = modifier.height(240.dp),
@@ -61,15 +65,21 @@ fun IptvSourceScreen(
             contentPadding = PaddingValues(vertical = 4.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            itemsIndexed(iptvSourceUrlList) { index, url ->
+            itemsIndexed(iptvSourceList) { index, source ->
                 IptvSourceItem(
-                    iptvSourceUrlProvider = { url },
-                    selectedProvider = {
-                        if (iptvSourceUrlList.contains(url)) url == currentIptvSourceUrl
-                        else index == 0
+                    modifier = Modifier.ifElse(
+                        max(0, currentIptvSourceIdx) == index,
+                        Modifier.focusOnLaunchedSaveable(iptvSourceList),
+                    ),
+                    iptvSourceProvider = { source },
+                    selectedProvider = { index == currentIptvSourceIdx },
+                    onSelected = { onIptvSourceSelected(source) },
+                    onDeleted = {
+                        if (source == iptvSourceList.last()) {
+                            focusManager.moveFocus(FocusDirection.Up)
+                        }
+                        onIptvSourceDeleted(source)
                     },
-                    onSelected = { onIptvSourceUrlSelected(url) },
-                    onDeleted = { onIptvSourceUrlDeleted(url) },
                 )
             }
 
@@ -115,14 +125,15 @@ private fun IptvSourceScreenPreview() {
     MyTVTheme {
         PreviewWithLayoutGrids {
             IptvSourceScreen(
-                iptvSourceUrlListProvider = {
-                    persistentListOf(
-                        "https://iptv-org.github.io/epg.xml",
-                        "https://iptv-org.github.io/epg2.xml",
-                        "https://iptv-org.github.io/epg3.xml",
+                iptvSourceListProvider = {
+                    IptvSourceList(
+                        listOf(
+                            IptvSource(name = "直播源1", url = "http://1.2.3.4/iptv.m3u"),
+                            IptvSource(name = "直播源2", url = "http://1.2.3.4/iptv.m3u"),
+                        )
                     )
                 },
-                currentIptvSourceUrlProvider = { "https://iptv-org.github.io/epg.xml" },
+                currentIptvSourceUrlProvider = { "http://1.2.3.4/iptv.m3u" },
             )
         }
     }

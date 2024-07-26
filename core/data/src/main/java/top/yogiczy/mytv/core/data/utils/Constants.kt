@@ -1,5 +1,10 @@
 package top.yogiczy.mytv.core.data.utils
 
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
+
 /**
  * 常量
  */
@@ -15,10 +20,24 @@ object Constants {
     const val APP_REPO = "https://github.com/yaoxieyoulei/mytv-android"
 
     /**
-     * IPTV源地址
+     * IPTV直播源
      */
-    const val IPTV_SOURCE_URL =
-        "https://mirror.ghproxy.com/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u"
+    val IPTV_SOURCE_LIST = IptvSourceList(
+        listOf(
+            IptvSource(
+                name = "默认直播源 fanmingming（IPV6）",
+                url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u",
+            ),
+            IptvSource(
+                name = "默认直播源 zhumeng11（IPV6）",
+                url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/zhumeng11/IPTV/main/IPTV.m3u",
+            ),
+            IptvSource(
+                name = "默认直播源 yuanzl77（IPV4/IPV6）",
+                url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yuanzl77/IPTV/main/live.m3u",
+            ),
+        )
+    )
 
     /**
      * IPTV源缓存时间（毫秒）
@@ -26,9 +45,20 @@ object Constants {
     const val IPTV_SOURCE_CACHE_TIME = 1000 * 60 * 60 * 24L // 24小时
 
     /**
-     * 节目单XML地址
+     * 节目单来源
      */
-    const val EPG_XML_URL = "http://epg.51zmt.top:8000/e.xml.gz"
+    val EPG_SOURCE_LIST = EpgSourceList(
+        listOf(
+            EpgSource(
+                name = "默认节目单 老张的EPG",
+                url = "http://epg.51zmt.top:8000/e.xml.gz",
+            ),
+            EpgSource(
+                name = "默认节目单 回看七天",
+                url = "https://epg.erw.cc/all.xml.gz",
+            ),
+        )
+    )
 
     /**
      * 节目单刷新时间阈值（小时）

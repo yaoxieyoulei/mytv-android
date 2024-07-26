@@ -1,5 +1,9 @@
 package top.yogiczy.mytv.tv.ui.utils
 
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.SP
 
@@ -38,14 +42,14 @@ object Configs {
         /** 直播源url */
         IPTV_SOURCE_URL,
 
+        /** 直播源列表 */
+        IPTV_SOURCE_LIST,
+
         /** 直播源缓存时间（毫秒） */
         IPTV_SOURCE_CACHE_TIME,
 
         /** 直播源可播放host列表 */
         IPTV_PLAYABLE_HOST_LIST,
-
-        /** 直播源url历史列表 */
-        IPTV_SOURCE_URL_HISTORY_LIST,
 
         /** 是否启用数字选台 */
         IPTV_CHANNEL_NO_SELECT_ENABLE,
@@ -69,11 +73,11 @@ object Configs {
         /** 节目单 xml url */
         EPG_XML_URL,
 
+        /** 节目单来源列表 */
+        EPG_SOURCE_LIST,
+
         /** 节目单刷新时间阈值（小时） */
         EPG_REFRESH_TIME_THRESHOLD,
-
-        /** 节目单历史列表 */
-        EPG_XML_URL_HISTORY_LIST,
 
         /** ==================== 界面 ==================== */
         /** 显示节目进度 */
@@ -150,10 +154,17 @@ object Configs {
         set(value) = SP.putBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, value)
 
     /** 直播源url */
-    // TODO 换成 IptvSource
     var iptvSourceUrl: String
-        get() = SP.getString(KEY.IPTV_SOURCE_URL.name, "").ifBlank { Constants.IPTV_SOURCE_URL }
+        get() = SP.getString(KEY.IPTV_SOURCE_URL.name, "")
+            .ifBlank { Constants.IPTV_SOURCE_LIST.first().url }
         set(value) = SP.putString(KEY.IPTV_SOURCE_URL.name, value)
+
+    /** 直播源列表 */
+    var iptvSourceList: IptvSourceList
+        get() = Json.decodeFromString(
+            SP.getString(KEY.IPTV_SOURCE_LIST.name, Json.encodeToString(IptvSourceList()))
+        )
+        set(value) = SP.putString(KEY.IPTV_SOURCE_LIST.name, Json.encodeToString(value))
 
     /** 直播源缓存时间（毫秒） */
     var iptvSourceCacheTime: Long
@@ -164,11 +175,6 @@ object Configs {
     var iptvPlayableHostList: Set<String>
         get() = SP.getStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, emptySet())
         set(value) = SP.putStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, value)
-
-    /** 直播源历史列表 */
-    var iptvSourceUrlHistoryList: Set<String>
-        get() = SP.getStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, emptySet())
-        set(value) = SP.putStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, value)
 
     /** 是否启用数字选台 */
     var iptvChannelNoSelectEnable: Boolean
@@ -204,10 +210,17 @@ object Configs {
         set(value) = SP.putBoolean(KEY.EPG_ENABLE.name, value)
 
     /** 节目单 xml url */
-    // TODO 换成 EpgSource
     var epgXmlUrl: String
-        get() = SP.getString(KEY.EPG_XML_URL.name, "").ifBlank { Constants.EPG_XML_URL }
+        get() = SP.getString(KEY.EPG_XML_URL.name, "")
+            .ifBlank { Constants.EPG_SOURCE_LIST.first().url }
         set(value) = SP.putString(KEY.EPG_XML_URL.name, value)
+
+    /** 节目单来源列表 */
+    var epgSourceList: EpgSourceList
+        get() = Json.decodeFromString(
+            SP.getString(KEY.EPG_SOURCE_LIST.name, Json.encodeToString(EpgSourceList()))
+        )
+        set(value) = SP.putString(KEY.EPG_SOURCE_LIST.name, Json.encodeToString(value))
 
     /** 节目单刷新时间阈值（小时） */
     var epgRefreshTimeThreshold: Int
@@ -216,11 +229,6 @@ object Configs {
             Constants.EPG_REFRESH_TIME_THRESHOLD
         )
         set(value) = SP.putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value)
-
-    /** 节目单历史列表 */
-    var epgXmlUrlHistoryList: Set<String>
-        get() = SP.getStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, emptySet())
-        set(value) = SP.putStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, value)
 
     /** ==================== 界面 ==================== */
     /** 显示节目进度 */

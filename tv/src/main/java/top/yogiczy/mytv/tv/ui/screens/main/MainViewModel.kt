@@ -55,12 +55,10 @@ class MainViewModel : ViewModel() {
             }
             .catch {
                 _uiState.value = MainUiState.Error(it.message)
-                Configs.iptvSourceUrlHistoryList -= Configs.iptvSourceUrl
             }
             .map { hybridChannel(it) }
             .map {
                 _uiState.value = MainUiState.Ready(channelGroupList = it)
-                Configs.iptvSourceUrlHistoryList += Configs.iptvSourceUrl
                 it
             }
             .collect()
@@ -112,13 +110,10 @@ class MainViewModel : ViewModel() {
                 .retry(Constants.HTTP_RETRY_COUNT) { delay(Constants.HTTP_RETRY_INTERVAL); true }
                 .catch {
                     emit(EpgList())
-                    Configs.epgXmlUrlHistoryList -= Configs.epgXmlUrl
                     Snackbar.show("节目单获取失败，请检查网络连接", type = SnackbarType.ERROR)
                 }
                 .map { epgList ->
-                    _uiState.value =
-                        (_uiState.value as MainUiState.Ready).copy(epgList = epgList)
-                    Configs.epgXmlUrlHistoryList += Configs.epgXmlUrl
+                    _uiState.value = (_uiState.value as MainUiState.Ready).copy(epgList = epgList)
                 }
                 .collect()
         }

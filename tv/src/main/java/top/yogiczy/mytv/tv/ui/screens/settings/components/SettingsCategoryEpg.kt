@@ -11,8 +11,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
@@ -20,6 +20,7 @@ import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Composable
 fun SettingsCategoryEpg(
@@ -60,13 +61,15 @@ fun SettingsCategoryEpg(
         item {
             val popupManager = LocalPopupManager.current
             val focusRequester = remember { FocusRequester() }
+            val currentEpgSource =
+                settingsViewModel.epgSourceList.let { Constants.EPG_SOURCE_LIST + it }
+                    .firstOrNull { it.url == settingsViewModel.epgXmlUrl }
             var isEpgSourceScreenVisible by remember { mutableStateOf(false) }
 
             SettingsListItem(
                 modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "自定义节目单",
-                supportingContent = if (settingsViewModel.epgXmlUrl != Constants.EPG_XML_URL) settingsViewModel.epgXmlUrl else null,
-                trailingContent = if (settingsViewModel.epgXmlUrl != Constants.EPG_XML_URL) "已启用" else "未启用",
+                trailingContent = currentEpgSource?.name ?: "未知",
                 onSelected = {
                     popupManager.push(focusRequester, true)
                     isEpgSourceScreenVisible = true
@@ -79,21 +82,23 @@ fun SettingsCategoryEpg(
                 onDismissRequest = { isEpgSourceScreenVisible = false },
             ) {
                 EpgSourceScreen(
-                    epgXmlUrlListProvider = {
-                        settingsViewModel.epgXmlUrlHistoryList.toImmutableList()
+                    epgSourceListProvider = {
+                        settingsViewModel.epgSourceList = Configs.epgSourceList
+                        settingsViewModel.epgSourceList
                     },
                     currentEpgXmlUrlProvider = { settingsViewModel.epgXmlUrl },
-                    onEpgXmlUrlSelected = {
+                    onEpgSourceSelected = {
                         isEpgSourceScreenVisible = false
-                        if (settingsViewModel.epgXmlUrl != it) {
-                            settingsViewModel.epgXmlUrl = it
+                        if (settingsViewModel.epgXmlUrl != it.url) {
+                            settingsViewModel.epgXmlUrl = it.url
                             coroutineScope.launch {
                                 EpgRepository(settingsViewModel.epgXmlUrl).clearCache()
                             }
                         }
                     },
-                    onEpgXmlUrlDeleted = {
-                        settingsViewModel.epgXmlUrlHistoryList -= it
+                    onEpgSourceDeleted = {
+                        settingsViewModel.epgSourceList =
+                            EpgSourceList(settingsViewModel.epgSourceList - it)
                     },
                 )
             }
