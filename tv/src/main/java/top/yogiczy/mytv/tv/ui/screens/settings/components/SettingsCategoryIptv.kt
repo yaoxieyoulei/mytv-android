@@ -147,6 +147,7 @@ fun SettingsCategoryIptv(
                         isIptvSourceScreenVisible = false
                         if (settingsViewModel.iptvSourceUrl != it.url) {
                             settingsViewModel.iptvSourceUrl = it.url
+                            settingsViewModel.iptvLastChannelIdx = 0
                             coroutineScope.launch {
                                 IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
                             }

@@ -16,9 +16,13 @@ import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserve
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Loggable
+import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerState
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.rememberVideoPlayerState
@@ -200,6 +204,41 @@ class MainContentState(
 
     fun changeCurrentChannelToNext() {
         changeCurrentChannel(getNextChannel())
+    }
+
+    fun favoriteChannelOrNot(channel: Channel) {
+        if (!settingsViewModel.iptvChannelFavoriteEnable) return
+
+        if (settingsViewModel.iptvChannelFavoriteList.contains(channel.name)) {
+            settingsViewModel.iptvChannelFavoriteList -= channel.name
+            Snackbar.show("取消收藏：${channel.name}")
+        } else {
+            settingsViewModel.iptvChannelFavoriteList += channel.name
+            Snackbar.show("已收藏：${channel.name}")
+        }
+    }
+
+    fun reverseEpgProgrammeOrNot(channel: Channel, programme: EpgProgramme) {
+        val reverse = settingsViewModel.epgChannelReserveList.firstOrNull {
+            it.test(channel, programme)
+        }
+
+        if (reverse != null) {
+            settingsViewModel.epgChannelReserveList =
+                EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList - reverse)
+            Snackbar.show("取消预约：${reverse.channel} - ${reverse.programme}")
+        } else {
+            val newReserve = EpgProgrammeReserve(
+                channel = channel.name,
+                programme = programme.title,
+                startAt = programme.startAt,
+                endAt = programme.endAt,
+            )
+
+            settingsViewModel.epgChannelReserveList =
+                EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList + newReserve)
+            Snackbar.show("已预约：${channel.name} - ${programme.title}")
+        }
     }
 }
 

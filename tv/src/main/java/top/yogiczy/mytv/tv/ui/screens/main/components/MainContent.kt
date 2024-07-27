@@ -14,6 +14,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.tv.ui.material.PopupContent
@@ -29,6 +30,7 @@ import top.yogiczy.mytv.tv.ui.screens.channelurl.ChannelUrlScreen
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.ClassicChannelScreen
 import top.yogiczy.mytv.tv.ui.screens.datetime.DatetimeScreen
 import top.yogiczy.mytv.tv.ui.screens.epg.EpgScreen
+import top.yogiczy.mytv.tv.ui.screens.epgreverse.EpgReverseScreen
 import top.yogiczy.mytv.tv.ui.screens.monitor.MonitorScreen
 import top.yogiczy.mytv.tv.ui.screens.quickop.QuickOpScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsScreen
@@ -201,11 +203,19 @@ fun MainContent(
                 epgListProvider().firstOrNull { it.channel == mainContentState.currentChannel.epgName }
                     ?: Epg.empty(mainContentState.currentChannel)
             },
+            epgProgrammeReserveListProvider = {
+                EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList.filter {
+                    it.channel == mainContentState.currentChannel.name
+                })
+            },
             onEpgProgrammePlayback = {
                 Snackbar.show("该功能未实现", type = SnackbarType.ERROR)
             },
-            onEpgProgrammeReserve = {
-                Snackbar.show("该功能未实现", type = SnackbarType.ERROR)
+            onEpgProgrammeReserve = { programme ->
+                mainContentState.reverseEpgProgrammeOrNot(
+                    mainContentState.currentChannel,
+                    programme
+                )
             },
             onClose = { mainContentState.isEpgScreenVisible = false },
         )
@@ -278,17 +288,7 @@ fun MainContent(
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(it)
             },
-            onChannelFavoriteToggle = {
-                if (!settingsViewModel.iptvChannelFavoriteEnable) return@ChannelScreen
-
-                if (settingsViewModel.iptvChannelFavoriteList.contains(it.name)) {
-                    settingsViewModel.iptvChannelFavoriteList -= it.name
-                    Snackbar.show("取消收藏：${it.name}")
-                } else {
-                    settingsViewModel.iptvChannelFavoriteList += it.name
-                    Snackbar.show("已收藏：${it.name}")
-                }
-            },
+            onChannelFavoriteToggle = { mainContentState.favoriteChannelOrNot(it) },
             epgListProvider = epgListProvider,
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
@@ -314,24 +314,17 @@ fun MainContent(
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(it)
             },
-            onChannelFavoriteToggle = {
-                if (!settingsViewModel.iptvChannelFavoriteEnable) return@ClassicChannelScreen
-
-                if (settingsViewModel.iptvChannelFavoriteList.contains(it.name)) {
-                    settingsViewModel.iptvChannelFavoriteList -= it.name
-                    Snackbar.show("取消收藏：${it.name}")
-                } else {
-                    settingsViewModel.iptvChannelFavoriteList += it.name
-                    Snackbar.show("已收藏：${it.name}")
-                }
-            },
+            onChannelFavoriteToggle = { mainContentState.favoriteChannelOrNot(it) },
             epgListProvider = epgListProvider,
+            epgProgrammeReserveListProvider = {
+                EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList)
+            },
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
-            onEpgProgrammePlayback = {
+            onEpgProgrammePlayback = { _, _ ->
                 Snackbar.show("该功能未实现", type = SnackbarType.ERROR)
             },
-            onEpgProgrammeReserve = {
-                Snackbar.show("该功能未实现", type = SnackbarType.ERROR)
+            onEpgProgrammeReserve = { channel, programme ->
+                mainContentState.reverseEpgProgrammeOrNot(channel, programme)
             },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
             channelFavoriteEnabledProvider = { settingsViewModel.iptvChannelFavoriteEnable },
@@ -350,6 +343,19 @@ fun MainContent(
     ) {
         SettingsScreen(onClose = { mainContentState.isSettingsScreenVisible = false })
     }
+
+    EpgReverseScreen(
+        epgProgrammeReserveListProvider = { settingsViewModel.epgChannelReserveList },
+        onConfirmReserve = { reserve ->
+            channelGroupListProvider().channelList.firstOrNull { it.name == reserve.channel }?.let {
+                mainContentState.changeCurrentChannel(it)
+            }
+        },
+        onDeleteReserve = { reserve ->
+            settingsViewModel.epgChannelReserveList =
+                EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList - reserve)
+        },
+    )
 
     UpdateScreen()
 

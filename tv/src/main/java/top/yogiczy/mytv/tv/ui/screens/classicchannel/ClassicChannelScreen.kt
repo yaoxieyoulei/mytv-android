@@ -36,6 +36,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.components.ClassicChannelGroupItemList
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.components.ClassicChannelItemList
@@ -57,9 +58,10 @@ fun ClassicChannelScreen(
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
+    epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
-    onEpgProgrammePlayback: (EpgProgramme) -> Unit = {},
-    onEpgProgrammeReserve: (EpgProgramme) -> Unit = {},
+    onEpgProgrammePlayback: (Channel, EpgProgramme) -> Unit = { _, _ -> },
+    onEpgProgrammeReserve: (Channel, EpgProgramme) -> Unit = { _, _ -> },
     isInTimeShiftProvider: () -> Boolean = { false },
     playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
@@ -156,9 +158,14 @@ fun ClassicChannelScreen(
                     epgProvider = {
                         epgListProvider().firstOrNull { it.channel == focusedChannel.epgName }
                     },
+                    epgProgrammeReserveListProvider = {
+                        EpgProgrammeReserveList(
+                            epgProgrammeReserveListProvider().filter { it.channel == focusedChannel.name }
+                        )
+                    },
                     exitFocusRequesterProvider = { focusedChannelFocusRequester },
-                    onEpgProgrammePlayback = onEpgProgrammePlayback,
-                    onEpgProgrammeReserve = onEpgProgrammeReserve,
+                    onEpgProgrammePlayback = { onEpgProgrammePlayback(focusedChannel, it) },
+                    onEpgProgrammeReserve = { onEpgProgrammeReserve(focusedChannel, it) },
                     onUserAction = { screenAutoCloseState.active() },
                 )
             }

@@ -30,6 +30,7 @@ fun SettingsCategoryContent(
             SettingsCategories.APP -> SettingsCategoryApp()
             SettingsCategories.IPTV -> SettingsCategoryIptv()
             SettingsCategories.EPG -> SettingsCategoryEpg()
+            SettingsCategories.EPG_RESERVE -> SettingsCategoryEpgReserve()
             SettingsCategories.UI -> SettingsCategoryUI()
             SettingsCategories.FAVORITE -> SettingsCategoryFavorite()
             SettingsCategories.UPDATE -> SettingsCategoryUpdate()

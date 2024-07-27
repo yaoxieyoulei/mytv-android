@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.utils
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
@@ -81,6 +82,9 @@ object Configs {
 
         /** 节目单刷新时间阈值（小时） */
         EPG_REFRESH_TIME_THRESHOLD,
+
+        /** 节目预约列表 */
+        EPG_CHANNEL_RESERVE_LIST,
 
         /** ==================== 界面 ==================== */
         /** 显示节目进度 */
@@ -232,11 +236,17 @@ object Configs {
 
     /** 节目单刷新时间阈值（小时） */
     var epgRefreshTimeThreshold: Int
-        get() = SP.getInt(
-            KEY.EPG_REFRESH_TIME_THRESHOLD.name,
-            Constants.EPG_REFRESH_TIME_THRESHOLD
-        )
+        get() = SP.getInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, Constants.EPG_REFRESH_TIME_THRESHOLD)
         set(value) = SP.putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value)
+
+    /** 节目预约列表 */
+    var epgChannelReserveList: EpgProgrammeReserveList
+        get() = Json.decodeFromString(
+            SP.getString(
+                KEY.EPG_CHANNEL_RESERVE_LIST.name, Json.encodeToString(EpgProgrammeReserveList())
+            )
+        )
+        set(value) = SP.putString(KEY.EPG_CHANNEL_RESERVE_LIST.name, Json.encodeToString(value))
 
     /** ==================== 界面 ==================== */
     /** 显示节目进度 */

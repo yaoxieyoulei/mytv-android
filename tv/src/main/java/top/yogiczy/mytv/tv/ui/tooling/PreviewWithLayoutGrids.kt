@@ -24,7 +24,7 @@ fun PreviewWithLayoutGrids(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background.copy(0.2f))) {
         // 顶部外边距
         Box(
             modifier = Modifier

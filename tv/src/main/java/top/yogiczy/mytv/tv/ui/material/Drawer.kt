@@ -28,7 +28,7 @@ fun Drawer(
     showProvider: () -> Boolean = { true },
     onDismissRequest: () -> Unit = {},
     position: DrawerPosition = DrawerPosition.End,
-    header: @Composable () -> Unit = {},
+    header: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit = {},
 ) {
     if (!showProvider()) return
@@ -64,18 +64,20 @@ fun Drawer(
                 .padding(20.dp)
         ) {
             Column {
-                CompositionLocalProvider(
-                    LocalTextStyle provides MaterialTheme.typography.titleLarge
-                ) {
-                    Box(
-                        modifier = Modifier.padding(
-                            top = 8.dp,
-                            bottom = 16.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        )
+                header?.let { nHeader ->
+                    CompositionLocalProvider(
+                        LocalTextStyle provides MaterialTheme.typography.titleLarge
                     ) {
-                        header()
+                        Box(
+                            modifier = Modifier.padding(
+                                top = 8.dp,
+                                bottom = 16.dp,
+                                start = 16.dp,
+                                end = 16.dp
+                            )
+                        ) {
+                            nHeader()
+                        }
                     }
                 }
 
@@ -137,6 +139,20 @@ private fun DrawerPreviewBottom() {
                 position = DrawerPosition.Bottom,
                 header = { Text("Header") },
             )
+        }
+    }
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun DrawerPreviewBottomNoHeader() {
+    MyTVTheme {
+        PreviewWithLayoutGrids {
+            Drawer(
+                position = DrawerPosition.Bottom,
+            ) {
+                Text("Content")
+            }
         }
     }
 }

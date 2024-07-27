@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screens.settings
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DisplaySettings
 import androidx.compose.material.icons.filled.FormatListNumbered
@@ -23,6 +24,7 @@ enum class SettingsCategories(
     APP(Icons.Default.Settings, "应用"),
     IPTV(Icons.Default.LiveTv, "直播源"),
     EPG(Icons.Default.Menu, "节目单"),
+    EPG_RESERVE(Icons.Default.Bookmark, "预约"),
     UI(Icons.Default.DisplaySettings, "界面"),
     FAVORITE(Icons.Default.Star, "收藏"),
     UPDATE(Icons.Default.Update, "更新"),

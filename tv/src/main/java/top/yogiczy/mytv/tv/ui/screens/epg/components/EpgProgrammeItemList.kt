@@ -17,6 +17,7 @@ import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.isLive
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeList
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import kotlin.math.max
 
@@ -24,6 +25,7 @@ import kotlin.math.max
 fun EpgProgrammeItemList(
     modifier: Modifier = Modifier,
     epgProgrammeListProvider: () -> EpgProgrammeList = { EpgProgrammeList() },
+    epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
     onPlayback: (EpgProgramme) -> Unit = {},
     onReserve: (EpgProgramme) -> Unit = {},
     focusOnLive: Boolean = true,
@@ -48,6 +50,7 @@ fun EpgProgrammeItemList(
         items(epgProgrammeList) { programme ->
             EpgProgrammeItem(
                 epgProgrammeProvider = { programme },
+                hasReservedProvider = { epgProgrammeReserveListProvider().firstOrNull { it.programme == programme.title } != null },
                 onPlayback = { onPlayback(programme) },
                 onReserve = { onReserve(programme) },
                 focusOnLive = focusOnLive,

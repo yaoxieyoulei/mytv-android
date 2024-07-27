@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -188,6 +189,14 @@ class SettingsViewModel : ViewModel() {
             Configs.epgRefreshTimeThreshold = value
         }
 
+    private var _epgChannelReserveList by mutableStateOf(Configs.epgChannelReserveList)
+    var epgChannelReserveList: EpgProgrammeReserveList
+        get() = _epgChannelReserveList
+        set(value) {
+            _epgChannelReserveList = value
+            Configs.epgChannelReserveList = value
+        }
+
     private var _uiShowEpgProgrammeProgress by mutableStateOf(Configs.uiShowEpgProgrammeProgress)
     var uiShowEpgProgrammeProgress: Boolean
         get() = _uiShowEpgProgrammeProgress
@@ -259,4 +268,13 @@ class SettingsViewModel : ViewModel() {
             _videoPlayerAspectRatio = value
             Configs.videoPlayerAspectRatio = value
         }
+
+    init {
+        // 删除过期的预约
+        _epgChannelReserveList = EpgProgrammeReserveList(
+            _epgChannelReserveList.filter {
+                System.currentTimeMillis() < it.startAt + 60 * 1000
+            }
+        )
+    }
 }

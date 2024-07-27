@@ -34,6 +34,7 @@ import java.util.Locale
 fun EpgProgrammeItem(
     modifier: Modifier = Modifier,
     epgProgrammeProvider: () -> EpgProgramme = { EpgProgramme() },
+    hasReservedProvider: () -> Boolean = { false },
     onPlayback: () -> Unit = {},
     onReserve: () -> Unit = {},
     focusOnLive: Boolean = true,
@@ -77,7 +78,8 @@ fun EpgProgrammeItem(
             } else if (programme.endAt < System.currentTimeMillis()) {
                 Text("回放")
             } else if (programme.startAt > System.currentTimeMillis()) {
-                Text("预约")
+                if (hasReservedProvider()) Text("已预约")
+                else Text("预约")
             }
         },
     )
@@ -109,6 +111,15 @@ private fun EpgProgrammeItemPreview() {
                         endAt = System.currentTimeMillis() + 200000,
                     )
                 },
+            )
+            EpgProgrammeItem(
+                epgProgrammeProvider = {
+                    EpgProgramme.EXAMPLE.copy(
+                        startAt = System.currentTimeMillis() + 100000,
+                        endAt = System.currentTimeMillis() + 200000,
+                    )
+                },
+                hasReservedProvider = { true },
             )
         }
     }

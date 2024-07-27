@@ -17,6 +17,7 @@ import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeList
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.material.Drawer
 import top.yogiczy.mytv.tv.ui.material.DrawerPosition
 import top.yogiczy.mytv.tv.ui.screens.components.rememberScreenAutoCloseState
@@ -32,6 +33,7 @@ import java.util.Locale
 fun EpgScreen(
     modifier: Modifier = Modifier,
     epgProvider: () -> Epg = { Epg() },
+    epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
     onEpgProgrammePlayback: (EpgProgramme) -> Unit = {},
     onEpgProgrammeReserve: (EpgProgramme) -> Unit = {},
     onClose: () -> Unit = {},
@@ -55,6 +57,7 @@ fun EpgScreen(
                 epgProgrammeListProvider = {
                     EpgProgrammeList(programDayGroup.getOrElse(currentDay) { emptyList() })
                 },
+                epgProgrammeReserveListProvider = epgProgrammeReserveListProvider,
                 onPlayback = onEpgProgrammePlayback,
                 onReserve = onEpgProgrammeReserve,
                 onUserAction = { screenAutoCloseState.active() },

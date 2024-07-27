@@ -21,6 +21,7 @@ import kotlinx.collections.immutable.toPersistentList
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeList
+import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.screens.epg.components.EpgDayItemList
 import top.yogiczy.mytv.tv.ui.screens.epg.components.EpgProgrammeItemList
 import java.text.SimpleDateFormat
@@ -31,6 +32,7 @@ import java.util.Locale
 fun ClassicEpgItemList(
     modifier: Modifier = Modifier,
     epgProvider: () -> Epg? = { null },
+    epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
     onEpgProgrammePlayback: (EpgProgramme) -> Unit = {},
     onEpgProgrammeReserve: (EpgProgramme) -> Unit = {},
     exitFocusRequesterProvider: () -> FocusRequester = { FocusRequester.Default },
@@ -59,6 +61,7 @@ fun ClassicEpgItemList(
             epgProgrammeListProvider = {
                 EpgProgrammeList(programDayGroup.getOrElse(currentDay) { emptyList() })
             },
+            epgProgrammeReserveListProvider = epgProgrammeReserveListProvider,
             onPlayback = onEpgProgrammePlayback,
             onReserve = onEpgProgrammeReserve,
             focusOnLive = false,
