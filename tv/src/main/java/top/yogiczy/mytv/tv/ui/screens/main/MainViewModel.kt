@@ -39,10 +39,7 @@ class MainViewModel : ViewModel() {
     private suspend fun refreshChannel() {
         flow {
             emit(
-                IptvRepository(Configs.iptvSourceUrl).getChannelGroupList(
-                    cacheTime = Configs.iptvSourceCacheTime,
-                    simplify = Configs.iptvSourceSimplify,
-                )
+                IptvRepository(Configs.iptvSourceUrl).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
             )
         }
             .retryWhen { _, attempt ->

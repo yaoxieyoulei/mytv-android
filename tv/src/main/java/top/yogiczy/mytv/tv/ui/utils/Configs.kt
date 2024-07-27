@@ -37,9 +37,6 @@ object Configs {
         /** 换台反转 */
         IPTV_CHANNEL_CHANGE_FLIP,
 
-        /** 直播源精简 */
-        IPTV_SOURCE_SIMPLIFY,
-
         /** 直播源url */
         IPTV_SOURCE_URL,
 
@@ -66,6 +63,9 @@ object Configs {
 
         /** 直播源频道收藏换台边界跳出 */
         IPTV_CHANNEL_FAVORITE_CHANGE_BOUNDARY_JUMP_OUT,
+
+        /** 直播源分组隐藏列表 */
+        IPTV_CHANNEL_GROUP_HIDDEN_LIST,
 
         /** 混合模式 */
         IPTV_HYBRID_MODE,
@@ -155,11 +155,6 @@ object Configs {
         get() = SP.getBoolean(KEY.IPTV_CHANNEL_CHANGE_FLIP.name, false)
         set(value) = SP.putBoolean(KEY.IPTV_CHANNEL_CHANGE_FLIP.name, value)
 
-    /** 直播源精简 */
-    var iptvSourceSimplify: Boolean
-        get() = SP.getBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, false)
-        set(value) = SP.putBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, value)
-
     /** 直播源url */
     var iptvSourceUrl: String
         get() = SP.getString(KEY.IPTV_SOURCE_URL.name, "")
@@ -207,6 +202,11 @@ object Configs {
     var iptvChannelFavoriteChangeBoundaryJumpOut: Boolean
         get() = SP.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_CHANGE_BOUNDARY_JUMP_OUT.name, true)
         set(value) = SP.putBoolean(KEY.IPTV_CHANNEL_FAVORITE_CHANGE_BOUNDARY_JUMP_OUT.name, value)
+
+    /** 直播源分组隐藏列表 */
+    var iptvChannelGroupHiddenList: Set<String>
+        get() = SP.getStringSet(KEY.IPTV_CHANNEL_GROUP_HIDDEN_LIST.name, emptySet())
+        set(value) = SP.putStringSet(KEY.IPTV_CHANNEL_GROUP_HIDDEN_LIST.name, value)
 
     /** 混合模式 */
     var iptvHybridMode: IptvHybridMode

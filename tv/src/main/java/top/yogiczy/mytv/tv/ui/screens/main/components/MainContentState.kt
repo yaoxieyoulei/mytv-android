@@ -32,7 +32,7 @@ import kotlin.math.max
 class MainContentState(
     private val coroutineScope: CoroutineScope,
     private val videoPlayerState: VideoPlayerState,
-    private val channelGroupList: ChannelGroupList,
+    private val channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     private val settingsViewModel: SettingsViewModel,
 ) : Loggable() {
     private var _currentChannel by mutableStateOf(Channel())
@@ -84,6 +84,8 @@ class MainContentState(
         }
 
     init {
+        val channelGroupList = channelGroupListProvider()
+
         changeCurrentChannel(channelGroupList.channelList.getOrElse(settingsViewModel.iptvLastChannelIdx) {
             channelGroupList.channelList.firstOrNull() ?: Channel()
         })
@@ -116,6 +118,8 @@ class MainContentState(
     private fun getPrevFavoriteChannel(): Channel? {
         if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
 
+        val channelGroupList = channelGroupListProvider()
+
         val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
         val favoriteChannelList =
             channelGroupList.channelList.filter { it.name in favoriteChannelNameList }
@@ -135,6 +139,8 @@ class MainContentState(
     private fun getNextFavoriteChannel(): Channel? {
         if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
 
+        val channelGroupList = channelGroupListProvider()
+
         val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
         val favoriteChannelList =
             channelGroupList.channelList.filter { it.name in favoriteChannelNameList }
@@ -152,6 +158,7 @@ class MainContentState(
 
     private fun getPrevChannel(): Channel {
         return getPrevFavoriteChannel() ?: run {
+            val channelGroupList = channelGroupListProvider()
             val currentIdx = channelGroupList.channelIdx(_currentChannel)
             return channelGroupList.channelList.getOrElse(currentIdx - 1) {
                 channelGroupList.channelList.lastOrNull() ?: Channel()
@@ -161,6 +168,7 @@ class MainContentState(
 
     private fun getNextChannel(): Channel {
         return getNextFavoriteChannel() ?: run {
+            val channelGroupList = channelGroupListProvider()
             val currentIdx = channelGroupList.channelIdx(_currentChannel)
             return channelGroupList.channelList.getOrElse(currentIdx + 1) {
                 channelGroupList.channelList.firstOrNull() ?: Channel()
@@ -178,7 +186,8 @@ class MainContentState(
         _isTempChannelScreenVisible = true
 
         _currentChannel = channel
-        settingsViewModel.iptvLastChannelIdx = channelGroupList.channelIdx(_currentChannel)
+        settingsViewModel.iptvLastChannelIdx =
+            channelGroupListProvider().channelIdx(_currentChannel)
 
         _currentChannelUrlIdx = if (urlIdx == null) {
             max(0, _currentChannel.urlList.indexOfFirst {
@@ -246,13 +255,13 @@ class MainContentState(
 fun rememberMainContentState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     videoPlayerState: VideoPlayerState = rememberVideoPlayerState(),
-    channelGroupList: ChannelGroupList = ChannelGroupList(),
+    channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     settingsViewModel: SettingsViewModel = viewModel(),
 ) = remember {
     MainContentState(
         coroutineScope = coroutineScope,
         videoPlayerState = videoPlayerState,
-        channelGroupList = channelGroupList,
+        channelGroupListProvider = channelGroupListProvider,
         settingsViewModel = settingsViewModel,
     )
 }

@@ -49,6 +49,7 @@ fun MainContent(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
+    filteredChannelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     epgListProvider: () -> EpgList = { EpgList() },
     settingsViewModel: SettingsViewModel = viewModel(),
 ) {
@@ -69,11 +70,11 @@ fun MainContent(
     )
     val mainContentState = rememberMainContentState(
         videoPlayerState = videoPlayerState,
-        channelGroupList = channelGroupListProvider(),
+        channelGroupListProvider = filteredChannelGroupListProvider,
     )
     val channelNumberSelectState = rememberChannelNumberSelectState {
         val idx = it.toInt() - 1
-        channelGroupListProvider().channelList.getOrNull(idx)?.let { channel ->
+        filteredChannelGroupListProvider().channelList.getOrNull(idx)?.let { channel ->
             mainContentState.changeCurrentChannel(channel)
         }
     }
@@ -186,7 +187,7 @@ fun MainContent(
         ChannelTempScreen(
             channelProvider = { mainContentState.currentChannel },
             channelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
-            channelNumberProvider = { channelGroupListProvider().channelIdx(mainContentState.currentChannel) + 1 },
+            channelNumberProvider = { filteredChannelGroupListProvider().channelIdx(mainContentState.currentChannel) + 1 },
             recentEpgProgrammeProvider = {
                 epgListProvider().recentProgramme(mainContentState.currentChannel)
             },
@@ -247,7 +248,7 @@ fun MainContent(
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
             currentChannelNumberProvider = {
-                (channelGroupListProvider().channelList.indexOf(mainContentState.currentChannel) + 1).toString()
+                (filteredChannelGroupListProvider().channelList.indexOf(mainContentState.currentChannel) + 1).toString()
             },
             epgListProvider = epgListProvider,
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
@@ -281,7 +282,7 @@ fun MainContent(
         onDismissRequest = { mainContentState.isChannelScreenVisible = false },
     ) {
         ChannelScreen(
-            channelGroupListProvider = channelGroupListProvider,
+            channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
             onChannelSelected = {
@@ -307,7 +308,7 @@ fun MainContent(
         onDismissRequest = { mainContentState.isChannelScreenVisible = false },
     ) {
         ClassicChannelScreen(
-            channelGroupListProvider = channelGroupListProvider,
+            channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
             onChannelSelected = {
@@ -341,13 +342,16 @@ fun MainContent(
         visibleProvider = { mainContentState.isSettingsScreenVisible },
         onDismissRequest = { mainContentState.isSettingsScreenVisible = false },
     ) {
-        SettingsScreen(onClose = { mainContentState.isSettingsScreenVisible = false })
+        SettingsScreen(
+            channelGroupListProvider = channelGroupListProvider,
+            onClose = { mainContentState.isSettingsScreenVisible = false },
+        )
     }
 
     EpgReverseScreen(
         epgProgrammeReserveListProvider = { settingsViewModel.epgChannelReserveList },
         onConfirmReserve = { reserve ->
-            channelGroupListProvider().channelList.firstOrNull { it.name == reserve.channel }?.let {
+            filteredChannelGroupListProvider().channelList.firstOrNull { it.name == reserve.channel }?.let {
                 mainContentState.changeCurrentChannel(it)
             }
         },

@@ -30,6 +30,7 @@ import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
 import top.yogiczy.mytv.tv.ui.material.SnackbarUI
@@ -68,6 +69,9 @@ fun MainScreen(
                 is MainUiState.Ready -> MainContent(
                     modifier = modifier,
                     channelGroupListProvider = { s.channelGroupList },
+                    filteredChannelGroupListProvider = {
+                        ChannelGroupList(s.channelGroupList.filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
+                    },
                     epgListProvider = { s.epgList },
                     onBackPressed = onBackPressed,
                 )

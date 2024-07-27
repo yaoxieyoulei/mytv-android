@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.settings.components.SettingsCategoryContent
 import top.yogiczy.mytv.tv.ui.screens.settings.components.SettingsCategoryList
@@ -25,6 +26,7 @@ import top.yogiczy.mytv.tv.ui.utils.captureBackKey
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
+    channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     onClose: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
@@ -48,7 +50,10 @@ fun SettingsScreen(
                 onCategorySelected = { currentCategory = it },
             )
 
-            SettingsCategoryContent(currentCategoryProvider = { currentCategory })
+            SettingsCategoryContent(
+                currentCategoryProvider = { currentCategory },
+                channelGroupListProvider = channelGroupListProvider,
+            )
         }
     }
 }

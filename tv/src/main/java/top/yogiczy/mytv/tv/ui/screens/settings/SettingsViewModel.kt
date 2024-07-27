@@ -69,14 +69,6 @@ class SettingsViewModel : ViewModel() {
             Configs.iptvChannelChangeFlip = value
         }
 
-    private var _iptvSourceSimplify by mutableStateOf(Configs.iptvSourceSimplify)
-    var iptvSourceSimplify: Boolean
-        get() = _iptvSourceSimplify
-        set(value) {
-            _iptvSourceSimplify = value
-            Configs.iptvSourceSimplify = value
-        }
-
     private var _iptvSourceCacheTime by mutableLongStateOf(Configs.iptvSourceCacheTime)
     var iptvSourceCacheTime: Long
         get() = _iptvSourceCacheTime
@@ -147,6 +139,14 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelFavoriteChangeBoundaryJumpOut = value
             Configs.iptvChannelFavoriteChangeBoundaryJumpOut = value
+        }
+
+    private var _iptvChannelGroupHiddenList by mutableStateOf(Configs.iptvChannelGroupHiddenList)
+    var iptvChannelGroupHiddenList: Set<String>
+        get() = _iptvChannelGroupHiddenList
+        set(value) {
+            _iptvChannelGroupHiddenList = value
+            Configs.iptvChannelGroupHiddenList = value
         }
 
     private var _iptvHybridMode by mutableStateOf(Configs.iptvHybridMode)

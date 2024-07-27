@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsCategories
 
@@ -15,6 +16,7 @@ import top.yogiczy.mytv.tv.ui.screens.settings.SettingsCategories
 fun SettingsCategoryContent(
     modifier: Modifier = Modifier,
     currentCategoryProvider: () -> SettingsCategories = { SettingsCategories.entries.first() },
+    channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
 ) {
     val childPadding = rememberChildPadding()
     val currentCategory = currentCategoryProvider()
@@ -28,7 +30,10 @@ fun SettingsCategoryContent(
         when (currentCategory) {
             SettingsCategories.ABOUT -> SettingsCategoryAbout()
             SettingsCategories.APP -> SettingsCategoryApp()
-            SettingsCategories.IPTV -> SettingsCategoryIptv()
+            SettingsCategories.IPTV -> SettingsCategoryIptv(
+                channelGroupListProvider = channelGroupListProvider,
+            )
+
             SettingsCategories.EPG -> SettingsCategoryEpg()
             SettingsCategories.EPG_RESERVE -> SettingsCategoryEpgReserve()
             SettingsCategories.UI -> SettingsCategoryUI()

@@ -7,7 +7,6 @@ import okhttp3.Request
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
-import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.network.await
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.parser.IptvParser
@@ -54,10 +53,7 @@ class IptvRepository(
     /**
      * 获取直播源分组列表
      */
-    suspend fun getChannelGroupList(
-        cacheTime: Long,
-        simplify: Boolean = false,
-    ): ChannelGroupList {
+    suspend fun getChannelGroupList(cacheTime: Long): ChannelGroupList {
         try {
             val sourceData = getOrRefresh(cacheTime) {
                 fetchSource(sourceUrl)
@@ -66,16 +62,6 @@ class IptvRepository(
             val parser = IptvParser.instances.first { it.isSupport(sourceUrl, sourceData) }
             val groupList = parser.parse(sourceData)
             log.i("解析直播源完成：${groupList.size}个分组，${groupList.sumOf { it.channelList.size }}个频道")
-
-            if (simplify) {
-                return ChannelGroupList(groupList.map { group ->
-                    group.copy(
-                        channelList = ChannelList(
-                            group.channelList.filter { iptv -> simplifyTest(group, iptv) },
-                        )
-                    )
-                }.filter { it.channelList.isNotEmpty() })
-            }
 
             return groupList
         } catch (ex: Exception) {

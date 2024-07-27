@@ -11,7 +11,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.Constants
@@ -19,6 +21,7 @@ import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.screens.channelgroup.ChannelGroupManageScreen
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceCacheTimeScreen
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
@@ -28,6 +31,7 @@ import top.yogiczy.mytv.tv.ui.utils.Configs
 fun SettingsCategoryIptv(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = viewModel(),
+    channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -62,19 +66,6 @@ fun SettingsCategoryIptv(
                 onSelected = {
                     settingsViewModel.iptvChannelChangeFlip =
                         !settingsViewModel.iptvChannelChangeFlip
-                },
-            )
-        }
-
-        item {
-            SettingsListItem(
-                headlineContent = "直播源精简",
-                supportingContent = if (settingsViewModel.iptvSourceSimplify) "显示精简直播源(仅央视、地方卫视)" else "显示完整直播源",
-                trailingContent = {
-                    Switch(checked = settingsViewModel.iptvSourceSimplify, onCheckedChange = null)
-                },
-                onSelected = {
-                    settingsViewModel.iptvSourceSimplify = !settingsViewModel.iptvSourceSimplify
                 },
             )
         }
@@ -148,6 +139,7 @@ fun SettingsCategoryIptv(
                         if (settingsViewModel.iptvSourceUrl != it.url) {
                             settingsViewModel.iptvSourceUrl = it.url
                             settingsViewModel.iptvLastChannelIdx = 0
+                            settingsViewModel.iptvChannelGroupHiddenList = emptySet()
                             coroutineScope.launch {
                                 IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
                             }
@@ -173,6 +165,39 @@ fun SettingsCategoryIptv(
                     }
                 },
             )
+        }
+
+        item {
+            val popupManager = LocalPopupManager.current
+            val focusRequester = remember { FocusRequester() }
+            var visible by remember { mutableStateOf(false) }
+
+            SettingsListItem(
+                modifier = Modifier.focusRequester(focusRequester),
+                headlineContent = "频道分组管理",
+                supportingContent = "管理频道分组可见、隐藏状态",
+                onSelected = {
+                    popupManager.push(focusRequester, true)
+                    visible = true
+                },
+                remoteConfig = true,
+            )
+
+            SimplePopup(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+            ) {
+                ChannelGroupManageScreen(
+                    channelGroupListProvider = {
+                        channelGroupListProvider().map { it.name }.toPersistentList()
+                    },
+                    channelGroupHiddenListProvider = { settingsViewModel.iptvChannelGroupHiddenList.toPersistentList() },
+                    onChannelGroupHiddenListChange = {
+                        settingsViewModel.iptvChannelGroupHiddenList = it.toSet()
+                    },
+                    onClose = { visible = false },
+                )
+            }
         }
 
         item {
