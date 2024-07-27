@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +39,7 @@ import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 fun ChannelItem(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: () -> Unit = {},
     onChannelFavoriteToggle: () -> Unit = {},
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
@@ -61,7 +62,7 @@ fun ChannelItem(
     Card(
         onClick = {},
         modifier = modifier
-            .size(124.dp, 53.dp)
+            .width(124.dp)
             .focusRequester(focusRequester)
             .onFocusChanged {
                 isFocused = it.isFocused || it.hasFocus
@@ -78,22 +79,45 @@ fun ChannelItem(
         ),
         border = CardDefaults.border(
             focusedBorder = Border(
-                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onSurface),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
             ),
         ),
     ) {
-        Box {
-            ChannelItemContent(
-                channelProvider = channelProvider,
-                recentEpgProgrammeProvider = recentEpgProgrammeProvider,
-            )
+        Column {
+            if (showChannelLogoProvider()) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            if (isFocused) MaterialTheme.colorScheme.surface.copy(0.9f)
+                            else MaterialTheme.colorScheme.surface.copy(0.5f)
+                        )
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                ) {
+                    ChannelItemLogo(
+                        modifier = Modifier.align(Alignment.Center),
+                        logoProvider = { channelProvider().logo },
+                    )
+                }
+            }
 
-            ChannelItemProgress(
-                recentEpgProgrammeProvider = recentEpgProgrammeProvider,
-                showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
-                isFocusedProvider = { isFocused },
-                modifier = Modifier.align(Alignment.BottomStart),
-            )
+            Box(modifier = Modifier.height(53.dp)) {
+                ChannelItemContent(
+                    channelProvider = channelProvider,
+                    recentEpgProgrammeProvider = recentEpgProgrammeProvider,
+                )
+
+                ChannelItemProgress(
+                    recentEpgProgrammeProvider = recentEpgProgrammeProvider,
+                    showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
+                    isFocusedProvider = { isFocused },
+                    modifier = Modifier.align(Alignment.BottomStart),
+                )
+            }
         }
     }
 }
@@ -169,6 +193,21 @@ private fun ChannelItemPreview() {
 
             ChannelItem(
                 channelProvider = { Channel.EXAMPLE },
+                recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
+                showEpgProgrammeProgressProvider = { true },
+                initialFocusedProvider = { true },
+            )
+
+            ChannelItem(
+                channelProvider = { Channel.EXAMPLE },
+                showChannelLogoProvider = { true },
+                recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
+                showEpgProgrammeProgressProvider = { true },
+            )
+
+            ChannelItem(
+                channelProvider = { Channel.EXAMPLE },
+                showChannelLogoProvider = { true },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
                 showEpgProgrammeProgressProvider = { true },
                 initialFocusedProvider = { true },

@@ -49,6 +49,7 @@ class TxtIptvParser : IptvParser {
                         name = nameEntry.key,
                         epgName = nameEntry.value.first().channelName,
                         urlList = nameEntry.value.map { it.url },
+                        logo = "https://live.fanmingming.com/tv/${nameEntry.value.first().channelName}.png"
                     )
                 }),
             )

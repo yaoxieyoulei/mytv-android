@@ -40,6 +40,7 @@ fun ChannelItemGrid(
     title: String,
     channelListProvider: () -> ChannelList = { ChannelList() },
     currentChannelProvider: () -> Channel = { Channel() },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
@@ -99,6 +100,7 @@ fun ChannelItemGrid(
                         Modifier.handleKeyEvents(onUp = onClose),
                     ),
                     channelProvider = { channel },
+                    showChannelLogoProvider = showChannelLogoProvider,
                     onChannelSelected = { onChannelSelected(channel) },
                     onChannelFavoriteToggle = {
                         key++

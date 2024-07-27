@@ -111,6 +111,8 @@ dependencies {
     // 二维码
     implementation(libs.qrose)
 
+    implementation(libs.coil.compose)
+
     implementation(libs.okhttp)
     implementation(libs.androidasync)
 

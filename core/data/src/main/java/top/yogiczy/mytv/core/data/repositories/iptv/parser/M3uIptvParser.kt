@@ -28,6 +28,7 @@ class M3uIptvParser : IptvParser {
                 ?: name
             val groupName = Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                 ?: "其他"
+            val logo = Regex("tvg-logo=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
 
             iptvList.add(
                 IptvResponseItem(
@@ -35,6 +36,7 @@ class M3uIptvParser : IptvParser {
                     channelName = channelName,
                     groupName = groupName,
                     url = lines[index + 1].trim(),
+                    logo = logo,
                 )
             )
         }
@@ -47,6 +49,7 @@ class M3uIptvParser : IptvParser {
                         name = nameEntry.key,
                         epgName = nameEntry.value.first().channelName,
                         urlList = nameEntry.value.map { it.url },
+                        logo = nameEntry.value.first().logo
                     )
                 })
             )
@@ -58,5 +61,6 @@ class M3uIptvParser : IptvParser {
         val channelName: String,
         val groupName: String,
         val url: String,
+        val logo: String?,
     )
 }

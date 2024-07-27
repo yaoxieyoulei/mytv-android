@@ -285,6 +285,7 @@ fun MainContent(
             channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             onChannelSelected = {
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(it)
@@ -311,6 +312,7 @@ fun MainContent(
             channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             onChannelSelected = {
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(it)
@@ -351,9 +353,10 @@ fun MainContent(
     EpgReverseScreen(
         epgProgrammeReserveListProvider = { settingsViewModel.epgChannelReserveList },
         onConfirmReserve = { reserve ->
-            filteredChannelGroupListProvider().channelList.firstOrNull { it.name == reserve.channel }?.let {
-                mainContentState.changeCurrentChannel(it)
-            }
+            filteredChannelGroupListProvider().channelList.firstOrNull { it.name == reserve.channel }
+                ?.let {
+                    mainContentState.changeCurrentChannel(it)
+                }
         },
         onDeleteReserve = { reserve ->
             settingsViewModel.epgChannelReserveList =

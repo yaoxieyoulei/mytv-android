@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
+import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelItemLogo
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import kotlin.math.max
@@ -52,6 +54,7 @@ fun ClassicChannelItemList(
     channelGroupProvider: () -> ChannelGroup = { ChannelGroup() },
     channelListProvider: () -> ChannelList = { ChannelList() },
     initialChannelProvider: () -> Channel = { Channel() },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     onChannelFocused: (Channel, FocusRequester) -> Unit = { _, _ -> },
@@ -92,15 +95,14 @@ fun ClassicChannelItemList(
     }
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.isScrollInProgress }
-            .distinctUntilChanged()
+        snapshotFlow { listState.isScrollInProgress }.distinctUntilChanged()
             .collect { _ -> onUserAction() }
     }
 
     LazyColumn(
         modifier = modifier
             .fillMaxHeight()
-            .width(220.dp)
+            .width(if (showChannelLogoProvider()) 280.dp else 220.dp)
             .background(MaterialTheme.colorScheme.surface.copy(0.8f)),
         state = listState,
         contentPadding = PaddingValues(8.dp),
@@ -139,6 +141,7 @@ fun ClassicChannelItemList(
                 initialFocusedProvider = { initialFocused },
                 onInitialFocused = { hasFocused = true },
                 isSelectedProvider = { isSelected },
+                showChannelLogoProvider = showChannelLogoProvider,
             )
         }
     }
@@ -148,6 +151,7 @@ fun ClassicChannelItemList(
 private fun ClassicChannelItem(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: () -> Unit = {},
     onChannelFavoriteToggle: () -> Unit = {},
     onChannelFocused: () -> Unit = {},
@@ -172,41 +176,59 @@ private fun ClassicChannelItem(
         }
     }
 
-    Box(modifier = modifier.clip(ListItemDefaults.shape().shape)) {
-        ListItem(
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .onFocusChanged {
-                    isFocused = it.isFocused || it.hasFocus
-                    if (isFocused) onChannelFocused()
-                }
-                .handleKeyEvents(
-                    isFocused = { isFocused },
-                    focusRequester = focusRequester,
-                    onSelect = onChannelSelected,
-                    onLongSelect = onChannelFavoriteToggle,
-                ),
-            colors = ListItemDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.onSurface,
-                selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                selectedContentColor = MaterialTheme.colorScheme.onSurface,
-            ),
-            selected = isSelectedProvider(),
-            onClick = {},
-            headlineContent = { Text(channel.name) },
-            supportingContent = {
-                Text(text = nowEpgProgramme?.title ?: "无节目", maxLines = 1)
-            },
-        )
-
-        if (showEpgProgrammeProgress && nowEpgProgramme != null) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (showChannelLogoProvider()) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth(nowEpgProgramme.progress())
-                    .height(3.dp)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)),
+                    .width(60.dp)
+                    .fillMaxHeight()
+            ) {
+                ChannelItemLogo(
+                    modifier = Modifier.align(Alignment.Center),
+                    logoProvider = { channel.logo },
+                )
+            }
+        }
+
+        Box(modifier = modifier.clip(ListItemDefaults.shape().shape)) {
+            ListItem(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        isFocused = it.isFocused || it.hasFocus
+                        if (isFocused) onChannelFocused()
+                    }
+                    .handleKeyEvents(
+                        isFocused = { isFocused },
+                        focusRequester = focusRequester,
+                        onSelect = onChannelSelected,
+                        onLongSelect = onChannelFavoriteToggle,
+                    ),
+                colors = ListItemDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.onSurface,
+                    selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    selectedContentColor = MaterialTheme.colorScheme.onSurface,
+                ),
+                selected = isSelectedProvider(),
+                onClick = {},
+                headlineContent = { Text(channel.name, maxLines = 1) },
+                supportingContent = {
+                    Text(text = nowEpgProgramme?.title ?: "无节目", maxLines = 1)
+                },
             )
+
+            if (showEpgProgrammeProgress && nowEpgProgramme != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth(nowEpgProgramme.progress())
+                        .height(3.dp)
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)),
+                )
+            }
         }
     }
 }
@@ -215,12 +237,31 @@ private fun ClassicChannelItem(
 @Composable
 private fun ClassicChannelItemListPreview() {
     MyTVTheme {
-        ClassicChannelItemList(
-            channelGroupProvider = { ChannelGroup.EXAMPLE },
-            channelListProvider = { ChannelList.EXAMPLE },
-            initialChannelProvider = { ChannelList.EXAMPLE.first() },
-            epgListProvider = { EpgList.example(ChannelList.EXAMPLE) },
-            showEpgProgrammeProgressProvider = { true },
-        )
+        Row {
+            ClassicChannelItemList(
+                channelGroupProvider = { ChannelGroup.EXAMPLE },
+                channelListProvider = { ChannelList.EXAMPLE },
+                initialChannelProvider = { ChannelList.EXAMPLE.first() },
+                epgListProvider = { EpgList.example(ChannelList.EXAMPLE) },
+                showEpgProgrammeProgressProvider = { true },
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ClassicChannelItemListWithChannelLogoPreview() {
+    MyTVTheme {
+        Row {
+            ClassicChannelItemList(
+                channelGroupProvider = { ChannelGroup.EXAMPLE },
+                channelListProvider = { ChannelList.EXAMPLE },
+                initialChannelProvider = { ChannelList.EXAMPLE.first() },
+                epgListProvider = { EpgList.example(ChannelList.EXAMPLE) },
+                showEpgProgrammeProgressProvider = { true },
+                showChannelLogoProvider = { true },
+            )
+        }
     }
 }

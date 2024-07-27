@@ -55,6 +55,7 @@ fun ClassicChannelScreen(
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
     currentChannelUrlIdxProvider: () -> Int = { 0 },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
@@ -151,6 +152,7 @@ fun ClassicChannelScreen(
                 showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
                 onUserAction = { screenAutoCloseState.active() },
                 inFavoriteModeProvider = { focusedChannelGroup == ClassicPanelScreenFavoriteChannelGroup },
+                showChannelLogoProvider = showChannelLogoProvider,
             )
 
             Visible({ epgListVisible }) {

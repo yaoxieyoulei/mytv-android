@@ -42,6 +42,7 @@ import top.yogiczy.mytv.tv.ui.screens.datetime.components.DateTimeDetail
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
 fun ChannelScreen(
@@ -49,6 +50,7 @@ fun ChannelScreen(
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
     currentChannelUrlIdxProvider: () -> Int = { 0 },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
@@ -82,6 +84,7 @@ fun ChannelScreen(
             channelGroupListProvider = channelGroupListProvider,
             currentChannelProvider = currentChannelProvider,
             currentChannelUrlIdxProvider = currentChannelUrlIdxProvider,
+            showChannelLogoProvider = showChannelLogoProvider,
             onChannelSelected = onChannelSelected,
             onChannelFavoriteToggle = onChannelFavoriteToggle,
             epgListProvider = epgListProvider,
@@ -136,6 +139,7 @@ private fun ChannelScreenBottom(
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
     currentChannelUrlIdxProvider: () -> Int = { 0 },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
@@ -178,6 +182,7 @@ private fun ChannelScreenBottom(
             ChannelScreenBottomChannelItemListAllAndFavorite(
                 channelGroupListProvider = channelGroupListProvider,
                 currentChannelProvider = currentChannelProvider,
+                showChannelLogoProvider = showChannelLogoProvider,
                 onChannelSelected = onChannelSelected,
                 onChannelFavoriteToggle = onChannelFavoriteToggle,
                 epgListProvider = epgListProvider,
@@ -197,6 +202,7 @@ private fun ChannelScreenBottomChannelItemListAllAndFavorite(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
@@ -207,7 +213,13 @@ private fun ChannelScreenBottomChannelItemListAllAndFavorite(
     onChannelFavoriteListVisibleChange: (Boolean) -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
-    Box(modifier = modifier.height(150.dp)) {
+    Box(
+        modifier = modifier.ifElse(
+            showChannelLogoProvider(),
+            Modifier.height(250.dp),
+            Modifier.height(150.dp),
+        ),
+    ) {
         if (channelFavoriteListVisibleProvider()) {
             ChannelItemGrid(
                 title = "收藏",
@@ -217,6 +229,7 @@ private fun ChannelScreenBottomChannelItemListAllAndFavorite(
                         .filter { favoriteChannelNameList.contains(it.name) })
                 },
                 currentChannelProvider = currentChannelProvider,
+                showChannelLogoProvider = showChannelLogoProvider,
                 onChannelSelected = onChannelSelected,
                 onChannelFavoriteToggle = onChannelFavoriteToggle,
                 epgListProvider = epgListProvider,
@@ -230,6 +243,7 @@ private fun ChannelScreenBottomChannelItemListAllAndFavorite(
                 ChannelItemGroupList(
                     channelGroupListProvider = channelGroupListProvider,
                     currentChannelProvider = currentChannelProvider,
+                    showChannelLogoProvider = showChannelLogoProvider,
                     onChannelSelected = onChannelSelected,
                     onChannelFavoriteToggle = onChannelFavoriteToggle,
                     epgListProvider = epgListProvider,
@@ -254,6 +268,7 @@ private fun ChannelScreenBottomChannelItemListAllAndFavorite(
                     title = "全部",
                     channelListProvider = { channelGroupListProvider().channelList },
                     currentChannelProvider = currentChannelProvider,
+                    showChannelLogoProvider = showChannelLogoProvider,
                     onChannelSelected = onChannelSelected,
                     onChannelFavoriteToggle = onChannelFavoriteToggle,
                     epgListProvider = epgListProvider,
@@ -313,6 +328,28 @@ private fun ChannelScreenBottomFavoritePreview() {
                 channelGroupListProvider = { ChannelGroupList.EXAMPLE },
                 currentChannelProvider = { ChannelGroupList.EXAMPLE.first().channelList.first() },
                 currentChannelUrlIdxProvider = { 0 },
+                epgListProvider = { EpgList.example(ChannelGroupList.EXAMPLE.channelList) },
+                showEpgProgrammeProgressProvider = { true },
+                channelFavoriteEnabledProvider = { true },
+                channelFavoriteListProvider = {
+                    ChannelGroupList.EXAMPLE.first().channelList.map { it.name }.toImmutableList()
+                },
+                channelFavoriteListVisibleProvider = { true },
+            )
+        }
+    }
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun ChannelScreenBottomFavoriteWithChannelLogoPreview() {
+    MyTVTheme {
+        PreviewWithLayoutGrids {
+            ChannelScreenBottom(
+                channelGroupListProvider = { ChannelGroupList.EXAMPLE },
+                currentChannelProvider = { ChannelGroupList.EXAMPLE.first().channelList.first() },
+                currentChannelUrlIdxProvider = { 0 },
+                showChannelLogoProvider = { true },
                 epgListProvider = { EpgList.example(ChannelGroupList.EXAMPLE.channelList) },
                 showEpgProgrammeProgressProvider = { true },
                 channelFavoriteEnabledProvider = { true },

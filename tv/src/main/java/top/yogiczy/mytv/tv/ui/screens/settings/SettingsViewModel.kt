@@ -205,6 +205,14 @@ class SettingsViewModel : ViewModel() {
             Configs.uiShowEpgProgrammeProgress = value
         }
 
+    private var _uiShowChannelLogo by mutableStateOf(Configs.uiShowChannelLogo)
+    var uiShowChannelLogo: Boolean
+        get() = _uiShowChannelLogo
+        set(value) {
+            _uiShowChannelLogo = value
+            Configs.uiShowChannelLogo = value
+        }
+
     private var _uiUseClassicPanelScreen by mutableStateOf(Configs.uiUseClassicPanelScreen)
     var uiUseClassicPanelScreen: Boolean
         get() = _uiUseClassicPanelScreen

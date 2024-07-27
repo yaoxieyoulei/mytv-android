@@ -90,6 +90,9 @@ object Configs {
         /** 显示节目进度 */
         UI_SHOW_EPG_PROGRAMME_PROGRESS,
 
+        /** 显示台标 */
+        UI_SHOW_CHANNEL_LOGO,
+
         /** 使用经典选台界面 */
         UI_USE_CLASSIC_PANEL_SCREEN,
 
@@ -253,6 +256,11 @@ object Configs {
     var uiShowEpgProgrammeProgress: Boolean
         get() = SP.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, true)
         set(value) = SP.putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value)
+
+    /** 显示台标 */
+    var uiShowChannelLogo: Boolean
+        get() = SP.getBoolean(KEY.UI_SHOW_CHANNEL_LOGO.name, false)
+        set(value) = SP.putBoolean(KEY.UI_SHOW_CHANNEL_LOGO.name, value)
 
     /** 使用经典选台界面 */
     var uiUseClassicPanelScreen: Boolean

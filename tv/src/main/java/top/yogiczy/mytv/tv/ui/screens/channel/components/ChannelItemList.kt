@@ -30,6 +30,7 @@ fun ChannelItemList(
     modifier: Modifier = Modifier,
     channelListProvider: () -> ChannelList = { ChannelList() },
     currentChannelProvider: () -> Channel = { Channel() },
+    showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     epgListProvider: () -> EpgList = { EpgList() },
@@ -61,6 +62,7 @@ fun ChannelItemList(
         items(channelList) { channel ->
             ChannelItem(
                 channelProvider = { channel },
+                showChannelLogoProvider = showChannelLogoProvider,
                 onChannelSelected = { onChannelSelected(channel) },
                 onChannelFavoriteToggle = { onChannelFavoriteToggle(channel) },
                 recentEpgProgrammeProvider = { epgListProvider().recentProgramme(channel) },

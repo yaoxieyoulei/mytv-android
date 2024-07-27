@@ -45,6 +45,21 @@ fun SettingsCategoryUI(
 
         item {
             SettingsListItem(
+                headlineContent = "台标显示",
+                trailingContent = {
+                    Switch(
+                        checked = settingsViewModel.uiShowChannelLogo,
+                        onCheckedChange = null
+                    )
+                },
+                onSelected = {
+                    settingsViewModel.uiShowChannelLogo = !settingsViewModel.uiShowChannelLogo
+                },
+            )
+        }
+
+        item {
+            SettingsListItem(
                 headlineContent = "经典选台界面",
                 supportingContent = "将选台界面替换为经典三段式结构",
                 trailingContent = {
