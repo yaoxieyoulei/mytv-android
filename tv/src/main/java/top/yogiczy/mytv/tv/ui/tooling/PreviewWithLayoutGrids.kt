@@ -50,7 +50,7 @@ fun PreviewWithLayoutGrids(
                 .padding(horizontal = 58.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            for (i in 0..12) {
+            for (i in 0..<12) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()

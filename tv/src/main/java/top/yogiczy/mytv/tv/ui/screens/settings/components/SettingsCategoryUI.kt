@@ -1,12 +1,22 @@
 package top.yogiczy.mytv.tv.ui.screens.settings.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.util.utils.humanizeMs
+import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
+import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screens.ui.UiDensityScaleRatioScreen
+import top.yogiczy.mytv.tv.ui.screens.ui.UiFontScaleRatioScreen
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.text.DecimalFormat
 
@@ -85,55 +95,68 @@ fun SettingsCategoryUI(
         }
 
         item {
-            val defaultScale = 1f
-            val minScale = 1f
-            val maxScale = 2f
-            val stepScale = 0.1f
+            val popupManager = LocalPopupManager.current
+            val focusRequester = remember { FocusRequester() }
+            var visible by remember { mutableStateOf(false) }
 
             SettingsListItem(
+                modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "界面整体缩放比例",
-                supportingContent = "短按切换缩放比例，长按恢复默认；",
-                trailingContent = "×${DecimalFormat("#.#").format(settingsViewModel.uiDensityScaleRatio)}",
+                trailingContent = when (settingsViewModel.uiDensityScaleRatio) {
+                    0f -> "自适应"
+                    else -> "×${DecimalFormat("#.#").format(settingsViewModel.uiDensityScaleRatio)}"
+                },
                 onSelected = {
-                    if (settingsViewModel.uiDensityScaleRatio >= maxScale) {
-                        settingsViewModel.uiDensityScaleRatio = minScale
-                    } else {
-                        settingsViewModel.uiDensityScaleRatio =
-                            (settingsViewModel.uiDensityScaleRatio + stepScale).coerceIn(
-                                minScale, maxScale
-                            )
-                    }
+                    popupManager.push(focusRequester, true)
+                    visible = true
                 },
-                onLongSelected = {
-                    settingsViewModel.uiDensityScaleRatio = defaultScale
-                },
+                remoteConfig = true,
             )
+
+            SimplePopup(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+            ) {
+                UiDensityScaleRatioScreen(
+                    currentScaleRatioProvider = { settingsViewModel.uiDensityScaleRatio },
+                    onScaleRatioSelected = {
+                        settingsViewModel.uiDensityScaleRatio = it
+                        visible = false
+                    },
+                    onClose = { visible = false },
+                )
+            }
         }
 
         item {
-            val defaultScale = 1f
-            val minScale = 1f
-            val maxScale = 2f
-            val stepScale = 0.1f
+            val popupManager = LocalPopupManager.current
+            val focusRequester = remember { FocusRequester() }
+            var visible by remember { mutableStateOf(false) }
 
             SettingsListItem(
+                modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "界面字体缩放比例",
-                supportingContent = "短按切换缩放比例，长按恢复默认；",
                 trailingContent = "×${DecimalFormat("#.#").format(settingsViewModel.uiFontScaleRatio)}",
                 onSelected = {
-                    if (settingsViewModel.uiFontScaleRatio >= maxScale) {
-                        settingsViewModel.uiFontScaleRatio = minScale
-                    } else {
-                        settingsViewModel.uiFontScaleRatio =
-                            (settingsViewModel.uiFontScaleRatio + stepScale).coerceIn(
-                                minScale, maxScale
-                            )
-                    }
+                    popupManager.push(focusRequester, true)
+                    visible = true
                 },
-                onLongSelected = {
-                    settingsViewModel.uiFontScaleRatio = defaultScale
-                },
+                remoteConfig = true,
             )
+
+            SimplePopup(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+            ) {
+                UiFontScaleRatioScreen(
+                    currentScaleRatioProvider = { settingsViewModel.uiFontScaleRatio },
+                    onScaleRatioSelected = {
+                        settingsViewModel.uiFontScaleRatio = it
+                        visible = false
+                    },
+                    onClose = { visible = false },
+                )
+            }
         }
     }
 }

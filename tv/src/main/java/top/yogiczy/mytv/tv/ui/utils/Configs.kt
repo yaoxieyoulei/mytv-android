@@ -261,7 +261,7 @@ object Configs {
 
     /** 界面密度缩放比例 */
     var uiDensityScaleRatio: Float
-        get() = SP.getFloat(KEY.UI_DENSITY_SCALE_RATIO.name, 1f)
+        get() = SP.getFloat(KEY.UI_DENSITY_SCALE_RATIO.name, 0f)
         set(value) = SP.putFloat(KEY.UI_DENSITY_SCALE_RATIO.name, value)
 
     /** 界面字体缩放比例 */

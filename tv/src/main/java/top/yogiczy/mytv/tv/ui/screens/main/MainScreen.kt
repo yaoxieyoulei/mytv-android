@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,11 +51,15 @@ fun MainScreen(
     mainViewModel: MainViewModel = viewModel(),
     settingsViewModel: SettingsViewModel = viewModel(),
 ) {
+    val configuration = LocalConfiguration.current
     val uiState by mainViewModel.uiState.collectAsState()
 
     CompositionLocalProvider(
         LocalDensity provides Density(
-            density = LocalDensity.current.density * settingsViewModel.uiDensityScaleRatio,
+            density = LocalDensity.current.density * when (settingsViewModel.uiDensityScaleRatio) {
+                0f -> configuration.screenWidthDp.toFloat() / 960
+                else -> settingsViewModel.uiDensityScaleRatio
+            },
             fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
         )
     ) {
