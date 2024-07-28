@@ -76,8 +76,7 @@ fun IptvSourceItem(
             ) {
                 Text(iptvSource.name)
 
-                if (iptvSource.isLocal) Tag("本地")
-                else Tag("远程")
+                Tag(if (iptvSource.isLocal) "本地" else "远程")
             }
         },
         supportingContent = {

@@ -15,8 +15,9 @@ import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
+import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
+import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
-import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.tv.ui.material.PopupContent
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
@@ -264,7 +265,8 @@ fun MainContent(
             onClearCache = {
                 settingsViewModel.iptvPlayableHostList = emptySet()
                 coroutineScope.launch {
-                    Globals.cacheDir.deleteRecursively()
+                    IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
+                    EpgRepository(settingsViewModel.epgXmlUrl).clearCache()
                     Snackbar.show("缓存已清除，请重启应用")
                 }
             },

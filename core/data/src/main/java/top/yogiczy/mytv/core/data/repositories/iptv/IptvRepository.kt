@@ -4,8 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import top.yogiczy.mytv.core.data.entities.channel.Channel
-import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.network.await
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
@@ -44,18 +42,13 @@ class IptvRepository(
     }
 
     /**
-     * 简化规则
-     */
-    private fun simplifyTest(group: ChannelGroup, channel: Channel): Boolean {
-        return channel.name.lowercase().startsWith("cctv") || channel.name.endsWith("卫视")
-    }
-
-    /**
      * 获取直播源分组列表
      */
     suspend fun getChannelGroupList(cacheTime: Long): ChannelGroupList {
         try {
-            val sourceData = getOrRefresh(cacheTime) {
+            val isLocal = sourceUrl.startsWith("file://")
+
+            val sourceData = getOrRefresh(if (isLocal) Long.MAX_VALUE else cacheTime) {
                 fetchSource(sourceUrl)
             }
 
@@ -68,5 +61,11 @@ class IptvRepository(
             log.e("获取直播源失败", ex)
             throw Exception(ex)
         }
+    }
+
+    override suspend fun clearCache() {
+        val isLocal = sourceUrl.startsWith("file://")
+        if (isLocal) return
+        super.clearCache()
     }
 }

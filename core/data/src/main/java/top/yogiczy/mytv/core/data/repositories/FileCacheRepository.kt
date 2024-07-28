@@ -47,7 +47,7 @@ abstract class FileCacheRepository(private val fileName: String) {
         return data
     }
 
-    fun clearCache() {
+    open suspend fun clearCache() {
         try {
             getCacheFile().delete()
         } catch (ex: Exception) {

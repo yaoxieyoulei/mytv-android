@@ -17,7 +17,6 @@ import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
-import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceRefreshTimeScreen
 import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
@@ -120,19 +119,6 @@ fun SettingsCategoryEpg(
                     },
                 )
             }
-        }
-
-        item {
-            SettingsListItem(
-                headlineContent = "清除缓存",
-                supportingContent = "短按清除节目单缓存文件",
-                onSelected = {
-                    coroutineScope.launch {
-                        EpgRepository(settingsViewModel.epgXmlUrl).clearCache()
-                        Snackbar.show("缓存已清除，请重启应用")
-                    }
-                },
-            )
         }
     }
 }

@@ -1,16 +1,21 @@
 package top.yogiczy.mytv.tv.ui.screens.settings.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
+import androidx.tv.material3.Text
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
@@ -20,7 +25,7 @@ import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
-import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.screens.channelgroup.ChannelGroupManageScreen
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceCacheTimeScreen
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceScreen
@@ -116,7 +121,15 @@ fun SettingsCategoryIptv(
             SettingsListItem(
                 modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "自定义直播源",
-                trailingContent = currentIptvSource?.name ?: "未知",
+                trailingContent = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        if (currentIptvSource != null) Tag(if (currentIptvSource.isLocal) "本地" else "远程")
+                        Text(currentIptvSource?.name ?: "未知")
+                    }
+                },
                 onSelected = {
                     popupManager.push(focusRequester, true)
                     isIptvSourceScreenVisible = true
@@ -151,20 +164,6 @@ fun SettingsCategoryIptv(
                     },
                 )
             }
-        }
-
-        item {
-            SettingsListItem(
-                headlineContent = "清除缓存",
-                supportingContent = "短按清除直播源缓存文件、可播放域名列表",
-                onSelected = {
-                    settingsViewModel.iptvPlayableHostList = emptySet()
-                    coroutineScope.launch {
-                        IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
-                        Snackbar.show("缓存已清除，请重启应用")
-                    }
-                },
-            )
         }
 
         item {
