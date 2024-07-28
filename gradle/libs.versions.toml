@@ -19,6 +19,7 @@ ksp = "2.0.0-1.0.21"
 androidasync = "3.1.0"
 compose-foundation = "1.7.0-beta06"
 tvMaterial = "1.0.0-rc01"
+navigationCompose = "2.7.7"
 minSdk = "21"
 targetSdk = "34"
 compileSdk = "34"
@@ -49,6 +50,10 @@ androidasync = { module = "com.koushikdutta.async:androidasync", version.ref = "
 androidx-tv-material = { group = "androidx.tv", name = "tv-material", version.ref = "tvMaterial" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-foundation-base = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

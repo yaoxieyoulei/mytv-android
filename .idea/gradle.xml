@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/core/data" />
             <option value="$PROJECT_DIR$/core/designsystem" />
             <option value="$PROJECT_DIR$/core/util" />
+            <option value="$PROJECT_DIR$/mobile" />
             <option value="$PROJECT_DIR$/tv" />
           </set>
         </option>
