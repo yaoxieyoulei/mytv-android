@@ -41,14 +41,14 @@ import kotlin.math.max
 fun IptvSourceScreen(
     modifier: Modifier = Modifier,
     iptvSourceListProvider: () -> IptvSourceList = { IptvSourceList() },
-    currentIptvSourceUrlProvider: () -> String = { "" },
+    currentIptvSourceProvider: () -> IptvSource = { IptvSource() },
     onIptvSourceSelected: (IptvSource) -> Unit = {},
     onIptvSourceDeleted: (IptvSource) -> Unit = {},
     onClose: () -> Unit = {},
 ) {
     val iptvSourceList = iptvSourceListProvider().let { Constants.IPTV_SOURCE_LIST + it }
-    val currentIptvSourceUrl = currentIptvSourceUrlProvider()
-    val currentIptvSourceIdx = iptvSourceList.indexOfFirst { it.url == currentIptvSourceUrl }
+    val currentIptvSource = currentIptvSourceProvider()
+    val currentIptvSourceIdx = iptvSourceList.indexOf(currentIptvSource)
 
     val focusManager = LocalFocusManager.current
 
@@ -133,7 +133,9 @@ private fun IptvSourceScreenPreview() {
                         )
                     )
                 },
-                currentIptvSourceUrlProvider = { "http://1.2.3.4/iptv.m3u" },
+                currentIptvSourceProvider = {
+                    IptvSource(name = "直播源1", url = "http://1.2.3.4/iptv.m3u")
+                },
             )
         }
     }

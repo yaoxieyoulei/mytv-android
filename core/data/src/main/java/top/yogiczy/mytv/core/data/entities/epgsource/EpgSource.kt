@@ -10,10 +10,10 @@ data class EpgSource(
     /**
      * 名称
      */
-    val name: String,
+    val name: String = "",
 
     /**
      * 链接
      */
-    val url: String,
+    val url: String = "",
 )

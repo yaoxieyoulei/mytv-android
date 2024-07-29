@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.network.await
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.parser.IptvParser
@@ -14,8 +15,8 @@ import top.yogiczy.mytv.core.data.utils.Logger
  * 直播源数据获取
  */
 class IptvRepository(
-    private val sourceUrl: String,
-) : FileCacheRepository("iptv.${sourceUrl.hashCode().toUInt().toString(16)}.txt") {
+    private val source: IptvSource,
+) : FileCacheRepository("iptv.${source.url.hashCode().toUInt().toString(16)}.txt") {
     private val log = Logger.create(javaClass.simpleName)
 
     /**
@@ -46,15 +47,21 @@ class IptvRepository(
      */
     suspend fun getChannelGroupList(cacheTime: Long): ChannelGroupList {
         try {
-            val isLocal = sourceUrl.startsWith("file://")
-
-            val sourceData = getOrRefresh(if (isLocal) Long.MAX_VALUE else cacheTime) {
-                fetchSource(sourceUrl)
+            val sourceData = getOrRefresh(if (source.isLocal) Long.MAX_VALUE else cacheTime) {
+                fetchSource(source.url)
             }
 
-            val parser = IptvParser.instances.first { it.isSupport(sourceUrl, sourceData) }
+            val parser = IptvParser.instances.first { it.isSupport(source.url, sourceData) }
+            val startTime = System.currentTimeMillis()
             val groupList = parser.parse(sourceData)
-            log.i("解析直播源完成：${groupList.size}个分组，${groupList.sumOf { it.channelList.size }}个频道")
+            log.i(
+                listOf(
+                    "解析直播源（${source.name}）完成：${groupList.size}个分组",
+                    "${groupList.sumOf { it.channelList.size }}个频道",
+                    "${groupList.sumOf { it.channelList.sumOf { channel -> channel.urlList.size } }}条线路",
+                    "耗时：${System.currentTimeMillis() - startTime}ms",
+                ).joinToString()
+            )
 
             return groupList
         } catch (ex: Exception) {
@@ -64,8 +71,7 @@ class IptvRepository(
     }
 
     override suspend fun clearCache() {
-        val isLocal = sourceUrl.startsWith("file://")
-        if (isLocal) return
+        if (source.isLocal) return
         super.clearCache()
     }
 }

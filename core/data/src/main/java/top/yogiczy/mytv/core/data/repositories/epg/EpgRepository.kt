@@ -12,6 +12,7 @@ import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeList
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.network.await
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.epg.fetcher.EpgFetcher
@@ -25,8 +26,8 @@ import java.util.Locale
  * 节目单获取
  */
 class EpgRepository(
-    private val xmlUrl: String,
-) : FileCacheRepository("epg.${xmlUrl.hashCode().toUInt().toString(16)}.json") {
+    private val source: EpgSource,
+) : FileCacheRepository("epg.${source.url.hashCode().toUInt().toString(16)}.json") {
     private val log = Logger.create(javaClass.simpleName)
     private val epgXmlRepository = EpgXmlRepository()
 
@@ -110,7 +111,7 @@ class EpgRepository(
             val xmlJson = getOrRefresh({ lastModified, _ ->
                 dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
             }) {
-                val xmlString = epgXmlRepository.getEpgXml(xmlUrl)
+                val xmlString = epgXmlRepository.getEpgXml(source.url)
                 Json.encodeToString(parseFromXml(xmlString, filteredChannels).value)
             }
 

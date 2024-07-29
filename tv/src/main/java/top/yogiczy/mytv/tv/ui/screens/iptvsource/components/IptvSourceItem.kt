@@ -49,7 +49,7 @@ fun IptvSourceItem(
     LaunchedEffect(Unit) {
         if (channelGroupList.isEmpty()) {
             channelGroupList = try {
-                IptvRepository(iptvSource.url).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
+                IptvRepository(iptvSource).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
             } catch (ex: Exception) {
                 ChannelGroupList()
             }

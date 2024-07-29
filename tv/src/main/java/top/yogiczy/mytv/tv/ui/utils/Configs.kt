@@ -3,7 +3,9 @@ package top.yogiczy.mytv.tv.ui.utils
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.SP
@@ -37,8 +39,8 @@ object Configs {
         /** 换台反转 */
         IPTV_CHANNEL_CHANGE_FLIP,
 
-        /** 直播源url */
-        IPTV_SOURCE_URL,
+        /** 当前直播源 */
+        IPTV_SOURCE_CURRENT,
 
         /** 直播源列表 */
         IPTV_SOURCE_LIST,
@@ -74,8 +76,8 @@ object Configs {
         /** 启用节目单 */
         EPG_ENABLE,
 
-        /** 节目单 xml url */
-        EPG_XML_URL,
+        /** 当前节目单来源 */
+        EPG_SOURCE_CURRENT,
 
         /** 节目单来源列表 */
         EPG_SOURCE_LIST,
@@ -158,11 +160,11 @@ object Configs {
         get() = SP.getBoolean(KEY.IPTV_CHANNEL_CHANGE_FLIP.name, false)
         set(value) = SP.putBoolean(KEY.IPTV_CHANNEL_CHANGE_FLIP.name, value)
 
-    /** 直播源url */
-    var iptvSourceUrl: String
-        get() = SP.getString(KEY.IPTV_SOURCE_URL.name, "")
-            .ifBlank { Constants.IPTV_SOURCE_LIST.first().url }
-        set(value) = SP.putString(KEY.IPTV_SOURCE_URL.name, value)
+    /** 当前直播源 */
+    var iptvSourceCurrent: IptvSource
+        get() = Json.decodeFromString(SP.getString(KEY.IPTV_SOURCE_CURRENT.name, "")
+            .ifBlank { Json.encodeToString(Constants.IPTV_SOURCE_LIST.first()) })
+        set(value) = SP.putString(KEY.IPTV_SOURCE_CURRENT.name, Json.encodeToString(value))
 
     /** 直播源列表 */
     var iptvSourceList: IptvSourceList
@@ -224,11 +226,11 @@ object Configs {
         get() = SP.getBoolean(KEY.EPG_ENABLE.name, true)
         set(value) = SP.putBoolean(KEY.EPG_ENABLE.name, value)
 
-    /** 节目单 xml url */
-    var epgXmlUrl: String
-        get() = SP.getString(KEY.EPG_XML_URL.name, "")
-            .ifBlank { Constants.EPG_SOURCE_LIST.first().url }
-        set(value) = SP.putString(KEY.EPG_XML_URL.name, value)
+    /** 当前节目单来源 */
+    var epgSourceCurrent: EpgSource
+        get() = Json.decodeFromString(SP.getString(KEY.EPG_SOURCE_CURRENT.name, "")
+            .ifBlank { Json.encodeToString(Constants.EPG_SOURCE_LIST.first()) })
+        set(value) = SP.putString(KEY.EPG_SOURCE_CURRENT.name, Json.encodeToString(value))
 
     /** 节目单来源列表 */
     var epgSourceList: EpgSourceList

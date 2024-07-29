@@ -8,7 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
@@ -77,12 +79,12 @@ class SettingsViewModel : ViewModel() {
             Configs.iptvSourceCacheTime = value
         }
 
-    private var _iptvSourceUrl by mutableStateOf(Configs.iptvSourceUrl)
-    var iptvSourceUrl: String
-        get() = _iptvSourceUrl
+    private var _iptvSourceCurrent by mutableStateOf(Configs.iptvSourceCurrent)
+    var iptvSourceCurrent: IptvSource
+        get() = _iptvSourceCurrent
         set(value) {
-            _iptvSourceUrl = value
-            Configs.iptvSourceUrl = value
+            _iptvSourceCurrent = value
+            Configs.iptvSourceCurrent = value
         }
 
     private var _iptvSourceList by mutableStateOf(Configs.iptvSourceList)
@@ -165,12 +167,12 @@ class SettingsViewModel : ViewModel() {
             Configs.epgEnable = value
         }
 
-    private var _epgXmlUrl by mutableStateOf(Configs.epgXmlUrl)
-    var epgXmlUrl: String
-        get() = _epgXmlUrl
+    private var _epgSourceCurrent by mutableStateOf(Configs.epgSourceCurrent)
+    var epgSourceCurrent: EpgSource
+        get() = _epgSourceCurrent
         set(value) {
-            _epgXmlUrl = value
-            Configs.epgXmlUrl = value
+            _epgSourceCurrent = value
+            Configs.epgSourceCurrent = value
         }
 
     private var _epgSourceList by mutableStateOf(Configs.epgSourceList)

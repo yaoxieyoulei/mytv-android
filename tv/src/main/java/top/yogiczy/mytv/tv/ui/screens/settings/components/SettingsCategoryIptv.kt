@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
-import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
@@ -113,9 +112,7 @@ fun SettingsCategoryIptv(
         item {
             val popupManager = LocalPopupManager.current
             val focusRequester = remember { FocusRequester() }
-            val currentIptvSource =
-                settingsViewModel.iptvSourceList.let { Constants.IPTV_SOURCE_LIST + it }
-                    .firstOrNull { it.url == settingsViewModel.iptvSourceUrl }
+            val currentIptvSource = settingsViewModel.iptvSourceCurrent
             var isIptvSourceScreenVisible by remember { mutableStateOf(false) }
 
             SettingsListItem(
@@ -126,8 +123,8 @@ fun SettingsCategoryIptv(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        if (currentIptvSource != null) Tag(if (currentIptvSource.isLocal) "本地" else "远程")
-                        Text(currentIptvSource?.name ?: "未知")
+                        Tag(if (currentIptvSource.isLocal) "本地" else "远程")
+                        Text(currentIptvSource.name)
                     }
                 },
                 onSelected = {
@@ -146,15 +143,15 @@ fun SettingsCategoryIptv(
                         settingsViewModel.iptvSourceList = Configs.iptvSourceList
                         settingsViewModel.iptvSourceList
                     },
-                    currentIptvSourceUrlProvider = { settingsViewModel.iptvSourceUrl },
+                    currentIptvSourceProvider = { settingsViewModel.iptvSourceCurrent },
                     onIptvSourceSelected = {
                         isIptvSourceScreenVisible = false
-                        if (settingsViewModel.iptvSourceUrl != it.url) {
-                            settingsViewModel.iptvSourceUrl = it.url
+                        if (settingsViewModel.iptvSourceCurrent != it) {
+                            settingsViewModel.iptvSourceCurrent = it
                             settingsViewModel.iptvLastChannelIdx = 0
                             settingsViewModel.iptvChannelGroupHiddenList = emptySet()
                             coroutineScope.launch {
-                                IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
+                                IptvRepository(settingsViewModel.iptvSourceCurrent).clearCache()
                             }
                         }
                     },

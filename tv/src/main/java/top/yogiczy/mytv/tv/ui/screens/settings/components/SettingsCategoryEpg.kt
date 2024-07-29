@@ -14,7 +14,6 @@ import androidx.tv.material3.Switch
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
-import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceRefreshTimeScreen
@@ -78,15 +77,13 @@ fun SettingsCategoryEpg(
         item {
             val popupManager = LocalPopupManager.current
             val focusRequester = remember { FocusRequester() }
-            val currentEpgSource =
-                settingsViewModel.epgSourceList.let { Constants.EPG_SOURCE_LIST + it }
-                    .firstOrNull { it.url == settingsViewModel.epgXmlUrl }
+            val currentEpgSource = settingsViewModel.epgSourceCurrent
             var isEpgSourceScreenVisible by remember { mutableStateOf(false) }
 
             SettingsListItem(
                 modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "自定义节目单",
-                trailingContent = currentEpgSource?.name ?: "未知",
+                trailingContent = currentEpgSource.name,
                 onSelected = {
                     popupManager.push(focusRequester, true)
                     isEpgSourceScreenVisible = true
@@ -103,13 +100,13 @@ fun SettingsCategoryEpg(
                         settingsViewModel.epgSourceList = Configs.epgSourceList
                         settingsViewModel.epgSourceList
                     },
-                    currentEpgXmlUrlProvider = { settingsViewModel.epgXmlUrl },
+                    currentEpgSourceProvider = { settingsViewModel.epgSourceCurrent },
                     onEpgSourceSelected = {
                         isEpgSourceScreenVisible = false
-                        if (settingsViewModel.epgXmlUrl != it.url) {
-                            settingsViewModel.epgXmlUrl = it.url
+                        if (settingsViewModel.epgSourceCurrent != it) {
+                            settingsViewModel.epgSourceCurrent = it
                             coroutineScope.launch {
-                                EpgRepository(settingsViewModel.epgXmlUrl).clearCache()
+                                EpgRepository(settingsViewModel.epgSourceCurrent).clearCache()
                             }
                         }
                     },

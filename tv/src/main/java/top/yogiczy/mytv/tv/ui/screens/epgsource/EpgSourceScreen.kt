@@ -42,14 +42,14 @@ import kotlin.math.max
 fun EpgSourceScreen(
     modifier: Modifier = Modifier,
     epgSourceListProvider: () -> EpgSourceList = { EpgSourceList() },
-    currentEpgXmlUrlProvider: () -> String = { "" },
+    currentEpgSourceProvider: () -> EpgSource = { EpgSource() },
     onEpgSourceSelected: (EpgSource) -> Unit = {},
     onEpgSourceDeleted: (EpgSource) -> Unit = {},
     onClose: () -> Unit = {},
 ) {
     val epgSourceList = epgSourceListProvider().let { Constants.EPG_SOURCE_LIST + it }
-    val currentEpgXmlUrl = currentEpgXmlUrlProvider()
-    val currentEpgSourceIdx = epgSourceList.indexOfFirst { it.url == currentEpgXmlUrl }
+    val currentEpgSource = currentEpgSourceProvider()
+    val currentEpgSourceIdx = epgSourceList.indexOf(currentEpgSource)
 
     val focusManager = LocalFocusManager.current
 
@@ -134,7 +134,9 @@ private fun EpgSourceScreenPreview() {
                         )
                     )
                 },
-                currentEpgXmlUrlProvider = { "https://iptv-org.github.io/epg.xml" },
+                currentEpgSourceProvider = {
+                    EpgSource(name = "EPG源1", url = "https://iptv-org.github.io/epg.xml")
+                },
             )
         }
     }

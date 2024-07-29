@@ -265,8 +265,8 @@ fun MainContent(
             onClearCache = {
                 settingsViewModel.iptvPlayableHostList = emptySet()
                 coroutineScope.launch {
-                    IptvRepository(settingsViewModel.iptvSourceUrl).clearCache()
-                    EpgRepository(settingsViewModel.epgXmlUrl).clearCache()
+                    IptvRepository(settingsViewModel.iptvSourceCurrent).clearCache()
+                    EpgRepository(settingsViewModel.epgSourceCurrent).clearCache()
                     Snackbar.show("缓存已清除，请重启应用")
                 }
             },

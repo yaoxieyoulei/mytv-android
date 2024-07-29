@@ -39,7 +39,7 @@ class MainViewModel : ViewModel() {
     private suspend fun refreshChannel() {
         flow {
             emit(
-                IptvRepository(Configs.iptvSourceUrl).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
+                IptvRepository(Configs.iptvSourceCurrent).getChannelGroupList(cacheTime = Configs.iptvSourceCacheTime)
             )
         }
             .retryWhen { _, attempt ->
@@ -98,7 +98,7 @@ class MainViewModel : ViewModel() {
 
             flow {
                 emit(
-                    EpgRepository(Configs.epgXmlUrl).getEpgList(
+                    EpgRepository(Configs.epgSourceCurrent).getEpgList(
                         filteredChannels = channelGroupList.channelList.map { it.epgName },
                         refreshTimeThreshold = Configs.epgRefreshTimeThreshold,
                     )
