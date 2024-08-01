@@ -1,5 +1,4 @@
-import java.io.FileInputStream
-import java.util.Properties
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,13 +7,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-val keystorePropertiesFile = rootProject.file("key.properties")
-val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-}
-
 android {
+    @Suppress("UNCHECKED_CAST")
+    apply(extra["appConfig"] as BaseAppModuleExtension.() -> Unit)
+
     namespace = "top.yogiczy.mytv.tv"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
@@ -39,8 +35,9 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -60,30 +57,6 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-
-    signingConfigs {
-        val localKeystore = rootProject.file("keystore.jks")
-        val userKeystore =
-            file(
-                System.getenv("KEYSTORE") ?: keystoreProperties.getProperty("storeFile")
-                ?: "keystore.jks"
-            )
-
-        create("release") {
-            storeFile = if (userKeystore.exists()) userKeystore else localKeystore
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-                ?: keystoreProperties.getProperty("storePassword")
-            keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties.getProperty("keyAlias")
-            keyPassword =
-                System.getenv("KEY_PASSWORD") ?: keystoreProperties.getProperty("keyPassword")
-        }
-    }
-
-    buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
