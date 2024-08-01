@@ -22,16 +22,15 @@ fun String.compareVersion(version2: String): Int {
     fun parseVersion(version: String): Pair<List<Int>, String?> {
         val mainParts = version.split("-", limit = 2)
         val versionNumbers = mainParts[0].split(".").map { it.toInt() }
-        val preReleaseLabel = if (mainParts.size > 1) mainParts[1] else null
+        val preReleaseLabel = mainParts.getOrNull(1)
         return versionNumbers to preReleaseLabel
     }
 
     fun comparePreRelease(label1: String?, label2: String?): Int {
         if (label1 == null && label2 == null) return 0
-        if (label1 == null) return 1 // Non-pre-release version is greater
-        if (label2 == null) return -1 // Non-pre-release version is greater
+        if (label1 == null) return 1
+        if (label2 == null) return -1
 
-        // Compare pre-release labels lexicographically
         return label1.compareTo(label2)
     }
 
@@ -46,6 +45,5 @@ fun String.compareVersion(version2: String): Int {
         if (part1 < part2) return -1
     }
 
-    // If main version parts are equal, compare pre-release labels
     return comparePreRelease(preRelease1, preRelease2)
 }
