@@ -13,6 +13,22 @@ fun SettingsCategoryUpdate(
 ) {
     SettingsContentList(modifier) {
         item {
+            val list = mapOf(
+                "stable" to "稳定版",
+                "beta" to "测试版",
+            )
+
+            SettingsListItem(
+                headlineContent = "更新通道",
+                trailingContent = list[settingsViewModel.updateChannel] ?: "",
+                onSelected = {
+                    settingsViewModel.updateChannel =
+                        list.keys.first { it != settingsViewModel.updateChannel }
+                },
+            )
+        }
+
+        item {
             SettingsListItem(
                 headlineContent = "更新强提醒",
                 supportingContent = if (settingsViewModel.updateForceRemind) "检测到新版本时会全屏提醒"

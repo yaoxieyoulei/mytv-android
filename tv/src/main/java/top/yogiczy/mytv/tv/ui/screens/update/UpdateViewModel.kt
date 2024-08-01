@@ -32,13 +32,15 @@ class UpdateViewModel : ViewModel() {
 
     var visible by mutableStateOf(false)
 
-    suspend fun checkUpdate(currentVersion: String) {
+    suspend fun checkUpdate(currentVersion: String, channel: String) {
         if (_isChecking) return
         if (_isUpdateAvailable) return
 
         try {
+            val releaseUrl = Constants.GIT_RELEASE_LATEST_URL[channel] ?: return
+
             _isChecking = true
-            _latestRelease = GitRepository().latestRelease(Constants.GIT_RELEASE_LATEST_URL)
+            _latestRelease = GitRepository().latestRelease(releaseUrl)
             log.d("线上版本: ${_latestRelease.version}")
             _isUpdateAvailable = _latestRelease.version.compareVersion(currentVersion) > 0
         } catch (ex: Exception) {

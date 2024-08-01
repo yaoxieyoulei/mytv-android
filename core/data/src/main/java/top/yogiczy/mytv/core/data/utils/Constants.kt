@@ -68,8 +68,10 @@ object Constants {
     /**
      * Git最新版本信息
      */
-    const val GIT_RELEASE_LATEST_URL =
-        "https://api.github.com/repos/yaoxieyoulei/mytv-android/releases/latest"
+    val GIT_RELEASE_LATEST_URL = mapOf(
+        "stable" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-stable.json",
+        "beta" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-beta.json",
+    )
 
     /**
      * GitHub加速代理地址

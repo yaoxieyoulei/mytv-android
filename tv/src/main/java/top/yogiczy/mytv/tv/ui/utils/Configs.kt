@@ -108,8 +108,11 @@ object Configs {
         UI_TIME_SHOW_MODE,
 
         /** ==================== 更新 ==================== */
-        /** 更新强提醒（弹窗形式） */
+        /** 更新强提醒 */
         UPDATE_FORCE_REMIND,
+
+        /** 更新通道 */
+        UPDATE_CHANNEL,
 
         /** ==================== 播放器 ==================== */
         /** 播放器 自定义ua */
@@ -287,10 +290,15 @@ object Configs {
         set(value) = SP.putInt(KEY.UI_TIME_SHOW_MODE.name, value.value)
 
     /** ==================== 更新 ==================== */
-    /** 更新强提醒（弹窗形式） */
+    /** 更新强提醒 */
     var updateForceRemind: Boolean
         get() = SP.getBoolean(KEY.UPDATE_FORCE_REMIND.name, false)
         set(value) = SP.putBoolean(KEY.UPDATE_FORCE_REMIND.name, value)
+
+    /** 更新通道 */
+    var updateChannel: String
+        get() = SP.getString(KEY.UPDATE_CHANNEL.name, "stable")
+        set(value) = SP.putString(KEY.UPDATE_CHANNEL.name, value)
 
     /** ==================== 播放器 ==================== */
     /** 播放器 自定义ua */

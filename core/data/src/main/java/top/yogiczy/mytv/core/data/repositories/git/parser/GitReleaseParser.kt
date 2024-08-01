@@ -20,6 +20,7 @@ interface GitReleaseParser {
         val instances = listOf(
             GithubGitReleaseParser(),
             GiteeGitReleaseParser(),
+            CustomGitReleaseParser(),
             DefaultGitReleaseParser(),
         )
     }

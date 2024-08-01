@@ -255,6 +255,14 @@ class SettingsViewModel : ViewModel() {
             Configs.updateForceRemind = value
         }
 
+    private var _updateChannel by mutableStateOf(Configs.updateChannel)
+    var updateChannel: String
+        get() = _updateChannel
+        set(value) {
+            _updateChannel = value
+            Configs.updateChannel = value
+        }
+
     private var _videoPlayerUserAgent by mutableStateOf(Configs.videoPlayerUserAgent)
     var videoPlayerUserAgent: String
         get() = _videoPlayerUserAgent
