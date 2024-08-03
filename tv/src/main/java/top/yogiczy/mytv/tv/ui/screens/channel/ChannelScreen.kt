@@ -122,7 +122,7 @@ private fun ChannelScreenTopRight(
             Box(modifier = Modifier.padding(horizontal = 8.dp)) {
                 Spacer(
                     modifier = Modifier
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.onSurface)
                         .width(2.dp)
                         .height(30.dp),
                 )

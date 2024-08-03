@@ -94,15 +94,12 @@ fun SimplePopup(
             PopupState(
                 key = key,
                 composableReference = {
-                    Box(
-                        modifier
-                            .fillMaxSize()
-                            .popupable()
-                            .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } }
-                            .captureBackKey { onDismissRequest?.invoke() },
-                    ) {
-                        content()
-                    }
+                    PopupContent(
+                        modifier = modifier,
+                        visibleProvider = visibleProvider,
+                        onDismissRequest = onDismissRequest,
+                        content = content,
+                    )
                 },
             ),
         )

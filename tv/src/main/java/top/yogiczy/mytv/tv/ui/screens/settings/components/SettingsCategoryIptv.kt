@@ -42,6 +42,7 @@ fun SettingsCategoryIptv(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "数字选台",
                 supportingContent = "通过数字选择频道",
                 trailingContent = {

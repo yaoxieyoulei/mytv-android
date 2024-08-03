@@ -20,6 +20,7 @@ fun SettingsCategoryApp(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "开机自启",
                 supportingContent = "请确保当前设备支持该功能",
                 trailingContent = {

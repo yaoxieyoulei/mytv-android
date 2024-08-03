@@ -27,6 +27,7 @@ fun SettingsCategoryAbout(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "应用名称",
                 trailingContent = Constants.APP_TITLE,
             )

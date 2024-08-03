@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.screens.settings.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
@@ -16,6 +17,7 @@ fun SettingsCategoryVideoPlayer(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "全局画面比例",
                 trailingContent = when (settingsViewModel.videoPlayerAspectRatio) {
                     Configs.VideoPlayerAspectRatio.ORIGINAL -> "原始"

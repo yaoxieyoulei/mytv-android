@@ -31,6 +31,7 @@ fun SettingsCategoryEpg(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "节目单启用",
                 supportingContent = "首次加载时可能会较为缓慢",
                 trailingContent = {

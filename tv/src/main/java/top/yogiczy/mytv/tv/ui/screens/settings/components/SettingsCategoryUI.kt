@@ -28,6 +28,7 @@ fun SettingsCategoryUI(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "节目进度",
                 supportingContent = "在频道项底部显示当前节目进度条",
                 trailingContent = {

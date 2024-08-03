@@ -22,11 +22,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +39,6 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.core.data.entities.channel.Channel
-import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
@@ -48,16 +49,16 @@ import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import kotlin.math.max
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ClassicChannelItemList(
     modifier: Modifier = Modifier,
-    channelGroupProvider: () -> ChannelGroup = { ChannelGroup() },
     channelListProvider: () -> ChannelList = { ChannelList() },
     initialChannelProvider: () -> Channel = { Channel() },
     showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
-    onChannelFocused: (Channel, FocusRequester) -> Unit = { _, _ -> },
+    onChannelFocused: (Channel) -> Unit = { },
     epgListProvider: () -> EpgList = { EpgList() },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
     inFavoriteModeProvider: () -> Boolean = { false },
@@ -66,34 +67,17 @@ fun ClassicChannelItemList(
     val focusManager = LocalFocusManager.current
     val channelList = channelListProvider()
     val initialChannel = initialChannelProvider()
+    val itemFocusRequesterList = List(channelList.size) { FocusRequester() }
 
     var hasFocused by rememberSaveable { mutableStateOf(!channelList.contains(initialChannel)) }
-    val itemFocusRequesterList =
-        remember(channelList) { List(channelList.size) { FocusRequester() } }
-    var focusedChannel by remember { mutableStateOf(initialChannel) }
-
-    LaunchedEffect(channelList) {
-        if (channelList.isEmpty()) {
-            onChannelFocused(Channel(), FocusRequester.Default)
-        } else {
-            if (hasFocused) {
-                onChannelFocused(channelList[0], itemFocusRequesterList[0])
-            } else {
-                onChannelFocused(
-                    initialChannel,
-                    itemFocusRequesterList[max(0, channelList.indexOf(initialChannel))],
-                )
-            }
-        }
-    }
-
-    val listState = remember(channelGroupProvider()) {
-        LazyListState(
-            if (hasFocused) 0
-            else max(0, channelList.indexOf(initialChannel) - 2)
+    var focusedChannel by remember(channelList) {
+        mutableStateOf(
+            if (hasFocused) channelList.firstOrNull() ?: Channel() else initialChannel
         )
     }
+    LaunchedEffect(focusedChannel) { onChannelFocused(focusedChannel) }
 
+    val listState = LazyListState(max(0, channelList.indexOf(focusedChannel) - 2))
     LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }.distinctUntilChanged()
             .collect { _ -> onUserAction() }
@@ -103,7 +87,8 @@ fun ClassicChannelItemList(
         modifier = modifier
             .fillMaxHeight()
             .width(if (showChannelLogoProvider()) 280.dp else 220.dp)
-            .background(MaterialTheme.colorScheme.surface.copy(0.8f)),
+            .background(MaterialTheme.colorScheme.surface.copy(0.8f))
+            .focusRestorer { itemFocusRequesterList[channelList.indexOf(focusedChannel)] },
         state = listState,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -131,10 +116,7 @@ fun ClassicChannelItemList(
                     }
                     onChannelFavoriteToggle(channel)
                 },
-                onChannelFocused = {
-                    focusedChannel = channel
-                    onChannelFocused(channel, itemFocusRequesterList[index])
-                },
+                onChannelFocused = { focusedChannel = channel },
                 recentEpgProgrammeProvider = { epgListProvider().recentProgramme(channel) },
                 showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
                 focusRequesterProvider = { itemFocusRequesterList[index] },
@@ -239,7 +221,6 @@ private fun ClassicChannelItemListPreview() {
     MyTVTheme {
         Row {
             ClassicChannelItemList(
-                channelGroupProvider = { ChannelGroup.EXAMPLE },
                 channelListProvider = { ChannelList.EXAMPLE },
                 initialChannelProvider = { ChannelList.EXAMPLE.first() },
                 epgListProvider = { EpgList.example(ChannelList.EXAMPLE) },
@@ -255,7 +236,6 @@ private fun ClassicChannelItemListWithChannelLogoPreview() {
     MyTVTheme {
         Row {
             ClassicChannelItemList(
-                channelGroupProvider = { ChannelGroup.EXAMPLE },
                 channelListProvider = { ChannelList.EXAMPLE },
                 initialChannelProvider = { ChannelList.EXAMPLE.first() },
                 epgListProvider = { EpgList.example(ChannelList.EXAMPLE) },

@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.screens.settings.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
@@ -19,6 +20,7 @@ fun SettingsCategoryUpdate(
             )
 
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "更新通道",
                 trailingContent = list[settingsViewModel.updateChannel] ?: "",
                 onSelected = {

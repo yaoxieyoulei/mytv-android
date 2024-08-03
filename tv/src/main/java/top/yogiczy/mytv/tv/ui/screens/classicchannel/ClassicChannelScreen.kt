@@ -73,7 +73,6 @@ fun ClassicChannelScreen(
     onClose: () -> Unit = {},
 ) {
     val screenAutoCloseState = rememberScreenAutoCloseState(onTimeout = onClose)
-
     val channelGroupList = channelGroupListProvider()
 
     var focusedChannelGroup by remember {
@@ -84,10 +83,7 @@ fun ClassicChannelScreen(
                 channelGroupList[max(0, channelGroupList.channelGroupIdx(currentChannelProvider()))]
         )
     }
-
     var focusedChannel by remember { mutableStateOf(currentChannelProvider()) }
-    var focusedChannelFocusRequester by remember { mutableStateOf(FocusRequester.Default) }
-
     var epgListVisible by remember { mutableStateOf(false) }
 
     ClassicChannelScreenWrapper(
@@ -113,7 +109,6 @@ fun ClassicChannelScreen(
                     focusedChannelGroup = it
                     onChannelFavoriteListVisibleChange(it == ClassicPanelScreenFavoriteChannelGroup)
                 },
-                exitFocusRequesterProvider = { focusedChannelFocusRequester },
                 onUserAction = { screenAutoCloseState.active() },
             )
 
@@ -133,7 +128,6 @@ fun ClassicChannelScreen(
                             }
                         }
                     },
-                channelGroupProvider = { focusedChannelGroup },
                 channelListProvider = {
                     if (focusedChannelGroup == ClassicPanelScreenFavoriteChannelGroup)
                         ChannelList(channelGroupListProvider().channelList
@@ -145,10 +139,7 @@ fun ClassicChannelScreen(
                 initialChannelProvider = currentChannelProvider,
                 onChannelSelected = onChannelSelected,
                 onChannelFavoriteToggle = onChannelFavoriteToggle,
-                onChannelFocused = { channel, focusRequester ->
-                    focusedChannel = channel
-                    focusedChannelFocusRequester = focusRequester
-                },
+                onChannelFocused = { channel -> focusedChannel = channel },
                 showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
                 onUserAction = { screenAutoCloseState.active() },
                 inFavoriteModeProvider = { focusedChannelGroup == ClassicPanelScreenFavoriteChannelGroup },
@@ -165,7 +156,6 @@ fun ClassicChannelScreen(
                             epgProgrammeReserveListProvider().filter { it.channel == focusedChannel.name }
                         )
                     },
-                    exitFocusRequesterProvider = { focusedChannelFocusRequester },
                     onEpgProgrammePlayback = { onEpgProgrammePlayback(focusedChannel, it) },
                     onEpgProgrammeReserve = { onEpgProgrammeReserve(focusedChannel, it) },
                     onUserAction = { screenAutoCloseState.active() },

@@ -10,11 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import kotlinx.collections.immutable.toPersistentList
@@ -27,7 +23,6 @@ import top.yogiczy.mytv.tv.ui.screens.epg.components.EpgProgrammeItemList
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ClassicEpgItemList(
     modifier: Modifier = Modifier,
@@ -35,7 +30,6 @@ fun ClassicEpgItemList(
     epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
     onEpgProgrammePlayback: (EpgProgramme) -> Unit = {},
     onEpgProgrammeReserve: (EpgProgramme) -> Unit = {},
-    exitFocusRequesterProvider: () -> FocusRequester = { FocusRequester.Default },
     onUserAction: () -> Unit = {},
 ) {
     val epg = epgProvider() ?: return
@@ -50,14 +44,7 @@ fun ClassicEpgItemList(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         EpgProgrammeItemList(
-            modifier = Modifier
-                .width(268.dp)
-                .focusProperties {
-                    exit = {
-                        if (it == FocusDirection.Left) exitFocusRequesterProvider()
-                        else FocusRequester.Default
-                    }
-                },
+            modifier = Modifier.width(268.dp),
             epgProgrammeListProvider = {
                 EpgProgrammeList(programDayGroup.getOrElse(currentDay) { emptyList() })
             },

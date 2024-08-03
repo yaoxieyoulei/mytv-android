@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import top.yogiczy.mytv.tv.ui.screens.components.Qrcode
@@ -26,6 +27,7 @@ fun SettingsCategoryMore(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "设置页面",
                 trailingContent = serverUrl,
             )

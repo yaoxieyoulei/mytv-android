@@ -4,12 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import kotlin.math.max
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EpgDayItemList(
     modifier: Modifier = Modifier,
@@ -29,6 +34,7 @@ fun EpgDayItemList(
     val dayList = dayListProvider()
     val currentDay = currentDayProvider()
 
+    val itemFocusRequesterList = List(dayList.size) { FocusRequester() }
     val listState = rememberLazyListState(max(0, dayList.indexOf(currentDay) - 2))
 
     LaunchedEffect(listState) {
@@ -38,13 +44,14 @@ fun EpgDayItemList(
     }
 
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.focusRestorer { itemFocusRequesterList[dayList.indexOf(currentDay)] },
         state = listState,
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        items(dayList) { day ->
+        itemsIndexed(dayList) { index, day ->
             EpgDayItem(
+                modifier = Modifier.focusRequester(itemFocusRequesterList[index]),
                 dayProvider = { day },
                 selectedProvider = { day == currentDay },
                 onDaySelected = { onDaySelected(day) },

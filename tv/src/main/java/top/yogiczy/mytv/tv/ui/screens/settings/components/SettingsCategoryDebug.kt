@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.screens.settings.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
@@ -14,6 +15,7 @@ fun SettingsCategoryDebug(
     SettingsContentList(modifier) {
         item {
             SettingsListItem(
+                modifier = Modifier.focusRequester(it),
                 headlineContent = "显示FPS",
                 supportingContent = "在屏幕左上角显示fps和柱状图",
                 trailingContent = {
