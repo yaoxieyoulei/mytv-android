@@ -64,6 +64,7 @@ fun ClassicChannelScreen(
     onEpgProgrammePlayback: (Channel, EpgProgramme) -> Unit = { _, _ -> },
     onEpgProgrammeReserve: (Channel, EpgProgramme) -> Unit = { _, _ -> },
     isInTimeShiftProvider: () -> Boolean = { false },
+    canEpgProgrammePlaybackProvider: (Channel) -> Boolean = { false },
     playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     channelFavoriteEnabledProvider: () -> Boolean = { false },
@@ -156,6 +157,10 @@ fun ClassicChannelScreen(
                             epgProgrammeReserveListProvider().filter { it.channel == focusedChannel.name }
                         )
                     },
+                    canEpgProgrammePlaybackProvider = {
+                        canEpgProgrammePlaybackProvider(focusedChannel)
+                    },
+                    playbackEpgProgrammeProvider = playbackEpgProgrammeProvider,
                     onEpgProgrammePlayback = { onEpgProgrammePlayback(focusedChannel, it) },
                     onEpgProgrammeReserve = { onEpgProgrammeReserve(focusedChannel, it) },
                     onUserAction = { screenAutoCloseState.active() },

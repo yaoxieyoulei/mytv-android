@@ -28,6 +28,8 @@ fun ClassicEpgItemList(
     modifier: Modifier = Modifier,
     epgProvider: () -> Epg? = { null },
     epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
+    canEpgProgrammePlaybackProvider: () -> Boolean = { false },
+    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     onEpgProgrammePlayback: (EpgProgramme) -> Unit = {},
     onEpgProgrammeReserve: (EpgProgramme) -> Unit = {},
     onUserAction: () -> Unit = {},
@@ -49,6 +51,8 @@ fun ClassicEpgItemList(
                 EpgProgrammeList(programDayGroup.getOrElse(currentDay) { emptyList() })
             },
             epgProgrammeReserveListProvider = epgProgrammeReserveListProvider,
+            canPlaybackProvider = canEpgProgrammePlaybackProvider,
+            playbackProvider = playbackEpgProgrammeProvider,
             onPlayback = onEpgProgrammePlayback,
             onReserve = onEpgProgrammeReserve,
             focusOnLive = false,

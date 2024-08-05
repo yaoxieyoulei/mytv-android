@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.core.data.entities.channel.Channel
+import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
@@ -145,7 +146,7 @@ private fun QuickOpScreenBottom(
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             ChannelInfo(
-                modifier = Modifier.padding(start = childPadding.start),
+                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 channelProvider = currentChannelProvider,
                 channelUrlIdxProvider = currentChannelUrlIdxProvider,
                 recentEpgProgrammeProvider = {
@@ -156,7 +157,7 @@ private fun QuickOpScreenBottom(
             )
 
             ChannelPlayerInfo(
-                modifier = Modifier.padding(start = childPadding.start),
+                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 resolutionProvider = {
                     val metadata = videoPlayerMetadataProvider()
                     metadata.videoWidth to metadata.videoHeight
@@ -184,6 +185,9 @@ private fun QuickOpScreenPreview() {
             QuickOpScreen(
                 currentChannelProvider = { Channel.EXAMPLE },
                 currentChannelNumberProvider = { "1" },
+                epgListProvider = {
+                    EpgList.example(ChannelList(listOf(Channel.EXAMPLE)))
+                },
             )
         }
     }

@@ -28,6 +28,8 @@ fun EpgProgrammeItemList(
     modifier: Modifier = Modifier,
     epgProgrammeListProvider: () -> EpgProgrammeList = { EpgProgrammeList() },
     epgProgrammeReserveListProvider: () -> EpgProgrammeReserveList = { EpgProgrammeReserveList() },
+    canPlaybackProvider: () -> Boolean = { false },
+    playbackProvider: () -> EpgProgramme? = { null },
     onPlayback: (EpgProgramme) -> Unit = {},
     onReserve: (EpgProgramme) -> Unit = {},
     focusOnLive: Boolean = true,
@@ -60,6 +62,8 @@ fun EpgProgrammeItemList(
             EpgProgrammeItem(
                 modifier = Modifier.focusRequester(itemFocusRequesterList[index]),
                 epgProgrammeProvider = { programme },
+                canPlaybackProvider = canPlaybackProvider,
+                isPlaybackProvider = { playbackProvider() == programme },
                 hasReservedProvider = { epgProgrammeReserveListProvider().firstOrNull { it.programme == programme.title } != null },
                 onPlayback = { onPlayback(programme) },
                 onReserve = { onReserve(programme) },

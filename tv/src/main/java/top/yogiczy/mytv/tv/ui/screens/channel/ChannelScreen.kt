@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -161,7 +160,7 @@ private fun ChannelScreenBottom(
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             ChannelInfo(
-                modifier = Modifier.padding(start = childPadding.start),
+                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 channelProvider = currentChannelProvider,
                 channelUrlIdxProvider = currentChannelUrlIdxProvider,
                 recentEpgProgrammeProvider = {
@@ -172,7 +171,7 @@ private fun ChannelScreenBottom(
             )
 
             ChannelPlayerInfo(
-                modifier = Modifier.padding(start = childPadding.start),
+                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 resolutionProvider = {
                     val metadata = videoPlayerMetadataProvider()
                     metadata.videoWidth to metadata.videoHeight

@@ -63,11 +63,11 @@ fun ChannelInfo(
                 )
 
                 if (isInTimeShift) {
-                    Tag("时移", outline = true, colors = tagColors)
+                    Tag("时移", colors = tagColors)
                 }
 
                 if (playbackEpgProgramme != null) {
-                    Tag("回放", outline = true, colors = tagColors)
+                    Tag("回放", colors = tagColors)
                 }
 
                 if (channel.urlList.size > 1) {
