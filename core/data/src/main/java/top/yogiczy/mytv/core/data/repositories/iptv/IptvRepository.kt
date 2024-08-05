@@ -20,10 +20,10 @@ class IptvRepository(
     private val log = Logger.create(javaClass.simpleName)
 
     /**
-     * 获取远程直播源数据
+     * 获取直播源数据
      */
     private suspend fun fetchSource(sourceUrl: String): String {
-        log.d("获取远程直播源: $sourceUrl")
+        log.d("获取远程直播源: $source")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(sourceUrl).build()
@@ -37,8 +37,8 @@ class IptvRepository(
                 response.body?.string() ?: ""
             }
         } catch (ex: Exception) {
-            log.e("获取远程直播源失败", ex)
-            throw Exception("获取远程直播源失败，请检查网络连接", ex)
+            log.e("获取直播源失败", ex)
+            throw Exception("获取直播源失败，请检查网络连接", ex)
         }
     }
 

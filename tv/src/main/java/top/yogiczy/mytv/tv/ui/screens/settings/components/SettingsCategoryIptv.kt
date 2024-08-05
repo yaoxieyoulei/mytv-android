@@ -26,7 +26,7 @@ import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.screens.channelgroup.ChannelGroupManageScreen
-import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceCacheTimeScreen
+import top.yogiczy.mytv.tv.ui.screens.components.SelectDialog
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -95,19 +95,28 @@ fun SettingsCategoryIptv(
                 remoteConfig = true,
             )
 
-            SimplePopup(
+            SelectDialog(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
-            ) {
-                IptvSourceCacheTimeScreen(
-                    currentCacheTimeProvider = { settingsViewModel.iptvSourceCacheTime },
-                    onCacheTimeSelected = {
-                        settingsViewModel.iptvSourceCacheTime = it
-                        visible = false
-                    },
-                    onClose = { visible = false },
-                )
-            }
+                title = "直播源缓存时间",
+                currentDataProvider = { settingsViewModel.iptvSourceCacheTime },
+                dataListProvider = {
+                    (0..<24).map { it * 1000L * 60 * 60 }
+                        .plus((1..15).map { it * 1000L * 60 * 60 * 24 })
+                        .plus(listOf(Long.MAX_VALUE))
+                },
+                dataText = {
+                    when (it) {
+                        0L -> "不缓存"
+                        Long.MAX_VALUE -> "永久"
+                        else -> it.humanizeMs()
+                    }
+                },
+                onDataSelected = {
+                    settingsViewModel.iptvSourceCacheTime = it
+                    visible = false
+                },
+            )
         }
 
         item {

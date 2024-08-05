@@ -133,7 +133,7 @@ private class EpgXmlRepository : FileCacheRepository("epg.xml") {
      * 获取远程xml
      */
     private suspend fun fetchXml(url: String): String {
-        log.d("获取远程节目单xml: $url")
+        log.i("获取节目单xml: $url")
 
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
@@ -148,8 +148,8 @@ private class EpgXmlRepository : FileCacheRepository("epg.xml") {
                 fetcher.fetch(response)
             }
         } catch (ex: Exception) {
-            log.e("获取远程节目单xml失败", ex)
-            throw Exception("获取远程节目单xml失败，请检查网络连接", ex)
+            log.e("获取节目单xml失败", ex)
+            throw Exception("获取节目单xml失败，请检查网络连接", ex)
         }
     }
 

@@ -26,7 +26,7 @@ import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 fun Drawer(
     modifier: Modifier = Modifier,
     showProvider: () -> Boolean = { true },
-    onDismissRequest: () -> Unit = {},
+    onDismissRequest: (() -> Unit)? = null,
     position: DrawerPosition = DrawerPosition.End,
     header: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit = {},
@@ -51,7 +51,7 @@ fun Drawer(
         modifier = modifier
             .fillMaxSize()
             .padding(24.dp)
-            .pointerInput(Unit) { detectTapGestures { onDismissRequest() } },
+            .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } },
     ) {
         Box(
             modifier = Modifier

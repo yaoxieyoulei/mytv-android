@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.tv.ui.screens.epgsource
+package top.yogiczy.mytv.tv.ui.screens.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,8 +25,11 @@ import androidx.tv.material3.Card
 import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.Drawer
 import top.yogiczy.mytv.tv.ui.material.DrawerPosition
+import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
+import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.theme.colors
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
@@ -35,44 +39,54 @@ import top.yogiczy.mytv.tv.ui.utils.ifElse
 import kotlin.math.max
 
 @Composable
-fun EpgSourceRefreshTimeScreen(
+fun <T> SelectDialog(
     modifier: Modifier = Modifier,
-    currentRefreshHourProvider: () -> Int = { 0 },
-    onRefreshHourSelected: (Int) -> Unit = {},
-    onClose: () -> Unit = {},
+    title: String,
+    currentDataProvider: () -> T,
+    dataListProvider: () -> List<T>,
+    dataText: (T) -> String,
+    onDataSelected: (T) -> Unit = {},
+    visibleProvider: () -> Boolean = { true },
+    onDismissRequest: (() -> Unit)? = null,
 ) {
-    val currentRefreshHour = currentRefreshHourProvider()
+    val currentData = currentDataProvider()
+    val dataList = dataListProvider()
 
-    Drawer(
-        position = DrawerPosition.Bottom,
-        onDismissRequest = onClose,
-        header = { Text("节目单刷新时间阈值") },
+    SimplePopup(
+        visibleProvider = visibleProvider,
+        onDismissRequest = onDismissRequest,
     ) {
-        LazyVerticalGrid(
-            modifier = modifier,
-            columns = GridCells.Fixed(10),
-            contentPadding = PaddingValues(4.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        Drawer(
+            position = DrawerPosition.Bottom,
+            onDismissRequest = onDismissRequest,
+            header = { Text(title) },
         ) {
-            items(13) { index ->
-                EpgSourceRefreshTimeItem(
-                    modifier = Modifier.ifElse(
-                        index == max(0, currentRefreshHour),
-                        Modifier.focusOnLaunchedSaveable(),
-                    ),
-                    refreshHour = index,
-                    onSelected = { onRefreshHourSelected(index) },
-                )
+            LazyVerticalGrid(
+                modifier = modifier,
+                columns = GridCells.Fixed(10),
+                contentPadding = PaddingValues(4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                itemsIndexed(dataList) { index, data ->
+                    SelectDialogItem(
+                        modifier = Modifier.ifElse(
+                            index == max(0, dataList.indexOf(currentData)),
+                            Modifier.focusOnLaunchedSaveable(),
+                        ),
+                        text = dataText(data),
+                        onSelected = { onDataSelected(data) },
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun EpgSourceRefreshTimeItem(
+private fun SelectDialogItem(
     modifier: Modifier = Modifier,
-    refreshHour: Int,
+    text: String,
     onSelected: () -> Unit = {},
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -101,7 +115,7 @@ private fun EpgSourceRefreshTimeItem(
         ),
     ) {
         Text(
-            text = "${refreshHour}:00",
+            text = text,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -113,10 +127,27 @@ private fun EpgSourceRefreshTimeItem(
 
 @Preview(device = "id:Android TV (720p)")
 @Composable
-private fun EpgSourceRefreshTimeScreenPreview() {
+private fun SelectDialogPreview() {
     MyTVTheme {
         PreviewWithLayoutGrids {
-            EpgSourceRefreshTimeScreen()
+            PopupHandleableApplication {
+                SelectDialog(
+                    title = "直播源缓存时间",
+                    currentDataProvider = { 0L },
+                    dataListProvider = {
+                        (0..<24).map { it * 1000L * 60 * 60 }
+                            .plus((1..15).map { it * 1000L * 60 * 60 * 24 })
+                            .plus(listOf(Long.MAX_VALUE))
+                    },
+                    dataText = {
+                        when (it) {
+                            0L -> "不缓存"
+                            Long.MAX_VALUE -> "永久"
+                            else -> it.humanizeMs()
+                        }
+                    },
+                )
+            }
         }
     }
 }
