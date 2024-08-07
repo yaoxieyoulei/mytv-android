@@ -439,7 +439,7 @@ enum class GuideTvRemoteKeys(
     ),
     Settings(label = "设置键", onTap = "打开设置界面"),
     ArrowUp(label = "方向键上", onTap = "上一个频道"),
-    ArrowDown(label = "方向键下", onTap = "下一个频道"),
+    ArrowDown(label = "方向键下", onTap = "下一个频道", onLongPress = "打开播放控制"),
     ArrowLeft(label = "方向键左", onTap = "上一个线路", onLongPress = "打开节目单"),
     ArrowRight(label = "方向键右", onTap = "下一个线路", onLongPress = "打开多线路"),
     Back(label = "返回键", onTap = "返回", onDoubleTap = "退出应用");

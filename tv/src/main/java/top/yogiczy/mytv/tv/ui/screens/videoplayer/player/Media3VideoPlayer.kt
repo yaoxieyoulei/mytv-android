@@ -94,6 +94,7 @@ class Media3VideoPlayer(
             contentTypeAttempts[contentType ?: Util.inferContentType(uri)] = true
             videoPlayer.setMediaSource(mediaSource)
             videoPlayer.prepare()
+            videoPlayer.play()
             triggerPrepared()
         }
         updatePositionJob?.cancel()

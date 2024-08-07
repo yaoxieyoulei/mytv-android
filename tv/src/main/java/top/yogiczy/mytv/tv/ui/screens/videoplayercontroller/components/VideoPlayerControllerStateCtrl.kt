@@ -39,7 +39,7 @@ fun VideoPlayerControllerStateCtrl(
     ) {
         if (isBuffering) {
             CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(20.dp),
                 strokeWidth = 3.dp,
                 color = LocalContentColor.current,
                 trackColor = Color.Transparent,

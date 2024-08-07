@@ -22,6 +22,7 @@ fun QuickOpBtnList(
     modifier: Modifier = Modifier,
     onShowEpg: () -> Unit = {},
     onShowChannelUrl: () -> Unit = {},
+    onShowVideoPlayerController: () -> Unit = {},
     onClearCache: () -> Unit = {},
     videoPlayerAspectRatioProvider: () -> Float = { 16f / 9f },
     onChangeVideoPlayerAspectRatio: (Float) -> Unit = {},
@@ -45,6 +46,7 @@ fun QuickOpBtnList(
     ) {
         item { QuickOpBtnEpg(modifier = Modifier.focusOnLaunched(), onShowEpg = onShowEpg) }
         item { QuickOpBtnChannelUrl(onShowChannelUrl = onShowChannelUrl) }
+        item { QuickOpBtnVideoPlayerController(onShowVideoPlayerController = onShowVideoPlayerController) }
         item { QuickOpBtnClearCache(onClearCache = onClearCache) }
         item {
             QuickOpBtnVideoPlayerAspectRatio(
@@ -77,6 +79,18 @@ private fun QuickOpBtnChannelUrl(
         modifier = modifier,
         title = { Text("多线路") },
         onSelect = onShowChannelUrl,
+    )
+}
+
+@Composable
+private fun QuickOpBtnVideoPlayerController(
+    modifier: Modifier = Modifier,
+    onShowVideoPlayerController: () -> Unit = {},
+) {
+    QuickOpBtn(
+        modifier = modifier,
+        title = { Text("播放控制") },
+        onSelect = onShowVideoPlayerController,
     )
 }
 

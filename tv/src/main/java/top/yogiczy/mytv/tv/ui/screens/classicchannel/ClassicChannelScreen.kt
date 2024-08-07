@@ -129,6 +129,7 @@ fun ClassicChannelScreen(
                             }
                         }
                     },
+                channelGroupProvider = { focusedChannelGroup },
                 channelListProvider = {
                     if (focusedChannelGroup == ClassicPanelScreenFavoriteChannelGroup)
                         ChannelList(channelGroupListProvider().channelList

@@ -194,7 +194,7 @@ fun MainContent(
                 epgListProvider().recentProgramme(mainContentState.currentChannel)
             },
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
-            playbackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
+            currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
         )
     }
 
@@ -297,6 +297,10 @@ fun MainContent(
             onShowChannelUrl = {
                 mainContentState.isQuickOpScreenVisible = false
                 mainContentState.isChannelUrlScreenVisible = true
+            },
+            onShowVideoPlayerController = {
+                mainContentState.isQuickOpScreenVisible = false
+                mainContentState.isVideoPlayerControllerScreenVisible = true
             },
             onClearCache = {
                 settingsViewModel.iptvPlayableHostList = emptySet()

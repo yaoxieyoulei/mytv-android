@@ -26,6 +26,7 @@ import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelNumber
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import kotlin.math.min
 
 @Composable
 fun ChannelTempScreen(
@@ -36,7 +37,7 @@ fun ChannelTempScreen(
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
     isInTimeShiftProvider: () -> Boolean = { false },
-    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
+    currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
 ) {
     val childPadding = rememberChildPadding()
 
@@ -59,23 +60,28 @@ fun ChannelTempScreen(
                         .layoutId("info")
                         .sizeIn(maxWidth = 412.dp)
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    channelProvider = channelProvider,
+                    channelProvider = {
+                        val channel = channelProvider()
+                        channel.copy(name = channel.name.substring(0, min(8, channel.name.length)))
+                    },
                     channelUrlIdxProvider = channelUrlIdxProvider,
                     recentEpgProgrammeProvider = recentEpgProgrammeProvider,
                     isInTimeShiftProvider = isInTimeShiftProvider,
-                    currentPlaybackEpgProgrammeProvider = playbackEpgProgrammeProvider,
+                    currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
                 )
 
-                recentEpgProgrammeProvider()?.now?.let { nowProgramme ->
-                    if (showEpgProgrammeProgressProvider()) {
-                        Box(
-                            modifier = Modifier
-                                .layoutId("progress")
-                                .align(Alignment.BottomStart)
-                                .fillMaxWidth(nowProgramme.progress())
-                                .height(3.dp)
-                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)),
-                        )
+                if (currentPlaybackEpgProgrammeProvider() == null) {
+                    recentEpgProgrammeProvider()?.now?.let { nowProgramme ->
+                        if (showEpgProgrammeProgressProvider()) {
+                            Box(
+                                modifier = Modifier
+                                    .layoutId("progress")
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth(nowProgramme.progress())
+                                    .height(3.dp)
+                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)),
+                            )
+                        }
                     }
                 }
             },
@@ -108,7 +114,7 @@ private fun ChannelTempScreenPreview() {
     MyTVTheme {
         PreviewWithLayoutGrids {
             ChannelTempScreen(
-                channelProvider = { Channel.EXAMPLE },
+                channelProvider = { Channel.EXAMPLE.copy(name = "长标题".repeat(4)) },
                 channelUrlIdxProvider = { 0 },
                 channelNumberProvider = { 8 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },

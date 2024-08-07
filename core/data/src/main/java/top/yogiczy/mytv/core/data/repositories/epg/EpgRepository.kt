@@ -29,7 +29,7 @@ class EpgRepository(
     private val source: EpgSource,
 ) : FileCacheRepository("epg-${source.url.hashCode().toUInt().toString(16)}.json") {
     private val log = Logger.create(javaClass.simpleName)
-    private val epgXmlRepository = EpgXmlRepository()
+    private val epgXmlRepository = EpgXmlRepository(source.url)
 
     /**
      * 解析节目单xml
@@ -111,7 +111,7 @@ class EpgRepository(
             val xmlJson = getOrRefresh({ lastModified, _ ->
                 dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
             }) {
-                val xmlString = epgXmlRepository.getEpgXml(source.url)
+                val xmlString = epgXmlRepository.getEpgXml()
                 Json.encodeToString(parseFromXml(xmlString, filteredChannels).value)
             }
 
@@ -126,13 +126,15 @@ class EpgRepository(
 /**
  * 节目单xml获取
  */
-private class EpgXmlRepository : FileCacheRepository("epg.xml") {
+private class EpgXmlRepository(
+    private val url: String
+) : FileCacheRepository("epg-${url.hashCode().toUInt().toString(16)}.xml") {
     private val log = Logger.create(javaClass.simpleName)
 
     /**
      * 获取远程xml
      */
-    private suspend fun fetchXml(url: String): String {
+    private suspend fun fetchXml(): String {
         log.i("获取节目单xml: $url")
 
         val client = OkHttpClient()
@@ -156,9 +158,9 @@ private class EpgXmlRepository : FileCacheRepository("epg.xml") {
     /**
      * 获取xml
      */
-    suspend fun getEpgXml(url: String): String {
+    suspend fun getEpgXml(): String {
         return getOrRefresh(0) {
-            fetchXml(url)
+            fetchXml()
         }
     }
 }

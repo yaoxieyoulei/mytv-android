@@ -39,6 +39,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.core.data.entities.channel.Channel
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
@@ -53,6 +54,7 @@ import kotlin.math.max
 @Composable
 fun ClassicChannelItemList(
     modifier: Modifier = Modifier,
+    channelGroupProvider: () -> ChannelGroup = { ChannelGroup() },
     channelListProvider: () -> ChannelList = { ChannelList() },
     initialChannelProvider: () -> Channel = { Channel() },
     showChannelLogoProvider: () -> Boolean = { false },
@@ -65,6 +67,7 @@ fun ClassicChannelItemList(
     onUserAction: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
+    val channelGroup = channelGroupProvider()
     val channelList = channelListProvider()
     val initialChannel = initialChannelProvider()
     val itemFocusRequesterList = List(channelList.size) { FocusRequester() }
@@ -77,7 +80,8 @@ fun ClassicChannelItemList(
     }
     LaunchedEffect(focusedChannel) { onChannelFocused(focusedChannel) }
 
-    val listState = LazyListState(max(0, channelList.indexOf(focusedChannel) - 2))
+    val listState =
+        remember(channelGroup) { LazyListState(max(0, channelList.indexOf(initialChannel) - 2)) }
     LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }.distinctUntilChanged()
             .collect { _ -> onUserAction() }
