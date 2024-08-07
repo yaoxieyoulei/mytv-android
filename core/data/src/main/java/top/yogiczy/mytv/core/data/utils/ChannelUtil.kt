@@ -325,4 +325,14 @@ object ChannelUtil {
         else if (url.contains("https://yangshipin.cn")) "央视频"
         else "未知"
     }
+
+    fun urlSupportPlayback(url: String): Boolean {
+        return listOf("pltv", "PLTV", "tvod", "TVOD").any { url.contains(it) }
+    }
+
+    fun urlToCanPlayback(url: String): String {
+        return url
+            .replace("PLTV", "tvod")
+            .replace("pltv", "tvod")
+    }
 }

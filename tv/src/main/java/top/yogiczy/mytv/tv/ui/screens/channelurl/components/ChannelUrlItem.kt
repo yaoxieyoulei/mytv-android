@@ -74,6 +74,7 @@ fun ChannelUrlItem(
                     Tag("混合")
                     Tag(ChannelUtil.getHybridWebViewUrlProvider(url))
                 } else {
+                    if (ChannelUtil.urlSupportPlayback(url)) Tag("回放")
                     Tag(if (url.isIPv6()) "IPV6" else "IPV4")
                     if (urlDelay != 0L) Tag("$urlDelay ms")
                 }

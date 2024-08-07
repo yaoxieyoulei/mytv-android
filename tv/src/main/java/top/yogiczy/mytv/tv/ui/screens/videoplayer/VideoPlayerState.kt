@@ -6,6 +6,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +29,15 @@ class VideoPlayerState(
     /** 错误 */
     var error by mutableStateOf<String?>(null)
 
+    /** 正在缓冲 */
+    var isBuffering by mutableStateOf(false)
+
+    /** 正在播放 */
+    var isPlaying by mutableStateOf(false)
+
+    /** 当前播放位置 */
+    var currentPosition by mutableLongStateOf(0L)
+
     /** 元数据 */
     var metadata by mutableStateOf(VideoPlayer.Metadata())
 
@@ -42,6 +52,10 @@ class VideoPlayerState(
 
     fun pause() {
         instance.pause()
+    }
+
+    fun seekTo(position: Long) {
+        instance.seekTo(position)
     }
 
     fun stop() {
@@ -88,8 +102,13 @@ class VideoPlayerState(
             onReadyListeners.forEach { it.invoke() }
             error = null
         }
-        instance.onBuffering { if (it) error = null }
+        instance.onBuffering {
+            isBuffering = it
+            if (it) error = null
+        }
         instance.onPrepared { }
+        instance.onIsPlayingChanged { isPlaying = it }
+        instance.onCurrentPositionChanged { currentPosition = it }
         instance.onMetadata { metadata = it }
         instance.onInterrupt { onInterruptListeners.forEach { it.invoke() } }
     }

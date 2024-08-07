@@ -34,7 +34,7 @@ import java.util.Locale
 fun EpgProgrammeItem(
     modifier: Modifier = Modifier,
     epgProgrammeProvider: () -> EpgProgramme = { EpgProgramme() },
-    canPlaybackProvider: () -> Boolean = { false },
+    supportPlaybackProvider: () -> Boolean = { false },
     isPlaybackProvider: () -> Boolean = { false },
     hasReservedProvider: () -> Boolean = { false },
     onPlayback: () -> Unit = {},
@@ -56,7 +56,7 @@ fun EpgProgrammeItem(
                 isFocused = { isFocused },
                 focusRequester = focusRequester,
                 onSelect = {
-                    if (programme.endAt < System.currentTimeMillis() && canPlaybackProvider()) onPlayback()
+                    if (programme.endAt < System.currentTimeMillis() && supportPlaybackProvider()) onPlayback()
                     else if (programme.startAt > System.currentTimeMillis()) onReserve()
                 }
             ),
@@ -79,7 +79,7 @@ fun EpgProgrammeItem(
                 Icon(Icons.Default.PlayArrow, contentDescription = null)
             } else if (isPlaybackProvider()) {
                 Text("正在回放")
-            } else if (programme.endAt < System.currentTimeMillis() && canPlaybackProvider()) {
+            } else if (programme.endAt < System.currentTimeMillis() && supportPlaybackProvider()) {
                 Text("回放")
             } else if (programme.startAt > System.currentTimeMillis()) {
                 if (hasReservedProvider()) Text("已预约")

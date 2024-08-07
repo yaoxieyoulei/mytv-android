@@ -32,14 +32,14 @@ fun ChannelInfo(
     channelUrlIdxProvider: () -> Int = { 0 },
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
     isInTimeShiftProvider: () -> Boolean = { false },
-    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
+    currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
 ) {
     val channel = channelProvider()
     val channelUrlIdx = channelUrlIdxProvider()
     val url = channel.urlList[channelUrlIdx]
     val recentEpgProgramme = recentEpgProgrammeProvider()
     val isInTimeShift = isInTimeShiftProvider()
-    val playbackEpgProgramme = playbackEpgProgrammeProvider()
+    val currentPlaybackEpgProgramme = currentPlaybackEpgProgrammeProvider()
 
     Column(modifier) {
         Row(verticalAlignment = Alignment.Bottom) {
@@ -66,7 +66,7 @@ fun ChannelInfo(
                     Tag("时移", colors = tagColors)
                 }
 
-                if (playbackEpgProgramme != null) {
+                if (currentPlaybackEpgProgramme != null) {
                     Tag("回放", colors = tagColors)
                 }
 
@@ -86,11 +86,11 @@ fun ChannelInfo(
             LocalTextStyle provides MaterialTheme.typography.bodyLarge,
             LocalContentColor provides LocalContentColor.current.copy(alpha = 0.8f),
         ) {
-            if (playbackEpgProgramme == null) {
+            if (currentPlaybackEpgProgramme == null) {
                 Text("正在播放：${recentEpgProgramme?.now?.title ?: "无节目"}", maxLines = 1)
                 Text("稍后播放：${recentEpgProgramme?.next?.title ?: "无节目"}", maxLines = 1)
             } else {
-                Text("正在回放：${playbackEpgProgramme.title}", maxLines = 1)
+                Text("正在回放：${currentPlaybackEpgProgramme.title}", maxLines = 1)
             }
         }
     }
@@ -111,7 +111,7 @@ private fun ChannelInfoPreview() {
             ChannelInfo(channelProvider = { Channel.EXAMPLE },
                 channelUrlIdxProvider = { 0 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
-                playbackEpgProgrammeProvider = { EpgProgramme(title = "回放电视节目") })
+                currentPlaybackEpgProgrammeProvider = { EpgProgramme(title = "回放电视节目") })
 
             ChannelInfo(
                 channelProvider = {

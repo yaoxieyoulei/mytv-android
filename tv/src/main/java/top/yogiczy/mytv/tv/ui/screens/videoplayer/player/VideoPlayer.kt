@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screens.videoplayer.player
 
 import android.view.SurfaceView
+import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,23 +27,27 @@ abstract class VideoPlayer(
 
     abstract fun pause()
 
+    abstract fun seekTo(position: Long)
+
     open fun stop() {
         loadTimeoutJob?.cancel()
         interruptJob?.cancel()
-        currentPosition = -1
+        currentPosition = 0L
     }
 
     abstract fun setVideoSurfaceView(surfaceView: SurfaceView)
 
     private var loadTimeoutJob: Job? = null
     private var interruptJob: Job? = null
-    private var currentPosition = -1L
+    private var currentPosition = 0L
 
     private val onResolutionListeners = mutableListOf<(width: Int, height: Int) -> Unit>()
     private val onErrorListeners = mutableListOf<(error: PlaybackException?) -> Unit>()
     private val onReadyListeners = mutableListOf<() -> Unit>()
     private val onBufferingListeners = mutableListOf<(buffering: Boolean) -> Unit>()
     private val onPreparedListeners = mutableListOf<() -> Unit>()
+    private val onIsPlayingChanged = mutableListOf<(isPlaying: Boolean) -> Unit>()
+    private val onCurrentPositionChanged = mutableListOf<(position: Long) -> Unit>()
     private val onMetadataListeners = mutableListOf<(metadata: Metadata) -> Unit>()
     private val onInterruptListeners = mutableListOf<() -> Unit>()
 
@@ -52,6 +57,8 @@ abstract class VideoPlayer(
         onReadyListeners.clear()
         onBufferingListeners.clear()
         onPreparedListeners.clear()
+        onIsPlayingChanged.clear()
+        onCurrentPositionChanged.clear()
         onMetadataListeners.clear()
         onInterruptListeners.clear()
     }
@@ -88,19 +95,24 @@ abstract class VideoPlayer(
         interruptJob = null
     }
 
+    protected fun triggerIsPlayingChanged(isPlaying: Boolean) {
+        onIsPlayingChanged.forEach { it(isPlaying) }
+    }
+
     protected fun triggerMetadata(metadata: Metadata) {
         onMetadataListeners.forEach { it(metadata) }
     }
 
-    protected fun triggerCurrentPosition(newPosition: Long) {
-        if (currentPosition != newPosition) {
+    protected fun triggerCurrentPosition(position: Long) {
+        if (currentPosition != position) {
             interruptJob?.cancel()
             interruptJob = coroutineScope.launch {
                 delay(Configs.videoPlayerLoadTimeout)
                 onInterruptListeners.forEach { it() }
             }
         }
-        currentPosition = newPosition
+        currentPosition = position
+        onCurrentPositionChanged.forEach { it(position) }
     }
 
     fun onResolution(listener: (width: Int, height: Int) -> Unit) {
@@ -121,6 +133,14 @@ abstract class VideoPlayer(
 
     fun onPrepared(listener: () -> Unit) {
         onPreparedListeners.add(listener)
+    }
+
+    fun onIsPlayingChanged(listener: (isPlaying: Boolean) -> Unit) {
+        onIsPlayingChanged.add(listener)
+    }
+
+    fun onCurrentPositionChanged(listener: (position: Long) -> Unit) {
+        onCurrentPositionChanged.add(listener)
     }
 
     fun onMetadata(listener: (metadata: Metadata) -> Unit) {

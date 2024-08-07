@@ -63,7 +63,7 @@ fun ChannelTempScreen(
                     channelUrlIdxProvider = channelUrlIdxProvider,
                     recentEpgProgrammeProvider = recentEpgProgrammeProvider,
                     isInTimeShiftProvider = isInTimeShiftProvider,
-                    playbackEpgProgrammeProvider = playbackEpgProgrammeProvider,
+                    currentPlaybackEpgProgrammeProvider = playbackEpgProgrammeProvider,
                 )
 
                 recentEpgProgrammeProvider()?.now?.let { nowProgramme ->

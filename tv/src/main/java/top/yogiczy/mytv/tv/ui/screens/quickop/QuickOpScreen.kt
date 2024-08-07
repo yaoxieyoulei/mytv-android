@@ -44,7 +44,7 @@ fun QuickOpScreen(
     currentChannelNumberProvider: () -> String = { "" },
     epgListProvider: () -> EpgList = { EpgList() },
     isInTimeShiftProvider: () -> Boolean = { false },
-    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
+    currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     videoPlayerAspectRatioProvider: () -> Float = { 16f / 9f },
     onShowEpg: () -> Unit = {},
@@ -74,7 +74,7 @@ fun QuickOpScreen(
             currentChannelUrlIdxProvider = currentChannelUrlIdxProvider,
             epgListProvider = epgListProvider,
             isInTimeShiftProvider = isInTimeShiftProvider,
-            playbackEpgProgrammeProvider = playbackEpgProgrammeProvider,
+            currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
             videoPlayerMetadataProvider = videoPlayerMetadataProvider,
             videoPlayerAspectRatioProvider = videoPlayerAspectRatioProvider,
             onShowEpg = onShowEpg,
@@ -126,7 +126,7 @@ private fun QuickOpScreenBottom(
     currentChannelUrlIdxProvider: () -> Int = { 0 },
     epgListProvider: () -> EpgList = { EpgList() },
     isInTimeShiftProvider: () -> Boolean = { false },
-    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
+    currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     videoPlayerAspectRatioProvider: () -> Float = { 16f / 9f },
     onShowEpg: () -> Unit = {},
@@ -153,7 +153,7 @@ private fun QuickOpScreenBottom(
                     epgListProvider().recentProgramme(currentChannelProvider())
                 },
                 isInTimeShiftProvider = isInTimeShiftProvider,
-                playbackEpgProgrammeProvider = playbackEpgProgrammeProvider,
+                currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
             )
 
             ChannelPlayerInfo(

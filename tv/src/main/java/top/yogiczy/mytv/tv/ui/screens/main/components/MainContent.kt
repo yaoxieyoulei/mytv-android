@@ -38,6 +38,7 @@ import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screens.update.UpdateScreen
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerScreen
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.rememberVideoPlayerState
+import top.yogiczy.mytv.tv.ui.screens.videoplayercontroller.VideoPlayerControllerScreen
 import top.yogiczy.mytv.tv.ui.screens.webview.WebViewScreen
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.captureBackKey
@@ -113,6 +114,7 @@ fun MainContent(
                 onSettings = { mainContentState.isQuickOpScreenVisible = true },
                 onLongLeft = { mainContentState.isEpgScreenVisible = true },
                 onLongRight = { mainContentState.isChannelUrlScreenVisible = true },
+                onLongDown = { mainContentState.isVideoPlayerControllerScreenVisible = true },
                 onNumber = { channelNumberSelectState.input(it) },
             )
             .handleDragGestures(
@@ -192,7 +194,7 @@ fun MainContent(
                 epgListProvider().recentProgramme(mainContentState.currentChannel)
             },
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
-            playbackEpgProgrammeProvider = { mainContentState.playbackEpgProgramme },
+            playbackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
         )
     }
 
@@ -210,8 +212,8 @@ fun MainContent(
                     it.channel == mainContentState.currentChannel.name
                 })
             },
-            canEpgProgrammePlaybackProvider = { mainContentState.canPlayback() },
-            playbackEpgProgrammeProvider = { mainContentState.playbackEpgProgramme },
+            supportPlaybackProvider = { mainContentState.supportPlayback() },
+            currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             onEpgProgrammePlayback = {
                 mainContentState.isEpgScreenVisible = false
                 mainContentState.changeCurrentChannel(
@@ -249,6 +251,32 @@ fun MainContent(
     }
 
     PopupContent(
+        visibleProvider = { mainContentState.isVideoPlayerControllerScreenVisible },
+        onDismissRequest = { mainContentState.isVideoPlayerControllerScreenVisible = false },
+    ) {
+        VideoPlayerControllerScreen(
+            isVideoPlayerPlayingProvider = { videoPlayerState.isPlaying },
+            isVideoPlayerBufferingProvider = { videoPlayerState.isBuffering },
+            videoPlayerCurrentPositionProvider = { videoPlayerState.currentPosition },
+            videoPlayerDurationProvider = {
+                val playback = mainContentState.currentPlaybackEpgProgramme
+
+                if (playback != null) {
+                    playback.startAt to playback.endAt
+                } else {
+                    val programme =
+                        epgListProvider().recentProgramme(mainContentState.currentChannel)?.now
+                    (programme?.startAt ?: 0L) to (programme?.endAt ?: 0L)
+                }
+            },
+            onVideoPlayerPlay = { videoPlayerState.play() },
+            onVideoPlayerPause = { videoPlayerState.pause() },
+            onVideoPlayerSeekTo = { videoPlayerState.seekTo(it) },
+            onClose = { mainContentState.isVideoPlayerControllerScreenVisible = false },
+        )
+    }
+
+    PopupContent(
         visibleProvider = { mainContentState.isQuickOpScreenVisible },
         onDismissRequest = { mainContentState.isQuickOpScreenVisible = false },
     ) {
@@ -259,7 +287,7 @@ fun MainContent(
                 (filteredChannelGroupListProvider().channelList.indexOf(mainContentState.currentChannel) + 1).toString()
             },
             epgListProvider = epgListProvider,
-            playbackEpgProgrammeProvider = { mainContentState.playbackEpgProgramme },
+            currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
             videoPlayerAspectRatioProvider = { videoPlayerState.aspectRatio },
             onShowEpg = {
@@ -303,7 +331,7 @@ fun MainContent(
             onChannelFavoriteToggle = { mainContentState.favoriteChannelOrNot(it) },
             epgListProvider = epgListProvider,
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
-            playbackEpgProgrammeProvider = { mainContentState.playbackEpgProgramme },
+            currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
             channelFavoriteEnabledProvider = { settingsViewModel.iptvChannelFavoriteEnable },
             channelFavoriteListProvider = { settingsViewModel.iptvChannelFavoriteList.toImmutableList() },
@@ -334,8 +362,8 @@ fun MainContent(
                 EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList)
             },
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
-            canEpgProgrammePlaybackProvider = { mainContentState.canPlayback(it) },
-            playbackEpgProgrammeProvider = { mainContentState.playbackEpgProgramme },
+            supportPlaybackProvider = { mainContentState.supportPlayback(it) },
+            currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             onEpgProgrammePlayback = { channel, programme ->
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(channel, null, programme)

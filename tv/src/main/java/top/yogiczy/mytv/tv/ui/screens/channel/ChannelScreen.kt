@@ -55,7 +55,7 @@ fun ChannelScreen(
     epgListProvider: () -> EpgList = { EpgList() },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
     isInTimeShiftProvider: () -> Boolean = { false },
-    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
+    currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     channelFavoriteEnabledProvider: () -> Boolean = { false },
     channelFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
@@ -89,7 +89,7 @@ fun ChannelScreen(
             epgListProvider = epgListProvider,
             showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
             isInTimeShiftProvider = isInTimeShiftProvider,
-            playbackEpgProgrammeProvider = playbackEpgProgrammeProvider,
+            currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
             videoPlayerMetadataProvider = videoPlayerMetadataProvider,
             channelFavoriteEnabledProvider = channelFavoriteEnabledProvider,
             channelFavoriteListProvider = channelFavoriteListProvider,
@@ -144,7 +144,7 @@ private fun ChannelScreenBottom(
     epgListProvider: () -> EpgList = { EpgList() },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
     isInTimeShiftProvider: () -> Boolean = { false },
-    playbackEpgProgrammeProvider: () -> EpgProgramme? = { null },
+    currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     channelFavoriteEnabledProvider: () -> Boolean = { false },
     channelFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
@@ -167,7 +167,7 @@ private fun ChannelScreenBottom(
                     epgListProvider().recentProgramme(currentChannelProvider())
                 },
                 isInTimeShiftProvider = isInTimeShiftProvider,
-                playbackEpgProgrammeProvider = playbackEpgProgrammeProvider,
+                currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
             )
 
             ChannelPlayerInfo(
