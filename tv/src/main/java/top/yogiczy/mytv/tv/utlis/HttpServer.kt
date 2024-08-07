@@ -125,20 +125,32 @@ object HttpServer : Loggable() {
     ) {
         val body = request.getBody<JSONObjectBody>().get()
         val name = body.get("name").toString()
+        val type = body.get("type").toString()
         val url = body.get("url").toString()
-        val isLocal = body.get("isLocal").toString().toBoolean()
+        val filePath = body.get("filePath").toString()
         val content = body.get("content").toString()
 
-        if (isLocal) {
-            val sourceUrl = "file://iptv-source-${System.currentTimeMillis()}"
-            val file =
-                File(Globals.cacheDir, "iptv.${sourceUrl.hashCode().toUInt().toString(16)}.txt")
-            file.writeText(content)
+        var newIptvSource: IptvSource? = null
 
-            Configs.iptvSourceList =
-                IptvSourceList(Configs.iptvSourceList + IptvSource(name, sourceUrl, true))
-        } else {
-            Configs.iptvSourceList = IptvSourceList(Configs.iptvSourceList + IptvSource(name, url))
+        when (type) {
+            "url" -> {
+                newIptvSource = IptvSource(name, url)
+            }
+
+            "file" -> {
+                newIptvSource = IptvSource(name, filePath, true)
+            }
+
+            "content" -> {
+                val file =
+                    File(Globals.cacheDir, "iptv-${System.currentTimeMillis()}.txt")
+                file.writeText(content)
+                newIptvSource = IptvSource(name, file.path, true)
+            }
+        }
+
+        newIptvSource?.let {
+            Configs.iptvSourceList = IptvSourceList(Configs.iptvSourceList + it)
         }
 
         wrapResponse(response).send("success")

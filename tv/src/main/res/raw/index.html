@@ -52,9 +52,10 @@
 
                                     <van-field label="类型" class="!pl-0" input-align="right">
                                         <template #input>
-                                            <van-radio-group v-model="iptvSource.isLocal" direction="horizontal">
-                                                <van-radio :name="false">远程</van-radio>
-                                                <van-radio :name="true">本地</van-radio>
+                                            <van-radio-group v-model="iptvSource.type" direction="horizontal">
+                                                <van-radio name="url">远程</van-radio>
+                                                <van-radio name="file">文件</van-radio>
+                                                <van-radio name="content">静态</van-radio>
                                             </van-radio-group>
                                         </template>
                                     </van-field>
@@ -62,13 +63,25 @@
                                     <van-field label="名称" class="!pl-0" v-model="iptvSource.name" placeholder="直播源名称"
                                         input-align="right"></van-field>
 
-                                    <van-field v-if="iptvSource.isLocal" label="内容" class="!pl-0" placeholder="直播源内容"
-                                        v-model="iptvSource.content" type="textarea" rows="5"
-                                        :input-align="iptvSource.content ? 'left' : 'right'"></van-field>
-
-                                    <van-field v-else label="链接" class="!pl-0" placeholder="直播源链接"
-                                        v-model="iptvSource.url" type="textarea" rows="2"
+                                    <van-field v-if="iptvSource.type === 'url'" label="链接" class="!pl-0"
+                                        placeholder="直播源链接" v-model="iptvSource.url" type="textarea" rows="2"
                                         input-align="right"></van-field>
+
+                                    <van-field v-else-if="iptvSource.type === 'file'" label="文件路径" class="!pl-0"
+                                        placeholder="直播源文件路径" v-model="iptvSource.filePath" type="textarea" rows="2"
+                                        input-align="right"></van-field>
+
+                                    <template v-else-if="iptvSource.type === 'content'">
+                                        <van-field label="内容" class="!pl-0" placeholder="直播源内容"
+                                            v-model="iptvSource.content" type="textarea" rows="5"
+                                            :input-align="iptvSource.content ? 'left' : 'right'"></van-field>
+
+                                        <van-field label="上传" class="!pl-0" input-align="right">
+                                            <template #input>
+                                                <van-uploader :after-read="uploadIptvSourceContentAfterRead" accept=".txt,.m3u" />
+                                            </template>
+                                        </van-field>
+                                    </template>
 
                                     <div class="flex justify-end">
                                         <van-button @click="pushIptvSource" size="small" type="primary">
@@ -123,7 +136,7 @@
                     <van-cell-group inset title="调试">
                         <van-cell title="上传apk">
                             <template #extra>
-                                <van-uploader :after-read="uploaderAfterRead" accept=".apk" />
+                                <van-uploader :after-read="uploadApkAfterRead" accept=".apk" />
                             </template>
                         </van-cell>
                     </van-cell-group>
@@ -183,20 +196,31 @@
 
                 const tabActive = ref('config')
 
-                const iptvSource = ref({ name: `添加于${dayjs().format('YYYY-MM-DD HH:mm:ss')}`, url: '', content: '', isLocal: false })
+                const iptvSource = ref({
+                    name: `添加于${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
+                    type: 'url',
+                    url: '',
+                    filePath: '',
+                    content: '',
+                })
                 async function pushIptvSource() {
                     if (!iptvSource.value.name) {
                         vant.showFailToast('请填写直播源名称')
                         return
                     }
 
-                    if (iptvSource.value.isLocal && !iptvSource.value.content) {
-                        vant.showFailToast('请填写直播源内容')
+                    if (!iptvSource.value.type === 'url' && !iptvSource.value.url) {
+                        vant.showFailToast('请填写直播源链接')
                         return
                     }
 
-                    if (!iptvSource.value.isLocal && !iptvSource.value.url) {
-                        vant.showFailToast('请填写直播源链接')
+                    if (iptvSource.value.type === 'file' && !iptvSource.value.filePath) {
+                        vant.showFailToast('请填写直播源文件路径')
+                        return
+                    }
+
+                    if (iptvSource.value.type === 'content' && !iptvSource.value.content) {
+                        vant.showFailToast('请填写直播源内容')
                         return
                     }
 
@@ -274,7 +298,7 @@
                     await refreshSettings()
                 })
 
-                async function uploaderAfterRead(file) {
+                async function uploadApkAfterRead(file) {
                     try {
                         vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
                         const formData = new FormData()
@@ -287,6 +311,15 @@
                     }
                 }
 
+                async function uploadIptvSourceContentAfterRead(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const content = e.target.result;
+                        iptvSource.value.content = content;
+                    };
+                    reader.readAsText(file.file);
+                }
+
                 return {
                     dayjs,
                     isDark,
@@ -297,7 +330,8 @@
                     pushEpgSource,
                     settings,
                     confirmSettings,
-                    uploaderAfterRead,
+                    uploadApkAfterRead,
+                    uploadIptvSourceContentAfterRead,
                 }
             }
         })

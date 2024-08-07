@@ -27,7 +27,7 @@ import java.util.Locale
  */
 class EpgRepository(
     private val source: EpgSource,
-) : FileCacheRepository("epg.${source.url.hashCode().toUInt().toString(16)}.json") {
+) : FileCacheRepository("epg-${source.url.hashCode().toUInt().toString(16)}.json") {
     private val log = Logger.create(javaClass.simpleName)
     private val epgXmlRepository = EpgXmlRepository()
 

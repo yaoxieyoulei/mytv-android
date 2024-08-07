@@ -8,8 +8,12 @@ import java.io.File
 /**
  * 用于将数据缓存至本地
  */
-abstract class FileCacheRepository(private val fileName: String) {
-    private fun getCacheFile() = File(Globals.cacheDir, fileName)
+abstract class FileCacheRepository(
+    private val fileName: String,
+    private val isFullPath: Boolean = false,
+) {
+    private fun getCacheFile() =
+        if (isFullPath) File(fileName) else File(Globals.cacheDir, fileName)
 
     private suspend fun getCacheData(): String? = withContext(Dispatchers.IO) {
         val file = getCacheFile()

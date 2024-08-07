@@ -16,7 +16,11 @@ import top.yogiczy.mytv.core.data.utils.Logger
  */
 class IptvRepository(
     private val source: IptvSource,
-) : FileCacheRepository("iptv.${source.url.hashCode().toUInt().toString(16)}.txt") {
+) : FileCacheRepository(
+    if (source.isLocal) source.url
+    else "iptv-${source.url.hashCode().toUInt().toString(16)}.txt",
+    source.isLocal,
+) {
     private val log = Logger.create(javaClass.simpleName)
 
     /**
