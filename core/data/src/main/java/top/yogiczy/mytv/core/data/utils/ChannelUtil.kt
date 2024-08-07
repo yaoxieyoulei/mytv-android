@@ -6,86 +6,12 @@ object ChannelUtil {
     }
 
     private val standardChannelNameTest: Map<String, (String) -> Boolean> = mapOf(
-        "CCTV-1综合" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "1"),
-                listOf("cctv", "综合"),
-                listOf("中央", "1"),
-                listOf("中央", "一"),
-            )
-        ),
-        "CCTV-2财经" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "2"),
-                listOf("cctv", "财经"),
-                listOf("中央", "2"),
-                listOf("中央", "二"),
-            )
-        ),
-        "CCTV-3综艺" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "3"),
-                listOf("cctv", "综艺"),
-                listOf("中央", "3"),
-                listOf("中央", "三"),
-            )
-        ),
-        "CCTV-4国际" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "4"),
-                listOf("cctv", "国际"),
-                listOf("中央", "4"),
-                listOf("中央", "四"),
-            )
-        ),
-        "CCTV-5体育" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "5"),
-                listOf("cctv", "体育"),
-                listOf("中央", "5"),
-                listOf("中央", "五"),
-            )
-        ),
         "CCTV-5+赛事" to standardCctvChannelNameTest(
             listOf(
                 listOf("cctv", "5+"),
                 listOf("cctv", "体育"),
                 listOf("中央", "5+"),
                 listOf("中央", "五+"),
-            )
-        ),
-        "CCTV-6电影" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "6"),
-                listOf("cctv", "电影"),
-                listOf("中央", "6"),
-                listOf("中央", "六"),
-            )
-        ),
-        "CCTV-7军事" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "7"),
-                listOf("cctv", "军事"),
-                listOf("cctv", "国防"),
-                listOf("cctv", "军农"),
-                listOf("中央", "7"),
-                listOf("中央", "七"),
-            )
-        ),
-        "CCTV-8电视" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "8"),
-                listOf("cctv", "电视"),
-                listOf("中央", "8"),
-                listOf("中央", "八"),
-            )
-        ),
-        "CCTV-9纪录" to standardCctvChannelNameTest(
-            listOf(
-                listOf("cctv", "9"),
-                listOf("cctv", "纪录"),
-                listOf("中央", "9"),
-                listOf("中央", "九"),
             )
         ),
         "CCTV-10科教" to standardCctvChannelNameTest(
@@ -156,6 +82,80 @@ object ChannelUtil {
                 listOf("cctv", "农业"),
                 listOf("中央", "17"),
                 listOf("中央", "十七"),
+            )
+        ),
+        "CCTV-1综合" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "1"),
+                listOf("cctv", "综合"),
+                listOf("中央", "1"),
+                listOf("中央", "一"),
+            )
+        ),
+        "CCTV-2财经" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "2"),
+                listOf("cctv", "财经"),
+                listOf("中央", "2"),
+                listOf("中央", "二"),
+            )
+        ),
+        "CCTV-3综艺" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "3"),
+                listOf("cctv", "综艺"),
+                listOf("中央", "3"),
+                listOf("中央", "三"),
+            )
+        ),
+        "CCTV-4国际" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "4"),
+                listOf("cctv", "国际"),
+                listOf("中央", "4"),
+                listOf("中央", "四"),
+            )
+        ),
+        "CCTV-5体育" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "5"),
+                listOf("cctv", "体育"),
+                listOf("中央", "5"),
+                listOf("中央", "五"),
+            )
+        ),
+        "CCTV-6电影" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "6"),
+                listOf("cctv", "电影"),
+                listOf("中央", "6"),
+                listOf("中央", "六"),
+            )
+        ),
+        "CCTV-7军事" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "7"),
+                listOf("cctv", "军事"),
+                listOf("cctv", "国防"),
+                listOf("cctv", "军农"),
+                listOf("中央", "7"),
+                listOf("中央", "七"),
+            )
+        ),
+        "CCTV-8电视" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "8"),
+                listOf("cctv", "电视"),
+                listOf("中央", "8"),
+                listOf("中央", "八"),
+            )
+        ),
+        "CCTV-9纪录" to standardCctvChannelNameTest(
+            listOf(
+                listOf("cctv", "9"),
+                listOf("cctv", "纪录"),
+                listOf("中央", "9"),
+                listOf("中央", "九"),
             )
         ),
         "上海卫视" to { name: String ->
