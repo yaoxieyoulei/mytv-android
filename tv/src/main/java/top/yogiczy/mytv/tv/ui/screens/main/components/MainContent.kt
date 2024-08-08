@@ -29,6 +29,7 @@ import top.yogiczy.mytv.tv.ui.screens.channel.rememberChannelNumberSelectState
 import top.yogiczy.mytv.tv.ui.screens.channelurl.ChannelUrlScreen
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.ClassicChannelScreen
 import top.yogiczy.mytv.tv.ui.screens.datetime.DatetimeScreen
+import top.yogiczy.mytv.tv.ui.screens.epg.EpgProgrammeProgressScreen
 import top.yogiczy.mytv.tv.ui.screens.epg.EpgScreen
 import top.yogiczy.mytv.tv.ui.screens.epgreverse.EpgReverseScreen
 import top.yogiczy.mytv.tv.ui.screens.monitor.MonitorScreen
@@ -161,6 +162,16 @@ fun MainContent(
                 },
             )
         }
+    }
+
+    Visible({ settingsViewModel.uiShowEpgProgrammePermanentProgress }) {
+        EpgProgrammeProgressScreen(
+            currentEpgProgrammeProvider = {
+                mainContentState.currentPlaybackEpgProgramme
+                    ?: epgListProvider().recentProgramme(mainContentState.currentChannel)?.now
+            },
+            videoPlayerCurrentPositionProvider = { videoPlayerState.currentPosition },
+        )
     }
 
     Visible({

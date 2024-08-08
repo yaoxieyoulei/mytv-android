@@ -207,6 +207,14 @@ class SettingsViewModel : ViewModel() {
             Configs.uiShowEpgProgrammeProgress = value
         }
 
+    private var _uiShowEpgProgrammePermanentProgress by mutableStateOf(Configs.uiShowEpgProgrammePermanentProgress)
+    var uiShowEpgProgrammePermanentProgress: Boolean
+        get() = _uiShowEpgProgrammePermanentProgress
+        set(value) {
+            _uiShowEpgProgrammePermanentProgress = value
+            Configs.uiShowEpgProgrammePermanentProgress = value
+        }
+
     private var _uiShowChannelLogo by mutableStateOf(Configs.uiShowChannelLogo)
     var uiShowChannelLogo: Boolean
         get() = _uiShowChannelLogo

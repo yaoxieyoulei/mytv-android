@@ -92,6 +92,9 @@ object Configs {
         /** 显示节目进度 */
         UI_SHOW_EPG_PROGRAMME_PROGRESS,
 
+        /** 显示常驻节目进度 */
+        UI_SHOW_EPG_PROGRAMME_PERMANENT_PROGRESS,
+
         /** 显示台标 */
         UI_SHOW_CHANNEL_LOGO,
 
@@ -261,6 +264,11 @@ object Configs {
     var uiShowEpgProgrammeProgress: Boolean
         get() = SP.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, true)
         set(value) = SP.putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value)
+
+    /** 显示常驻节目进度 */
+    var uiShowEpgProgrammePermanentProgress: Boolean
+        get() = SP.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PERMANENT_PROGRESS.name, false)
+        set(value) = SP.putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PERMANENT_PROGRESS.name, value)
 
     /** 显示台标 */
     var uiShowChannelLogo: Boolean

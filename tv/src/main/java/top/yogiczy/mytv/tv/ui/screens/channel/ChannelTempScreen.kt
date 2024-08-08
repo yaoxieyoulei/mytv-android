@@ -26,7 +26,6 @@ import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelNumber
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
-import kotlin.math.min
 
 @Composable
 fun ChannelTempScreen(
@@ -60,10 +59,7 @@ fun ChannelTempScreen(
                         .layoutId("info")
                         .sizeIn(maxWidth = 412.dp)
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    channelProvider = {
-                        val channel = channelProvider()
-                        channel.copy(name = channel.name.substring(0, min(8, channel.name.length)))
-                    },
+                    channelProvider = channelProvider,
                     channelUrlIdxProvider = channelUrlIdxProvider,
                     recentEpgProgrammeProvider = recentEpgProgrammeProvider,
                     isInTimeShiftProvider = isInTimeShiftProvider,

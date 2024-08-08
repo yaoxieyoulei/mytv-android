@@ -31,8 +31,8 @@ data class EpgProgramme(
         /**
          * 节目进度
          */
-        fun EpgProgramme.progress() =
-            (System.currentTimeMillis() - startAt).toFloat() / (endAt - startAt)
+        fun EpgProgramme.progress(current: Long = System.currentTimeMillis()) =
+            (current - startAt).toFloat() / (endAt - startAt)
 
         val EXAMPLE = EpgProgramme(
             startAt = System.currentTimeMillis() - 3600 * 1000,
