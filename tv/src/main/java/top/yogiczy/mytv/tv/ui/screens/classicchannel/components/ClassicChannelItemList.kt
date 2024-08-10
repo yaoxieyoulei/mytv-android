@@ -80,8 +80,12 @@ fun ClassicChannelItemList(
     }
     LaunchedEffect(focusedChannel) { onChannelFocused(focusedChannel) }
 
-    val listState =
-        remember(channelGroup) { LazyListState(max(0, channelList.indexOf(initialChannel) - 2)) }
+    val listState = remember(channelGroup) {
+        LazyListState(
+            if (hasFocused) 0
+            else max(0, channelList.indexOf(initialChannel) - 2)
+        )
+    }
     LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }.distinctUntilChanged()
             .collect { _ -> onUserAction() }
