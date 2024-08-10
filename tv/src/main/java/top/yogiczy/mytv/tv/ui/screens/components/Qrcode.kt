@@ -68,6 +68,7 @@ fun QrcodeDialog(
     SimplePopup(
         visibleProvider = showDialogProvider,
         onDismissRequest = onDismissRequest,
+        withBackground = true,
     ) {
         Column(
             modifier = modifier

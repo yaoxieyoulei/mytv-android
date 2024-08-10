@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.tv.ui.material
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.tv.ui.utils.captureBackKey
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 import java.util.UUID
 
 class PopupManager {
@@ -63,6 +66,7 @@ fun PopupContent(
     modifier: Modifier = Modifier,
     visibleProvider: () -> Boolean,
     onDismissRequest: (() -> Unit)? = null,
+    withBackground: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
 ) {
     if (!visibleProvider()) return
@@ -72,7 +76,11 @@ fun PopupContent(
             .fillMaxSize()
             .popupable()
             .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } }
-            .captureBackKey { onDismissRequest?.invoke() },
+            .captureBackKey { onDismissRequest?.invoke() }
+            .ifElse(
+                withBackground,
+                Modifier.background(MaterialTheme.colorScheme.background.copy(0.5f)),
+            ),
     ) {
         content()
     }
@@ -83,6 +91,7 @@ fun SimplePopup(
     modifier: Modifier = Modifier,
     visibleProvider: () -> Boolean,
     onDismissRequest: (() -> Unit)? = null,
+    withBackground: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val visible = visibleProvider()
@@ -98,6 +107,7 @@ fun SimplePopup(
                         modifier = modifier,
                         visibleProvider = visibleProvider,
                         onDismissRequest = onDismissRequest,
+                        withBackground = withBackground,
                         content = content,
                     )
                 },

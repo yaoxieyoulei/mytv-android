@@ -149,6 +149,7 @@ fun SettingsCategoryUI(
             SimplePopup(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
+                withBackground = true,
             ) {
                 UiDensityScaleRatioScreen(
                     currentScaleRatioProvider = { settingsViewModel.uiDensityScaleRatio },
@@ -180,6 +181,7 @@ fun SettingsCategoryUI(
             SimplePopup(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
+                withBackground = true,
             ) {
                 UiFontScaleRatioScreen(
                     currentScaleRatioProvider = { settingsViewModel.uiFontScaleRatio },

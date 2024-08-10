@@ -94,6 +94,7 @@ fun SettingsCategoryEpg(
             SimplePopup(
                 visibleProvider = { isEpgSourceScreenVisible },
                 onDismissRequest = { isEpgSourceScreenVisible = false },
+                withBackground = true,
             ) {
                 EpgSourceScreen(
                     epgSourceListProvider = {
