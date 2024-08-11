@@ -196,20 +196,13 @@ class MainContentState(
         }
     }
 
-    private fun getUrlIdx(urlIdx: Int? = null): Int {
-        return if (urlIdx == null) {
-            max(
-                0,
-                _currentChannel.urlList.indexOfFirst {
-                    settingsViewModel.iptvPlayableHostList.contains(getUrlHost(it))
-                },
-            )
-        } else {
-            min(
-                _currentChannel.urlList.size - 1,
-                (urlIdx + _currentChannel.urlList.size) % _currentChannel.urlList.size,
-            )
+    private fun getUrlIdx(urlList: List<String>, urlIdx: Int? = null): Int {
+        val idx = if (urlIdx == null) urlList.indexOfFirst {
+            settingsViewModel.iptvPlayableHostList.contains(getUrlHost(it))
         }
+        else (urlIdx + urlList.size) % urlList.size
+
+        return max(0, min(idx, urlList.size - 1))
     }
 
     fun changeCurrentChannel(
@@ -229,7 +222,7 @@ class MainContentState(
         settingsViewModel.iptvLastChannelIdx =
             channelGroupListProvider().channelIdx(_currentChannel)
 
-        _currentChannelUrlIdx = getUrlIdx(urlIdx)
+        _currentChannelUrlIdx = getUrlIdx(_currentChannel.urlList, urlIdx)
 
         _currentPlaybackEpgProgramme = playbackEpgProgramme
 
@@ -302,7 +295,7 @@ class MainContentState(
         channel: Channel = _currentChannel,
         urlIdx: Int? = _currentChannelUrlIdx,
     ): Boolean {
-        val currentUrlIdx = getUrlIdx(urlIdx)
+        val currentUrlIdx = getUrlIdx(channel.urlList, urlIdx)
         return ChannelUtil.urlSupportPlayback(channel.urlList[currentUrlIdx])
     }
 }
