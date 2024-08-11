@@ -30,6 +30,7 @@ import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.max
+import kotlin.math.min
 
 @Stable
 class MainContentState(
@@ -204,7 +205,10 @@ class MainContentState(
                 },
             )
         } else {
-            (urlIdx + _currentChannel.urlList.size) % _currentChannel.urlList.size
+            min(
+                _currentChannel.urlList.size - 1,
+                (urlIdx + _currentChannel.urlList.size) % _currentChannel.urlList.size,
+            )
         }
     }
 
