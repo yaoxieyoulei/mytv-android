@@ -79,8 +79,15 @@ fun UpdateScreen(
             if (context.packageManager.canRequestPackageInstalls()) {
                 ApkInstaller.installApk(context, latestFile.path)
             } else {
-                val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                launcher.launch(intent)
+                try {
+                    val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    launcher.launch(intent)
+                } catch (_: Exception) {
+                    Snackbar.show(
+                        "无法找到相应的设置项，请手动启用未知来源安装权限。",
+                        type = SnackbarType.ERROR,
+                    )
+                }
             }
         }
     }
