@@ -36,7 +36,7 @@ fun SettingsCategoryUpdate(
                 supportingContent = if (settingsViewModel.updateForceRemind) "检测到新版本时会全屏提醒"
                 else "检测到新版本时仅消息提示",
                 trailingContent = {
-                    Switch(checked = settingsViewModel.updateForceRemind, onCheckedChange = null)
+                    Switch(settingsViewModel.updateForceRemind, null)
                 },
                 onSelected = {
                     settingsViewModel.updateForceRemind = !settingsViewModel.updateForceRemind

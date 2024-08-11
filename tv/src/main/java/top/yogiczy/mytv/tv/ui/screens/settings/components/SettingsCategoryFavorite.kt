@@ -18,10 +18,7 @@ fun SettingsCategoryFavorite(
                 modifier = Modifier.focusRequester(it),
                 headlineContent = "收藏启用",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.iptvChannelFavoriteEnable,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.iptvChannelFavoriteEnable, null)
                 },
                 onSelected = {
                     settingsViewModel.iptvChannelFavoriteEnable =
@@ -60,10 +57,7 @@ fun SettingsCategoryFavorite(
                 else
                     "在收藏列表可见情况下，将在收藏列表中循环换台",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut, null)
                 },
                 onSelected = {
                     settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut =

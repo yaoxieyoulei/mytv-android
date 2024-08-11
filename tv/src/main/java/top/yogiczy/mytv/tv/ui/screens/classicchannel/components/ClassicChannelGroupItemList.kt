@@ -33,6 +33,7 @@ import androidx.tv.material3.Text
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -66,7 +67,12 @@ fun ClassicChannelGroupItemList(
             .width(140.dp)
             .fillMaxHeight()
             .background(MaterialTheme.colorScheme.surface.copy(0.9f))
-            .focusRestorer { itemFocusRequesterList[channelGroupList.indexOf(focusedChannelGroup)] },
+            .ifElse(
+                LocalSettings.current.uiFocusOptimize,
+                Modifier.focusRestorer {
+                    itemFocusRequesterList[channelGroupList.indexOf(focusedChannelGroup)]
+                },
+            ),
         state = listState,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),

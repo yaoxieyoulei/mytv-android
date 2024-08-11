@@ -32,10 +32,7 @@ fun SettingsCategoryUI(
                 headlineContent = "节目进度",
                 supportingContent = "在频道项底部显示当前节目进度条",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.uiShowEpgProgrammeProgress,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.uiShowEpgProgrammeProgress, null)
                 },
                 onSelected = {
                     settingsViewModel.uiShowEpgProgrammeProgress =
@@ -49,10 +46,7 @@ fun SettingsCategoryUI(
                 headlineContent = "常驻底部节目进度",
                 supportingContent = "在播放器底部显示当前节目进度条",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.uiShowEpgProgrammePermanentProgress,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.uiShowEpgProgrammePermanentProgress, null)
                 },
                 onSelected = {
                     settingsViewModel.uiShowEpgProgrammePermanentProgress =
@@ -65,10 +59,7 @@ fun SettingsCategoryUI(
             SettingsListItem(
                 headlineContent = "台标显示",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.uiShowChannelLogo,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.uiShowChannelLogo, null)
                 },
                 onSelected = {
                     settingsViewModel.uiShowChannelLogo = !settingsViewModel.uiShowChannelLogo
@@ -81,9 +72,7 @@ fun SettingsCategoryUI(
                 headlineContent = "经典选台界面",
                 supportingContent = "将选台界面替换为经典三段式结构",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.uiUseClassicPanelScreen, onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.uiUseClassicPanelScreen, null)
                 },
                 onSelected = {
                     settingsViewModel.uiUseClassicPanelScreen =
@@ -192,6 +181,19 @@ fun SettingsCategoryUI(
                     onClose = { visible = false },
                 )
             }
+        }
+
+        item {
+            SettingsListItem(
+                headlineContent = "焦点优化",
+                supportingContent = "关闭后可解决触摸设备在部分场景下闪退",
+                trailingContent = {
+                    Switch(settingsViewModel.uiFocusOptimize, null)
+                },
+                onSelected = {
+                    settingsViewModel.uiFocusOptimize = !settingsViewModel.uiFocusOptimize
+                },
+            )
         }
     }
 }

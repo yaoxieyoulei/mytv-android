@@ -255,6 +255,14 @@ class SettingsViewModel : ViewModel() {
             Configs.uiTimeShowMode = value
         }
 
+    private var _uiFocusOptimize by mutableStateOf(Configs.uiFocusOptimize)
+    var uiFocusOptimize: Boolean
+        get() = _uiFocusOptimize
+        set(value) {
+            _uiFocusOptimize = value
+            Configs.uiFocusOptimize = value
+        }
+
     private var _updateForceRemind by mutableStateOf(Configs.updateForceRemind)
     var updateForceRemind: Boolean
         get() = _updateForceRemind

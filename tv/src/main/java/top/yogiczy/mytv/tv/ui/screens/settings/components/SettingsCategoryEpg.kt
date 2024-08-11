@@ -35,7 +35,7 @@ fun SettingsCategoryEpg(
                 headlineContent = "节目单启用",
                 supportingContent = "首次加载时可能会较为缓慢",
                 trailingContent = {
-                    Switch(checked = settingsViewModel.epgEnable, onCheckedChange = null)
+                    Switch(settingsViewModel.epgEnable, null)
                 },
                 onSelected = {
                     settingsViewModel.epgEnable = !settingsViewModel.epgEnable

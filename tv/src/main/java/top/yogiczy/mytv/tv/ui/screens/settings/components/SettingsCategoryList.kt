@@ -28,6 +28,7 @@ import androidx.tv.material3.ListItemDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsCategories
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
@@ -46,7 +47,10 @@ fun SettingsCategoryList(
     LazyColumn(
         contentPadding = PaddingValues(top = childPadding.top, bottom = childPadding.bottom),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier.focusRestorer()
+        modifier = modifier.ifElse(
+            LocalSettings.current.uiFocusOptimize,
+            Modifier.focusRestorer(),
+        ),
     ) {
         itemsIndexed(SettingsCategories.entries) { index, category ->
             val isSelected by remember { derivedStateOf { currentCategoryProvider() == category } }

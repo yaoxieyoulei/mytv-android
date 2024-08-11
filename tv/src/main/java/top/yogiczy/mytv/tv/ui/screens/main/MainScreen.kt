@@ -37,6 +37,8 @@ import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.main.components.MainContent
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettingsCurrent
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
@@ -62,7 +64,10 @@ fun MainScreen(
                 else -> settingsViewModel.uiDensityScaleRatio
             },
             fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
-        )
+        ),
+        LocalSettings provides LocalSettingsCurrent(
+            uiFocusOptimize = settingsViewModel.uiFocusOptimize,
+        ),
     ) {
         PopupHandleableApplication {
             when (val s = uiState) {

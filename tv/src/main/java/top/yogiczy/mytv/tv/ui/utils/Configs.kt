@@ -110,6 +110,9 @@ object Configs {
         /** 时间显示模式 */
         UI_TIME_SHOW_MODE,
 
+        /** 焦点优化 */
+        UI_FOCUS_OPTIMIZE,
+
         /** ==================== 更新 ==================== */
         /** 更新强提醒 */
         UPDATE_FORCE_REMIND,
@@ -296,6 +299,11 @@ object Configs {
             SP.getInt(KEY.UI_TIME_SHOW_MODE.name, UiTimeShowMode.HIDDEN.value)
         )
         set(value) = SP.putInt(KEY.UI_TIME_SHOW_MODE.name, value.value)
+
+    /** 焦点优化 */
+    var uiFocusOptimize: Boolean
+        get() = SP.getBoolean(KEY.UI_FOCUS_OPTIMIZE.name, true)
+        set(value) = SP.putBoolean(KEY.UI_FOCUS_OPTIMIZE.name, value)
 
     /** ==================== 更新 ==================== */
     /** 更新强提醒 */

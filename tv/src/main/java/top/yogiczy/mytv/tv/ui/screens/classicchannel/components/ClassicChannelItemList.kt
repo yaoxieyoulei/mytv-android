@@ -46,8 +46,10 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelItemLogo
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 import kotlin.math.max
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -96,7 +98,10 @@ fun ClassicChannelItemList(
             .fillMaxHeight()
             .width(if (showChannelLogoProvider()) 280.dp else 220.dp)
             .background(MaterialTheme.colorScheme.surface.copy(0.8f))
-            .focusRestorer { itemFocusRequesterList[channelList.indexOf(focusedChannel)] },
+            .ifElse(
+                LocalSettings.current.uiFocusOptimize,
+                Modifier.focusRestorer { itemFocusRequesterList[channelList.indexOf(focusedChannel)] },
+            ),
         state = listState,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),

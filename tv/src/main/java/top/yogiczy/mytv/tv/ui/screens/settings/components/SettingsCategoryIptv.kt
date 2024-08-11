@@ -46,10 +46,7 @@ fun SettingsCategoryIptv(
                 headlineContent = "数字选台",
                 supportingContent = "通过数字选择频道",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.iptvChannelNoSelectEnable,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.iptvChannelNoSelectEnable, null)
                 },
                 onSelected = {
                     settingsViewModel.iptvChannelNoSelectEnable =
@@ -64,9 +61,7 @@ fun SettingsCategoryIptv(
                 supportingContent = if (settingsViewModel.iptvChannelChangeFlip) "方向键上：下一个频道；方向键下：上一个频道"
                 else "方向键上：上一个频道；方向键下：下一个频道",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.iptvChannelChangeFlip, onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.iptvChannelChangeFlip, null)
                 },
                 onSelected = {
                     settingsViewModel.iptvChannelChangeFlip =

@@ -19,7 +19,7 @@ fun SettingsCategoryDebug(
                 headlineContent = "显示FPS",
                 supportingContent = "在屏幕左上角显示fps和柱状图",
                 trailingContent = {
-                    Switch(checked = settingsViewModel.debugShowFps, onCheckedChange = null)
+                    Switch(settingsViewModel.debugShowFps, null)
                 },
                 onSelected = {
                     settingsViewModel.debugShowFps = !settingsViewModel.debugShowFps
@@ -32,10 +32,7 @@ fun SettingsCategoryDebug(
                 headlineContent = "显示播放器信息",
                 supportingContent = "显示播放器详细信息（编码、解码器、采样率等）",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.debugShowVideoPlayerMetadata,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.debugShowVideoPlayerMetadata, null)
                 },
                 onSelected = {
                     settingsViewModel.debugShowVideoPlayerMetadata =
@@ -48,10 +45,7 @@ fun SettingsCategoryDebug(
             SettingsListItem(
                 headlineContent = "显示布局网格",
                 trailingContent = {
-                    Switch(
-                        checked = settingsViewModel.debugShowLayoutGrids,
-                        onCheckedChange = null
-                    )
+                    Switch(settingsViewModel.debugShowLayoutGrids, null)
                 },
                 onSelected = {
                     settingsViewModel.debugShowLayoutGrids = !settingsViewModel.debugShowLayoutGrids

@@ -24,7 +24,7 @@ fun SettingsCategoryApp(
                 headlineContent = "开机自启",
                 supportingContent = "请确保当前设备支持该功能",
                 trailingContent = {
-                    Switch(checked = settingsViewModel.appBootLaunch, onCheckedChange = null)
+                    Switch(settingsViewModel.appBootLaunch, null)
                 },
                 onSelected = {
                     settingsViewModel.appBootLaunch = !settingsViewModel.appBootLaunch
