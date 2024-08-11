@@ -168,7 +168,7 @@ fun ClassicChannelScreen(
             Visible({ !epgListVisible }) {
                 ClassicPanelScreenShowEpgTip(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background.copy(0.7f))
+                        .background(MaterialTheme.colorScheme.surface.copy(0.7f))
                         .padding(horizontal = 4.dp),
                     onTap = { epgListVisible = true },
                 )
