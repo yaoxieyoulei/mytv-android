@@ -127,7 +127,9 @@ private fun ChannelGroupManageItem(
         ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp, horizontal = 4.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -136,8 +138,7 @@ private fun ChannelGroupManageItem(
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                modifier = Modifier
-                    .padding(vertical = 6.dp, horizontal = 12.dp),
+                modifier = Modifier.padding(end = 8.dp).fillMaxWidth(0.8f),
             )
 
             if (isHidden) {
@@ -158,7 +159,9 @@ private fun ChannelGroupManageScreenPreview() {
         PreviewWithLayoutGrids {
             ChannelGroupManageScreen(
                 channelGroupListProvider = {
-                    ChannelGroupList.EXAMPLE.map { it.name }.toPersistentList()
+                    ChannelGroupList.EXAMPLE.map { it.name }.let {
+                        it + "•央视「IPV6」"
+                    }.toPersistentList()
                 },
                 channelGroupHiddenListProvider = {
                     persistentListOf(
@@ -166,6 +169,7 @@ private fun ChannelGroupManageScreenPreview() {
                         "频道分组3",
                         "频道分组5",
                         "频道分组6",
+                        "•央视「IPV6」",
                     )
                 },
             )
