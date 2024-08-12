@@ -265,19 +265,29 @@ fun MainContent(
         visibleProvider = { mainContentState.isVideoPlayerControllerScreenVisible },
         onDismissRequest = { mainContentState.isVideoPlayerControllerScreenVisible = false },
     ) {
+        val threshold = 1000L * 60 * 60 * 24 * 365
+        val hour0 = -28800000L
+
         VideoPlayerControllerScreen(
             isVideoPlayerPlayingProvider = { videoPlayerState.isPlaying },
             isVideoPlayerBufferingProvider = { videoPlayerState.isBuffering },
-            videoPlayerCurrentPositionProvider = { videoPlayerState.currentPosition },
+            videoPlayerCurrentPositionProvider = {
+                if (videoPlayerState.currentPosition >= threshold) videoPlayerState.currentPosition
+                else hour0 + videoPlayerState.currentPosition
+            },
             videoPlayerDurationProvider = {
-                val playback = mainContentState.currentPlaybackEpgProgramme
+                if (videoPlayerState.currentPosition >= threshold) {
+                    val playback = mainContentState.currentPlaybackEpgProgramme
 
-                if (playback != null) {
-                    playback.startAt to playback.endAt
+                    if (playback != null) {
+                        playback.startAt to playback.endAt
+                    } else {
+                        val programme =
+                            epgListProvider().recentProgramme(mainContentState.currentChannel)?.now
+                        (programme?.startAt ?: hour0) to (programme?.endAt ?: hour0)
+                    }
                 } else {
-                    val programme =
-                        epgListProvider().recentProgramme(mainContentState.currentChannel)?.now
-                    (programme?.startAt ?: 0L) to (programme?.endAt ?: 0L)
+                    hour0 to (hour0 + videoPlayerState.duration)
                 }
             },
             onVideoPlayerPlay = { videoPlayerState.play() },

@@ -150,10 +150,15 @@ class Media3VideoPlayer(
                 updatePositionJob?.cancel()
                 updatePositionJob = coroutineScope.launch {
                     while (true) {
-                        triggerCurrentPosition(System.currentTimeMillis() - videoPlayer.currentLiveOffset)
+                        val livePosition =
+                            System.currentTimeMillis() - videoPlayer.currentLiveOffset
+
+                        triggerCurrentPosition(if (livePosition > 0) livePosition else videoPlayer.currentPosition)
                         delay(1000)
                     }
                 }
+
+                triggerDuration(videoPlayer.duration)
             }
 
             if (playbackState != Player.STATE_BUFFERING) {

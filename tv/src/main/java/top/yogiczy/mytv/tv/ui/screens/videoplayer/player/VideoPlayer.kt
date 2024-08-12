@@ -1,7 +1,6 @@
 package top.yogiczy.mytv.tv.ui.screens.videoplayer.player
 
 import android.view.SurfaceView
-import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -47,6 +46,7 @@ abstract class VideoPlayer(
     private val onBufferingListeners = mutableListOf<(buffering: Boolean) -> Unit>()
     private val onPreparedListeners = mutableListOf<() -> Unit>()
     private val onIsPlayingChanged = mutableListOf<(isPlaying: Boolean) -> Unit>()
+    private val onDurationChanged = mutableListOf<(duration: Long) -> Unit>()
     private val onCurrentPositionChanged = mutableListOf<(position: Long) -> Unit>()
     private val onMetadataListeners = mutableListOf<(metadata: Metadata) -> Unit>()
     private val onInterruptListeners = mutableListOf<() -> Unit>()
@@ -58,6 +58,7 @@ abstract class VideoPlayer(
         onBufferingListeners.clear()
         onPreparedListeners.clear()
         onIsPlayingChanged.clear()
+        onDurationChanged.clear()
         onCurrentPositionChanged.clear()
         onMetadataListeners.clear()
         onInterruptListeners.clear()
@@ -99,6 +100,10 @@ abstract class VideoPlayer(
         onIsPlayingChanged.forEach { it(isPlaying) }
     }
 
+    protected fun triggerDuration(duration: Long) {
+        onDurationChanged.forEach { it(duration) }
+    }
+
     protected fun triggerMetadata(metadata: Metadata) {
         onMetadataListeners.forEach { it(metadata) }
     }
@@ -137,6 +142,10 @@ abstract class VideoPlayer(
 
     fun onIsPlayingChanged(listener: (isPlaying: Boolean) -> Unit) {
         onIsPlayingChanged.add(listener)
+    }
+
+    fun onDurationChanged(listener: (duration: Long) -> Unit) {
+        onDurationChanged.add(listener)
     }
 
     fun onCurrentPositionChanged(listener: (position: Long) -> Unit) {

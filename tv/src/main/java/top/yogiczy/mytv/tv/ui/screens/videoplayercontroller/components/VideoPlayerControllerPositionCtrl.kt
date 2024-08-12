@@ -68,7 +68,7 @@ fun VideoPlayerControllerPositionCtrl(
         val currentPosition = currentPositionProvider()
         val endPosition = durationProvider().second
         seekToPosition = min(
-            min(endPosition, System.currentTimeMillis()),
+            if (endPosition <= 0L) Long.MAX_VALUE else min(endPosition, System.currentTimeMillis()),
             (seekToPosition ?: currentPosition) + ms
         )
     }

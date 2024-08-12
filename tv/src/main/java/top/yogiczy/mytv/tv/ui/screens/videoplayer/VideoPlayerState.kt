@@ -35,6 +35,9 @@ class VideoPlayerState(
     /** 正在播放 */
     var isPlaying by mutableStateOf(false)
 
+    /** 总时长 */
+    var duration by mutableLongStateOf(0L)
+
     /** 当前播放位置 */
     var currentPosition by mutableLongStateOf(0L)
 
@@ -108,6 +111,7 @@ class VideoPlayerState(
         }
         instance.onPrepared { }
         instance.onIsPlayingChanged { isPlaying = it }
+        instance.onDurationChanged { duration = it }
         instance.onCurrentPositionChanged { currentPosition = it }
         instance.onMetadata { metadata = it }
         instance.onInterrupt { onInterruptListeners.forEach { it.invoke() } }
