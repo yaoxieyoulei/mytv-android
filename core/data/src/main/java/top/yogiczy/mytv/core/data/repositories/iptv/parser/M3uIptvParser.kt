@@ -48,7 +48,7 @@ class M3uIptvParser : IptvParser {
                     Channel(
                         name = nameEntry.key,
                         epgName = nameEntry.value.first().channelName,
-                        urlList = nameEntry.value.map { it.url },
+                        urlList = nameEntry.value.map { it.url }.distinct(),
                         logo = nameEntry.value.first().logo
                     )
                 })
