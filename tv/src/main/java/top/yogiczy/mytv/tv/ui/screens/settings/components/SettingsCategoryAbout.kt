@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import io.sentry.Sentry
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
@@ -121,6 +122,16 @@ fun SettingsCategoryAbout(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(300.dp),
+                )
+            }
+        }
+
+        Sentry.withScope {
+            item {
+                @Suppress("UnstableApiUsage")
+                SettingsListItem(
+                    headlineContent = "设备ID",
+                    trailingContent = it.options.distinctId.toString(),
                 )
             }
         }
