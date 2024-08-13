@@ -40,12 +40,12 @@ fun ChannelUrlItem(
     modifier: Modifier = Modifier,
     urlProvider: () -> String = { "" },
     urlIdxProvider: () -> Int = { 0 },
-    selectedProvider: () -> Boolean = { false },
+    isSelectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
 ) {
     val url = urlProvider()
     val urlIdx = urlIdxProvider()
-    val selected = selectedProvider()
+    val isSelected = isSelectedProvider()
 
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -53,7 +53,7 @@ fun ChannelUrlItem(
 
     ListItem(
         modifier = modifier
-            .ifElse(selected, Modifier.focusOnLaunchedSaveable())
+            .ifElse(isSelected, Modifier.focusOnLaunchedSaveable())
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
@@ -82,7 +82,7 @@ fun ChannelUrlItem(
         },
         supportingContent = { Text(url, maxLines = 1) },
         trailingContent = {
-            RadioButton(selected = selected, onClick = {})
+            RadioButton(selected = isSelected, onClick = {})
         },
     )
 }
@@ -126,7 +126,7 @@ private fun ChannelUrlItemPreview() {
             ChannelUrlItem(
                 urlProvider = { "http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8" },
                 urlIdxProvider = { 0 },
-                selectedProvider = { true },
+                isSelectedProvider = { true },
             )
 
             ChannelUrlItem(
@@ -137,7 +137,7 @@ private fun ChannelUrlItemPreview() {
             ChannelUrlItem(
                 urlProvider = { ChannelUtil.getHybridWebViewUrl("cctv1")!!.first() },
                 urlIdxProvider = { 0 },
-                selectedProvider = { true },
+                isSelectedProvider = { true },
             )
         }
     }

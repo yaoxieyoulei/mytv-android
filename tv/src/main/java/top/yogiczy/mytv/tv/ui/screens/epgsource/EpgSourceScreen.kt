@@ -73,7 +73,7 @@ fun EpgSourceScreen(
                         Modifier.focusOnLaunchedSaveable(iptvSourceList),
                     ),
                     epgSourceProvider = { source },
-                    selectedProvider = { index == currentEpgSourceIdx },
+                    isSelectedProvider = { index == currentEpgSourceIdx },
                     onSelected = { onEpgSourceSelected(source) },
                     onDeleted = {
                         if (source == epgSourceList.last()) {

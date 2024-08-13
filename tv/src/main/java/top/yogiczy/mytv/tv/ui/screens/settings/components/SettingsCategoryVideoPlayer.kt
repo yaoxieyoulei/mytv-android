@@ -11,9 +11,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
+import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.screens.components.SelectDialog
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
-import top.yogiczy.mytv.tv.ui.utils.Configs
+import top.yogiczy.mytv.tv.ui.screens.videoplayerdiaplaymode.VideoPlayerDisplayModeScreen
 
 @Composable
 fun SettingsCategoryVideoPlayer(
@@ -22,22 +23,32 @@ fun SettingsCategoryVideoPlayer(
 ) {
     SettingsContentList(modifier) {
         item {
+            val popupManager = LocalPopupManager.current
+            var visible by remember { mutableStateOf(false) }
+
             SettingsListItem(
                 modifier = Modifier.focusRequester(it),
-                headlineContent = "全局画面比例",
-                trailingContent = when (settingsViewModel.videoPlayerAspectRatio) {
-                    Configs.VideoPlayerAspectRatio.ORIGINAL -> "原始"
-                    Configs.VideoPlayerAspectRatio.SIXTEEN_NINE -> "16:9"
-                    Configs.VideoPlayerAspectRatio.FOUR_THREE -> "4:3"
-                    Configs.VideoPlayerAspectRatio.AUTO -> "自动拉伸"
-                },
+                headlineContent = "全局显示模式",
+                trailingContent = settingsViewModel.videoPlayerDisplayMode.label,
                 onSelected = {
-                    settingsViewModel.videoPlayerAspectRatio =
-                        Configs.VideoPlayerAspectRatio.entries.let {
-                            it[(it.indexOf(settingsViewModel.videoPlayerAspectRatio) + 1) % it.size]
-                        }
+                    popupManager.push(it, true)
+                    visible = true
                 },
+                remoteConfig = true,
             )
+
+            SimplePopup(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+            ) {
+                VideoPlayerDisplayModeScreen(
+                    currentDisplayModeProvider = { settingsViewModel.videoPlayerDisplayMode },
+                    onDisplayModeChanged = {
+                        settingsViewModel.videoPlayerDisplayMode = it
+                        visible = false
+                    },
+                )
+            }
         }
 
         item {

@@ -9,6 +9,7 @@ import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.SP
+import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
 
 /**
  * 应用配置
@@ -130,8 +131,8 @@ object Configs {
         /** 播放器 加载超时 */
         VIDEO_PLAYER_LOAD_TIMEOUT,
 
-        /** 播放器 画面比例 */
-        VIDEO_PLAYER_ASPECT_RATIO,
+        /** 播放器 显示模式 */
+        VIDEO_PLAYER_DISPLAY_MODE,
     }
 
     /** ==================== 应用 ==================== */
@@ -338,12 +339,12 @@ object Configs {
         get() = SP.getLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, Constants.VIDEO_PLAYER_LOAD_TIMEOUT)
         set(value) = SP.putLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, value)
 
-    /** 播放器 画面比例 */
-    var videoPlayerAspectRatio: VideoPlayerAspectRatio
-        get() = VideoPlayerAspectRatio.fromValue(
-            SP.getInt(KEY.VIDEO_PLAYER_ASPECT_RATIO.name, VideoPlayerAspectRatio.ORIGINAL.value)
+    /** 播放器 显示模式 */
+    var videoPlayerDisplayMode: VideoPlayerDisplayMode
+        get() = VideoPlayerDisplayMode.fromValue(
+            SP.getInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, VideoPlayerDisplayMode.NORMAL.value)
         )
-        set(value) = SP.putInt(KEY.VIDEO_PLAYER_ASPECT_RATIO.name, value.value)
+        set(value) = SP.putInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, value.value)
 
     enum class UiTimeShowMode(val value: Int) {
         /** 隐藏 */
@@ -378,26 +379,6 @@ object Configs {
         companion object {
             fun fromValue(value: Int): IptvHybridMode {
                 return entries.firstOrNull { it.value == value } ?: DISABLE
-            }
-        }
-    }
-
-    enum class VideoPlayerAspectRatio(val value: Int) {
-        /** 原始 */
-        ORIGINAL(0),
-
-        /** 16:9 */
-        SIXTEEN_NINE(1),
-
-        /** 4:3 */
-        FOUR_THREE(2),
-
-        /** 自动拉伸 */
-        AUTO(3);
-
-        companion object {
-            fun fromValue(value: Int): VideoPlayerAspectRatio {
-                return entries.firstOrNull { it.value == value } ?: ORIGINAL
             }
         }
     }

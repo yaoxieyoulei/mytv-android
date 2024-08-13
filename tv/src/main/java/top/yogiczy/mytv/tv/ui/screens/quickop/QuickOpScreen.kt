@@ -46,13 +46,12 @@ fun QuickOpScreen(
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
-    videoPlayerAspectRatioProvider: () -> Float = { 16f / 9f },
     onShowEpg: () -> Unit = {},
     onShowChannelUrl: () -> Unit = {},
     onShowVideoPlayerController: () -> Unit = {},
-    onClearCache: () -> Unit = {},
-    onChangeVideoPlayerAspectRatio: (Float) -> Unit = {},
+    onShowVideoPlayerDisplayMode: () -> Unit = {},
     onShowMoreSettings: () -> Unit = {},
+    onClearCache: () -> Unit = {},
     onClose: () -> Unit = {},
 ) {
     val screenAutoCloseState = rememberScreenAutoCloseState(onTimeout = onClose)
@@ -77,13 +76,12 @@ fun QuickOpScreen(
             isInTimeShiftProvider = isInTimeShiftProvider,
             currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
             videoPlayerMetadataProvider = videoPlayerMetadataProvider,
-            videoPlayerAspectRatioProvider = videoPlayerAspectRatioProvider,
             onShowEpg = onShowEpg,
             onShowChannelUrl = onShowChannelUrl,
             onShowVideoPlayerController = onShowVideoPlayerController,
-            onClearCache = onClearCache,
-            onChangeVideoPlayerAspectRatio = onChangeVideoPlayerAspectRatio,
+            onShowVideoPlayerDisplayMode = onShowVideoPlayerDisplayMode,
             onShowMoreSettings = onShowMoreSettings,
+            onClearCache = onClearCache,
             onUserAction = { screenAutoCloseState.active() },
         )
     }
@@ -130,13 +128,12 @@ private fun QuickOpScreenBottom(
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
-    videoPlayerAspectRatioProvider: () -> Float = { 16f / 9f },
     onShowEpg: () -> Unit = {},
     onShowChannelUrl: () -> Unit = {},
     onShowVideoPlayerController: () -> Unit = {},
-    onClearCache: () -> Unit = {},
-    onChangeVideoPlayerAspectRatio: (Float) -> Unit = {},
+    onShowVideoPlayerDisplayMode: () -> Unit = {},
     onShowMoreSettings: () -> Unit = {},
+    onClearCache: () -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
@@ -171,10 +168,9 @@ private fun QuickOpScreenBottom(
                 onShowEpg = onShowEpg,
                 onShowChannelUrl = onShowChannelUrl,
                 onShowVideoPlayerController = onShowVideoPlayerController,
-                onClearCache = onClearCache,
-                videoPlayerAspectRatioProvider = videoPlayerAspectRatioProvider,
-                onChangeVideoPlayerAspectRatio = onChangeVideoPlayerAspectRatio,
+                onShowVideoPlayerDisplayMode = onShowVideoPlayerDisplayMode,
                 onShowMoreSettings = onShowMoreSettings,
+                onClearCache = onClearCache,
                 onUserAction = onUserAction,
             )
         }

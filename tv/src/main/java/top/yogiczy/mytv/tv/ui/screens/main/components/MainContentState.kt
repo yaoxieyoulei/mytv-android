@@ -97,6 +97,13 @@ class MainContentState(
             _isChannelUrlScreenVisible = value
         }
 
+    private var _isVideoPlayerDisplayModeScreenVisible by mutableStateOf(false)
+    var isVideoPlayerDisplayModeScreenVisible
+        get() = _isVideoPlayerDisplayModeScreenVisible
+        set(value) {
+            _isVideoPlayerDisplayModeScreenVisible = value
+        }
+
     init {
         val channelGroupList = channelGroupListProvider()
 

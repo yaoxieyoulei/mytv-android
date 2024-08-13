@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -40,8 +39,8 @@ import top.yogiczy.mytv.tv.ui.screens.update.UpdateScreen
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerScreen
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.rememberVideoPlayerState
 import top.yogiczy.mytv.tv.ui.screens.videoplayercontroller.VideoPlayerControllerScreen
+import top.yogiczy.mytv.tv.ui.screens.videoplayerdiaplaymode.VideoPlayerDisplayModeScreen
 import top.yogiczy.mytv.tv.ui.screens.webview.WebViewScreen
-import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.captureBackKey
 import top.yogiczy.mytv.tv.ui.utils.handleDragGestures
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -56,20 +55,9 @@ fun MainContent(
     settingsViewModel: SettingsViewModel = viewModel(),
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val configuration = LocalConfiguration.current
 
-    val videoPlayerState = rememberVideoPlayerState(
-        defaultAspectRatioProvider = {
-            when (settingsViewModel.videoPlayerAspectRatio) {
-                Configs.VideoPlayerAspectRatio.ORIGINAL -> null
-                Configs.VideoPlayerAspectRatio.SIXTEEN_NINE -> 16f / 9f
-                Configs.VideoPlayerAspectRatio.FOUR_THREE -> 4f / 3f
-                Configs.VideoPlayerAspectRatio.AUTO -> {
-                    configuration.screenHeightDp.toFloat() / configuration.screenWidthDp.toFloat()
-                }
-            }
-        }
-    )
+    val videoPlayerState =
+        rememberVideoPlayerState(defaultDisplayMode = settingsViewModel.videoPlayerDisplayMode)
     val mainContentState = rememberMainContentState(
         videoPlayerState = videoPlayerState,
         channelGroupListProvider = filteredChannelGroupListProvider,
@@ -298,6 +286,17 @@ fun MainContent(
     }
 
     PopupContent(
+        visibleProvider = { mainContentState.isVideoPlayerDisplayModeScreenVisible },
+        onDismissRequest = { mainContentState.isVideoPlayerDisplayModeScreenVisible = false },
+    ) {
+        VideoPlayerDisplayModeScreen(
+            currentDisplayModeProvider = { videoPlayerState.displayMode },
+            onDisplayModeChanged = { videoPlayerState.displayMode = it },
+            onClose = { mainContentState.isVideoPlayerDisplayModeScreenVisible = false },
+        )
+    }
+
+    PopupContent(
         visibleProvider = { mainContentState.isQuickOpScreenVisible },
         onDismissRequest = { mainContentState.isQuickOpScreenVisible = false },
     ) {
@@ -310,7 +309,6 @@ fun MainContent(
             epgListProvider = epgListProvider,
             currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
-            videoPlayerAspectRatioProvider = { videoPlayerState.aspectRatio },
             onShowEpg = {
                 mainContentState.isQuickOpScreenVisible = false
                 mainContentState.isEpgScreenVisible = true
@@ -323,6 +321,14 @@ fun MainContent(
                 mainContentState.isQuickOpScreenVisible = false
                 mainContentState.isVideoPlayerControllerScreenVisible = true
             },
+            onShowVideoPlayerDisplayMode = {
+                mainContentState.isQuickOpScreenVisible = false
+                mainContentState.isVideoPlayerDisplayModeScreenVisible = true
+            },
+            onShowMoreSettings = {
+                mainContentState.isQuickOpScreenVisible = false
+                mainContentState.isSettingsScreenVisible = true
+            },
             onClearCache = {
                 settingsViewModel.iptvPlayableHostList = emptySet()
                 coroutineScope.launch {
@@ -330,11 +336,6 @@ fun MainContent(
                     EpgRepository(settingsViewModel.epgSourceCurrent).clearCache()
                     Snackbar.show("缓存已清除，请重启应用")
                 }
-            },
-            onChangeVideoPlayerAspectRatio = { videoPlayerState.aspectRatio = it },
-            onShowMoreSettings = {
-                mainContentState.isQuickOpScreenVisible = false
-                mainContentState.isSettingsScreenVisible = true
             },
             onClose = { mainContentState.isQuickOpScreenVisible = false },
         )

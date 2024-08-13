@@ -33,10 +33,14 @@ class PopupManager {
         val last = stack.lastOrNull()
         try {
             last?.focusRequester?.requestFocus()
+            if (last?.emitter == true) stack.remove(last)
         } catch (ex: Exception) {
             ex.printStackTrace()
-        } finally {
-            if (last?.emitter == true) stack.remove(last)
+            stack.remove(last)
+            try {
+                stack.lastOrNull()?.focusRequester?.requestFocus()
+            } catch (_: Exception) {
+            }
         }
     }
 

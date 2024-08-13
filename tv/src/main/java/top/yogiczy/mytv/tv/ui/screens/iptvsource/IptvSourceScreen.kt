@@ -72,7 +72,7 @@ fun IptvSourceScreen(
                         Modifier.focusOnLaunchedSaveable(iptvSourceList),
                     ),
                     iptvSourceProvider = { source },
-                    selectedProvider = { index == currentIptvSourceIdx },
+                    isSelectedProvider = { index == currentIptvSourceIdx },
                     onSelected = { onIptvSourceSelected(source) },
                     onDeleted = {
                         if (source == iptvSourceList.last()) {

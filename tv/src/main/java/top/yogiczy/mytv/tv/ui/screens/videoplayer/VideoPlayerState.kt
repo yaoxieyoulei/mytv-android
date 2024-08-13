@@ -21,8 +21,11 @@ import top.yogiczy.mytv.tv.ui.screens.videoplayer.player.VideoPlayer
 @Stable
 class VideoPlayerState(
     private val instance: VideoPlayer,
-    private val defaultAspectRatioProvider: () -> Float? = { null },
+    private var defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.NORMAL,
 ) {
+    /** 显示模式 */
+    var displayMode by mutableStateOf(defaultDisplayMode)
+
     /** 视频宽高比 */
     var aspectRatio by mutableFloatStateOf(16f / 9f)
 
@@ -88,13 +91,7 @@ class VideoPlayerState(
     fun initialize() {
         instance.initialize()
         instance.onResolution { width, height ->
-            val defaultAspectRatio = defaultAspectRatioProvider()
-
-            if (defaultAspectRatio == null) {
-                if (width > 0 && height > 0) aspectRatio = width.toFloat() / height
-            } else {
-                aspectRatio = defaultAspectRatio
-            }
+            if (width > 0 && height > 0) aspectRatio = width.toFloat() / height
         }
         instance.onError { ex ->
             error = ex?.let { "${it.errorCodeName}(${it.errorCode})" }
@@ -109,7 +106,7 @@ class VideoPlayerState(
             isBuffering = it
             if (it) error = null
         }
-        instance.onPrepared { }
+        instance.onPrepared { displayMode = defaultDisplayMode }
         instance.onIsPlayingChanged { isPlaying = it }
         instance.onDurationChanged { duration = it }
         instance.onCurrentPositionChanged { currentPosition = it }
@@ -126,15 +123,15 @@ class VideoPlayerState(
 
 @Composable
 fun rememberVideoPlayerState(
-    defaultAspectRatioProvider: () -> Float? = { null },
+    defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.NORMAL,
 ): VideoPlayerState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
     val state = remember {
         VideoPlayerState(
-            instance = Media3VideoPlayer(context, coroutineScope),
-            defaultAspectRatioProvider = defaultAspectRatioProvider,
+            Media3VideoPlayer(context, coroutineScope),
+            defaultDisplayMode,
         )
     }
 
@@ -154,4 +151,39 @@ fun rememberVideoPlayerState(
     }
 
     return state
+}
+
+enum class VideoPlayerDisplayMode(
+    val label: String,
+    val value: Int,
+) {
+    /** 正常 */
+    NORMAL("正常", 0),
+
+    /** 全屏 */
+    FULL("全屏", 1),
+
+    /** 拉伸 */
+    ZOOM("拉伸", 2),
+
+    /** 拉伸-2.35:1 */
+    ZOOM_WIDE("拉伸-2.35:1", 3),
+
+    /** 缩小 */
+    REDUCED("缩小", 4),
+
+    /** 4:3 */
+    FOUR_THREE("4:3", 5),
+
+    /** 16:9 */
+    SIXTEEN_NINE("16:9", 6),
+
+    /** 2.35:1 */
+    WIDE("2.35:1", 7);
+
+    companion object {
+        fun fromValue(value: Int): VideoPlayerDisplayMode {
+            return entries.firstOrNull { it.value == value } ?: NORMAL
+        }
+    }
 }

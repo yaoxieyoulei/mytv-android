@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.tv.ui.screens.epgsource.components
+package top.yogiczy.mytv.tv.ui.screens.videoplayerdiaplaymode.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,21 +17,20 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
-import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
+import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
-fun EpgSourceItem(
+fun VideoPlayerDisplayModeItem(
     modifier: Modifier = Modifier,
-    epgSourceProvider: () -> EpgSource,
+    displayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.NORMAL },
     isSelectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
-    onDeleted: () -> Unit = {},
 ) {
-    val epgSource = epgSourceProvider()
+    val displayMode = displayModeProvider()
     val isSelected = isSelectedProvider()
 
     val focusRequester = remember { FocusRequester() }
@@ -46,45 +45,31 @@ fun EpgSourceItem(
                 isFocused = { isFocused },
                 focusRequester = focusRequester,
                 onSelect = onSelected,
-                onLongSelect = onDeleted,
             ),
         selected = false,
         onClick = {},
-        headlineContent = { Text(epgSource.name) },
-        supportingContent = {
-            Text(
-                epgSource.url,
-                maxLines = if (isFocused) Int.MAX_VALUE else 1,
-            )
-        },
+        headlineContent = { Text(displayMode.label) },
         trailingContent = {
-            RadioButton(selected = isSelected, onClick = onSelected)
+            RadioButton(selected = isSelected, onClick = {})
         },
     )
 }
 
 @Preview
 @Composable
-private fun EpgSourceItemPreview() {
+private fun VideoPlayerDisplayModeItemPreview() {
     MyTVTheme {
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            EpgSourceItem(
-                epgSourceProvider = {
-                    EpgSource(
-                        name = "EPG源1", url = "https://iptv-org.github.io/epg.xml"
-                    )
-                },
+            VideoPlayerDisplayModeItem(
+                displayModeProvider = { VideoPlayerDisplayMode.NORMAL },
                 isSelectedProvider = { true },
             )
-            EpgSourceItem(
-                epgSourceProvider = {
-                    EpgSource(
-                        name = "EPG源1", url = "https://iptv-org.github.io/epg.xml"
-                    )
-                },
+
+            VideoPlayerDisplayModeItem(
+                displayModeProvider = { VideoPlayerDisplayMode.NORMAL },
             )
         }
     }

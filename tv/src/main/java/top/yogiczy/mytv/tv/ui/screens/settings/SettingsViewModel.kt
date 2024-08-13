@@ -12,6 +12,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
+import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
 class SettingsViewModel : ViewModel() {
@@ -303,12 +304,12 @@ class SettingsViewModel : ViewModel() {
             Configs.videoPlayerLoadTimeout = value
         }
 
-    private var _videoPlayerAspectRatio by mutableStateOf(Configs.videoPlayerAspectRatio)
-    var videoPlayerAspectRatio: Configs.VideoPlayerAspectRatio
+    private var _videoPlayerAspectRatio by mutableStateOf(Configs.videoPlayerDisplayMode)
+    var videoPlayerDisplayMode: VideoPlayerDisplayMode
         get() = _videoPlayerAspectRatio
         set(value) {
             _videoPlayerAspectRatio = value
-            Configs.videoPlayerAspectRatio = value
+            Configs.videoPlayerDisplayMode = value
         }
 
     init {
@@ -330,6 +331,7 @@ class SettingsViewModel : ViewModel() {
         _iptvChannelChangeFlip = Configs.iptvChannelChangeFlip
         _iptvSourceCacheTime = Configs.iptvSourceCacheTime
         _iptvSourceCurrent = Configs.iptvSourceCurrent
+        _iptvSourceList = Configs.iptvSourceList
         _iptvPlayableHostList = Configs.iptvPlayableHostList
         _iptvChannelNoSelectEnable = Configs.iptvChannelNoSelectEnable
         _iptvChannelFavoriteEnable = Configs.iptvChannelFavoriteEnable
@@ -356,6 +358,6 @@ class SettingsViewModel : ViewModel() {
         _updateChannel = Configs.updateChannel
         _videoPlayerUserAgent = Configs.videoPlayerUserAgent
         _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout
-        _videoPlayerAspectRatio = Configs.videoPlayerAspectRatio
+        _videoPlayerAspectRatio = Configs.videoPlayerDisplayMode
     }
 }

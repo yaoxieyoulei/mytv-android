@@ -34,12 +34,12 @@ import top.yogiczy.mytv.tv.ui.utils.ifElse
 fun IptvSourceItem(
     modifier: Modifier = Modifier,
     iptvSourceProvider: () -> IptvSource,
-    selectedProvider: () -> Boolean = { false },
+    isSelectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
     onDeleted: () -> Unit = {},
 ) {
     val iptvSource = iptvSourceProvider()
-    val selected = selectedProvider()
+    val isSelected = isSelectedProvider()
 
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
@@ -58,7 +58,7 @@ fun IptvSourceItem(
 
     ListItem(
         modifier = modifier
-            .ifElse(selected, Modifier.focusOnLaunchedSaveable())
+            .ifElse(isSelected, Modifier.focusOnLaunchedSaveable())
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
@@ -94,7 +94,7 @@ fun IptvSourceItem(
             }
         },
         trailingContent = {
-            RadioButton(selected = selected, onClick = onSelected)
+            RadioButton(selected = isSelected, onClick = onSelected)
         },
     )
 }
@@ -114,7 +114,7 @@ private fun IptvSourceItemPreview() {
                         url = "https://gh.con.sh/https://raw.githubusercontent.com/yuanzl77/IPTV/main/live.m3u"
                     )
                 },
-                selectedProvider = { true },
+                isSelectedProvider = { true },
             )
 
             IptvSourceItem(

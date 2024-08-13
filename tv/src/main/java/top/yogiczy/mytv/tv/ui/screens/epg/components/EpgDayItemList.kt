@@ -58,7 +58,7 @@ fun EpgDayItemList(
             EpgDayItem(
                 modifier = Modifier.focusRequester(itemFocusRequesterList[index]),
                 dayProvider = { day },
-                selectedProvider = { day == currentDay },
+                isSelectedProvider = { day == currentDay },
                 onDaySelected = { onDaySelected(day) },
             )
         }

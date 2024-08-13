@@ -1,9 +1,9 @@
-package top.yogiczy.mytv.tv.ui.screens.channelurl.components
+package top.yogiczy.mytv.tv.ui.screens.videoplayerdiaplaymode.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,21 +15,22 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
-import top.yogiczy.mytv.core.data.entities.channel.Channel
+import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import kotlin.math.max
 
 @Composable
-fun ChannelUrlItemList(
+fun VideoPlayerDisplayModeItemList(
     modifier: Modifier = Modifier,
-    urlListProvider: () -> ImmutableList<String> = { persistentListOf() },
-    currentUrlProvider: () -> String = { "" },
-    onSelected: (String) -> Unit = {},
+    displayModeListProvider: () -> ImmutableList<VideoPlayerDisplayMode> = { persistentListOf() },
+    currentDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.NORMAL },
+    onSelected: (VideoPlayerDisplayMode) -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
-    val urlList = urlListProvider()
+    val displayModeList = displayModeListProvider()
 
-    val listState = rememberLazyListState(max(0, urlList.indexOf(currentUrlProvider()) - 2))
+    val listState =
+        rememberLazyListState(max(0, displayModeList.indexOf(currentDisplayModeProvider()) - 2))
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }
@@ -43,12 +44,11 @@ fun ChannelUrlItemList(
         contentPadding = PaddingValues(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        itemsIndexed(urlList) { index, url ->
-            ChannelUrlItem(
-                urlProvider = { url },
-                urlIdxProvider = { index },
-                isSelectedProvider = { url == currentUrlProvider() },
-                onSelected = { onSelected(url) },
+        items(displayModeList) { displayMode ->
+            VideoPlayerDisplayModeItem(
+                displayModeProvider = { displayMode },
+                isSelectedProvider = { displayMode == currentDisplayModeProvider() },
+                onSelected = { onSelected(displayMode) },
             )
         }
     }
@@ -56,13 +56,13 @@ fun ChannelUrlItemList(
 
 @Preview
 @Composable
-private fun ChannelUrlItemListPreview() {
+private fun VideoPlayerDisplayModeItemListPreview() {
     MyTVTheme {
-        ChannelUrlItemList(
-            urlListProvider = {
-                Channel.EXAMPLE.urlList.toPersistentList()
+        VideoPlayerDisplayModeItemList(
+            displayModeListProvider = {
+                VideoPlayerDisplayMode.entries.toPersistentList()
             },
-            currentUrlProvider = { Channel.EXAMPLE.urlList.first() },
+            currentDisplayModeProvider = { VideoPlayerDisplayMode.NORMAL },
         )
     }
 }

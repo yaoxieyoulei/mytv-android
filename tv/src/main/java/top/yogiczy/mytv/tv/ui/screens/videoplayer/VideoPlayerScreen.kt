@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,10 +36,30 @@ fun VideoPlayerScreen(
             .fillMaxSize()
             .background(Color.Black),
     ) {
+        val displayModeModifier = when (state.displayMode) {
+            VideoPlayerDisplayMode.NORMAL -> Modifier.aspectRatio(state.aspectRatio)
+            VideoPlayerDisplayMode.FULL -> Modifier.fillMaxSize()
+            VideoPlayerDisplayMode.ZOOM -> Modifier
+                .fillMaxWidth()
+                .aspectRatio(state.aspectRatio)
+
+            VideoPlayerDisplayMode.ZOOM_WIDE -> Modifier
+                .scale(1.3f)
+                .aspectRatio(2.35f / 1)
+
+            VideoPlayerDisplayMode.REDUCED -> Modifier
+                .fillMaxSize(0.65f)
+                .aspectRatio(state.aspectRatio)
+
+            VideoPlayerDisplayMode.FOUR_THREE -> Modifier.aspectRatio(4f / 3)
+            VideoPlayerDisplayMode.SIXTEEN_NINE -> Modifier.aspectRatio(16f / 9)
+            VideoPlayerDisplayMode.WIDE -> Modifier.aspectRatio(2.35f / 1)
+        }
+
         AndroidView(
             modifier = Modifier
                 .align(Alignment.Center)
-                .aspectRatio(state.aspectRatio),
+                .then(displayModeModifier),
             factory = { SurfaceView(context) },
             update = { state.setVideoSurfaceView(it) },
         )

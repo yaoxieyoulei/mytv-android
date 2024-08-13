@@ -29,7 +29,7 @@ import java.util.Locale
 fun EpgDayItem(
     modifier: Modifier = Modifier,
     dayProvider: () -> String = { "" }, // 格式：E MM-dd
-    selectedProvider: () -> Boolean = { false },
+    isSelectedProvider: () -> Boolean = { false },
     onDaySelected: () -> Unit = {},
 ) {
     val day = dayProvider()
@@ -57,7 +57,7 @@ fun EpgDayItem(
             selectedContainerColor = MaterialTheme.colorScheme.inverseSurface.copy(0.1f),
             selectedContentColor = MaterialTheme.colorScheme.onSurface,
         ),
-        selected = selectedProvider(),
+        selected = isSelectedProvider(),
         onClick = {},
         headlineContent = {
             val lines = day.split(" ")
@@ -95,7 +95,7 @@ private fun EpgDayItemPreview() {
 
             EpgDayItem(
                 dayProvider = { "周一 07-09" },
-                selectedProvider = { true },
+                isSelectedProvider = { true },
             )
         }
     }

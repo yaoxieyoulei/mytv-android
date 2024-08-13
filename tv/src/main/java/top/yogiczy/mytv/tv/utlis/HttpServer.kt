@@ -26,6 +26,7 @@ import top.yogiczy.mytv.core.util.utils.ApkInstaller
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
+import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.io.File
 import java.net.Inet4Address
@@ -182,8 +183,9 @@ object HttpServer : Loggable() {
     private fun handleConfigsGet(response: AsyncHttpServerResponse) {
         wrapResponse(response).apply {
             setContentType("application/json")
+            val json = Json { encodeDefaults = true }
             send(
-                Json.encodeToString(
+                json.encodeToString(
                     AllSettings(
                         appBootLaunch = Configs.appBootLaunch,
                         appLastLatestVersion = Configs.appLastLatestVersion,
@@ -221,7 +223,7 @@ object HttpServer : Loggable() {
                         updateChannel = Configs.updateChannel,
                         videoPlayerUserAgent = Configs.videoPlayerUserAgent,
                         videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout,
-                        videoPlayerAspectRatio = Configs.videoPlayerAspectRatio,
+                        videoPlayerDisplayMode = Configs.videoPlayerDisplayMode,
                     )
                 )
             )
@@ -272,7 +274,7 @@ object HttpServer : Loggable() {
         Configs.updateChannel = configs.updateChannel
         Configs.videoPlayerUserAgent = configs.videoPlayerUserAgent
         Configs.videoPlayerLoadTimeout = configs.videoPlayerLoadTimeout
-        Configs.videoPlayerAspectRatio = configs.videoPlayerAspectRatio
+        Configs.videoPlayerDisplayMode = configs.videoPlayerDisplayMode
 
         wrapResponse(response).send("success")
     }
@@ -382,5 +384,5 @@ private data class AllSettings(
     val updateChannel: String = "",
     val videoPlayerUserAgent: String = "",
     val videoPlayerLoadTimeout: Long = 0,
-    val videoPlayerAspectRatio: Configs.VideoPlayerAspectRatio = Configs.VideoPlayerAspectRatio.ORIGINAL,
+    val videoPlayerDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.NORMAL,
 )
