@@ -263,6 +263,14 @@ class SettingsViewModel : ViewModel() {
             Configs.uiFocusOptimize = value
         }
 
+    private var _uiScreenAutoCloseDelay by mutableLongStateOf(Configs.uiScreenAutoCloseDelay)
+    var uiScreenAutoCloseDelay: Long
+        get() = _uiScreenAutoCloseDelay
+        set(value) {
+            _uiScreenAutoCloseDelay = value
+            Configs.uiScreenAutoCloseDelay = value
+        }
+
     private var _updateForceRemind by mutableStateOf(Configs.updateForceRemind)
     var updateForceRemind: Boolean
         get() = _updateForceRemind
@@ -318,7 +326,7 @@ class SettingsViewModel : ViewModel() {
         _debugShowFps = Configs.debugShowFps
         _debugShowVideoPlayerMetadata = Configs.debugShowVideoPlayerMetadata
         _debugShowLayoutGrids = Configs.debugShowLayoutGrids
-        _iptvLastChannelIdx  = Configs.iptvLastChannelIdx
+        _iptvLastChannelIdx = Configs.iptvLastChannelIdx
         _iptvChannelChangeFlip = Configs.iptvChannelChangeFlip
         _iptvSourceCacheTime = Configs.iptvSourceCacheTime
         _iptvSourceCurrent = Configs.iptvSourceCurrent
@@ -343,6 +351,7 @@ class SettingsViewModel : ViewModel() {
         _uiFontScaleRatio = Configs.uiFontScaleRatio
         _uiTimeShowMode = Configs.uiTimeShowMode
         _uiFocusOptimize = Configs.uiFocusOptimize
+        _uiScreenAutoCloseDelay = Configs.uiScreenAutoCloseDelay
         _updateForceRemind = Configs.updateForceRemind
         _updateChannel = Configs.updateChannel
         _videoPlayerUserAgent = Configs.videoPlayerUserAgent

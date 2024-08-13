@@ -216,6 +216,7 @@ object HttpServer : Loggable() {
                         uiFontScaleRatio = Configs.uiFontScaleRatio,
                         uiTimeShowMode = Configs.uiTimeShowMode,
                         uiFocusOptimize = Configs.uiFocusOptimize,
+                        uiScreenAutoCloseDelay = Configs.uiScreenAutoCloseDelay,
                         updateForceRemind = Configs.updateForceRemind,
                         updateChannel = Configs.updateChannel,
                         videoPlayerUserAgent = Configs.videoPlayerUserAgent,
@@ -266,6 +267,7 @@ object HttpServer : Loggable() {
         Configs.uiFontScaleRatio = configs.uiFontScaleRatio
         Configs.uiTimeShowMode = configs.uiTimeShowMode
         Configs.uiFocusOptimize = configs.uiFocusOptimize
+        Configs.uiScreenAutoCloseDelay = configs.uiScreenAutoCloseDelay
         Configs.updateForceRemind = configs.updateForceRemind
         Configs.updateChannel = configs.updateChannel
         Configs.videoPlayerUserAgent = configs.videoPlayerUserAgent
@@ -373,8 +375,9 @@ private data class AllSettings(
     val uiUseClassicPanelScreen: Boolean = false,
     val uiDensityScaleRatio: Float = 0f,
     val uiFontScaleRatio: Float = 1f,
-    val uiTimeShowMode: Configs.UiTimeShowMode = Configs.UiTimeShowMode.HIDDEN, // TODO
+    val uiTimeShowMode: Configs.UiTimeShowMode = Configs.UiTimeShowMode.HIDDEN,
     val uiFocusOptimize: Boolean = false,
+    val uiScreenAutoCloseDelay: Long = 0,
     val updateForceRemind: Boolean = false,
     val updateChannel: String = "",
     val videoPlayerUserAgent: String = "",

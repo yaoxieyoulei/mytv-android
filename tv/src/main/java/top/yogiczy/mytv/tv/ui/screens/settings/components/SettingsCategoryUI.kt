@@ -13,10 +13,8 @@ import androidx.tv.material3.Switch
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
-import top.yogiczy.mytv.tv.ui.material.SimplePopup
+import top.yogiczy.mytv.tv.ui.screens.components.SelectDialog
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
-import top.yogiczy.mytv.tv.ui.screens.ui.UiDensityScaleRatioScreen
-import top.yogiczy.mytv.tv.ui.screens.ui.UiFontScaleRatioScreen
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.text.DecimalFormat
 
@@ -108,11 +106,33 @@ fun SettingsCategoryUI(
         }
 
         item {
+            val popupManager = LocalPopupManager.current
+            val focusRequester = remember { FocusRequester() }
+            var visible by remember { mutableStateOf(false) }
+
             SettingsListItem(
+                modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "超时自动关闭界面",
-                supportingContent = "影响选台界面，快捷操作界面",
-                trailingContent = Constants.UI_SCREEN_AUTO_CLOSE_DELAY.humanizeMs(),
-                locK = true,
+                supportingContent = "影响选台界面，快捷操作等界面",
+                trailingContent = settingsViewModel.uiScreenAutoCloseDelay.humanizeMs(),
+                onSelected = {
+                    popupManager.push(focusRequester, true)
+                    visible = true
+                },
+                remoteConfig = true,
+            )
+
+            SelectDialog(
+                visibleProvider = { visible },
+                onDismissRequest = { visible = false },
+                title = "超时自动关闭界面",
+                currentDataProvider = { settingsViewModel.uiScreenAutoCloseDelay },
+                dataListProvider = { listOf(5, 10, 15, 20, 25, 30).map { it.toLong() * 1000 } },
+                dataText = { it.humanizeMs() },
+                onDataSelected = {
+                    settingsViewModel.uiScreenAutoCloseDelay = it
+                    visible = false
+                },
             )
         }
 
@@ -135,20 +155,23 @@ fun SettingsCategoryUI(
                 remoteConfig = true,
             )
 
-            SimplePopup(
+            SelectDialog(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
-                withBackground = true,
-            ) {
-                UiDensityScaleRatioScreen(
-                    currentScaleRatioProvider = { settingsViewModel.uiDensityScaleRatio },
-                    onScaleRatioSelected = {
-                        settingsViewModel.uiDensityScaleRatio = it
-                        visible = false
-                    },
-                    onClose = { visible = false },
-                )
-            }
+                title = "界面整体缩放比例",
+                currentDataProvider = { settingsViewModel.uiDensityScaleRatio },
+                dataListProvider = { listOf(0f) + (5..20).map { it * 0.1f } },
+                dataText = {
+                    when (it) {
+                        0f -> "自适应"
+                        else -> "×${DecimalFormat("#.#").format(it)}"
+                    }
+                },
+                onDataSelected = {
+                    settingsViewModel.uiDensityScaleRatio = it
+                    visible = false
+                },
+            )
         }
 
         item {
@@ -167,20 +190,18 @@ fun SettingsCategoryUI(
                 remoteConfig = true,
             )
 
-            SimplePopup(
+            SelectDialog(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
-                withBackground = true,
-            ) {
-                UiFontScaleRatioScreen(
-                    currentScaleRatioProvider = { settingsViewModel.uiFontScaleRatio },
-                    onScaleRatioSelected = {
-                        settingsViewModel.uiFontScaleRatio = it
-                        visible = false
-                    },
-                    onClose = { visible = false },
-                )
-            }
+                title = "界面字体缩放比例",
+                currentDataProvider = { settingsViewModel.uiFontScaleRatio },
+                dataListProvider = { (5..20).map { it * 0.1f } },
+                dataText = { "×${DecimalFormat("#.#").format(it)}" },
+                onDataSelected = {
+                    settingsViewModel.uiFontScaleRatio = it
+                    visible = false
+                },
+            )
         }
 
         item {

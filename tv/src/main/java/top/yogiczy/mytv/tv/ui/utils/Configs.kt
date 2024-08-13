@@ -113,6 +113,9 @@ object Configs {
         /** 焦点优化 */
         UI_FOCUS_OPTIMIZE,
 
+        /** 自动关闭界面延时 */
+        UI_SCREEN_AUTO_CLOSE_DELAY,
+
         /** ==================== 更新 ==================== */
         /** 更新强提醒 */
         UPDATE_FORCE_REMIND,
@@ -304,6 +307,12 @@ object Configs {
     var uiFocusOptimize: Boolean
         get() = SP.getBoolean(KEY.UI_FOCUS_OPTIMIZE.name, true)
         set(value) = SP.putBoolean(KEY.UI_FOCUS_OPTIMIZE.name, value)
+
+    /** 自动关闭界面延时 */
+    var uiScreenAutoCloseDelay: Long
+        get() =
+            SP.getLong(KEY.UI_SCREEN_AUTO_CLOSE_DELAY.name, Constants.UI_SCREEN_AUTO_CLOSE_DELAY)
+        set(value) = SP.putLong(KEY.UI_SCREEN_AUTO_CLOSE_DELAY.name, value)
 
     /** ==================== 更新 ==================== */
     /** 更新强提醒 */
