@@ -311,4 +311,42 @@ class SettingsViewModel : ViewModel() {
             }
         )
     }
+
+    fun refresh() {
+        _appBootLaunch = Configs.appBootLaunch
+        _appLastLatestVersion = Configs.appLastLatestVersion
+        _debugShowFps = Configs.debugShowFps
+        _debugShowVideoPlayerMetadata = Configs.debugShowVideoPlayerMetadata
+        _debugShowLayoutGrids = Configs.debugShowLayoutGrids
+        _iptvLastChannelIdx  = Configs.iptvLastChannelIdx
+        _iptvChannelChangeFlip = Configs.iptvChannelChangeFlip
+        _iptvSourceCacheTime = Configs.iptvSourceCacheTime
+        _iptvSourceCurrent = Configs.iptvSourceCurrent
+        _iptvPlayableHostList = Configs.iptvPlayableHostList
+        _iptvChannelNoSelectEnable = Configs.iptvChannelNoSelectEnable
+        _iptvChannelFavoriteEnable = Configs.iptvChannelFavoriteEnable
+        _iptvChannelFavoriteListVisible = Configs.iptvChannelFavoriteListVisible
+        _iptvChannelFavoriteList = Configs.iptvChannelFavoriteList
+        _iptvChannelFavoriteChangeBoundaryJumpOut = Configs.iptvChannelFavoriteChangeBoundaryJumpOut
+        _iptvChannelGroupHiddenList = Configs.iptvChannelGroupHiddenList
+        _iptvHybridMode = Configs.iptvHybridMode
+        _epgEnable = Configs.epgEnable
+        _epgSourceCurrent = Configs.epgSourceCurrent
+        _epgSourceList = Configs.epgSourceList
+        _epgRefreshTimeThreshold = Configs.epgRefreshTimeThreshold
+        _epgChannelReserveList = Configs.epgChannelReserveList
+        _uiShowEpgProgrammeProgress = Configs.uiShowEpgProgrammeProgress
+        _uiShowEpgProgrammePermanentProgress = Configs.uiShowEpgProgrammePermanentProgress
+        _uiShowChannelLogo = Configs.uiShowChannelLogo
+        _uiUseClassicPanelScreen = Configs.uiUseClassicPanelScreen
+        _uiDensityScaleRatio = Configs.uiDensityScaleRatio
+        _uiFontScaleRatio = Configs.uiFontScaleRatio
+        _uiTimeShowMode = Configs.uiTimeShowMode
+        _uiFocusOptimize = Configs.uiFocusOptimize
+        _updateForceRemind = Configs.updateForceRemind
+        _updateChannel = Configs.updateChannel
+        _videoPlayerUserAgent = Configs.videoPlayerUserAgent
+        _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout
+        _videoPlayerAspectRatio = Configs.videoPlayerAspectRatio
+    }
 }

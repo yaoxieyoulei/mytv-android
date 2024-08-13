@@ -32,10 +32,10 @@
 <body>
     <div class="min-h-100vh pt-46px pb-66px" id="app">
         <van-config-provider :theme="isDark ? 'dark' : undefined">
-            <template v-if="settings">
+            <template v-if="info">
                 <div class="p-20px pt-0">
-                    <div class="ml-16px text-32px">{{ settings.appTitle }}</div>
-                    <div class="ml-16px text-gray text-14px">{{ settings.appRepo }}</div>
+                    <div class="ml-16px text-32px">{{ info.appTitle }}</div>
+                    <div class="ml-16px text-gray text-14px">{{ info.appRepo }}</div>
                 </div>
 
                 <template v-if="tabActive === 'config'">
@@ -78,7 +78,8 @@
 
                                         <van-field label="上传" class="!pl-0" input-align="right">
                                             <template #input>
-                                                <van-uploader :after-read="uploadIptvSourceContentAfterRead" accept=".txt,.m3u" />
+                                                <van-uploader :after-read="uploadIptvSourceContentAfterRead"
+                                                    accept=".txt,.m3u" />
                                             </template>
                                         </van-field>
                                     </template>
@@ -119,16 +120,15 @@
                         <van-cell title="自定义UA">
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
-                                    <van-field class="!p-0" placeholder="置为空时，将恢复默认"
-                                        v-model="settings.videoPlayerUserAgent" type="textarea" rows="2"></van-field>
-                                </van-space>
-                            </template>
+                                    <van-field class="!p-0" placeholder="播放器自定义UA" v-model="videoPlayerUserAgent"
+                                        type="textarea" rows="2"></van-field>
 
-                            <template #extra>
-                                <van-button
-                                    @click="settings.epgXmlCachedAt = 0; settings.epgCachedHash = 0; confirmSettings()"
-                                    size="small" type="primary">推送
-                                </van-button>
+                                    <div class="flex justify-end">
+                                        <van-button @click="pushVideoPlayerUserAgent" size="small" type="primary">
+                                            推送
+                                        </van-button>
+                                    </div>
+                                </van-space>
                             </template>
                         </van-cell>
                     </van-cell-group>
@@ -144,7 +144,7 @@
 
                 <template v-else-if="tabActive === 'log'">
                     <van-list>
-                        <van-cell v-for="item in settings.logHistory" :key="item.time" :label="item.cause">
+                        <van-cell v-for="item in info.logHistory" :key="item.time" :label="item.cause">
                             <template #title>
                                 <div class="flex flex-col gap-1">
                                     <div class="flex gap-1 items-center">
@@ -175,7 +175,7 @@
     <script>
         const { createApp, ref, onMounted, watch, nextTick } = Vue
 
-        //const baseUrl = "http://127.0.0.1:10481"
+        // const baseUrl = "http://127.0.0.1:10481"
         const baseUrl = ""
 
         async function requestApi(url, config) {
@@ -195,6 +195,19 @@
                 const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 
                 const tabActive = ref('config')
+
+                const info = ref()
+                async function refreshInfo() {
+                    try {
+                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
+                        info.value = await (await requestApi('/api/info')).json()
+                        info.value.logHistory = info.value.logHistory.reverse()
+                        vant.closeToast()
+                    } catch (e) {
+                        vant.showFailToast('无法获取信息')
+                        console.error(e)
+                    }
+                }
 
                 const iptvSource = ref({
                     name: `添加于${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
@@ -237,6 +250,15 @@
                         console.error(e)
                     }
                 }
+                async function uploadIptvSourceContentAfterRead(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const content = e.target.result;
+                        iptvSource.value.content = content;
+                    };
+                    reader.readAsText(file.file);
+                }
+
 
                 const epgSource = ref({ name: `添加于${dayjs().format('YYYY-MM-DD HH:mm:ss')}`, url: '' })
                 async function pushEpgSource() {
@@ -264,39 +286,26 @@
                     }
                 }
 
-                const settings = ref()
-                async function confirmSettings() {
+                const videoPlayerUserAgent = ref('')
+                async function pushVideoPlayerUserAgent() {
+                    if (!videoPlayerUserAgent.value) {
+                        vant.showFailToast('请填写播放器自定义UA')
+                        return
+                    }
+
                     try {
                         vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
-                        await requestApi('/api/settings', {
+                        await requestApi('/api/video-player-user-agent/push', {
                             method: "POST",
-                            body: JSON.stringify({ ...settings.value, logHistory: undefined }),
+                            body: JSON.stringify({ ua: videoPlayerUserAgent.value }),
                             headers: { 'Content-Type': 'application/json' }
                         })
-                        await refreshSettings()
-                        vant.closeToast()
+                        vant.showSuccessToast("推送UA成功")
                     } catch (e) {
-                        vant.showFailToast('无法修改设置')
-                        console.error(e)
-                        refreshSettings()
-                    }
-                }
-                async function refreshSettings() {
-                    try {
-                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
-                        settings.value = await (await requestApi('/api/settings')).json()
-                        settings.value.logHistory = settings.value.logHistory.reverse()
-                        vant.closeToast()
-                    } catch (e) {
-                        vant.showFailToast('无法获取设置')
+                        vant.showFailToast('推送UA失败')
                         console.error(e)
                     }
                 }
-
-
-                onMounted(async () => {
-                    await refreshSettings()
-                })
 
                 async function uploadApkAfterRead(file) {
                     try {
@@ -311,27 +320,23 @@
                     }
                 }
 
-                async function uploadIptvSourceContentAfterRead(file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const content = e.target.result;
-                        iptvSource.value.content = content;
-                    };
-                    reader.readAsText(file.file);
-                }
+                onMounted(async () => {
+                    await refreshInfo()
+                })
 
                 return {
                     dayjs,
                     isDark,
                     tabActive,
+                    info,
                     iptvSource,
                     pushIptvSource,
+                    uploadIptvSourceContentAfterRead,
                     epgSource,
                     pushEpgSource,
-                    settings,
-                    confirmSettings,
+                    videoPlayerUserAgent,
+                    pushVideoPlayerUserAgent,
                     uploadApkAfterRead,
-                    uploadIptvSourceContentAfterRead,
                 }
             }
         })

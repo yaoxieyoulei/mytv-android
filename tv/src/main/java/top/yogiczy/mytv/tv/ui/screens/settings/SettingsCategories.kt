@@ -3,6 +3,7 @@ package top.yogiczy.mytv.tv.ui.screens.settings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DisplaySettings
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Http
@@ -32,5 +33,5 @@ enum class SettingsCategories(
     HTTP(Icons.Default.Http, "网络"),
     DEBUG(Icons.Default.BugReport, "调试"),
     LOG(Icons.Default.FormatListNumbered, "日志"),
-    MORE(Icons.Default.MoreHoriz, "更多设置"),
+    MORE(Icons.Default.CloudUpload, "推送"),
 }

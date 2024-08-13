@@ -19,7 +19,7 @@ import top.yogiczy.mytv.tv.ui.screens.components.Qrcode
 import top.yogiczy.mytv.tv.utlis.HttpServer
 
 @Composable
-fun SettingsCategoryMore(
+fun SettingsCategoryPush(
     modifier: Modifier = Modifier,
 ) {
     val serverUrl: String = HttpServer.serverUrl
@@ -28,7 +28,7 @@ fun SettingsCategoryMore(
         item {
             SettingsListItem(
                 modifier = Modifier.focusRequester(it),
-                headlineContent = "设置页面",
+                headlineContent = "推送页面",
                 trailingContent = serverUrl,
             )
         }

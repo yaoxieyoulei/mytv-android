@@ -43,7 +43,7 @@ fun SettingsCategoryContent(
             SettingsCategories.HTTP -> SettingsCategoryHttp()
             SettingsCategories.DEBUG -> SettingsCategoryDebug()
             SettingsCategories.LOG -> SettingsCategoryLog()
-            SettingsCategories.MORE -> SettingsCategoryMore()
+            SettingsCategories.MORE -> SettingsCategoryPush()
         }
     }
 }

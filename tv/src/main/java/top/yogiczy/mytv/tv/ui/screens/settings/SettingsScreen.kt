@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,7 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.MaterialTheme
+import kotlinx.coroutines.delay
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.settings.components.SettingsCategoryContent
@@ -28,10 +31,17 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     onClose: () -> Unit = {},
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) {
     val childPadding = rememberChildPadding()
-
     var currentCategory by remember { mutableStateOf(SettingsCategories.entries.first()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            settingsViewModel.refresh()
+        }
+    }
 
     Box(
         modifier = modifier

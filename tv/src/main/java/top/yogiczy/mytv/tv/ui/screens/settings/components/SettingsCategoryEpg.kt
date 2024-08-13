@@ -19,7 +19,6 @@ import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.screens.components.SelectDialog
 import top.yogiczy.mytv.tv.ui.screens.epgsource.EpgSourceScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
-import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Composable
 fun SettingsCategoryEpg(
@@ -97,10 +96,7 @@ fun SettingsCategoryEpg(
                 withBackground = true,
             ) {
                 EpgSourceScreen(
-                    epgSourceListProvider = {
-                        settingsViewModel.epgSourceList = Configs.epgSourceList
-                        settingsViewModel.epgSourceList
-                    },
+                    epgSourceListProvider = { settingsViewModel.epgSourceList },
                     currentEpgSourceProvider = { settingsViewModel.epgSourceCurrent },
                     onEpgSourceSelected = {
                         isEpgSourceScreenVisible = false

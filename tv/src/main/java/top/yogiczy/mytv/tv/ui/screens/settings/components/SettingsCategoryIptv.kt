@@ -145,10 +145,7 @@ fun SettingsCategoryIptv(
                 withBackground = true,
             ) {
                 IptvSourceScreen(
-                    iptvSourceListProvider = {
-                        settingsViewModel.iptvSourceList = Configs.iptvSourceList
-                        settingsViewModel.iptvSourceList
-                    },
+                    iptvSourceListProvider = { settingsViewModel.iptvSourceList },
                     currentIptvSourceProvider = { settingsViewModel.iptvSourceCurrent },
                     onIptvSourceSelected = {
                         isIptvSourceScreenVisible = false
