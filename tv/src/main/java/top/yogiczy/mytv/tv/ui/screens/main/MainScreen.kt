@@ -29,8 +29,6 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
-import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
-import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.main.components.MainContent
@@ -51,31 +49,25 @@ fun MainScreen(
 ) {
     val uiState by mainViewModel.uiState.collectAsState()
 
-    PopupHandleableApplication {
-        when (val s = uiState) {
-            is MainUiState.Ready -> MainContent(
-                modifier = modifier,
-                channelGroupListProvider = { s.channelGroupList },
-                filteredChannelGroupListProvider = {
-                    ChannelGroupList(s.channelGroupList.filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
-                },
-                epgListProvider = { s.epgList },
-                onBackPressed = onBackPressed,
-            )
+    when (val s = uiState) {
+        is MainUiState.Ready -> MainContent(
+            modifier = modifier,
+            channelGroupListProvider = { s.channelGroupList },
+            filteredChannelGroupListProvider = {
+                ChannelGroupList(s.channelGroupList.filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
+            },
+            epgListProvider = { s.epgList },
+            onBackPressed = onBackPressed,
+        )
 
-            is MainUiState.Loading -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
-                MainScreenLoading(messageProvider = { s.message })
-            }
+        is MainUiState.Loading -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
+            MainScreenLoading(messageProvider = { s.message })
+        }
 
-            is MainUiState.Error -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
-                MainScreenError(messageProvider = { s.message })
-            }
+        is MainUiState.Error -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
+            MainScreenError(messageProvider = { s.message })
         }
     }
-
-    SnackbarUI()
-
-    Visible({ settingsViewModel.debugShowLayoutGrids }) { PreviewWithLayoutGrids { } }
 }
 
 @Composable

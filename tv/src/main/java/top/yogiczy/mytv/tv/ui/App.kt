@@ -24,12 +24,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import top.yogiczy.mytv.tv.ui.material.Padding
+import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.material.SnackbarUI
+import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.screens.agreement.AgreementScreen
 import top.yogiczy.mytv.tv.ui.screens.main.MainScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettingsCurrent
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 
 @Composable
 fun App(
@@ -52,24 +56,29 @@ fun App(
             uiFocusOptimize = settingsViewModel.uiFocusOptimize,
         ),
     ) {
-        if (settingsViewModel.appAgreementAgreed) {
-            MainScreen(
-                modifier = modifier,
-                onBackPressed = {
-                    if (doubleBackPressedExitState.allowExit) {
-                        onBackPressed()
-                    } else {
-                        doubleBackPressedExitState.backPress()
-                        Snackbar.show("再按一次退出")
-                    }
-                },
-            )
-        } else {
-            AgreementScreen(
-                onAgree = { settingsViewModel.appAgreementAgreed = true },
-                onDisagree = { onBackPressed() },
-            )
+        PopupHandleableApplication {
+            if (settingsViewModel.appAgreementAgreed) {
+                MainScreen(
+                    modifier = modifier,
+                    onBackPressed = {
+                        if (doubleBackPressedExitState.allowExit) {
+                            onBackPressed()
+                        } else {
+                            doubleBackPressedExitState.backPress()
+                            Snackbar.show("再按一次退出")
+                        }
+                    },
+                )
+            } else {
+                AgreementScreen(
+                    onAgree = { settingsViewModel.appAgreementAgreed = true },
+                    onDisagree = { onBackPressed() },
+                )
+            }
         }
+
+        SnackbarUI()
+        Visible({ settingsViewModel.debugShowLayoutGrids }) { PreviewWithLayoutGrids { } }
     }
 }
 
