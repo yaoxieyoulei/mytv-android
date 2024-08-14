@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screens.classicchannel.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -209,9 +210,19 @@ private fun ClassicChannelItem(
                 ),
                 selected = isSelectedProvider(),
                 onClick = {},
-                headlineContent = { Text(channel.name, maxLines = 1) },
+                headlineContent = {
+                    Text(
+                        channel.name,
+                        maxLines = 1,
+                        modifier = Modifier.ifElse(isFocused, Modifier.basicMarquee()),
+                    )
+                },
                 supportingContent = {
-                    Text(text = nowEpgProgramme?.title ?: "无节目", maxLines = 1)
+                    Text(
+                        text = nowEpgProgramme?.title ?: "无节目",
+                        maxLines = 1,
+                        modifier = Modifier.ifElse(isFocused, Modifier.basicMarquee()),
+                    )
                 },
             )
 

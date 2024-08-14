@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screens.channelgroup
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -138,7 +139,10 @@ private fun ChannelGroupManageItem(
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                modifier = Modifier.padding(end = 8.dp).fillMaxWidth(0.8f),
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .fillMaxWidth(0.8f)
+                    .ifElse(isFocused, Modifier.basicMarquee()),
             )
 
             if (isHidden) {

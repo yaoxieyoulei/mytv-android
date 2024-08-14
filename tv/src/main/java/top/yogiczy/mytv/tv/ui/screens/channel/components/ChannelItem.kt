@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.screens.channel.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
 fun ChannelItem(
@@ -102,6 +104,7 @@ fun ChannelItem(
                 ChannelItemContent(
                     channelProvider = channelProvider,
                     recentEpgProgrammeProvider = recentEpgProgrammeProvider,
+                    isFocusedProvider = { isFocused },
                 )
 
                 ChannelItemProgress(
@@ -120,9 +123,11 @@ private fun ChannelItemContent(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
+    isFocusedProvider: () -> Boolean = { false },
 ) {
     val channel = channelProvider()
     val recentEpgProgramme = recentEpgProgrammeProvider()
+    val isFocused = isFocusedProvider()
 
     Column(
         modifier = modifier
@@ -134,12 +139,15 @@ private fun ChannelItemContent(
             channel.name,
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
+            modifier = Modifier.ifElse(isFocused, Modifier.basicMarquee()),
         )
         Text(
             recentEpgProgramme?.now?.title ?: "",
             style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.alpha(0.8f),
             maxLines = 1,
+            modifier = Modifier
+                .alpha(0.8f)
+                .ifElse(isFocused, Modifier.basicMarquee()),
         )
     }
 }

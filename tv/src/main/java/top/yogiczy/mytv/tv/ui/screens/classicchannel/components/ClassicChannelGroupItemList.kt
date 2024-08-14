@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screens.classicchannel.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -130,7 +131,9 @@ private fun ClassicChannelGroupItem(
                 text = channelGroup.name,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .ifElse(isFocused, Modifier.basicMarquee()),
             )
         },
     )
