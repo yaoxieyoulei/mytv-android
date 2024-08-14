@@ -23,10 +23,9 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
-import top.yogiczy.mytv.tv.ui.screens.components.QrcodeDialog
+import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
-import top.yogiczy.mytv.tv.utlis.HttpServer
 
 @Composable
 fun SettingsListItem(
@@ -44,7 +43,7 @@ fun SettingsListItem(
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
-    var showServerUrlDialog by remember { mutableStateOf(false) }
+    var showPush by remember { mutableStateOf(false) }
 
     ListItem(
         selected = false,
@@ -88,19 +87,20 @@ fun SettingsListItem(
                     if (onSelected != null) onSelected()
                     else if (remoteConfig) {
                         popupManager.push(focusRequester, true)
-                        showServerUrlDialog = true
+                        showPush = true
                     }
                 },
                 onLongSelect = { onLongSelected() },
             ),
     )
 
-    QrcodeDialog(
-        textProvider = { HttpServer.serverUrl },
-        descriptionProvider = { "扫码前往设置页面" },
-        showDialogProvider = { showServerUrlDialog },
-        onDismissRequest = { showServerUrlDialog = false },
-    )
+    SimplePopup(
+        visibleProvider = { showPush },
+        onDismissRequest = { showPush = false },
+        withBackground = true,
+    ) {
+        SettingsCategoryPush()
+    }
 }
 
 @Composable

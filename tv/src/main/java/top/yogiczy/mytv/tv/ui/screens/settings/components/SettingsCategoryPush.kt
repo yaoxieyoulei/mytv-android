@@ -1,20 +1,16 @@
 package top.yogiczy.mytv.tv.ui.screens.settings.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
+import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.screens.components.Qrcode
 import top.yogiczy.mytv.tv.utlis.HttpServer
 
@@ -24,36 +20,21 @@ fun SettingsCategoryPush(
 ) {
     val serverUrl: String = HttpServer.serverUrl
 
-    SettingsContentList(modifier) {
-        item {
-            SettingsListItem(
-                modifier = Modifier.focusRequester(it),
-                headlineContent = "推送页面",
-                trailingContent = serverUrl,
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Qrcode(
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
+                    .width(200.dp)
+                    .height(200.dp),
+                textProvider = { serverUrl },
             )
-        }
 
-        item {
-            var show by remember { mutableStateOf(false) }
-
-            LaunchedEffect(Unit) {
-                delay(100)
-                show = true
-            }
-
-            if (show) {
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Qrcode(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(200.dp),
-                        textProvider = { serverUrl },
-                    )
-                }
-            }
+            Text("服务已启动：${serverUrl}")
+            Text("请使用手机扫描上方二维码")
         }
     }
 }

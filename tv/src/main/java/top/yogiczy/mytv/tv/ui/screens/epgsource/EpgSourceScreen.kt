@@ -27,15 +27,15 @@ import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.material.Drawer
 import top.yogiczy.mytv.tv.ui.material.DrawerPosition
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
-import top.yogiczy.mytv.tv.ui.screens.components.QrcodeDialog
+import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.screens.epgsource.components.EpgSourceItem
+import top.yogiczy.mytv.tv.ui.screens.settings.components.SettingsCategoryPush
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.Configs.iptvSourceList
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
-import top.yogiczy.mytv.tv.utlis.HttpServer
 import kotlin.math.max
 
 @Composable
@@ -88,7 +88,7 @@ fun EpgSourceScreen(
                 val popupManager = LocalPopupManager.current
                 val focusRequester = remember { FocusRequester() }
                 var isFocused by remember { mutableStateOf(false) }
-                var showDialog by remember { mutableStateOf(false) }
+                var showPush by remember { mutableStateOf(false) }
 
                 ListItem(
                     modifier = modifier
@@ -99,7 +99,7 @@ fun EpgSourceScreen(
                             focusRequester = focusRequester,
                             onSelect = {
                                 popupManager.push(focusRequester, true)
-                                showDialog = true
+                                showPush = true
                             },
                         ),
                     selected = false,
@@ -109,12 +109,13 @@ fun EpgSourceScreen(
                     },
                 )
 
-                QrcodeDialog(
-                    textProvider = { HttpServer.serverUrl },
-                    descriptionProvider = { "扫码前往设置页面" },
-                    showDialogProvider = { showDialog },
-                    onDismissRequest = { showDialog = false },
-                )
+                SimplePopup(
+                    visibleProvider = { showPush },
+                    onDismissRequest = { showPush = false },
+                    withBackground = true,
+                ) {
+                    SettingsCategoryPush()
+                }
             }
         }
     }
