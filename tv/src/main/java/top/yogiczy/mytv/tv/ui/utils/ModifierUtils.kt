@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -11,12 +12,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -250,20 +251,12 @@ fun Modifier.captureBackKey(onBackPressed: () -> Unit) = this.onPreviewKeyEvent 
     }
 }
 
-
-@OptIn(ExperimentalComposeUiApi::class)
-fun Modifier.saveFocusedChild(): Modifier = composed {
-    val focusRequester = remember { FocusRequester() }
-
-    focusRequester(focusRequester)
-        .focusProperties {
-            exit = {
-                focusRequester.saveFocusedChild()
-                FocusRequester.Default
-            }
-            enter = {
-                if (focusRequester.restoreFocusedChild()) FocusRequester.Cancel
-                else FocusRequester.Default
-            }
-        }
-}
+fun Modifier.customBackground() = background(
+    brush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF141e30),
+            Color(0xFF243b55),
+            Color(0xFF141e30)
+        ),
+    )
+)

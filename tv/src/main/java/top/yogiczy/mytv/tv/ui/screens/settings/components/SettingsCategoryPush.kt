@@ -34,7 +34,7 @@ fun SettingsCategoryPush(
             )
 
             Text("服务已启动：${serverUrl}")
-            Text("请使用手机扫描上方二维码")
+            Text("请扫描二维码或输入IP地址进行连接")
         }
     }
 }

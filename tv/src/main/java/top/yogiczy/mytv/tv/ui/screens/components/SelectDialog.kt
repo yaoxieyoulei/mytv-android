@@ -55,7 +55,6 @@ fun <T> SelectDialog(
     SimplePopup(
         visibleProvider = visibleProvider,
         onDismissRequest = onDismissRequest,
-        withBackground = true,
     ) {
         Drawer(
             position = DrawerPosition.Bottom,

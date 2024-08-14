@@ -95,7 +95,6 @@ fun SimplePopup(
     modifier: Modifier = Modifier,
     visibleProvider: () -> Boolean,
     onDismissRequest: (() -> Unit)? = null,
-    withBackground: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val visible = visibleProvider()
@@ -111,7 +110,7 @@ fun SimplePopup(
                         modifier = modifier,
                         visibleProvider = visibleProvider,
                         onDismissRequest = onDismissRequest,
-                        withBackground = withBackground,
+                        withBackground = true,
                         content = content,
                     )
                 },

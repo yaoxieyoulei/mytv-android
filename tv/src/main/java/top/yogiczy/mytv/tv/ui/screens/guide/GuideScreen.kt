@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.tv.ui.screens.guide
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import top.yogiczy.mytv.tv.ui.screens.guide.components.LocalGuideTvRemoteActiveK
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.captureBackKey
+import top.yogiczy.mytv.tv.ui.utils.customBackground
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
@@ -45,7 +45,7 @@ fun GuideScreen(
     Row(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .customBackground()
             .captureBackKey { onClose() }
             .pointerInput(Unit) { detectTapGestures { } }
             .padding(horizontal = 130.dp, vertical = 70.dp),

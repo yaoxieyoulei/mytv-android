@@ -111,7 +111,6 @@ fun IptvSourceScreen(
                 SimplePopup(
                     visibleProvider = { showPush },
                     onDismissRequest = { showPush = false },
-                    withBackground = true,
                 ) {
                     SettingsCategoryPush()
                 }

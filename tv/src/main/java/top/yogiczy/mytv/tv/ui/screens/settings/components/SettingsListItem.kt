@@ -97,7 +97,6 @@ fun SettingsListItem(
     SimplePopup(
         visibleProvider = { showPush },
         onDismissRequest = { showPush = false },
-        withBackground = true,
     ) {
         SettingsCategoryPush()
     }

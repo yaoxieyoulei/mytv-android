@@ -3,7 +3,13 @@ package top.yogiczy.mytv.tv.ui.screens.settings.components
 import android.content.Context
 import android.content.pm.PackageInfo
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.runtime.Composable
@@ -18,12 +24,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.Text
 import io.sentry.Sentry
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
-import top.yogiczy.mytv.tv.ui.screens.components.QrcodeDialog
+import top.yogiczy.mytv.tv.ui.screens.components.Qrcode
 import top.yogiczy.mytv.tv.ui.screens.guide.GuideScreen
 
 @Composable
@@ -63,12 +70,27 @@ fun SettingsCategoryAbout(
                 },
             )
 
-            QrcodeDialog(
-                textProvider = { Constants.APP_REPO },
-                descriptionProvider = { "扫码前往代码仓库" },
-                showDialogProvider = { showDialog },
+            SimplePopup(
+                visibleProvider = { showDialog },
                 onDismissRequest = { showDialog = false },
-            )
+            ) {
+                Box(modifier = modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Qrcode(
+                            modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .width(200.dp)
+                                .height(200.dp),
+                            textProvider = { Constants.APP_REPO },
+                        )
+
+                        Text("扫码前往代码仓库")
+                    }
+                }
+            }
         }
 
         item {
@@ -112,7 +134,6 @@ fun SettingsCategoryAbout(
             SimplePopup(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
-                withBackground = true,
             ) {
                 val painter = painterResource(R.drawable.mm_reward_qrcode)
 

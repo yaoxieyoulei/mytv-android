@@ -142,7 +142,6 @@ fun SettingsCategoryIptv(
             SimplePopup(
                 visibleProvider = { isIptvSourceScreenVisible },
                 onDismissRequest = { isIptvSourceScreenVisible = false },
-                withBackground = true,
             ) {
                 IptvSourceScreen(
                     iptvSourceListProvider = { settingsViewModel.iptvSourceList },
@@ -185,7 +184,6 @@ fun SettingsCategoryIptv(
             SimplePopup(
                 visibleProvider = { visible },
                 onDismissRequest = { visible = false },
-                withBackground = true,
             ) {
                 ChannelGroupManageScreen(
                     channelGroupListProvider = {

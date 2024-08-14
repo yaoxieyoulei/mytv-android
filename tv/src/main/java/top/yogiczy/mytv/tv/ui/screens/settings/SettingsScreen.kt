@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.tv.ui.screens.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,13 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.tv.material3.MaterialTheme
 import kotlinx.coroutines.delay
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.settings.components.SettingsCategoryContent
 import top.yogiczy.mytv.tv.ui.screens.settings.components.SettingsCategoryList
 import top.yogiczy.mytv.tv.ui.utils.captureBackKey
+import top.yogiczy.mytv.tv.ui.utils.customBackground
 
 @Composable
 fun SettingsScreen(
@@ -48,7 +47,7 @@ fun SettingsScreen(
             .captureBackKey { onClose() }
             .pointerInput(Unit) { detectTapGestures { } }
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .customBackground()
             .padding(start = childPadding.start, end = childPadding.end),
     ) {
         Row(

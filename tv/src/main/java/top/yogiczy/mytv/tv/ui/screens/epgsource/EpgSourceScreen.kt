@@ -112,7 +112,6 @@ fun EpgSourceScreen(
                 SimplePopup(
                     visibleProvider = { showPush },
                     onDismissRequest = { showPush = false },
-                    withBackground = true,
                 ) {
                     SettingsCategoryPush()
                 }

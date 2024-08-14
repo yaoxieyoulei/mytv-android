@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.tv.ui.screens.update.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.tv.material3.WideButton
 import top.yogiczy.mytv.core.data.entities.git.GitRelease
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.customBackground
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
@@ -34,7 +34,7 @@ fun UpdateContent(
     Row(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .customBackground()
             .padding(horizontal = 130.dp, vertical = 88.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
