@@ -292,6 +292,11 @@ fun MainContent(
         VideoPlayerDisplayModeScreen(
             currentDisplayModeProvider = { videoPlayerState.displayMode },
             onDisplayModeChanged = { videoPlayerState.displayMode = it },
+            onApplyToGlobal = {
+                mainContentState.isVideoPlayerDisplayModeScreenVisible = false
+                settingsViewModel.videoPlayerDisplayMode = videoPlayerState.displayMode
+                Snackbar.show("已应用到全局")
+            },
             onClose = { mainContentState.isVideoPlayerDisplayModeScreenVisible = false },
         )
     }

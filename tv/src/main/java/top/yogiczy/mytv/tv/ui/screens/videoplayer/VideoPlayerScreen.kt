@@ -4,6 +4,7 @@ import android.view.SurfaceView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,10 +46,11 @@ fun VideoPlayerScreen(
 
             VideoPlayerDisplayMode.ZOOM_WIDE -> Modifier
                 .scale(1.3f)
+                .fillMaxHeight()
                 .aspectRatio(2.35f / 1)
 
             VideoPlayerDisplayMode.REDUCED -> Modifier
-                .fillMaxSize(0.65f)
+                .fillMaxSize(0.8f)
                 .aspectRatio(state.aspectRatio)
 
             VideoPlayerDisplayMode.FOUR_THREE -> Modifier.aspectRatio(4f / 3)

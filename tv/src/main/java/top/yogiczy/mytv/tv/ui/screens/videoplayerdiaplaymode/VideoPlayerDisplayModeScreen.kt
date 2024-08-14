@@ -21,6 +21,7 @@ fun VideoPlayerDisplayModeScreen(
     modifier: Modifier = Modifier,
     currentDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.NORMAL },
     onDisplayModeChanged: (VideoPlayerDisplayMode) -> Unit = {},
+    onApplyToGlobal: (() -> Unit)? = null,
     onClose: () -> Unit = {},
 ) {
     val screenAutoCloseState = rememberScreenAutoCloseState(onTimeout = onClose)
@@ -36,6 +37,7 @@ fun VideoPlayerDisplayModeScreen(
             displayModeListProvider = { VideoPlayerDisplayMode.entries.toPersistentList() },
             currentDisplayModeProvider = currentDisplayModeProvider,
             onSelected = onDisplayModeChanged,
+            onApplyToGlobal = onApplyToGlobal,
             onUserAction = { screenAutoCloseState.active() },
         )
     }
