@@ -33,7 +33,7 @@ import kotlin.math.max
 fun VideoPlayerDisplayModeItemList(
     modifier: Modifier = Modifier,
     displayModeListProvider: () -> ImmutableList<VideoPlayerDisplayMode> = { persistentListOf() },
-    currentDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.NORMAL },
+    currentDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.ORIGINAL },
     onSelected: (VideoPlayerDisplayMode) -> Unit = {},
     onApplyToGlobal: (() -> Unit)? = null,
     onUserAction: () -> Unit = {},
@@ -94,7 +94,7 @@ private fun VideoPlayerDisplayModeItemListPreview() {
             displayModeListProvider = {
                 VideoPlayerDisplayMode.entries.toPersistentList()
             },
-            currentDisplayModeProvider = { VideoPlayerDisplayMode.NORMAL },
+            currentDisplayModeProvider = { VideoPlayerDisplayMode.ORIGINAL },
         )
     }
 }

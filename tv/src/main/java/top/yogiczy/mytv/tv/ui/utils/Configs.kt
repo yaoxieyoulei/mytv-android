@@ -350,7 +350,7 @@ object Configs {
     /** 播放器 显示模式 */
     var videoPlayerDisplayMode: VideoPlayerDisplayMode
         get() = VideoPlayerDisplayMode.fromValue(
-            SP.getInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, VideoPlayerDisplayMode.NORMAL.value)
+            SP.getInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, VideoPlayerDisplayMode.ORIGINAL.value)
         )
         set(value) = SP.putInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, value.value)
 

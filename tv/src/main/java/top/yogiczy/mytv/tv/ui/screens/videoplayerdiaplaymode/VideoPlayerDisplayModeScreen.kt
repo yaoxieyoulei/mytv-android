@@ -19,7 +19,7 @@ import top.yogiczy.mytv.tv.ui.utils.captureBackKey
 @Composable
 fun VideoPlayerDisplayModeScreen(
     modifier: Modifier = Modifier,
-    currentDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.NORMAL },
+    currentDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.ORIGINAL },
     onDisplayModeChanged: (VideoPlayerDisplayMode) -> Unit = {},
     onApplyToGlobal: (() -> Unit)? = null,
     onClose: () -> Unit = {},

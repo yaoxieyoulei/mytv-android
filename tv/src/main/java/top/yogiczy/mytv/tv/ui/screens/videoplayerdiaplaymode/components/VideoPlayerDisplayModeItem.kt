@@ -26,7 +26,7 @@ import top.yogiczy.mytv.tv.ui.utils.ifElse
 @Composable
 fun VideoPlayerDisplayModeItem(
     modifier: Modifier = Modifier,
-    displayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.NORMAL },
+    displayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.ORIGINAL },
     isSelectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
 ) {
@@ -64,12 +64,12 @@ private fun VideoPlayerDisplayModeItemPreview() {
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             VideoPlayerDisplayModeItem(
-                displayModeProvider = { VideoPlayerDisplayMode.NORMAL },
+                displayModeProvider = { VideoPlayerDisplayMode.ORIGINAL },
                 isSelectedProvider = { true },
             )
 
             VideoPlayerDisplayModeItem(
-                displayModeProvider = { VideoPlayerDisplayMode.NORMAL },
+                displayModeProvider = { VideoPlayerDisplayMode.ORIGINAL },
             )
         }
     }

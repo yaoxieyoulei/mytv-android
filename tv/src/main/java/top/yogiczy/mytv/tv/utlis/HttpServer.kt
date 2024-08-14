@@ -387,5 +387,5 @@ private data class AllSettings(
     val updateChannel: String = "",
     val videoPlayerUserAgent: String = "",
     val videoPlayerLoadTimeout: Long = 0,
-    val videoPlayerDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.NORMAL,
+    val videoPlayerDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.ORIGINAL,
 )

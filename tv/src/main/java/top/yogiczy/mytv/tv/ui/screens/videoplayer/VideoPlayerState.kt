@@ -21,7 +21,7 @@ import top.yogiczy.mytv.tv.ui.screens.videoplayer.player.VideoPlayer
 @Stable
 class VideoPlayerState(
     private val instance: VideoPlayer,
-    private var defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.NORMAL,
+    private var defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.ORIGINAL,
 ) {
     /** 显示模式 */
     var displayMode by mutableStateOf(defaultDisplayMode)
@@ -123,7 +123,7 @@ class VideoPlayerState(
 
 @Composable
 fun rememberVideoPlayerState(
-    defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.NORMAL,
+    defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.ORIGINAL,
 ): VideoPlayerState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -157,8 +157,8 @@ enum class VideoPlayerDisplayMode(
     val label: String,
     val value: Int,
 ) {
-    /** 正常 */
-    NORMAL("正常", 0),
+    /** 原始 */
+    ORIGINAL("原始", 0),
 
     /** 全屏 */
     FULL("全屏", 1),
@@ -166,24 +166,18 @@ enum class VideoPlayerDisplayMode(
     /** 拉伸 */
     ZOOM("拉伸", 2),
 
-    /** 拉伸-2.35:1 */
-    ZOOM_WIDE("拉伸-2.35:1", 3),
-
-    /** 缩小 */
-    REDUCED("缩小", 4),
-
     /** 4:3 */
-    FOUR_THREE("4:3", 5),
+    FOUR_THREE("4:3", 3),
 
     /** 16:9 */
-    SIXTEEN_NINE("16:9", 6),
+    SIXTEEN_NINE("16:9", 4),
 
     /** 2.35:1 */
-    WIDE("2.35:1", 7);
+    WIDE("2.35:1", 5);
 
     companion object {
         fun fromValue(value: Int): VideoPlayerDisplayMode {
-            return entries.firstOrNull { it.value == value } ?: NORMAL
+            return entries.firstOrNull { it.value == value } ?: ORIGINAL
         }
     }
 }
