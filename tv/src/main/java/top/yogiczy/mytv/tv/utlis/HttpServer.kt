@@ -189,6 +189,7 @@ object HttpServer : Loggable() {
                     AllSettings(
                         appBootLaunch = Configs.appBootLaunch,
                         appLastLatestVersion = Configs.appLastLatestVersion,
+                        appAgreementAgreed = Configs.appAgreementAgreed,
                         debugShowFps = Configs.debugShowFps,
                         debugShowVideoPlayerMetadata = Configs.debugShowVideoPlayerMetadata,
                         debugShowLayoutGrids = Configs.debugShowLayoutGrids,
@@ -239,6 +240,7 @@ object HttpServer : Loggable() {
 
         Configs.appBootLaunch = configs.appBootLaunch
         Configs.appLastLatestVersion = configs.appLastLatestVersion
+        Configs.appAgreementAgreed = configs.appAgreementAgreed
         Configs.debugShowFps = configs.debugShowFps
         Configs.debugShowVideoPlayerMetadata = configs.debugShowVideoPlayerMetadata
         Configs.debugShowLayoutGrids = configs.debugShowLayoutGrids
@@ -350,6 +352,7 @@ private data class AppInfo(
 private data class AllSettings(
     val appBootLaunch: Boolean = false,
     val appLastLatestVersion: String = "",
+    val appAgreementAgreed: Boolean = false,
     val debugShowFps: Boolean = false,
     val debugShowVideoPlayerMetadata: Boolean = false,
     val debugShowLayoutGrids: Boolean = false,

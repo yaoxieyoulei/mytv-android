@@ -23,6 +23,9 @@ object Configs {
         /** 上一次最新版本 */
         APP_LAST_LATEST_VERSION,
 
+        /** 协议已同意 */
+        APP_AGREEMENT_AGREED,
+
         /** ==================== 调式 ==================== */
         /** 显示fps */
         DEBUG_SHOW_FPS,
@@ -145,6 +148,11 @@ object Configs {
     var appLastLatestVersion: String
         get() = SP.getString(KEY.APP_LAST_LATEST_VERSION.name, "")
         set(value) = SP.putString(KEY.APP_LAST_LATEST_VERSION.name, value)
+
+    /** 协议已同意 */
+    var appAgreementAgreed: Boolean
+        get() = SP.getBoolean(KEY.APP_AGREEMENT_AGREED.name, false)
+        set(value) = SP.putBoolean(KEY.APP_AGREEMENT_AGREED.name, value)
 
     /** ==================== 调式 ==================== */
     /** 显示fps */

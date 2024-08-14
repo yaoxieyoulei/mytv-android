@@ -19,11 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.LocalContentColor
@@ -37,8 +34,6 @@ import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.main.components.MainContent
-import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
-import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettingsCurrent
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsScreen
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
@@ -54,49 +49,33 @@ fun MainScreen(
     mainViewModel: MainViewModel = viewModel(),
     settingsViewModel: SettingsViewModel = viewModel(),
 ) {
-    val configuration = LocalConfiguration.current
     val uiState by mainViewModel.uiState.collectAsState()
 
-    CompositionLocalProvider(
-        LocalDensity provides Density(
-            density = LocalDensity.current.density * when (settingsViewModel.uiDensityScaleRatio) {
-                0f -> configuration.screenWidthDp.toFloat() / 960
-                else -> settingsViewModel.uiDensityScaleRatio
-            },
-            fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
-        ),
-        LocalSettings provides LocalSettingsCurrent(
-            uiFocusOptimize = settingsViewModel.uiFocusOptimize,
-        ),
-    ) {
-        PopupHandleableApplication {
-            when (val s = uiState) {
-                is MainUiState.Ready -> MainContent(
-                    modifier = modifier,
-                    channelGroupListProvider = { s.channelGroupList },
-                    filteredChannelGroupListProvider = {
-                        ChannelGroupList(s.channelGroupList.filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
-                    },
-                    epgListProvider = { s.epgList },
-                    onBackPressed = onBackPressed,
-                )
+    PopupHandleableApplication {
+        when (val s = uiState) {
+            is MainUiState.Ready -> MainContent(
+                modifier = modifier,
+                channelGroupListProvider = { s.channelGroupList },
+                filteredChannelGroupListProvider = {
+                    ChannelGroupList(s.channelGroupList.filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
+                },
+                epgListProvider = { s.epgList },
+                onBackPressed = onBackPressed,
+            )
 
-                is MainUiState.Loading -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
-                    MainScreenLoading(messageProvider = { s.message })
-                }
+            is MainUiState.Loading -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
+                MainScreenLoading(messageProvider = { s.message })
+            }
 
-                is MainUiState.Error -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
-                    MainScreenError(messageProvider = { s.message })
-                }
+            is MainUiState.Error -> MainScreenSettingsWrapper(onBackPressed = onBackPressed) {
+                MainScreenError(messageProvider = { s.message })
             }
         }
-
-        SnackbarUI()
-
-        Visible({ settingsViewModel.debugShowLayoutGrids }) {
-            PreviewWithLayoutGrids { }
-        }
     }
+
+    SnackbarUI()
+
+    Visible({ settingsViewModel.debugShowLayoutGrids }) { PreviewWithLayoutGrids { } }
 }
 
 @Composable

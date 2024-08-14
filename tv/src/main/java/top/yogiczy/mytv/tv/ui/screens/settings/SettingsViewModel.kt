@@ -32,6 +32,14 @@ class SettingsViewModel : ViewModel() {
             Configs.appLastLatestVersion = value
         }
 
+    private var _appAgreementAgreed by mutableStateOf(Configs.appAgreementAgreed)
+    var appAgreementAgreed: Boolean
+        get() = _appAgreementAgreed
+        set(value) {
+            _appAgreementAgreed = value
+            Configs.appAgreementAgreed = value
+        }
+
     private var _debugShowFps by mutableStateOf(Configs.debugShowFps)
     var debugShowFps: Boolean
         get() = _debugShowFps
@@ -324,6 +332,7 @@ class SettingsViewModel : ViewModel() {
     fun refresh() {
         _appBootLaunch = Configs.appBootLaunch
         _appLastLatestVersion = Configs.appLastLatestVersion
+        _appAgreementAgreed = Configs.appAgreementAgreed
         _debugShowFps = Configs.debugShowFps
         _debugShowVideoPlayerMetadata = Configs.debugShowVideoPlayerMetadata
         _debugShowLayoutGrids = Configs.debugShowLayoutGrids

@@ -5,41 +5,72 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import top.yogiczy.mytv.tv.ui.material.Padding
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.screens.agreement.AgreementScreen
 import top.yogiczy.mytv.tv.ui.screens.main.MainScreen
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettingsCurrent
+import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 
 @Composable
 fun App(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) {
+    val configuration = LocalConfiguration.current
     val doubleBackPressedExitState = rememberDoubleBackPressedExitState()
 
-    MainScreen(
-        modifier = modifier,
-        onBackPressed = {
-            if (doubleBackPressedExitState.allowExit) {
-                onBackPressed()
-            } else {
-                doubleBackPressedExitState.backPress()
-                Snackbar.show("再按一次退出")
-            }
-        },
-    )
+    CompositionLocalProvider(
+        LocalDensity provides Density(
+            density = LocalDensity.current.density * when (settingsViewModel.uiDensityScaleRatio) {
+                0f -> configuration.screenWidthDp.toFloat() / 960
+                else -> settingsViewModel.uiDensityScaleRatio
+            },
+            fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
+        ),
+        LocalSettings provides LocalSettingsCurrent(
+            uiFocusOptimize = settingsViewModel.uiFocusOptimize,
+        ),
+    ) {
+        if (settingsViewModel.appAgreementAgreed) {
+            MainScreen(
+                modifier = modifier,
+                onBackPressed = {
+                    if (doubleBackPressedExitState.allowExit) {
+                        onBackPressed()
+                    } else {
+                        doubleBackPressedExitState.backPress()
+                        Snackbar.show("再按一次退出")
+                    }
+                },
+            )
+        } else {
+            AgreementScreen(
+                onAgree = { settingsViewModel.appAgreementAgreed = true },
+                onDisagree = { onBackPressed() },
+            )
+        }
+    }
 }
 
 /**

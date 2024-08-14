@@ -64,9 +64,7 @@ fun ChannelItem(
         modifier = modifier
             .width(124.dp)
             .focusRequester(focusRequester)
-            .onFocusChanged {
-                isFocused = it.isFocused || it.hasFocus
-            }
+            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
                 isFocused = { isFocused },
                 focusRequester = focusRequester,
@@ -78,12 +76,7 @@ fun ChannelItem(
             focusedContainerColor = MaterialTheme.colorScheme.onSurface,
         ),
         border = CardDefaults.border(
-            focusedBorder = Border(
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-            ),
+            focusedBorder = Border(BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface)),
         ),
     ) {
         Column {
