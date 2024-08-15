@@ -47,9 +47,9 @@ fun VideoPlayerControllerPositionCtrl(
     val debounce = rememberDebounce(
         wait = 1000L,
         func = {
-            seekToPosition?.let { nSeekToPosition ->
+            seekToPosition?.let { nnSeekToPosition ->
                 val startPosition = durationProvider().first
-                onSeekTo(nSeekToPosition - startPosition)
+                onSeekTo(nnSeekToPosition - startPosition)
                 seekToPosition = null
             }
         },

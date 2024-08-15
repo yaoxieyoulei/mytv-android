@@ -25,6 +25,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.customBackground
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -51,7 +52,7 @@ fun AgreementScreen(
             LocalTextStyle provides MaterialTheme.typography.bodyLarge
         ) {
             LazyColumn(
-                modifier = Modifier.width(480.dp),
+                modifier = Modifier.width(556.dp),
                 contentPadding = PaddingValues(top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
@@ -109,5 +110,6 @@ fun AgreementScreen(
 private fun AgreementScreenPreview() {
     MyTVTheme {
         AgreementScreen()
+        PreviewWithLayoutGrids {  }
     }
 }

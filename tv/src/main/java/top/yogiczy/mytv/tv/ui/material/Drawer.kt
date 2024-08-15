@@ -64,7 +64,7 @@ fun Drawer(
                 .padding(20.dp)
         ) {
             Column {
-                header?.let { nHeader ->
+                header?.let { nnHeader ->
                     CompositionLocalProvider(
                         LocalTextStyle provides MaterialTheme.typography.titleLarge
                     ) {
@@ -76,7 +76,7 @@ fun Drawer(
                                 end = 16.dp
                             )
                         ) {
-                            nHeader()
+                            nnHeader()
                         }
                     }
                 }

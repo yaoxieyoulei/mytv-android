@@ -2,12 +2,16 @@ package top.yogiczy.mytv.tv.ui.screens.settings.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
+import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.utils.SP
 import top.yogiczy.mytv.tv.ui.material.LocalPopupManager
+import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screens.update.UpdateViewModel
 
@@ -35,6 +39,7 @@ fun SettingsCategoryApp(
         item {
             val popupManager = LocalPopupManager.current
             val focusRequester = remember { FocusRequester() }
+
             SettingsListItem(
                 modifier = Modifier.focusRequester(focusRequester),
                 headlineContent = "应用更新",
@@ -43,6 +48,20 @@ fun SettingsCategoryApp(
                 onSelected = {
                     popupManager.push(focusRequester, true)
                     updateViewModel.visible = true
+                },
+            )
+        }
+
+        item {
+            val coroutineScope = rememberCoroutineScope()
+
+            SettingsListItem(
+                headlineContent = "恢复初始化",
+                onSelected = {
+                    coroutineScope.launch {
+                        SP.clear()
+                        Snackbar.show("已恢复初始化")
+                    }
                 },
             )
         }
