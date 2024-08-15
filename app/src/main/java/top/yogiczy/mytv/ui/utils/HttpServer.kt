@@ -47,7 +47,13 @@ object HttpServer : Loggable() {
                 server.listen(AsyncServer.getDefault(), SERVER_PORT)
 
                 server.get("/") { _, response ->
-                    handleHomePage(response, context)
+                    handleRawResource(response, context, "text/html", R.raw.index)
+                }
+                server.get("/index_css.css") { _, response ->
+                    handleRawResource(response, context, "text/css", R.raw.index_css)
+                }
+                server.get("/index_js.js") { _, response ->
+                    handleRawResource(response, context, "text/javascript", R.raw.index_js)
                 }
 
                 server.get("/api/settings") { _, response ->
@@ -83,10 +89,15 @@ object HttpServer : Loggable() {
         )
     }
 
-    private fun handleHomePage(response: AsyncHttpServerResponse, context: Context) {
+    private fun handleRawResource(
+        response: AsyncHttpServerResponse,
+        context: Context,
+        contentType: String,
+        id: Int,
+    ) {
         wrapResponse(response).apply {
-            setContentType("text/html; charset=utf-8")
-            send(context.resources.openRawResource(R.raw.index).readBytes().decodeToString())
+            setContentType(contentType)
+            send(context.resources.openRawResource(id).readBytes().decodeToString())
         }
     }
 
