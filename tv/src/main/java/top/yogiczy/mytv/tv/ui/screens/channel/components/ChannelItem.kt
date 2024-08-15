@@ -153,7 +153,7 @@ private fun ChannelItemContent(
 }
 
 @Composable
-fun ChannelItemProgress(
+private fun ChannelItemProgress(
     modifier: Modifier = Modifier,
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },

@@ -48,7 +48,7 @@ fun ChannelItemGrid(
     onClose: () -> Unit = {},
     onUserAction: () -> Unit = {},
 ) {
-    val favoriteListSize = 6
+    val gridSize = 6
     val currentChannel = currentChannelProvider()
 
     val childPadding = rememberChildPadding()
@@ -83,7 +83,7 @@ fun ChannelItemGrid(
 
         LazyVerticalGrid(
             state = listState,
-            columns = GridCells.Fixed(favoriteListSize),
+            columns = GridCells.Fixed(gridSize),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
             contentPadding = PaddingValues(
@@ -96,7 +96,7 @@ fun ChannelItemGrid(
             itemsIndexed(channelList) { index, channel ->
                 ChannelItem(
                     modifier = Modifier.ifElse(
-                        index < favoriteListSize,
+                        index < gridSize,
                         Modifier.handleKeyEvents(onUp = onClose),
                     ),
                     channelProvider = { channel },
