@@ -160,11 +160,11 @@ enum class VideoPlayerDisplayMode(
     /** 原始 */
     ORIGINAL("原始", 0),
 
-    /** 全屏 */
-    FULL("全屏", 1),
+    /** 填充 */
+    FILL("填充", 1),
 
-    /** 拉伸 */
-    ZOOM("拉伸", 2),
+    /** 裁剪 */
+    CROP("裁剪", 2),
 
     /** 4:3 */
     FOUR_THREE("4:3", 3),

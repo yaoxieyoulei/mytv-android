@@ -37,8 +37,8 @@ fun VideoPlayerScreen(
     ) {
         val displayModeModifier = when (state.displayMode) {
             VideoPlayerDisplayMode.ORIGINAL -> Modifier.aspectRatio(state.aspectRatio)
-            VideoPlayerDisplayMode.FULL -> Modifier.fillMaxSize()
-            VideoPlayerDisplayMode.ZOOM -> Modifier
+            VideoPlayerDisplayMode.FILL -> Modifier.fillMaxSize()
+            VideoPlayerDisplayMode.CROP -> Modifier
                 .fillMaxWidth()
                 .aspectRatio(state.aspectRatio)
             VideoPlayerDisplayMode.FOUR_THREE -> Modifier.aspectRatio(4f / 3)
