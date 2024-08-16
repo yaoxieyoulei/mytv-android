@@ -17,7 +17,7 @@ data class EpgList(
          * 当前节目/下一个节目
          */
         fun EpgList.recentProgramme(channel: Channel): EpgProgrammeRecent? {
-            return firstOrNull { it.channel == channel.epgName }?.recentProgramme()
+            return firstOrNull { it.channel.lowercase() == channel.epgName.lowercase() }?.recentProgramme()
         }
 
         fun example(channelList: ChannelList): EpgList {

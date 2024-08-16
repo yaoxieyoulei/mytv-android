@@ -52,6 +52,7 @@ fun ChannelInfo(
 
             Spacer(modifier = Modifier.width(6.dp))
 
+            // FIXME 频道名称过长导致Tag异常
             Row(
                 // FIXME 没对齐，临时解决
                 modifier = Modifier.padding(bottom = 6.dp),
