@@ -94,6 +94,7 @@ abstract class VideoPlayer(
         }
         interruptJob?.cancel()
         interruptJob = null
+        metadata = Metadata()
     }
 
     protected fun triggerIsPlayingChanged(isPlaying: Boolean) {
