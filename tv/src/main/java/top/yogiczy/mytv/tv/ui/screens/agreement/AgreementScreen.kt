@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.tv.ui.screens.agreement
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
@@ -35,6 +37,7 @@ fun AgreementScreen(
     modifier: Modifier = Modifier,
     onAgree: () -> Unit = {},
     onDisagree: () -> Unit = {},
+    onDisableUiFocusOptimize: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -77,7 +80,13 @@ fun AgreementScreen(
                         Button(
                             modifier = Modifier
                                 .focusOnLaunched()
-                                .handleKeyEvents(onSelect = onAgree),
+                                .handleKeyEvents(onSelect = onAgree)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = {
+                                        onDisableUiFocusOptimize()
+                                        onAgree()
+                                    })
+                                },
                             colors = ButtonDefaults.colors(
                                 containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                             ),
@@ -110,6 +119,6 @@ fun AgreementScreen(
 private fun AgreementScreenPreview() {
     MyTVTheme {
         AgreementScreen()
-        PreviewWithLayoutGrids {  }
+        PreviewWithLayoutGrids { }
     }
 }

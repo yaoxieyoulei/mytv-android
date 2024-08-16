@@ -73,6 +73,7 @@ fun App(
                 AgreementScreen(
                     onAgree = { settingsViewModel.appAgreementAgreed = true },
                     onDisagree = { onBackPressed() },
+                    onDisableUiFocusOptimize = { settingsViewModel.uiFocusOptimize = false },
                 )
             }
         }
