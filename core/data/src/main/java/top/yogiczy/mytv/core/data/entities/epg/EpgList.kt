@@ -13,11 +13,12 @@ data class EpgList(
     val value: List<Epg> = emptyList(),
 ) : List<Epg> by value {
     companion object {
-        /**
-         * 当前节目/下一个节目
-         */
         fun EpgList.recentProgramme(channel: Channel): EpgProgrammeRecent? {
-            return firstOrNull { it.channel.lowercase() == channel.epgName.lowercase() }?.recentProgramme()
+            return match(channel)?.recentProgramme()
+        }
+
+        fun EpgList.match(channel: Channel): Epg? {
+            return firstOrNull { it.channel.lowercase() == channel.epgName.lowercase() }
         }
 
         fun example(channelList: ChannelList): EpgList {

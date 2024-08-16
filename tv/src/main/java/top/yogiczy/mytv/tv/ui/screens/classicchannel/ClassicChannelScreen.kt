@@ -35,6 +35,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
+import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.material.Visible
@@ -150,9 +151,7 @@ fun ClassicChannelScreen(
 
             Visible({ epgListVisible }) {
                 ClassicEpgItemList(
-                    epgProvider = {
-                        epgListProvider().firstOrNull { it.channel == focusedChannel.epgName }
-                    },
+                    epgProvider = { epgListProvider().match(focusedChannel) },
                     epgProgrammeReserveListProvider = {
                         EpgProgrammeReserveList(
                             epgProgrammeReserveListProvider().filter { it.channel == focusedChannel.name }

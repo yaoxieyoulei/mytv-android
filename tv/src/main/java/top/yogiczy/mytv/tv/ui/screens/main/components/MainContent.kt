@@ -12,6 +12,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
+import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
@@ -203,7 +204,7 @@ fun MainContent(
     ) {
         EpgScreen(
             epgProvider = {
-                epgListProvider().firstOrNull { it.channel == mainContentState.currentChannel.epgName }
+                epgListProvider().match(mainContentState.currentChannel)
                     ?: Epg.empty(mainContentState.currentChannel)
             },
             epgProgrammeReserveListProvider = {
