@@ -21,10 +21,10 @@ import top.yogiczy.mytv.tv.ui.screens.videoplayer.player.VideoPlayer
 @Stable
 class VideoPlayerState(
     private val instance: VideoPlayer,
-    private var defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.ORIGINAL,
+    private var defaultDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.ORIGINAL },
 ) {
     /** 显示模式 */
-    var displayMode by mutableStateOf(defaultDisplayMode)
+    var displayMode by mutableStateOf(defaultDisplayModeProvider())
 
     /** 视频宽高比 */
     var aspectRatio by mutableFloatStateOf(16f / 9f)
@@ -101,12 +101,13 @@ class VideoPlayerState(
         instance.onReady {
             onReadyListeners.forEach { it.invoke() }
             error = null
+            displayMode = defaultDisplayModeProvider()
         }
         instance.onBuffering {
             isBuffering = it
             if (it) error = null
         }
-        instance.onPrepared { displayMode = defaultDisplayMode }
+        instance.onPrepared { }
         instance.onIsPlayingChanged { isPlaying = it }
         instance.onDurationChanged { duration = it }
         instance.onCurrentPositionChanged { currentPosition = it }
@@ -123,7 +124,7 @@ class VideoPlayerState(
 
 @Composable
 fun rememberVideoPlayerState(
-    defaultDisplayMode: VideoPlayerDisplayMode = VideoPlayerDisplayMode.ORIGINAL,
+    defaultDisplayModeProvider: () -> VideoPlayerDisplayMode = { VideoPlayerDisplayMode.ORIGINAL },
 ): VideoPlayerState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -131,7 +132,7 @@ fun rememberVideoPlayerState(
     val state = remember {
         VideoPlayerState(
             Media3VideoPlayer(context, coroutineScope),
-            defaultDisplayMode,
+            defaultDisplayModeProvider,
         )
     }
 

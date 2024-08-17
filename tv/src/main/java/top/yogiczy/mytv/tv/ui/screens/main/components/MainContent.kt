@@ -58,7 +58,7 @@ fun MainContent(
     val coroutineScope = rememberCoroutineScope()
 
     val videoPlayerState =
-        rememberVideoPlayerState(defaultDisplayMode = settingsViewModel.videoPlayerDisplayMode)
+        rememberVideoPlayerState(defaultDisplayModeProvider = { settingsViewModel.videoPlayerDisplayMode })
     val mainContentState = rememberMainContentState(
         videoPlayerState = videoPlayerState,
         channelGroupListProvider = filteredChannelGroupListProvider,
