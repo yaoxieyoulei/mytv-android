@@ -63,6 +63,10 @@ class Media3VideoPlayer(
     private fun getMediaSource(uri: Uri, contentType: Int? = null): MediaSource? {
         val mediaItem = MediaItem.fromUri(uri)
 
+        if (uri.toString().startsWith("rtp://")) {
+            return RtspMediaSource.Factory().createMediaSource(mediaItem)
+        }
+
         return when (val type = contentType ?: Util.inferContentType(uri)) {
             C.CONTENT_TYPE_HLS -> {
                 HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
