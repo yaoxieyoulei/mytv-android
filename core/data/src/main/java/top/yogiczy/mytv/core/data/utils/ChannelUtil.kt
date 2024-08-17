@@ -9,6 +9,7 @@ object ChannelUtil {
         "CCTV-5+赛事" to standardCctvChannelNameTest(
             listOf(
                 listOf("cctv", "5+"),
+                listOf("cctv", "5plus"),
                 listOf("cctv", "体育"),
                 listOf("中央", "5+"),
                 listOf("中央", "五+"),

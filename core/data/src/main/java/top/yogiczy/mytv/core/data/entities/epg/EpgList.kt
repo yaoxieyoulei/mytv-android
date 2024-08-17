@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.core.data.entities.epg
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.Epg.Companion.recentProgramme
@@ -8,6 +9,7 @@ import top.yogiczy.mytv.core.data.entities.epg.Epg.Companion.recentProgramme
 /**
  * 频道节目单列表
  */
+@Serializable
 @Immutable
 data class EpgList(
     val value: List<Epg> = emptyList(),

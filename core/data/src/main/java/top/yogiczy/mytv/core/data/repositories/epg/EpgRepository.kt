@@ -26,7 +26,7 @@ import java.util.Locale
  * 节目单获取
  */
 class EpgRepository(
-    private val source: EpgSource,
+    source: EpgSource,
 ) : FileCacheRepository("epg-${source.url.hashCode().toUInt().toString(16)}.json") {
     private val log = Logger.create(javaClass.simpleName)
     private val epgXmlRepository = EpgXmlRepository(source.url)
@@ -60,7 +60,7 @@ class EpgRepository(
                         parser.nextTag()
                         val channelName = parser.nextText()
 
-                        if (filteredChannels.isEmpty() || filteredChannels.contains(channelName)) {
+                        if (filteredChannels.isEmpty() || filteredChannels.contains(channelName.lowercase())) {
                             epgMap[channelId] = Epg(channelName, EpgProgrammeList())
                         }
                     } else if (parser.name == "programme") {
@@ -102,7 +102,7 @@ class EpgRepository(
     ): EpgList = withContext(Dispatchers.Default) {
         try {
             if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < refreshTimeThreshold) {
-                log.d("未到时间点，不刷新节目单")
+                log.i("未到时间点，不刷新节目单")
                 return@withContext EpgList()
             }
 
@@ -112,10 +112,15 @@ class EpgRepository(
                 dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
             }) {
                 val xmlString = epgXmlRepository.getEpgXml()
-                Json.encodeToString(parseFromXml(xmlString, filteredChannels).value)
+                Json.encodeToString(
+                    parseFromXml(
+                        xmlString,
+                        filteredChannels.map { it.lowercase() },
+                    )
+                )
             }
 
-            return@withContext EpgList(Json.decodeFromString(xmlJson))
+            return@withContext Json.decodeFromString(xmlJson)
         } catch (ex: Exception) {
             log.e("获取节目单失败", ex)
             throw Exception(ex)
