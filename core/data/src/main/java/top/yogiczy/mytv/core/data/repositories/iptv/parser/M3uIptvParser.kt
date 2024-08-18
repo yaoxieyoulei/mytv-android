@@ -29,16 +29,19 @@ class M3uIptvParser : IptvParser {
             val groupName = Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                 ?: "其他"
             val logo = Regex("tvg-logo=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
+            val url = lines.getOrNull(index + 1)?.trim()
 
-            iptvList.add(
-                IptvResponseItem(
-                    name = name,
-                    channelName = channelName,
-                    groupName = groupName,
-                    url = lines[index + 1].trim(),
-                    logo = logo,
+            url?.let {
+                iptvList.add(
+                    IptvResponseItem(
+                        name = name,
+                        channelName = channelName,
+                        groupName = groupName,
+                        url = url,
+                        logo = logo,
+                    )
                 )
-            )
+            }
         }
 
         return@withContext ChannelGroupList(iptvList.groupBy { it.groupName }.map { groupEntry ->
