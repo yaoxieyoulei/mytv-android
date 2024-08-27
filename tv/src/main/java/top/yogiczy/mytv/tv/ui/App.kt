@@ -38,6 +38,7 @@ import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource.Companion.needE
 import top.yogiczy.mytv.tv.ui.material.Padding
 import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.material.SnackbarType
 import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.screens.agreement.AgreementScreen
@@ -164,10 +165,15 @@ fun requestExternalStoragePermission(): Boolean {
 
         LaunchedEffect(Unit) {
             if (!permissionGranted) {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                    data = Uri.parse("package:${context.packageName}")
+                try {
+                    val intent =
+                        Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                            data = Uri.parse("package:${context.packageName}")
+                        }
+                    intentLauncher.launch(intent)
+                } catch (ex: Exception) {
+                    Snackbar.show("无法找到管理全部文件设置项", type = SnackbarType.ERROR)
                 }
-                intentLauncher.launch(intent)
             }
         }
 
