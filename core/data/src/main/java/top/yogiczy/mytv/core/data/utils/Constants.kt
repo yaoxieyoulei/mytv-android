@@ -12,12 +12,17 @@ object Constants {
     /**
      * 应用 标题
      */
-    const val APP_TITLE = "我的电视"
+    const val APP_TITLE = "天光云影"
 
     /**
      * 应用 代码仓库
      */
     const val APP_REPO = "https://github.com/yaoxieyoulei/mytv-android"
+
+    /**
+     * 交流群 telegram
+     */
+    const val GROUP_TELEGRAM = "https://t.me/mytv_android"
 
     /**
      * IPTV直播源
@@ -26,15 +31,7 @@ object Constants {
         listOf(
             IptvSource(
                 name = "默认直播源 fanmingming（IPV6）",
-                url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u",
-            ),
-            IptvSource(
-                name = "默认直播源 zhumeng11（IPV6）",
-                url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/zhumeng11/IPTV/main/IPTV.m3u",
-            ),
-            IptvSource(
-                name = "默认直播源 yuanzl77（IPV4/IPV6）",
-                url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yuanzl77/IPTV/main/live.m3u",
+                url = "https://live.fanmingming.com/tv/m3u/ipv6.m3u",
             ),
         )
     )
@@ -71,6 +68,8 @@ object Constants {
     val GIT_RELEASE_LATEST_URL = mapOf(
         "stable" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-stable.json",
         "beta" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-beta.json",
+        "dev" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-dev.json",
+        // "dev" to "http://192.168.2.29:8080/tv-dev.json?t=raw.githubusercontent.com",
     )
 
     /**
@@ -79,19 +78,19 @@ object Constants {
     const val GITHUB_PROXY = "https://mirror.ghproxy.com/"
 
     /**
-     * HTTP请求重试次数
+     * 网络请求重试次数
      */
-    const val HTTP_RETRY_COUNT = 10L
+    const val NETWORK_RETRY_COUNT = 10L
 
     /**
-     * HTTP请求重试间隔时间（毫秒）
+     * 网络请求重试间隔时间（毫秒）
      */
-    const val HTTP_RETRY_INTERVAL = 3000L
+    const val NETWORK_RETRY_INTERVAL = 3000L
 
     /**
      * 播放器 userAgent
      */
-    const val VIDEO_PLAYER_USER_AGENT = "ExoPlayer"
+    const val VIDEO_PLAYER_USER_AGENT = "aptv"
 
     /**
      * 播放器加载超时

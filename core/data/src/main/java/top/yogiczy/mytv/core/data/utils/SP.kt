@@ -27,24 +27,30 @@ object SP {
     }
 
     fun getString(key: String, defValue: String) = safeGet(key, defValue, sp::getString)!!
-    fun putString(key: String, value: String) = sp.edit().putString(key, value).apply()
+    fun putString(key: String, value: String) =
+        runCatching { sp.edit().putString(key, value).apply() }.getOrElse { }
 
     fun getStringSet(key: String, defValue: Set<String>): Set<String> =
         safeGet(key, defValue, sp::getStringSet)!!
 
-    fun putStringSet(key: String, value: Set<String>) = sp.edit().putStringSet(key, value).apply()
+    fun putStringSet(key: String, value: Set<String>) =
+        runCatching { sp.edit().putStringSet(key, value).apply() }.getOrElse { }
 
     fun getInt(key: String, defValue: Int) = safeGet(key, defValue, sp::getInt)
-    fun putInt(key: String, value: Int) = sp.edit().putInt(key, value).apply()
+    fun putInt(key: String, value: Int) =
+        runCatching { sp.edit().putInt(key, value).apply() }.getOrElse { }
 
     fun getLong(key: String, defValue: Long) = safeGet(key, defValue, sp::getLong)
-    fun putLong(key: String, value: Long) = sp.edit().putLong(key, value).apply()
+    fun putLong(key: String, value: Long) =
+        runCatching { sp.edit().putLong(key, value).apply() }.getOrElse { }
 
     fun getFloat(key: String, defValue: Float) = safeGet(key, defValue, sp::getFloat)
-    fun putFloat(key: String, value: Float) = sp.edit().putFloat(key, value).apply()
+    fun putFloat(key: String, value: Float) =
+        runCatching { sp.edit().putFloat(key, value).apply() }.getOrElse { }
 
     fun getBoolean(key: String, defValue: Boolean) = safeGet(key, defValue, sp::getBoolean)
-    fun putBoolean(key: String, value: Boolean) = sp.edit().putBoolean(key, value).apply()
+    fun putBoolean(key: String, value: Boolean) =
+        runCatching { sp.edit().putBoolean(key, value).apply() }.getOrElse { }
 
-    fun clear() = sp.edit().clear().apply()
+    fun clear() = runCatching { sp.edit().clear().apply() }.getOrElse { }
 }

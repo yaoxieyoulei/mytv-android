@@ -24,6 +24,11 @@ data class IptvSource(
     val isLocal: Boolean = false,
 ) {
     companion object {
+        val EXAMPLE = IptvSource(
+            name = "测试直播源1",
+            url = "http://1.2.3.4/tv.txt",
+        )
+
         fun IptvSource.needExternalStoragePermission(): Boolean {
             return this.isLocal && !this.url.startsWith(Globals.cacheDir.path)
         }

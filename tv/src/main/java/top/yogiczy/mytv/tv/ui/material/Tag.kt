@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import androidx.tv.material3.contentColorFor
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
@@ -81,7 +81,7 @@ object TagDefaults {
 @Preview
 @Composable
 private fun TagPreview() {
-    MyTVTheme {
+    MyTvTheme {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,

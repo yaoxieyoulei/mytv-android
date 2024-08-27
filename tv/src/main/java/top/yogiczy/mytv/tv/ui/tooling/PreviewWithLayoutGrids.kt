@@ -17,7 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_COLUMNS
+import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_SPACING
+import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_WIDTH
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_HORIZONTAL_PADDING
+import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_VERTICAL_PADDING
 
 @Composable
 fun PreviewWithLayoutGrids(
@@ -29,7 +34,7 @@ fun PreviewWithLayoutGrids(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp)
+                .height(SAFE_AREA_VERTICAL_PADDING.dp)
                 .background(MaterialTheme.colorScheme.error.copy(0.1f))
         ) {}
 
@@ -38,7 +43,7 @@ fun PreviewWithLayoutGrids(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .height(24.dp)
+                .height(SAFE_AREA_VERTICAL_PADDING.dp)
                 .background(MaterialTheme.colorScheme.error.copy(0.1f))
         ) {}
 
@@ -47,14 +52,14 @@ fun PreviewWithLayoutGrids(
             modifier = Modifier
                 .focusable(false)
                 .fillMaxSize()
-                .padding(horizontal = 58.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = SAFE_AREA_HORIZONTAL_PADDING.dp),
+            horizontalArrangement = Arrangement.spacedBy(LAYOUT_GRID_SPACING.dp)
         ) {
-            for (i in 0..<12) {
+            for (i in 0..<LAYOUT_GRID_COLUMNS) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(52.dp)
+                        .width(LAYOUT_GRID_WIDTH.dp)
                         .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(0.1f)),
                 ) { }
             }
@@ -67,7 +72,7 @@ fun PreviewWithLayoutGrids(
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun PreviewWithDeviceBgPreview() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {}
     }
 }

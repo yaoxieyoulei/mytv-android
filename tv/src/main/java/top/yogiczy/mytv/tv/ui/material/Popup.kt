@@ -17,7 +17,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.tv.material3.MaterialTheme
-import top.yogiczy.mytv.tv.ui.utils.captureBackKey
+import top.yogiczy.mytv.tv.ui.utils.backHandler
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 import java.util.UUID
 
@@ -80,7 +80,7 @@ fun PopupContent(
             .fillMaxSize()
             .popupable()
             .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } }
-            .captureBackKey { onDismissRequest?.invoke() }
+            .backHandler { onDismissRequest?.invoke() }
             .ifElse(
                 withBackground,
                 Modifier.background(MaterialTheme.colorScheme.background.copy(0.5f)),

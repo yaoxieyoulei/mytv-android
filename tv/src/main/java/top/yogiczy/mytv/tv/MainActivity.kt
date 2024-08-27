@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.tv.material3.Surface
 import top.yogiczy.mytv.tv.ui.App
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.utlis.HttpServer
 import kotlin.system.exitProcess
 
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
             // 屏幕常亮
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-            MyTVTheme {
+            MyTvTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     App(
                         onBackPressed = {

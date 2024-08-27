@@ -40,11 +40,13 @@ import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visible
-import top.yogiczy.mytv.tv.ui.screens.agreement.AgreementScreen
-import top.yogiczy.mytv.tv.ui.screens.main.MainScreen
-import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
-import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettingsCurrent
-import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.main.MainScreen
+import top.yogiczy.mytv.tv.ui.screensold.agreement.AgreementScreen
+import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettingsCurrent
+import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_HORIZONTAL_PADDING
+import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_VERTICAL_PADDING
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 
 @Composable
@@ -70,6 +72,9 @@ fun App(
         ),
         LocalSettings provides LocalSettingsCurrent(
             uiFocusOptimize = settingsViewModel.uiFocusOptimize,
+            uiShowEpgProgrammeProgress = settingsViewModel.uiShowEpgProgrammeProgress,
+            uiShowChannelLogo = settingsViewModel.uiShowChannelLogo,
+            uiShowChannelPreview = settingsViewModel.uiShowChannelPreview,
         ),
     ) {
         PopupHandleableApplication {
@@ -132,7 +137,10 @@ fun rememberDoubleBackPressedExitState(@IntRange(from = 0) resetSeconds: Int = 2
     remember { DoubleBackPressedExitState(resetSeconds = resetSeconds) }
         .also { LaunchedEffect(it) { it.observe() } }
 
-val ParentPadding = PaddingValues(vertical = 24.dp, horizontal = 58.dp)
+val ParentPadding = PaddingValues(
+    vertical = SAFE_AREA_VERTICAL_PADDING.dp,
+    horizontal = SAFE_AREA_HORIZONTAL_PADDING.dp,
+)
 
 @Composable
 fun rememberChildPadding(direction: LayoutDirection = LocalLayoutDirection.current) =

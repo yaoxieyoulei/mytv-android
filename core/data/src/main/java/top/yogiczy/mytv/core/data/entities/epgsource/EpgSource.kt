@@ -16,4 +16,11 @@ data class EpgSource(
      * 链接
      */
     val url: String = "",
-)
+) {
+    companion object {
+        val EXAMPLE = EpgSource(
+            name = "测试节目单1",
+            url = "http://1.2.3.4/all.xml",
+        )
+    }
+}

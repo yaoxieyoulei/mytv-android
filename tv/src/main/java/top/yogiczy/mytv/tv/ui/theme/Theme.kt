@@ -10,7 +10,7 @@ import top.yogiczy.mytv.core.designsystem.theme.darkColors
 import top.yogiczy.mytv.core.designsystem.theme.lightColors
 
 @Composable
-fun MyTVTheme(
+fun MyTvTheme(
     isInDarkTheme: Boolean = true,
     content: @Composable () -> Unit,
 ) {
@@ -33,3 +33,10 @@ fun MyTVTheme(
 val MaterialTheme.colors: Colors
     @Composable
     get() = LocalColors.current
+
+const val SAFE_AREA_HORIZONTAL_PADDING = 58
+const val SAFE_AREA_VERTICAL_PADDING = 24
+const val LAYOUT_GRID_SPACING = 20
+const val LAYOUT_GRID_WIDTH = 52
+const val LAYOUT_GRID_COLUMNS = 12
+

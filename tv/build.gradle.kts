@@ -16,11 +16,11 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "top.yogiczy.mytv.tv"
+        applicationId = "top.yogiczy.slcs.tv"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 2
-        versionName = "2.2.0"
+        versionName = "3.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -62,6 +62,18 @@ android {
         }
     }
 
+    flavorDimensions.add("version")
+    productFlavors {
+        create("original") {
+            dimension = "version"
+        }
+
+        create("disguised") {
+            dimension = "version"
+            applicationId = "com.chinablue.tv"
+        }
+    }
+
 //    splits {
 //        abi {
 //            isEnable = true
@@ -82,6 +94,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
 
     implementation(libs.kotlinx.serialization)
     implementation(libs.kotlinx.collections.immutable)
@@ -99,6 +112,8 @@ dependencies {
 
     implementation(libs.okhttp)
     implementation(libs.androidasync)
+
+    implementation(libs.tinypinyin)
 
     implementation(project(":core:data"))
     implementation(project(":core:designsystem"))

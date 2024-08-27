@@ -9,7 +9,7 @@ import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.SP
-import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
+import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 
 /**
  * 应用配置
@@ -102,6 +102,9 @@ object Configs {
         /** 显示台标 */
         UI_SHOW_CHANNEL_LOGO,
 
+        /** 显示频道预览 */
+        UI_SHOW_CHANNEL_PREVIEW,
+
         /** 使用经典选台界面 */
         UI_USE_CLASSIC_PANEL_SCREEN,
 
@@ -130,6 +133,9 @@ object Configs {
         /** ==================== 播放器 ==================== */
         /** 播放器 自定义ua */
         VIDEO_PLAYER_USER_AGENT,
+
+        /** 播放器 自定义headers */
+        VIDEO_PLAYER_HEADERS,
 
         /** 播放器 加载超时 */
         VIDEO_PLAYER_LOAD_TIMEOUT,
@@ -287,8 +293,13 @@ object Configs {
 
     /** 显示台标 */
     var uiShowChannelLogo: Boolean
-        get() = SP.getBoolean(KEY.UI_SHOW_CHANNEL_LOGO.name, false)
+        get() = SP.getBoolean(KEY.UI_SHOW_CHANNEL_LOGO.name, true)
         set(value) = SP.putBoolean(KEY.UI_SHOW_CHANNEL_LOGO.name, value)
+
+    /** 显示频道预览 */
+    var uiShowChannelPreview: Boolean
+        get() = SP.getBoolean(KEY.UI_SHOW_CHANNEL_PREVIEW.name, false)
+        set(value) = SP.putBoolean(KEY.UI_SHOW_CHANNEL_PREVIEW.name, value)
 
     /** 使用经典选台界面 */
     var uiUseClassicPanelScreen: Boolean
@@ -341,6 +352,11 @@ object Configs {
             Constants.VIDEO_PLAYER_USER_AGENT
         }
         set(value) = SP.putString(KEY.VIDEO_PLAYER_USER_AGENT.name, value)
+
+    /** 播放器 自定义headers */
+    var videoPlayerHeaders: String
+        get() = SP.getString(KEY.VIDEO_PLAYER_HEADERS.name, "")
+        set(value) = SP.putString(KEY.VIDEO_PLAYER_HEADERS.name, value)
 
     /** 播放器 加载超时 */
     var videoPlayerLoadTimeout: Long

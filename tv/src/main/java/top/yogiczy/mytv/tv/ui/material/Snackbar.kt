@@ -30,7 +30,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import androidx.tv.material3.WideButton
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
@@ -177,7 +177,7 @@ private fun SnackbarContentIcon(
 @Preview
 @Composable
 private fun SnackbarContentPreview() {
-    MyTVTheme {
+    MyTvTheme {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             SnackbarContent(
                 text = "Single-line snackbar label",
@@ -244,7 +244,7 @@ private fun SnackbarContentPreview() {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun SnackbarContentLongPreview() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Box(modifier = Modifier.fillMaxSize()) {
                 SnackbarContent(
@@ -263,7 +263,7 @@ private fun SnackbarContentLongPreview() {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun SnackbarUIPreview() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Column(
                 modifier = Modifier.padding(40.dp),

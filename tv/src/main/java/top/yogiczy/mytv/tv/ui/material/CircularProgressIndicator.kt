@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
@@ -185,7 +185,7 @@ private const val RotationAngleOffset = (BaseRotationAngle + JumpRotationAngle) 
 @Preview
 @Composable
 private fun CircularProgressIndicatorPreview() {
-    MyTVTheme {
+    MyTvTheme {
         CircularProgressIndicator()
     }
 }

@@ -26,7 +26,7 @@ import top.yogiczy.mytv.core.util.utils.ApkInstaller
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
-import top.yogiczy.mytv.tv.ui.screens.videoplayer.VideoPlayerDisplayMode
+import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.io.File
 import java.net.Inet4Address
@@ -35,10 +35,11 @@ import java.net.SocketException
 
 object HttpServer : Loggable() {
     private const val SERVER_PORT = 10481
-    private val uploadedApkFile = File(Globals.cacheDir, "uploaded_apk.apk")
-        .apply { deleteOnExit() }
+    private val uploadedApkFile by lazy {
+        File(Globals.cacheDir, "uploaded_apk.apk").apply { deleteOnExit() }
+    }
 
-    val serverUrl: String by lazy { "http://${getLocalIpAddress()}:${SERVER_PORT}" }
+    val serverUrl by lazy { "http://${getLocalIpAddress()}:${SERVER_PORT}" }
 
     fun start(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -70,6 +71,10 @@ object HttpServer : Loggable() {
 
                 server.post("/api/video-player-user-agent/push") { request, response ->
                     handleVideoPlayerUserAgentPush(request, response)
+                }
+
+                server.post("/api/video-player-headers/push") { request, response ->
+                    handleVideoPlayerHeadersPush(request, response)
                 }
 
                 server.get("/api/configs") { _, response ->
@@ -187,6 +192,18 @@ object HttpServer : Loggable() {
         val ua = body.get("ua").toString()
 
         Configs.videoPlayerUserAgent = ua
+
+        wrapResponse(response).send("success")
+    }
+
+    private fun handleVideoPlayerHeadersPush(
+        request: AsyncHttpServerRequest,
+        response: AsyncHttpServerResponse,
+    ) {
+        val body = request.getBody<JSONObjectBody>().get()
+        val headers = body.get("headers").toString()
+
+        Configs.videoPlayerHeaders = headers
 
         wrapResponse(response).send("success")
     }

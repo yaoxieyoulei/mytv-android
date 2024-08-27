@@ -47,3 +47,7 @@ fun String.compareVersion(version2: String): Int {
 
     return comparePreRelease(preRelease1, preRelease2)
 }
+
+fun String.urlHost(): String {
+    return this.split("://").getOrElse(1) { "" }.split("/").firstOrNull() ?: this
+}

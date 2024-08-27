@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
@@ -26,6 +27,8 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.dp
+import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_SPACING
+import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_WIDTH
 import kotlin.math.absoluteValue
 
 fun Modifier.ifElse(
@@ -57,10 +60,10 @@ fun Modifier.focusOnLaunchedSaveable(key: Any = Unit): Modifier = composed {
 fun Modifier.handleKeyEvents(
     onKeyTap: Map<Int, () -> Unit> = emptyMap(),
     onKeyLongTap: Map<Int, () -> Unit> = emptyMap(),
-): Modifier {
-    val keyDownMap = mutableMapOf<Int, Boolean>()
+): Modifier = composed {
+    val keyDownMap = remember { mutableMapOf<Int, Boolean>() }
 
-    return onPreviewKeyEvent {
+    onPreviewKeyEvent {
         when (it.nativeKeyEvent.action) {
             KeyEvent.ACTION_DOWN -> {
                 if (it.nativeKeyEvent.repeatCount == 0) {
@@ -242,8 +245,58 @@ fun Modifier.handleKeyEvents(
     onNumber = { if (isFocused()) onNumber(it) else focusRequester.requestFocus() },
 )
 
-fun Modifier.captureBackKey(onBackPressed: () -> Unit) = this.onPreviewKeyEvent {
+fun Modifier.handleKeyEventsOnFocused(
+    key: Any = Unit,
+    onLeft: () -> Unit = {},
+    onLongLeft: () -> Unit = {},
+    onRight: () -> Unit = {},
+    onLongRight: () -> Unit = {},
+    onUp: () -> Unit = {},
+    onLongUp: () -> Unit = {},
+    onDown: () -> Unit = {},
+    onLongDown: () -> Unit = {},
+    onSelect: () -> Unit = {},
+    onLongSelect: () -> Unit = {},
+    onSettings: () -> Unit = {},
+    onNumber: (Int) -> Unit = {},
+): Modifier = composed {
+    val focusRequester = remember { FocusRequester() }
+    var isFocused by remember { mutableStateOf(false) }
+
+    this
+        .focusRequester(focusRequester)
+        .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
+        .handleKeyEvents(
+            key = key,
+            onLeft = { if (isFocused) onLeft() else focusRequester.requestFocus() },
+            onLongLeft = { if (isFocused) onLongLeft() else focusRequester.requestFocus() },
+            onRight = { if (isFocused) onRight() else focusRequester.requestFocus() },
+            onLongRight = { if (isFocused) onLongRight() else focusRequester.requestFocus() },
+            onUp = { if (isFocused) onUp() else focusRequester.requestFocus() },
+            onLongUp = { if (isFocused) onLongUp() else focusRequester.requestFocus() },
+            onDown = { if (isFocused) onDown() else focusRequester.requestFocus() },
+            onLongDown = { if (isFocused) onLongDown() else focusRequester.requestFocus() },
+            onSelect = { if (isFocused) onSelect() else focusRequester.requestFocus() },
+            onLongSelect = { if (isFocused) onLongSelect() else focusRequester.requestFocus() },
+            onSettings = { if (isFocused) onSettings() else focusRequester.requestFocus() },
+            onNumber = { if (isFocused) onNumber(it) else focusRequester.requestFocus() },
+        )
+}
+
+fun Modifier.backHandler(onBackPressed: () -> Unit) = this.onPreviewKeyEvent {
     if (it.key == Key.Back && it.type == KeyEventType.KeyUp) {
+        onBackPressed()
+        true
+    } else {
+        false
+    }
+}
+
+fun Modifier.backHandler(
+    condition: () -> Boolean,
+    onBackPressed: () -> Unit,
+) = this.onPreviewKeyEvent {
+    if (it.key == Key.Back && it.type == KeyEventType.KeyUp && condition()) {
         onBackPressed()
         true
     } else {
@@ -260,3 +313,6 @@ fun Modifier.customBackground() = background(
         ),
     )
 )
+
+fun Int.gridColumns() = (LAYOUT_GRID_WIDTH * this + LAYOUT_GRID_SPACING * (this - 1)).dp
+fun Float.gridColumns() = (LAYOUT_GRID_WIDTH * this + LAYOUT_GRID_SPACING * (this - 1)).dp

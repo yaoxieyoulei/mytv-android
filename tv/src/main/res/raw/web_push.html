@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <title>我的电视</title>
+    <title>天光云影</title>
     <link href="./web_push_css.css" rel="stylesheet" />
     <script src="./web_push_js.js"></script>
 
@@ -32,9 +32,9 @@
                                 <van-space class="w-full" direction="vertical" size="small">
                                     <span>支持m3u、txt格式</span>
 
-                                    <van-field label="类型" class="!pl-0" input-align="right">
+                                    <van-field class="!pl-0" input-align="right" label="类型">
                                         <template #input>
-                                            <van-radio-group v-model="iptvSource.type" direction="horizontal">
+                                            <van-radio-group direction="horizontal" v-model="iptvSource.type">
                                                 <van-radio name="url">远程</van-radio>
                                                 <van-radio name="file">文件</van-radio>
                                                 <van-radio name="content">静态</van-radio>
@@ -42,23 +42,23 @@
                                         </template>
                                     </van-field>
 
-                                    <van-field label="名称" class="!pl-0" v-model="iptvSource.name" placeholder="直播源名称"
-                                        input-align="right"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="名称" placeholder="直播源名称"
+                                        v-model="iptvSource.name"></van-field>
 
-                                    <van-field v-if="iptvSource.type === 'url'" label="链接" class="!pl-0"
-                                        placeholder="直播源链接" v-model="iptvSource.url" type="textarea" rows="2"
-                                        input-align="right"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="链接" placeholder="直播源链接" rows="2"
+                                        type="textarea" v-if="iptvSource.type === 'url'"
+                                        v-model="iptvSource.url"></van-field>
 
-                                    <van-field v-else-if="iptvSource.type === 'file'" label="文件路径" class="!pl-0"
-                                        placeholder="直播源文件路径" v-model="iptvSource.filePath" type="textarea" rows="2"
-                                        input-align="right"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="文件路径" placeholder="直播源文件路径"
+                                        rows="2" type="textarea" v-else-if="iptvSource.type === 'file'"
+                                        v-model="iptvSource.filePath"></van-field>
 
                                     <template v-else-if="iptvSource.type === 'content'">
-                                        <van-field label="内容" class="!pl-0" placeholder="直播源内容"
-                                            v-model="iptvSource.content" type="textarea" rows="5"
-                                            :input-align="iptvSource.content ? 'left' : 'right'"></van-field>
+                                        <van-field :input-align="iptvSource.content ? 'left' : 'right'" class="!pl-0"
+                                            label="内容" placeholder="直播源内容" rows="5" type="textarea"
+                                            v-model="iptvSource.content"></van-field>
 
-                                        <van-field label="上传" class="!pl-0" input-align="right">
+                                        <van-field class="!pl-0" input-align="right" label="上传">
                                             <template #input>
                                                 <van-uploader :after-read="uploadIptvSourceContentAfterRead"
                                                     accept=".txt,.m3u" />
@@ -82,11 +82,11 @@
                                 <van-space class="w-full" direction="vertical" size="small">
                                     <span>支持xml、xml.gz格式</span>
 
-                                    <van-field label="名称" class="!pl-0" v-model="epgSource.name" placeholder="节目单名称"
-                                        input-align="right"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="名称" placeholder="节目单名称"
+                                        v-model="epgSource.name"></van-field>
 
-                                    <van-field label="链接" class="!pl-0" placeholder="节目单链接" v-model="epgSource.url"
-                                        type="textarea" rows="2" input-align="right"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="链接" placeholder="节目单链接" rows="2"
+                                        type="textarea" v-model="epgSource.url"></van-field>
 
                                     <div class="flex justify-end">
                                         <van-button @click="pushEpgSource" size="small" type="primary">
@@ -99,14 +99,29 @@
                     </van-cell-group>
 
                     <van-cell-group inset title="播放器">
-                        <van-cell title="自定义UA">
+                        <van-cell title="自定义ua">
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
-                                    <van-field class="!p-0" placeholder="播放器自定义UA" v-model="videoPlayerUserAgent"
-                                        type="textarea" rows="2"></van-field>
+                                    <van-field class="!p-0" placeholder="播放器自定义ua" rows="2" type="textarea"
+                                        v-model="videoPlayerUserAgent"></van-field>
 
                                     <div class="flex justify-end">
                                         <van-button @click="pushVideoPlayerUserAgent" size="small" type="primary">
+                                            推送
+                                        </van-button>
+                                    </div>
+                                </van-space>
+                            </template>
+                        </van-cell>
+
+                        <van-cell title="自定义headers">
+                            <template #label>
+                                <van-space class="w-full" direction="vertical" size="small">
+                                    <van-field :placeholder="videoPlayerHeadersExample" autosize class="!p-0"
+                                        rows="3" type="textarea" v-model="videoPlayerHeaders"></van-field>
+
+                                    <div class="flex justify-end">
+                                        <van-button @click="pushVideoPlayerHeaders" size="small" type="primary">
                                             推送
                                         </van-button>
                                     </div>
@@ -126,7 +141,7 @@
 
                 <template v-else-if="tabActive === 'log'">
                     <van-list>
-                        <van-cell v-for="item in info.logHistory" :key="item.time" :label="item.cause">
+                        <van-cell :key="item.time" :label="item.cause" v-for="item in info.logHistory">
                             <template #title>
                                 <div class="flex flex-col gap-1">
                                     <div class="flex gap-1 items-center">
@@ -145,8 +160,8 @@
                 </template>
 
                 <van-tabbar v-model="tabActive">
-                    <van-tabbar-item name="config" icon="tv-o">配置</van-tabbar-item>
-                    <van-tabbar-item name="log" icon="list-switch">日志</van-tabbar-item>
+                    <van-tabbar-item icon="tv-o" name="config">配置</van-tabbar-item>
+                    <van-tabbar-item icon="list-switch" name="log">日志</van-tabbar-item>
                 </van-tabbar>
             </template>
 
@@ -271,7 +286,7 @@
                 const videoPlayerUserAgent = ref('')
                 async function pushVideoPlayerUserAgent() {
                     if (!videoPlayerUserAgent.value) {
-                        vant.showFailToast('请填写播放器自定义UA')
+                        vant.showFailToast('请填写播放器自定义ua')
                         return
                     }
 
@@ -282,9 +297,31 @@
                             body: JSON.stringify({ ua: videoPlayerUserAgent.value }),
                             headers: { 'Content-Type': 'application/json' }
                         })
-                        vant.showSuccessToast("推送UA成功")
+                        vant.showSuccessToast("推送ua成功")
                     } catch (e) {
-                        vant.showFailToast('推送UA失败')
+                        vant.showFailToast('推送ua失败')
+                        console.error(e)
+                    }
+                }
+
+                const videoPlayerHeadersExample = "Header-Name-1: Header-Value-1\nHeader-Name-2: Header-Value-2"
+                const videoPlayerHeaders = ref('')
+                async function pushVideoPlayerHeaders() {
+                    if (!videoPlayerHeaders.value) {
+                        vant.showFailToast('请填写播放器自定义headers')
+                        return
+                    }
+
+                    try {
+                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
+                        await requestApi('/api/video-player-headers/push', {
+                            method: "POST",
+                            body: JSON.stringify({ headers: videoPlayerHeaders.value }),
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                        vant.showSuccessToast("推送headers成功")
+                    } catch (e) {
+                        vant.showFailToast('推送headers失败')
                         console.error(e)
                     }
                 }
@@ -318,6 +355,9 @@
                     pushEpgSource,
                     videoPlayerUserAgent,
                     pushVideoPlayerUserAgent,
+                    videoPlayerHeadersExample,
+                    videoPlayerHeaders,
+                    pushVideoPlayerHeaders,
                     uploadApkAfterRead,
                 }
             }

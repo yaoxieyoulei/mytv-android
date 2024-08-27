@@ -10,4 +10,20 @@ import kotlinx.serialization.Serializable
 @Immutable
 data class IptvSourceList(
     val value: List<IptvSource> = emptyList(),
-) : List<IptvSource> by value
+) : List<IptvSource> by value {
+    companion object {
+        val EXAMPLE = IptvSourceList(
+            listOf(
+                IptvSource(
+                    name = "测试直播源1",
+                    url = "http://1.2.3.4/tv.txt",
+                ),
+                IptvSource(
+                    name = "测试直播源2",
+                    url = "/sdcard/Download/tv.txt",
+                    isLocal = true,
+                )
+            )
+        )
+    }
+}

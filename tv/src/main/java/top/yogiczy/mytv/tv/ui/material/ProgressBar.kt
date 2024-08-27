@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 
 @Composable
 fun ProgressBar(
@@ -67,7 +67,7 @@ object ProgressBarDefaults {
 @Preview
 @Composable
 private fun ProgressBarPreview() {
-    MyTVTheme {
+    MyTvTheme {
         Row(
             modifier = Modifier
                 .padding(20.dp)

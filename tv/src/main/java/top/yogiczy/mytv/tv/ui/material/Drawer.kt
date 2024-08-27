@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
+import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.theme.colors
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 
@@ -94,7 +94,7 @@ enum class DrawerPosition {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun DrawerPreviewStart() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Drawer(
                 position = DrawerPosition.Start,
@@ -107,7 +107,7 @@ private fun DrawerPreviewStart() {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun DrawerPreviewEnd() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Drawer(
                 position = DrawerPosition.End,
@@ -120,7 +120,7 @@ private fun DrawerPreviewEnd() {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun DrawerPreviewTop() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Drawer(
                 position = DrawerPosition.Top,
@@ -133,7 +133,7 @@ private fun DrawerPreviewTop() {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun DrawerPreviewBottom() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Drawer(
                 position = DrawerPosition.Bottom,
@@ -146,7 +146,7 @@ private fun DrawerPreviewBottom() {
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun DrawerPreviewBottomNoHeader() {
-    MyTVTheme {
+    MyTvTheme {
         PreviewWithLayoutGrids {
             Drawer(
                 position = DrawerPosition.Bottom,

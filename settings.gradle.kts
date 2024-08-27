@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "我的电视"
+rootProject.name = "天光云影"
 
 include(":core:data")
 include(":core:util")
