@@ -73,7 +73,10 @@ fun SettingsEpgSourceScreen(
             contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            itemsIndexed(epgSourceList) { index, epgSource ->
+            itemsIndexed(
+                epgSourceList,
+                key = { _, source -> source.hashCode() },
+            ) { index, epgSource ->
                 EpgSourceItem(
                     modifier = Modifier
                         .ifElse(

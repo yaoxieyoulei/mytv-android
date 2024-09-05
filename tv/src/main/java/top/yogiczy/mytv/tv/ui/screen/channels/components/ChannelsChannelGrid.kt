@@ -3,9 +3,9 @@ package top.yogiczy.mytv.tv.ui.screen.channels.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -55,9 +54,13 @@ fun ChannelsChannelGrid(
     val childPadding = rememberChildPadding()
     val focusManager = LocalFocusManager.current
 
-    val gridState = rememberSaveable(channelList, saver = LazyGridState.Saver) { LazyGridState() }
+    val gridState = rememberLazyGridState()
     val firstItemFocusRequester = remember { FocusRequester() }
     var isFirstItemFocused by remember { mutableStateOf(false) }
+
+    LaunchedEffect(channelList) {
+        gridState.scrollToItem(0)
+    }
 
     val shouldShowTopBar by remember {
         derivedStateOf {

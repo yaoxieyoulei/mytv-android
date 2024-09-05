@@ -140,7 +140,10 @@ private fun SettingsIptvSourceContent(
         contentPadding = childPadding.copy(top = 10.dp).paddingValues,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        itemsIndexed(iptvSourceList) { index, iptvSource ->
+        itemsIndexed(
+            iptvSourceList,
+            key = { _, source -> source.hashCode() },
+        ) { index, iptvSource ->
             IptvSourceItem(
                 iptvSourceProvider = { iptvSource },
                 iptvSourceDetailProvider = {

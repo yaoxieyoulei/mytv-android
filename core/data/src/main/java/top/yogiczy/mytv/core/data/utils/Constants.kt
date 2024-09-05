@@ -33,6 +33,14 @@ object Constants {
                 name = "默认直播源 fanmingming（IPV6）",
                 url = "https://live.fanmingming.com/tv/m3u/ipv6.m3u",
             ),
+            IptvSource(
+                name = "默认直播源 YanG-1989（电视）",
+                url = "https://tv.iill.top/m3u/Gather",
+            ),
+            IptvSource(
+                name = "默认直播源 YanG-1989（直播）",
+                url = "https://tv.iill.top/m3u/Live",
+            ),
         )
     )
 
