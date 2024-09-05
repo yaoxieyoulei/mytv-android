@@ -120,6 +120,8 @@
 
 Telegram: https://t.me/mytv_android
 
+QQ群: 807328577
+
 ## 赞赏
 
 <img src="./screenshots/mm_reward_qrcode.png" width="48%"/>
