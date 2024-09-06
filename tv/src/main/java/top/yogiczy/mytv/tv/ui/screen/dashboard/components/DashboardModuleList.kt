@@ -44,6 +44,7 @@ fun DashboardModuleList(
     toChannelsScreen: () -> Unit = {},
     toFavoritesScreen: () -> Unit = {},
     toSearchScreen: () -> Unit = {},
+    toMultiViewScreen: () -> Unit = {},
     toPushScreen: () -> Unit = {},
     toSettingsScreen: () -> Unit = {},
     toAboutScreen: () -> Unit = {},
@@ -108,8 +109,18 @@ fun DashboardModuleList(
 
         item {
             DashboardModuleItem(
+                imageVector = Icons.Outlined.GridView,
+                title = "多屏同播",
+                onSelected = toMultiViewScreen,
+                tag = "BETA",
+            )
+        }
+
+        item {
+            DashboardModuleItem(
                 imageVector = Icons.Outlined.InsertChart,
                 title = "观看统计",
+                tag = "UNDO",
             )
         }
 

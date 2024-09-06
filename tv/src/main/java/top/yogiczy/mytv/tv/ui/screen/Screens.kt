@@ -15,6 +15,7 @@ enum class Screens(
     Settings(listOf(SettingsScreen.START_DESTINATION)),
     About,
     Update,
+    MultiView,
     ;
 
     operator fun invoke(): String {

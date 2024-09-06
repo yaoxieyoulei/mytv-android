@@ -45,6 +45,7 @@ import top.yogiczy.mytv.tv.ui.screensold.agreement.AgreementScreen
 import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettingsCurrent
 import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.theme.DESIGN_WIDTH
 import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_HORIZONTAL_PADDING
 import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_VERTICAL_PADDING
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
@@ -65,7 +66,7 @@ fun App(
     CompositionLocalProvider(
         LocalDensity provides Density(
             density = LocalDensity.current.density * when (settingsViewModel.uiDensityScaleRatio) {
-                0f -> configuration.screenWidthDp.toFloat() / 960
+                0f -> configuration.screenWidthDp.toFloat() / DESIGN_WIDTH
                 else -> settingsViewModel.uiDensityScaleRatio
             },
             fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
