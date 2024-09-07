@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.InsertChart
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Tv
+import androidx.compose.material.icons.outlined.ViewCozy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -109,7 +110,7 @@ fun DashboardModuleList(
 
         item {
             DashboardModuleItem(
-                imageVector = Icons.Outlined.GridView,
+                imageVector = Icons.Outlined.ViewCozy,
                 title = "多屏同播",
                 onSelected = toMultiViewScreen,
                 tag = "BETA",

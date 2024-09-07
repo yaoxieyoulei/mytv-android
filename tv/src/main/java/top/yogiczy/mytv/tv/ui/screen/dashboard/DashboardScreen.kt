@@ -130,11 +130,7 @@ private fun DashboardScreeIptvSource(
         modifier = modifier
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
-                onSelect = toSettingsIptvSourceScreen,
-            )
+            .handleKeyEvents(onSelect = toSettingsIptvSourceScreen)
             .alpha(alpha.value),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = Color.Transparent,

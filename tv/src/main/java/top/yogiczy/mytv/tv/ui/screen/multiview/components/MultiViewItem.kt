@@ -17,6 +17,8 @@ import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SyncAlt
+import androidx.compose.material.icons.outlined.ZoomInMap
+import androidx.compose.material.icons.outlined.ZoomOutMap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,7 +50,7 @@ import top.yogiczy.mytv.tv.ui.screensold.videoplayer.rememberVideoPlayerState
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.backHandler
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
@@ -58,9 +60,12 @@ fun MultiViewItem(
     epgListProvider: () -> EpgList = { EpgList() },
     channelProvider: () -> Channel = { Channel() },
     viewCountProvider: () -> Int = { 0 },
+    isZoomInProvider: () -> Boolean = { false },
     onAddChannel: (Channel) -> Unit = {},
     onRemoveChannel: (Channel) -> Unit = {},
     onChangeChannel: (Channel) -> Unit = {},
+    onZoomIn: () -> Unit = {},
+    onZoomOut: () -> Unit = {},
 ) {
     val channel = channelProvider()
 
@@ -81,7 +86,7 @@ fun MultiViewItem(
                     actionVisible = false
                 }
             }
-            .handleKeyEventsOnFocused(onSelect = { actionVisible = true })
+            .handleKeyEvents(onSelect = { actionVisible = true })
             .backHandler({ actionVisible }) { actionVisible = false },
         onClick = {},
         border = ClickableSurfaceDefaults.border(
@@ -99,10 +104,19 @@ fun MultiViewItem(
             visibleProvider = { actionVisible },
             onDismissRequest = { actionVisible = false },
             viewCountProvider = viewCountProvider,
+            isZoomInProvider = isZoomInProvider,
             onAddChannel = { addChannelVisible = true },
             onSearchAndAddChannel = { searchAndAddChannelVisible = true },
             onChangeChannel = { changeChannelVisible = true },
             onRemoveChannel = { onRemoveChannel(channel) },
+            onZoomIn = {
+                onZoomIn()
+                actionVisible = false
+            },
+            onZoomOut = {
+                onZoomOut()
+                actionVisible = false
+            },
         )
     }
 
@@ -159,10 +173,13 @@ private fun MultiViewItemActions(
     visibleProvider: () -> Boolean = { false },
     onDismissRequest: () -> Unit = {},
     viewCountProvider: () -> Int = { 0 },
+    isZoomInProvider: () -> Boolean = { false },
     onAddChannel: () -> Unit = {},
     onSearchAndAddChannel: () -> Unit = {},
     onChangeChannel: () -> Unit = {},
     onRemoveChannel: () -> Unit = {},
+    onZoomIn: () -> Unit = {},
+    onZoomOut: () -> Unit = {},
 ) {
     if (!visibleProvider()) return
 
@@ -195,10 +212,17 @@ private fun MultiViewItemActions(
                 )
 
                 MultiViewItemActionItem(
-                    title = "搜索并添加",
+                    title = "搜索",
                     imageVector = Icons.Outlined.Search,
                     onSelected = onSearchAndAddChannel,
                     disabled = viewCount >= MULTI_VIEW_MAX_COUNT,
+                    modifier = Modifier.weight(1f),
+                )
+
+                MultiViewItemActionItem(
+                    title = "切换",
+                    imageVector = Icons.Outlined.SyncAlt,
+                    onSelected = onChangeChannel,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -208,19 +232,30 @@ private fun MultiViewItemActions(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 MultiViewItemActionItem(
-                    title = "切换",
-                    imageVector = Icons.Outlined.SyncAlt,
-                    onSelected = onChangeChannel,
-                    modifier = Modifier.weight(1f),
-                )
-
-                MultiViewItemActionItem(
                     title = "删除",
                     imageVector = Icons.Outlined.DeleteOutline,
                     onSelected = onRemoveChannel,
                     disabled = viewCount <= 1,
                     modifier = Modifier.weight(1f),
                 )
+
+                if (isZoomInProvider()) {
+                    MultiViewItemActionItem(
+                        title = "缩小",
+                        imageVector = Icons.Outlined.ZoomInMap,
+                        onSelected = onZoomOut,
+                        disabled = viewCount <= 1,
+                        modifier = Modifier.weight(1f),
+                    )
+                } else {
+                    MultiViewItemActionItem(
+                        title = "放大",
+                        imageVector = Icons.Outlined.ZoomOutMap,
+                        onSelected = onZoomIn,
+                        disabled = viewCount <= 1,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
 
                 MultiViewItemActionItem(
                     title = "返回",
@@ -247,7 +282,7 @@ private fun MultiViewItemActionItem(
             .ifElse(
                 disabled,
                 Modifier.alpha(0.5f),
-                Modifier.handleKeyEventsOnFocused(onSelect = onSelected),
+                Modifier.handleKeyEvents(onSelect = onSelected),
             ),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
