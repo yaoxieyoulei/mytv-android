@@ -18,7 +18,7 @@ class TxtIptvParser : IptvParser {
 
     override suspend fun parse(data: String): ChannelGroupList = withContext(Dispatchers.Default) {
         val lines = data.split("\r\n", "\n")
-        val iptvList = mutableListOf<IptvResponseItem>()
+        val iptvList = mutableListOf<ChannelItem>()
 
         var groupName: String? = null
         lines.forEach { line ->
@@ -31,9 +31,9 @@ class TxtIptvParser : IptvParser {
                 if (res.size < 2) return@forEach
 
                 iptvList.addAll(res[1].split("#").map { url ->
-                    IptvResponseItem(
+                    ChannelItem(
                         name = res[0].trim(),
-                        channelName = res[0].trim(),
+                        epgName = res[0].trim(),
                         groupName = groupName ?: "其他",
                         url = url.trim(),
                     )
@@ -47,18 +47,18 @@ class TxtIptvParser : IptvParser {
                 channelList = ChannelList(groupEntry.value.groupBy { it.name }.map { nameEntry ->
                     Channel(
                         name = nameEntry.key,
-                        epgName = nameEntry.value.first().channelName,
+                        epgName = nameEntry.value.first().epgName,
                         urlList = nameEntry.value.map { it.url }.distinct(),
-                        logo = "https://live.fanmingming.com/tv/${nameEntry.value.first().channelName}.png"
+                        logo = "https://live.fanmingming.com/tv/${nameEntry.value.first().epgName}.png"
                     )
                 }),
             )
         })
     }
 
-    private data class IptvResponseItem(
+    private data class ChannelItem(
         val name: String,
-        val channelName: String,
+        val epgName: String,
         val groupName: String,
         val url: String,
     )

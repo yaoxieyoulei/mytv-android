@@ -74,6 +74,20 @@
                                 </van-space>
                             </template>
                         </van-cell>
+
+                        <van-cell title="频道别名">
+                            <template #label>
+                                <van-space class="w-full" direction="vertical" size="small">
+                                    <van-field class="!p-0" placeholder="频道别名" rows="5" type="textarea"
+                                        v-model="channelAlias"></van-field>
+
+                                    <div class="flex justify-end">
+                                        <van-button @click="updateChannelAlias" size="small" type="primary">
+                                            推送
+                                        </van-button>
+                                    </div>
+                                </van-space></template>
+                        </van-cell>
                     </van-cell-group>
 
                     <van-cell-group inset title="节目单">
@@ -117,8 +131,8 @@
                         <van-cell title="自定义headers">
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
-                                    <van-field :placeholder="videoPlayerHeadersExample" autosize class="!p-0"
-                                        rows="3" type="textarea" v-model="videoPlayerHeaders"></van-field>
+                                    <van-field :placeholder="videoPlayerHeadersExample" autosize class="!p-0" rows="3"
+                                        type="textarea" v-model="videoPlayerHeaders"></van-field>
 
                                     <div class="flex justify-end">
                                         <van-button @click="pushVideoPlayerHeaders" size="small" type="primary">
@@ -326,6 +340,24 @@
                     }
                 }
 
+                const channelAlias = ref('')
+                async function refreshChannelAlias() {
+                    channelAlias.value = await (await requestApi('/api/channel-alias')).text()
+                } async function updateChannelAlias() {
+                    try {
+                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
+                        await requestApi('/api/channel-alias', {
+                            method: "POST",
+                            body: channelAlias.value,
+                        })
+                        vant.showSuccessToast("更新频道别名成功")
+                        await refreshChannelAlias()
+                    } catch (e) {
+                        vant.showFailToast('更新频道别名失败')
+                        console.error(e)
+                    }
+                }
+
                 async function uploadApkAfterRead(file) {
                     try {
                         vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
@@ -341,6 +373,7 @@
 
                 onMounted(async () => {
                     await refreshInfo()
+                    await refreshChannelAlias()
                 })
 
                 return {
@@ -359,6 +392,8 @@
                     videoPlayerHeaders,
                     pushVideoPlayerHeaders,
                     uploadApkAfterRead,
+                    channelAlias,
+                    updateChannelAlias,
                 }
             }
         })

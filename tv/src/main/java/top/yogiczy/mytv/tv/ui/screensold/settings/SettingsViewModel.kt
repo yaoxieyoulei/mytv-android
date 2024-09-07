@@ -168,6 +168,14 @@ class SettingsViewModel : ViewModel() {
             Configs.iptvHybridMode = value
         }
 
+    private var _iptvSimilarChannelMerge by mutableStateOf(false)
+    var iptvSimilarChannelMerge: Boolean
+        get() = _iptvSimilarChannelMerge
+        set(value) {
+            _iptvSimilarChannelMerge = value
+            Configs.iptvSimilarChannelMerge = value
+        }
+
     private var _epgEnable by mutableStateOf(false)
     var epgEnable: Boolean
         get() = _epgEnable
@@ -369,6 +377,7 @@ class SettingsViewModel : ViewModel() {
         _iptvChannelFavoriteChangeBoundaryJumpOut = Configs.iptvChannelFavoriteChangeBoundaryJumpOut
         _iptvChannelGroupHiddenList = Configs.iptvChannelGroupHiddenList
         _iptvHybridMode = Configs.iptvHybridMode
+        _iptvSimilarChannelMerge = Configs.iptvSimilarChannelMerge
         _epgEnable = Configs.epgEnable
         _epgSourceCurrent = Configs.epgSourceCurrent
         _epgSourceList = Configs.epgSourceList

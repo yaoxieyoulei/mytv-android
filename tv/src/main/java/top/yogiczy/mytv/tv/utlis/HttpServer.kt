@@ -4,11 +4,13 @@ import android.content.Context
 import com.koushikdutta.async.AsyncServer
 import com.koushikdutta.async.http.body.JSONObjectBody
 import com.koushikdutta.async.http.body.MultipartFormDataBody
+import com.koushikdutta.async.http.body.StringBody
 import com.koushikdutta.async.http.server.AsyncHttpServer
 import com.koushikdutta.async.http.server.AsyncHttpServerRequest
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -18,6 +20,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
+import top.yogiczy.mytv.core.data.utils.ChannelAlias
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Loggable
@@ -75,6 +78,14 @@ object HttpServer : Loggable() {
 
                 server.post("/api/video-player-headers/push") { request, response ->
                     handleVideoPlayerHeadersPush(request, response)
+                }
+
+                server.get("/api/channel-alias") { _, response ->
+                    handleGetChannelAlias(response)
+                }
+
+                server.post("/api/channel-alias") { request, response ->
+                    handleUpdateChannelAlias(request, response)
                 }
 
                 server.get("/api/configs") { _, response ->
@@ -204,6 +215,27 @@ object HttpServer : Loggable() {
         val headers = body.get("headers").toString()
 
         Configs.videoPlayerHeaders = headers
+
+        wrapResponse(response).send("success")
+    }
+
+    private fun handleGetChannelAlias(response: AsyncHttpServerResponse) {
+        val json = Json { prettyPrint = true }
+
+        wrapResponse(response).apply {
+            setContentType("application/json")
+            send(json.encodeToString(ChannelAlias.aliasMap))
+        }
+    }
+
+    private fun handleUpdateChannelAlias(
+        request: AsyncHttpServerRequest,
+        response: AsyncHttpServerResponse,
+    ) {
+        val alias = request.getBody<StringBody>().get()
+
+        ChannelAlias.aliasFile.writeText(alias)
+        GlobalScope.launch { ChannelAlias.refresh() }
 
         wrapResponse(response).send("success")
     }

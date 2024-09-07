@@ -11,8 +11,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.LocalContentColor
+import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
+import top.yogiczy.mytv.core.data.utils.ChannelAlias
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.material.TagDefaults
@@ -100,6 +102,32 @@ fun SettingsIptvScreen(
                     },
                     onSelected = toChannelGroupVisibilityScreen,
                     link = true,
+                )
+            }
+
+            item {
+                val alias = ChannelAlias.aliasMap
+
+                SettingsListItem(
+                    headlineContent = "频道别名",
+                    trailingContent = {
+                        Text("共${alias.size}个频道，${alias.values.sumOf { it.size }}个别名")
+                    },
+                    remoteConfig = true,
+                )
+            }
+
+            item {
+                SettingsListItem(
+                    headlineContent = "相似频道合并",
+                    supportingContent = "相同频道别名将进行合并",
+                    trailingContent = {
+                        Switch(settingsViewModel.iptvSimilarChannelMerge, null)
+                    },
+                    onSelected = {
+                        settingsViewModel.iptvSimilarChannelMerge =
+                            !settingsViewModel.iptvSimilarChannelMerge
+                    },
                 )
             }
 

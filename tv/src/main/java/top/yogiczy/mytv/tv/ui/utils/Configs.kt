@@ -76,6 +76,9 @@ object Configs {
         /** 混合模式 */
         IPTV_HYBRID_MODE,
 
+        /** 相似频道合并 */
+        IPTV_SIMILAR_CHANNEL_MERGE,
+
         /** ==================== 节目单 ==================== */
         /** 启用节目单 */
         EPG_ENABLE,
@@ -246,6 +249,11 @@ object Configs {
             SP.getInt(KEY.IPTV_HYBRID_MODE.name, IptvHybridMode.DISABLE.value)
         )
         set(value) = SP.putInt(KEY.IPTV_HYBRID_MODE.name, value.value)
+
+    /** 相似频道合并 */
+    var iptvSimilarChannelMerge: Boolean
+        get() = SP.getBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, true)
+        set(value) = SP.putBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, value)
 
     /** ==================== 节目单 ==================== */
     /** 启用节目单 */

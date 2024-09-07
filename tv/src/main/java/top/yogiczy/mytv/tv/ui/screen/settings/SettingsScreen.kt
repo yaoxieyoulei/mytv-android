@@ -217,6 +217,7 @@ fun SettingsScreen(
                         hybridModeProvider = { settingsViewModel.iptvHybridMode },
                         onHybridModeChanged = {
                             settingsViewModel.iptvHybridMode = it
+                            navController.navigateUp()
                         },
                         onBackPressed = { navController.navigateUp() },
                     )
