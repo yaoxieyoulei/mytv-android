@@ -27,7 +27,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @Composable
@@ -91,7 +91,7 @@ private fun ChannelGroupVisibilityItem(
     ListItem(
         modifier = modifier
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .handleKeyEventsOnFocused(onSelect = onVisibilityToggle),
+            .handleKeyEvents(onSelect = onVisibilityToggle),
         headlineContent = {
             Text(
                 group.name,

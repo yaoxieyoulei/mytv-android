@@ -44,7 +44,7 @@ import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.push.PushContent
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsIptvSourceScreen(
@@ -86,7 +86,7 @@ fun SettingsIptvSourceScreen(
         headerExtra = {
             Button(
                 modifier = modifier
-                    .handleKeyEventsOnFocused(onSelect = {
+                    .handleKeyEvents(onSelect = {
                         coroutineScope.launch {
                             refreshAll()
                         }
@@ -159,7 +159,7 @@ private fun SettingsIptvSourceContent(
             var visible by remember { mutableStateOf(false) }
 
             ListItem(
-                modifier = Modifier.handleKeyEventsOnFocused(onSelect = { visible = true }),
+                modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
                 headlineContent = { Text("添加其他直播源") },
                 selected = false,
                 onClick = {},
@@ -189,7 +189,7 @@ private fun IptvSourceItem(
     val isSelected = isSelectedProvider()
 
     ListItem(
-        modifier = modifier.handleKeyEventsOnFocused(
+        modifier = modifier.handleKeyEvents(
             onSelect = onIptvSourceSelected,
             onLongSelect = onIptvSourceDelete,
         ),

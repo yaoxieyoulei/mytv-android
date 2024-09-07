@@ -27,8 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -67,17 +65,13 @@ fun ChannelsChannelItem(
     onChannelFavoriteToggle: () -> Unit = {},
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
 ) {
-    val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier
-            .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .width(2.4f.gridColumns())
             .handleKeyEvents(
-                focusRequester = focusRequester,
-                isFocused = { isFocused },
                 onSelect = onChannelSelected,
                 onLongSelect = onChannelFavoriteToggle,
             ),

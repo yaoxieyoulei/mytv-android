@@ -21,7 +21,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsEpgRefreshTimeThresholdScreen(
@@ -51,7 +51,7 @@ fun SettingsEpgRefreshTimeThresholdScreen(
             items(timeThresholdList) { timeThreshold ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onTimeThresholdChanged(timeThreshold) }),
+                        .handleKeyEvents(onSelect = { onTimeThresholdChanged(timeThreshold) }),
                     headlineContent = {
                         Text(
                             text = "${timeThreshold}:00",

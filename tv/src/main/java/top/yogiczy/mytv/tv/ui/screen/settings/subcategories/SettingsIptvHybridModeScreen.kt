@@ -2,11 +2,9 @@ package top.yogiczy.mytv.tv.ui.screen.settings.subcategories
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
@@ -22,7 +20,7 @@ import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.Configs
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsIptvHybridModeScreen(
@@ -48,7 +46,7 @@ fun SettingsIptvHybridModeScreen(
         ) {
             items(Configs.IptvHybridMode.entries) { mode ->
                 ListItem(
-                    modifier = Modifier.handleKeyEventsOnFocused(
+                    modifier = Modifier.handleKeyEvents(
                         onSelect = { onHybridModeChanged(mode) },
                     ),
                     headlineContent = {

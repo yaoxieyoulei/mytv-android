@@ -30,7 +30,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -115,7 +115,7 @@ private fun SearchKeyboardKey(
     Surface(
         modifier = modifier
             .aspectRatio(1f)
-            .handleKeyEventsOnFocused(onSelect = onSelected),
+            .handleKeyEvents(onSelect = onSelected),
         shape = ClickableSurfaceDefaults.shape(MaterialTheme.shapes.small),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),

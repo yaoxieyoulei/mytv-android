@@ -36,7 +36,7 @@ import top.yogiczy.mytv.tv.ui.screen.push.PushContent
 import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -96,7 +96,7 @@ fun SettingsEpgSourceScreen(
                 var visible by remember { mutableStateOf(false) }
 
                 ListItem(
-                    modifier = Modifier.handleKeyEventsOnFocused(onSelect = { visible = true }),
+                    modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
                     headlineContent = { Text("添加其他节目单") },
                     selected = false,
                     onClick = {},
@@ -125,7 +125,7 @@ private fun EpgSourceItem(
     val isSelected = isSelectedProvider()
 
     ListItem(
-        modifier = modifier.handleKeyEventsOnFocused(
+        modifier = modifier.handleKeyEvents(
             onSelect = onEpgSourceSelected,
             onLongSelect = onEpgSourceDelete,
         ),

@@ -39,7 +39,7 @@ import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_HORIZONTAL_PADDING
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import java.io.File
 
 @Composable
@@ -159,7 +159,7 @@ private fun UpdateActionBtn(
     ListItem(
         modifier = modifier
             .width(4.gridColumns())
-            .handleKeyEventsOnFocused(onSelect = onSelected),
+            .handleKeyEvents(onSelect = onSelected),
         onClick = { },
         selected = false,
         headlineContent = { Text(title) },

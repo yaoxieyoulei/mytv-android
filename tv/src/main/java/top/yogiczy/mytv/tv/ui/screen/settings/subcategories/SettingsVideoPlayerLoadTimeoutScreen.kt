@@ -22,7 +22,7 @@ import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsVideoPlayerLoadTimeoutScreen(
@@ -52,7 +52,7 @@ fun SettingsVideoPlayerLoadTimeoutScreen(
             items(timeoutList) { delay ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onTimeoutChanged(delay) }),
+                        .handleKeyEvents(onSelect = { onTimeoutChanged(delay) }),
                     headlineContent = {
                         Text(
                             delay.humanizeMs(),

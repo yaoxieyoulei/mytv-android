@@ -21,7 +21,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import java.text.DecimalFormat
 
 @Composable
@@ -52,7 +52,7 @@ fun SettingsUiDensityScaleRatioScreen(
             items(scaleRatioList) { scaleRatio ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onScaleRatioChanged(scaleRatio) }),
+                        .handleKeyEvents(onSelect = { onScaleRatioChanged(scaleRatio) }),
                     headlineContent = {
                         Text(
                             text = when (scaleRatio) {

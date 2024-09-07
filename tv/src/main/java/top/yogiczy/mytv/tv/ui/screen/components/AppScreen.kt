@@ -43,7 +43,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import kotlin.math.roundToInt
 
 @Composable
@@ -161,7 +161,7 @@ private fun AppScaffoldBack(
     Button(
         modifier = modifier
             .focusOnLaunched()
-            .handleKeyEventsOnFocused(onSelect = onBack),
+            .handleKeyEvents(onSelect = onBack),
         colors = ButtonDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
         ),

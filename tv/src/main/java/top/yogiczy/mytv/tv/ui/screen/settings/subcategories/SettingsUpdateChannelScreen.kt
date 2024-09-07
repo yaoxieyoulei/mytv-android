@@ -21,7 +21,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsUpdateChannelScreen(
@@ -50,7 +50,7 @@ fun SettingsUpdateChannelScreen(
             items(updateChannelList) { channel ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onUpdateChannelChanged(channel) }),
+                        .handleKeyEvents(onSelect = { onUpdateChannelChanged(channel) }),
                     headlineContent = {
                         Text(
                             when (channel) {

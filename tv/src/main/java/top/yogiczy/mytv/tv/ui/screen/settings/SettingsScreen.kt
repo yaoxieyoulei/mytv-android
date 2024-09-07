@@ -177,7 +177,6 @@ fun SettingsScreen(
                         onIptvSourceSelected = {
                             settingsViewModel.iptvSourceCurrent = it
                             settingsViewModel.iptvChannelGroupHiddenList = emptySet()
-                            settingsViewModel.iptvChannelFavoriteList = emptySet()
                             onReload()
                         },
                         onIptvSourceDelete = {

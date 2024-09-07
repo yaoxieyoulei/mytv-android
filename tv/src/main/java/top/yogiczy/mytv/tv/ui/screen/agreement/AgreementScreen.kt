@@ -31,7 +31,7 @@ import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun AgreementScreen(
@@ -85,7 +85,7 @@ fun AgreementScreen(
                             Button(
                                 modifier = Modifier
                                     .focusOnLaunched()
-                                    .handleKeyEventsOnFocused(onSelect = onAgree)
+                                    .handleKeyEvents(onSelect = onAgree)
                                     .pointerInput(Unit) {
                                         detectTapGestures(onTap = {
                                             onTouchTested()
@@ -102,7 +102,7 @@ fun AgreementScreen(
 
                             Button(
                                 modifier = Modifier
-                                    .handleKeyEventsOnFocused(onSelect = onDisagree),
+                                    .handleKeyEvents(onSelect = onDisagree),
                                 colors = btnColors,
                                 onClick = { },
                             ) {

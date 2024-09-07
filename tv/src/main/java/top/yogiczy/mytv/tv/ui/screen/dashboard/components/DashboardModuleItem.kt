@@ -23,7 +23,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun DashboardModuleItem(
@@ -36,7 +36,7 @@ fun DashboardModuleItem(
     Surface(
         modifier = modifier
             .size(2.gridColumns())
-            .handleKeyEventsOnFocused(onSelect = onSelected),
+            .handleKeyEvents(onSelect = onSelected),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
         ),

@@ -22,7 +22,7 @@ import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsIptvSourceCacheTimeScreen(
@@ -54,7 +54,7 @@ fun SettingsIptvSourceCacheTimeScreen(
             items(cacheTimeList) { cacheTime ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onCacheTimeChanged(cacheTime) }),
+                        .handleKeyEvents(onSelect = { onCacheTimeChanged(cacheTime) }),
                     headlineContent = {
                         Text(
                             text = when (cacheTime) {

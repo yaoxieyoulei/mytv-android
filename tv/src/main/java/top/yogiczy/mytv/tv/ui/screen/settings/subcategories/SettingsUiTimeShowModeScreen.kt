@@ -21,7 +21,7 @@ import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.Configs
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsUiTimeShowModeScreen(
@@ -50,7 +50,7 @@ fun SettingsUiTimeShowModeScreen(
             items(Configs.UiTimeShowMode.entries) { mode ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onTimeShowModeChanged(mode) }),
+                        .handleKeyEvents(onSelect = { onTimeShowModeChanged(mode) }),
                     headlineContent = {
                         Text(
                             when (mode) {

@@ -34,7 +34,7 @@ import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.components.QrcodePopup
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun AboutScreen(
@@ -79,7 +79,7 @@ fun AboutScreen(
                 var visible by remember { mutableStateOf(false) }
 
                 ListItem(
-                    modifier = Modifier.handleKeyEventsOnFocused(onSelect = { visible = true }),
+                    modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
                     headlineContent = { Text("代码仓库") },
                     trailingContent = {
                         Row(
@@ -111,7 +111,7 @@ fun AboutScreen(
                 var visible by remember { mutableStateOf(false) }
 
                 ListItem(
-                    modifier = Modifier.handleKeyEventsOnFocused(onSelect = { visible = true }),
+                    modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
                     headlineContent = { Text("技术交流 Telegram") },
                     trailingContent = {
                         Row(
@@ -142,7 +142,7 @@ fun AboutScreen(
                 var visible by remember { mutableStateOf(false) }
 
                 ListItem(
-                    modifier = Modifier.handleKeyEventsOnFocused(onSelect = { visible = true }),
+                    modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
                     headlineContent = { Text("赞赏") },
                     supportingContent = { Text("仅支持微信赞赏码") },
                     trailingContent = {
@@ -179,7 +179,7 @@ fun AboutScreen(
                         var visible by remember { mutableStateOf(false) }
 
                         ListItem(
-                            modifier = Modifier.handleKeyEventsOnFocused(onSelect = {
+                            modifier = Modifier.handleKeyEvents(onSelect = {
                                 visible = true
                             }),
                             headlineContent = { Text("设备ID") },
@@ -212,7 +212,7 @@ fun AboutScreen(
 
             item {
                 ListItem(
-                    modifier = Modifier.handleKeyEventsOnFocused(onSelect = toUpdateScreen),
+                    modifier = Modifier.handleKeyEvents(onSelect = toUpdateScreen),
                     headlineContent = { Text("检查更新") },
                     trailingContent = {
                         val currentVersion = packageInfo.versionName

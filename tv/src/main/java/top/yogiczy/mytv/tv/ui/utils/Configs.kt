@@ -252,7 +252,7 @@ object Configs {
 
     /** 相似频道合并 */
     var iptvSimilarChannelMerge: Boolean
-        get() = SP.getBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, true)
+        get() = SP.getBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, false)
         set(value) = SP.putBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, value)
 
     /** ==================== 节目单 ==================== */

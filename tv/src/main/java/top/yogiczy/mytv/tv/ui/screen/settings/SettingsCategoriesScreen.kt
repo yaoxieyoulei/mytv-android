@@ -36,7 +36,7 @@ import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsCategoriesScreen(
@@ -79,7 +79,7 @@ private fun SettingsCategoryItem(
     Surface(
         modifier = modifier
             .size(2.gridColumns())
-            .handleKeyEventsOnFocused(onSelect = onSelected),
+            .handleKeyEvents(onSelect = onSelected),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
         ),
@@ -108,6 +108,7 @@ enum class SettingsCategories(
     CONTROL(Icons.Outlined.ControlCamera, "控制"),
     VIDEO_PLAYER(Icons.Outlined.SmartDisplay, "播放器"),
     UPDATE(Icons.Outlined.Update, "更新"),
+
     // FAVORITE(Icons.Outlined.FavoriteBorder, "收藏"),
     // EPG_RESERVE(Icons.Default.BookmarkBorder, "预约"),
     NETWORK(Icons.Outlined.Wifi, "网络"),

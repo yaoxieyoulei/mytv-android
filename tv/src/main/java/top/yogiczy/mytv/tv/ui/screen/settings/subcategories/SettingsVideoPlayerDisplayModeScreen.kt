@@ -22,7 +22,7 @@ import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.handleKeyEventsOnFocused
+import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
 fun SettingsVideoPlayerDisplayModeScreen(
@@ -50,7 +50,7 @@ fun SettingsVideoPlayerDisplayModeScreen(
             items(VideoPlayerDisplayMode.entries) { mode ->
                 ListItem(
                     modifier = modifier
-                        .handleKeyEventsOnFocused(onSelect = { onDisplayModeChanged(mode) }),
+                        .handleKeyEvents(onSelect = { onDisplayModeChanged(mode) }),
                     headlineContent = {
                         Text(
                             mode.label,
