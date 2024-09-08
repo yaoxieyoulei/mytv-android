@@ -71,36 +71,9 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- Required: set your sentry.io project identifier (DSN) -->
         <meta-data
-            android:name="io.sentry.dsn"
-            android:value="https://281efac85bc5621798d2a87cb580eb84@o1118313.ingest.us.sentry.io/4507455918309376" />
-
-        <!-- enable automatic breadcrumbs for user interactions (clicks, swipes, scrolls) -->
-        <meta-data
-            android:name="io.sentry.traces.user-interaction.enable"
-            android:value="true" />
-        <!-- enable screenshot for crashes -->
-        <meta-data
-            android:name="io.sentry.attach-screenshot"
-            android:value="true" />
-        <!-- enable view hierarchy for crashes -->
-        <meta-data
-            android:name="io.sentry.attach-view-hierarchy"
-            android:value="true" />
-
-        <!-- enable the performance API by setting a sample-rate, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.sample-rate"
-            android:value="1.0" />
-        <!-- enable profiling when starting transactions, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.profiling.sample-rate"
-            android:value="1.0" />
-        <!-- enable app start profiling -->
-        <meta-data
-            android:name="io.sentry.traces.profiling.enable-app-start"
-            android:value="true" />
+            android:name="io.sentry.auto-init"
+            android:value="false" />
     </application>
 
 </manifest>

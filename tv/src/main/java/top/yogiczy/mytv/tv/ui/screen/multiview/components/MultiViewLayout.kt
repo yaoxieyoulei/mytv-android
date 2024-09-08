@@ -47,7 +47,7 @@ fun MultiViewLayout(
                     key(keyList.getOrElse(index) { index }) {
                         Box(
                             modifier = Modifier
-                                .padding(4.dp)
+                                .padding(2.dp)
                                 .ifElse(zoomInIndex == index, Modifier.layoutId("zoomInItem")),
                         ) {
                             val scaleRatio =

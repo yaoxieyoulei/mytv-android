@@ -1,4 +1,6 @@
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -28,6 +30,8 @@ android {
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
         }
+
+        buildConfigField("String", "SENTRY_DSN", "\"${getProperty("sentry.dsn") ?: ""}\"")
     }
 
     buildTypes {
@@ -54,6 +58,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -125,4 +130,23 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+}
+
+sentry {
+    org.set("yogiczy")
+    projectName.set("mytv-android")
+    authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
+    ignoredBuildTypes.set(setOf("debug"))
+}
+
+fun getProperty(key: String): String? {
+    val propertiesFile = rootProject.file("local.properties")
+    if (propertiesFile.exists()) {
+        val properties = Properties()
+        properties.load(FileInputStream(propertiesFile))
+
+        return properties.getProperty(key)
+    }
+
+    return null
 }
