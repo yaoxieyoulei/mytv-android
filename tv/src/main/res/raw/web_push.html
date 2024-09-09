@@ -78,7 +78,7 @@
                         <van-cell title="频道别名">
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
-                                    <van-field class="!p-0" placeholder="频道别名" rows="5" type="textarea"
+                                    <van-field class="!p-0" :placeholder="channelAliasExample" rows="5" type="textarea"
                                         v-model="channelAlias"></van-field>
 
                                     <div class="flex justify-end">
@@ -340,6 +340,7 @@
                     }
                 }
 
+                const channelAliasExample = '{\n  "CCTV1": [\n    "cctv1 综合",\n    "cctv1-综合",\n    "cctv-1综合HD"\n  ]\n}'
                 const channelAlias = ref('')
                 async function refreshChannelAlias() {
                     channelAlias.value = await (await requestApi('/api/channel-alias')).text()
@@ -392,6 +393,7 @@
                     videoPlayerHeaders,
                     pushVideoPlayerHeaders,
                     uploadApkAfterRead,
+                    channelAliasExample,
                     channelAlias,
                     updateChannelAlias,
                 }

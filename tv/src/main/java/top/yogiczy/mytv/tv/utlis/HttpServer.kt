@@ -10,7 +10,6 @@ import com.koushikdutta.async.http.server.AsyncHttpServerRequest
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -166,8 +165,7 @@ object HttpServer : Loggable() {
             }
 
             "content" -> {
-                val file =
-                    File(Globals.cacheDir, "iptv-${System.currentTimeMillis()}.txt")
+                val file = File(Globals.cacheDir, "iptv-${System.currentTimeMillis()}.txt")
                 file.writeText(content)
                 newIptvSource = IptvSource(name, file.path, true)
             }
@@ -220,11 +218,9 @@ object HttpServer : Loggable() {
     }
 
     private fun handleGetChannelAlias(response: AsyncHttpServerResponse) {
-        val json = Json { prettyPrint = true }
-
         wrapResponse(response).apply {
             setContentType("application/json")
-            send(json.encodeToString(ChannelAlias.aliasMap))
+            send(runCatching { ChannelAlias.aliasFile.readText() }.getOrElse { "" })
         }
     }
 
@@ -235,7 +231,6 @@ object HttpServer : Loggable() {
         val alias = request.getBody<StringBody>().get()
 
         ChannelAlias.aliasFile.writeText(alias)
-        GlobalScope.launch { ChannelAlias.refresh() }
 
         wrapResponse(response).send("success")
     }
