@@ -2,6 +2,7 @@ package top.yogiczy.mytv.tv.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
@@ -61,34 +63,36 @@ class MainViewModel : ViewModel() {
             .collect()
     }
 
-    private fun hybridChannel(channelGroupList: ChannelGroupList): ChannelGroupList {
-        val hybridMode = Configs.iptvHybridMode
-        return when (hybridMode) {
-            Configs.IptvHybridMode.DISABLE -> channelGroupList
-            Configs.IptvHybridMode.IPTV_FIRST -> {
-                ChannelGroupList(channelGroupList.map { group ->
-                    group.copy(channelList = ChannelList(group.channelList.map { channel ->
-                        channel.copy(
-                            urlList = channel.urlList.plus(
-                                ChannelUtil.getHybridWebViewUrl(channel.name) ?: emptyList()
+    private suspend fun hybridChannel(channelGroupList: ChannelGroupList) =
+        withContext(Dispatchers.Default) {
+            val hybridMode = Configs.iptvHybridMode
+            return@withContext when (hybridMode) {
+                Configs.IptvHybridMode.DISABLE -> channelGroupList
+                Configs.IptvHybridMode.IPTV_FIRST -> {
+                    ChannelGroupList(channelGroupList.map { group ->
+                        group.copy(channelList = ChannelList(group.channelList.map { channel ->
+                            channel.copy(
+                                urlList = channel.urlList.plus(
+                                    ChannelUtil.getHybridWebViewUrl(channel.name) ?: emptyList()
+                                )
                             )
-                        )
-                    }))
-                })
-            }
+                        }))
+                    })
+                }
 
-            Configs.IptvHybridMode.HYBRID_FIRST -> {
-                ChannelGroupList(channelGroupList.map { group ->
-                    group.copy(channelList = ChannelList(group.channelList.map { channel ->
-                        channel.copy(
-                            urlList = (ChannelUtil.getHybridWebViewUrl(channel.name) ?: emptyList())
-                                .plus(channel.urlList)
-                        )
-                    }))
-                })
+                Configs.IptvHybridMode.HYBRID_FIRST -> {
+                    ChannelGroupList(channelGroupList.map { group ->
+                        group.copy(channelList = ChannelList(group.channelList.map { channel ->
+                            channel.copy(
+                                urlList = (ChannelUtil.getHybridWebViewUrl(channel.name)
+                                    ?: emptyList())
+                                    .plus(channel.urlList)
+                            )
+                        }))
+                    })
+                }
             }
         }
-    }
 
     private suspend fun refreshEpg() {
         if (!Configs.epgEnable) return
