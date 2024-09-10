@@ -47,7 +47,9 @@ fun MainScreen(
     val coroutineScope = rememberCoroutineScope()
     val uiState by mainViewModel.uiState.collectAsState()
 
-    val channelGroupListProvider = { (uiState as MainUiState.Ready).channelGroupList }
+    val channelGroupListProvider = {
+        (uiState as? MainUiState.Ready)?.channelGroupList ?: ChannelGroupList()
+    }
     val filteredChannelGroupListProvider = {
         ChannelGroupList(channelGroupListProvider().filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
     }
