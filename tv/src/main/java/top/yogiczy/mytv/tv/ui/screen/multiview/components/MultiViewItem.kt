@@ -76,7 +76,8 @@ fun MultiViewItem(
 
     val state = rememberVideoPlayerState()
     LaunchedEffect(channel) {
-        state.prepare(channel.urlList.first())
+        // TODO 获取最优线路
+        state.prepare(channel.lineList.first())
     }
 
     Surface(

@@ -62,7 +62,7 @@ class IptvRepository(
                 listOf(
                     "解析直播源（${source.name}）完成：${groupList.size}个分组",
                     "${groupList.sumOf { it.channelList.size }}个频道",
-                    "${groupList.sumOf { it.channelList.sumOf { channel -> channel.urlList.size } }}条线路",
+                    "${groupList.sumOf { it.channelList.sumOf { channel -> channel.lineList.size } }}条线路",
                     "耗时：${System.currentTimeMillis() - startTime}ms",
                 ).joinToString()
             )

@@ -55,7 +55,7 @@ fun ClassicChannelScreen(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
-    currentChannelUrlIdxProvider: () -> Int = { 0 },
+    currentChannelLineIdxProvider: () -> Int = { 0 },
     showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
@@ -228,7 +228,7 @@ private fun ClassicChannelScreenPreview() {
             ClassicChannelScreen(
                 channelGroupListProvider = { ChannelGroupList.EXAMPLE },
                 currentChannelProvider = { ChannelGroupList.EXAMPLE.first().channelList.first() },
-                currentChannelUrlIdxProvider = { 0 },
+                currentChannelLineIdxProvider = { 0 },
                 epgListProvider = { EpgList.example(ChannelGroupList.EXAMPLE.channelList) },
                 showEpgProgrammeProgressProvider = { true },
             )

@@ -40,14 +40,14 @@ import top.yogiczy.mytv.tv.ui.utils.backHandler
 fun QuickOpScreen(
     modifier: Modifier = Modifier,
     currentChannelProvider: () -> Channel = { Channel() },
-    currentChannelUrlIdxProvider: () -> Int = { 0 },
+    currentChannelLineIdxProvider: () -> Int = { 0 },
     currentChannelNumberProvider: () -> String = { "" },
     epgListProvider: () -> EpgList = { EpgList() },
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     onShowEpg: () -> Unit = {},
-    onShowChannelUrl: () -> Unit = {},
+    onShowChannelLine: () -> Unit = {},
     onShowVideoPlayerController: () -> Unit = {},
     onShowVideoPlayerDisplayMode: () -> Unit = {},
     onShowMoreSettings: () -> Unit = {},
@@ -71,13 +71,13 @@ fun QuickOpScreen(
 
         QuickOpScreenBottom(
             currentChannelProvider = currentChannelProvider,
-            currentChannelUrlIdxProvider = currentChannelUrlIdxProvider,
+            currentChannelLineIdxProvider = currentChannelLineIdxProvider,
             epgListProvider = epgListProvider,
             isInTimeShiftProvider = isInTimeShiftProvider,
             currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
             videoPlayerMetadataProvider = videoPlayerMetadataProvider,
             onShowEpg = onShowEpg,
-            onShowChannelUrl = onShowChannelUrl,
+            onShowChannelLine = onShowChannelLine,
             onShowVideoPlayerController = onShowVideoPlayerController,
             onShowVideoPlayerDisplayMode = onShowVideoPlayerDisplayMode,
             onShowMoreSettings = onShowMoreSettings,
@@ -123,13 +123,13 @@ private fun QuickOpScreenTopRight(
 private fun QuickOpScreenBottom(
     modifier: Modifier = Modifier,
     currentChannelProvider: () -> Channel = { Channel() },
-    currentChannelUrlIdxProvider: () -> Int = { 0 },
+    currentChannelLineIdxProvider: () -> Int = { 0 },
     epgListProvider: () -> EpgList = { EpgList() },
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     onShowEpg: () -> Unit = {},
-    onShowChannelUrl: () -> Unit = {},
+    onShowChannelLine: () -> Unit = {},
     onShowVideoPlayerController: () -> Unit = {},
     onShowVideoPlayerDisplayMode: () -> Unit = {},
     onShowMoreSettings: () -> Unit = {},
@@ -148,7 +148,7 @@ private fun QuickOpScreenBottom(
             ChannelInfo(
                 modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 channelProvider = currentChannelProvider,
-                channelUrlIdxProvider = currentChannelUrlIdxProvider,
+                channelLineIdxProvider = currentChannelLineIdxProvider,
                 recentEpgProgrammeProvider = {
                     epgListProvider().recentProgramme(currentChannelProvider())
                 },
@@ -166,7 +166,7 @@ private fun QuickOpScreenBottom(
 
             QuickOpBtnList(
                 onShowEpg = onShowEpg,
-                onShowChannelUrl = onShowChannelUrl,
+                onShowChannelLine = onShowChannelLine,
                 onShowVideoPlayerController = onShowVideoPlayerController,
                 onShowVideoPlayerDisplayMode = onShowVideoPlayerDisplayMode,
                 onShowMoreSettings = onShowMoreSettings,

@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
@@ -17,7 +18,6 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
-import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.tv.ui.material.PopupContent
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.Visible
@@ -26,7 +26,7 @@ import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelNumberSelectScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelTempScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.rememberChannelNumberSelectState
-import top.yogiczy.mytv.tv.ui.screensold.channelurl.ChannelUrlScreen
+import top.yogiczy.mytv.tv.ui.screensold.channelline.ChannelLineScreen
 import top.yogiczy.mytv.tv.ui.screensold.classicchannel.ClassicChannelScreen
 import top.yogiczy.mytv.tv.ui.screensold.datetime.DatetimeScreen
 import top.yogiczy.mytv.tv.ui.screensold.epg.EpgProgrammeProgressScreen
@@ -84,18 +84,18 @@ fun MainContent(
                     else mainContentState.changeCurrentChannelToNext()
                 },
                 onLeft = {
-                    if (mainContentState.currentChannel.urlList.size > 1) {
+                    if (mainContentState.currentChannel.lineList.size > 1) {
                         mainContentState.changeCurrentChannel(
                             mainContentState.currentChannel,
-                            mainContentState.currentChannelUrlIdx - 1,
+                            mainContentState.currentChannelLineIdx - 1,
                         )
                     }
                 },
                 onRight = {
-                    if (mainContentState.currentChannel.urlList.size > 1) {
+                    if (mainContentState.currentChannel.lineList.size > 1) {
                         mainContentState.changeCurrentChannel(
                             mainContentState.currentChannel,
-                            mainContentState.currentChannelUrlIdx + 1,
+                            mainContentState.currentChannelLineIdx + 1,
                         )
                     }
                 },
@@ -103,7 +103,7 @@ fun MainContent(
                 onLongSelect = { mainContentState.isQuickOpScreenVisible = true },
                 onSettings = { mainContentState.isQuickOpScreenVisible = true },
                 onLongLeft = { mainContentState.isEpgScreenVisible = true },
-                onLongRight = { mainContentState.isChannelUrlScreenVisible = true },
+                onLongRight = { mainContentState.isChannelLineScreenVisible = true },
                 onLongDown = { mainContentState.isVideoPlayerControllerScreenVisible = true },
                 onNumber = { channelNumberSelectState.input(it) },
             )
@@ -117,18 +117,18 @@ fun MainContent(
                     else mainContentState.changeCurrentChannelToNext()
                 },
                 onSwipeRight = {
-                    if (mainContentState.currentChannel.urlList.size > 1) {
+                    if (mainContentState.currentChannel.lineList.size > 1) {
                         mainContentState.changeCurrentChannel(
                             mainContentState.currentChannel,
-                            mainContentState.currentChannelUrlIdx - 1,
+                            mainContentState.currentChannelLineIdx - 1,
                         )
                     }
                 },
                 onSwipeLeft = {
-                    if (mainContentState.currentChannel.urlList.size > 1) {
+                    if (mainContentState.currentChannel.lineList.size > 1) {
                         mainContentState.changeCurrentChannel(
                             mainContentState.currentChannel,
-                            mainContentState.currentChannelUrlIdx + 1,
+                            mainContentState.currentChannelLineIdx + 1,
                         )
                     }
                 },
@@ -139,9 +139,9 @@ fun MainContent(
             showMetadataProvider = { settingsViewModel.debugShowVideoPlayerMetadata },
         )
 
-        Visible({ ChannelUtil.isHybridWebViewUrl(mainContentState.currentChannel.urlList[mainContentState.currentChannelUrlIdx]) }) {
+        Visible({ mainContentState.currentChannelLine.hybridType == ChannelLine.HybridType.WebView }) {
             WebViewScreen(
-                urlProvider = { mainContentState.currentChannel.urlList[mainContentState.currentChannelUrlIdx] },
+                urlProvider = { mainContentState.currentChannelLine.url },
                 onVideoResolutionChanged = { width, height ->
                     videoPlayerState.metadata = videoPlayerState.metadata.copy(
                         videoWidth = width,
@@ -169,7 +169,7 @@ fun MainContent(
                 && !mainContentState.isSettingsScreenVisible
                 && !mainContentState.isQuickOpScreenVisible
                 && !mainContentState.isEpgScreenVisible
-                && !mainContentState.isChannelUrlScreenVisible
+                && !mainContentState.isChannelLineScreenVisible
                 && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         DatetimeScreen(showModeProvider = { settingsViewModel.uiTimeShowMode })
@@ -183,12 +183,12 @@ fun MainContent(
                 && !mainContentState.isSettingsScreenVisible
                 && !mainContentState.isQuickOpScreenVisible
                 && !mainContentState.isEpgScreenVisible
-                && !mainContentState.isChannelUrlScreenVisible
+                && !mainContentState.isChannelLineScreenVisible
                 && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         ChannelTempScreen(
             channelProvider = { mainContentState.currentChannel },
-            channelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            channelLineIdxProvider = { mainContentState.currentChannelLineIdx },
             channelNumberProvider = { filteredChannelGroupListProvider().channelIdx(mainContentState.currentChannel) + 1 },
             recentEpgProgrammeProvider = {
                 epgListProvider().recentProgramme(mainContentState.currentChannel)
@@ -218,7 +218,7 @@ fun MainContent(
                 mainContentState.isEpgScreenVisible = false
                 mainContentState.changeCurrentChannel(
                     mainContentState.currentChannel,
-                    mainContentState.currentChannelUrlIdx,
+                    mainContentState.currentChannelLineIdx,
                     it,
                 )
             },
@@ -233,20 +233,20 @@ fun MainContent(
     }
 
     PopupContent(
-        visibleProvider = { mainContentState.isChannelUrlScreenVisible },
-        onDismissRequest = { mainContentState.isChannelUrlScreenVisible = false },
+        visibleProvider = { mainContentState.isChannelLineScreenVisible },
+        onDismissRequest = { mainContentState.isChannelLineScreenVisible = false },
     ) {
-        ChannelUrlScreen(
+        ChannelLineScreen(
             channelProvider = { mainContentState.currentChannel },
-            currentUrlProvider = { mainContentState.currentChannel.urlList[mainContentState.currentChannelUrlIdx] },
-            onUrlSelected = {
-                mainContentState.isChannelUrlScreenVisible = false
+            currentLineProvider = { mainContentState.currentChannelLine },
+            onLineSelected = {
+                mainContentState.isChannelLineScreenVisible = false
                 mainContentState.changeCurrentChannel(
                     mainContentState.currentChannel,
-                    mainContentState.currentChannel.urlList.indexOf(it),
+                    mainContentState.currentChannel.lineList.indexOf(it),
                 )
             },
-            onClose = { mainContentState.isChannelUrlScreenVisible = false },
+            onClose = { mainContentState.isChannelLineScreenVisible = false },
         )
     }
 
@@ -308,7 +308,7 @@ fun MainContent(
     ) {
         QuickOpScreen(
             currentChannelProvider = { mainContentState.currentChannel },
-            currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            currentChannelLineIdxProvider = { mainContentState.currentChannelLineIdx },
             currentChannelNumberProvider = {
                 (filteredChannelGroupListProvider().channelList.indexOf(mainContentState.currentChannel) + 1).toString()
             },
@@ -319,9 +319,9 @@ fun MainContent(
                 mainContentState.isQuickOpScreenVisible = false
                 mainContentState.isEpgScreenVisible = true
             },
-            onShowChannelUrl = {
+            onShowChannelLine = {
                 mainContentState.isQuickOpScreenVisible = false
-                mainContentState.isChannelUrlScreenVisible = true
+                mainContentState.isChannelLineScreenVisible = true
             },
             onShowVideoPlayerController = {
                 mainContentState.isQuickOpScreenVisible = false
@@ -354,7 +354,7 @@ fun MainContent(
         ChannelScreen(
             channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
-            currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            currentChannelLineIdxProvider = { mainContentState.currentChannelLineIdx },
             showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             onChannelSelected = {
                 mainContentState.isChannelScreenVisible = false
@@ -382,7 +382,7 @@ fun MainContent(
         ClassicChannelScreen(
             channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
-            currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            currentChannelLineIdxProvider = { mainContentState.currentChannelLineIdx },
             showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             onChannelSelected = {
                 mainContentState.isChannelScreenVisible = false

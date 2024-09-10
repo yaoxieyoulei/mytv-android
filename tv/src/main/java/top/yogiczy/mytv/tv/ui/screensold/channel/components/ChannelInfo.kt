@@ -17,6 +17,7 @@ import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.entities.channel.Channel
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
@@ -29,14 +30,14 @@ import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 fun ChannelInfo(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
-    channelUrlIdxProvider: () -> Int = { 0 },
+    channelLineIdxProvider: () -> Int = { 0 },
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
 ) {
     val channel = channelProvider()
-    val channelUrlIdx = channelUrlIdxProvider()
-    val url = channel.urlList[channelUrlIdx]
+    val channelLineIdx = channelLineIdxProvider()
+    val line = channel.lineList[channelLineIdx]
     val recentEpgProgramme = recentEpgProgrammeProvider()
     val isInTimeShift = isInTimeShiftProvider()
     val currentPlaybackEpgProgramme = currentPlaybackEpgProgrammeProvider()
@@ -71,14 +72,14 @@ fun ChannelInfo(
                     Tag("回放", colors = tagColors)
                 }
 
-                if (channel.urlList.size > 1) {
-                    Tag("${channelUrlIdx + 1}/${channel.urlList.size}", colors = tagColors)
+                if (channel.lineList.size > 1) {
+                    Tag("${channelLineIdx + 1}/${channel.lineList.size}", colors = tagColors)
                 }
 
-                if (ChannelUtil.isHybridWebViewUrl(url)) {
-                    Tag(ChannelUtil.getHybridWebViewUrlProvider(url), colors = tagColors)
+                if (line.hybridType == ChannelLine.HybridType.WebView) {
+                    Tag(ChannelUtil.getHybridWebViewUrlProvider(line.url), colors = tagColors)
                 } else {
-                    Tag(if (url.isIPv6()) "IPV6" else "IPV4", colors = tagColors)
+                    Tag(if (line.url.isIPv6()) "IPV6" else "IPV4", colors = tagColors)
                 }
             }
         }
@@ -104,23 +105,23 @@ private fun ChannelInfoPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             ChannelInfo(
                 channelProvider = { Channel.EXAMPLE },
-                channelUrlIdxProvider = { 1 },
+                channelLineIdxProvider = { 1 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
                 isInTimeShiftProvider = { true },
             )
 
             ChannelInfo(channelProvider = { Channel.EXAMPLE },
-                channelUrlIdxProvider = { 0 },
+                channelLineIdxProvider = { 0 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
                 currentPlaybackEpgProgrammeProvider = { EpgProgramme(title = "回放电视节目") })
 
             ChannelInfo(
                 channelProvider = {
                     Channel.EXAMPLE.copy(
-                        urlList = ChannelUtil.getHybridWebViewUrl("cctv1") ?: emptyList()
+                        lineList = ChannelUtil.getHybridWebViewLines("cctv1"),
                     )
                 },
-                channelUrlIdxProvider = { 0 },
+                channelLineIdxProvider = { 0 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
             )
         }

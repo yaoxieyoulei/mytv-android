@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
-import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.screensold.webview.components.WebViewPlaceholder
 
@@ -31,10 +30,10 @@ import top.yogiczy.mytv.tv.ui.screensold.webview.components.WebViewPlaceholder
 @Composable
 fun WebViewScreen(
     modifier: Modifier = Modifier,
-    urlProvider: () -> String = { "${ChannelUtil.HYBRID_WEB_VIEW_URL_PREFIX}https://tv.cctv.com/live/index.shtml" },
+    urlProvider: () -> String = { "https://tv.cctv.com/live/index.shtml" },
     onVideoResolutionChanged: (width: Int, height: Int) -> Unit = { _, _ -> },
 ) {
-    val url = urlProvider().replace(ChannelUtil.HYBRID_WEB_VIEW_URL_PREFIX, "")
+    val url = urlProvider()
     var placeholderVisible by remember { mutableStateOf(true) }
 
     Box(modifier = modifier.fillMaxSize()) {

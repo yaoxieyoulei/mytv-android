@@ -6,6 +6,8 @@ import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
 
 /**
  * m3u直播源解析
@@ -29,6 +31,8 @@ class M3uIptvParser : IptvParser {
             val groupName = Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                 ?: "其他"
             val logo = Regex("tvg-logo=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
+            val httpUserAgent =
+                Regex("http-user-agent=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
             val url = lines.getOrNull(index + 1)?.trim()
 
             url?.let {
@@ -39,6 +43,7 @@ class M3uIptvParser : IptvParser {
                         groupName = groupName,
                         url = url,
                         logo = logo,
+                        httpUserAgent = httpUserAgent,
                     )
                 )
             }
@@ -51,7 +56,10 @@ class M3uIptvParser : IptvParser {
                     Channel(
                         name = nameEntry.key,
                         epgName = nameEntry.value.first().epgName,
-                        urlList = nameEntry.value.map { it.url }.distinct(),
+                        lineList = ChannelLineList(
+                            nameEntry.value.distinctBy { it.url }
+                                .map { ChannelLine(it.url, it.httpUserAgent) }
+                        ),
                         logo = nameEntry.value.first().logo
                     )
                 })
@@ -65,5 +73,6 @@ class M3uIptvParser : IptvParser {
         val groupName: String,
         val url: String,
         val logo: String?,
+        val httpUserAgent: String?,
     )
 }

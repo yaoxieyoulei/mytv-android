@@ -20,7 +20,7 @@ import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 fun QuickOpBtnList(
     modifier: Modifier = Modifier,
     onShowEpg: () -> Unit = {},
-    onShowChannelUrl: () -> Unit = {},
+    onShowChannelLine: () -> Unit = {},
     onShowVideoPlayerController: () -> Unit = {},
     onShowVideoPlayerDisplayMode: () -> Unit = {},
     onShowMoreSettings: () -> Unit = {},
@@ -53,7 +53,7 @@ fun QuickOpBtnList(
         item {
             QuickOpBtn(
                 title = { Text("多线路") },
-                onSelect = onShowChannelUrl,
+                onSelect = onShowChannelLine,
             )
         }
 

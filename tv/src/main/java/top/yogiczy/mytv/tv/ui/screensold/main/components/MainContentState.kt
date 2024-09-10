@@ -16,6 +16,8 @@ import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserve
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
@@ -42,8 +44,10 @@ class MainContentState(
     private var _currentChannel by mutableStateOf(Channel())
     val currentChannel get() = _currentChannel
 
-    private var _currentChannelUrlIdx by mutableIntStateOf(0)
-    val currentChannelUrlIdx get() = _currentChannelUrlIdx
+    private var _currentChannelLineIdx by mutableIntStateOf(0)
+    val currentChannelLineIdx get() = _currentChannelLineIdx
+
+    val currentChannelLine get() = _currentChannel.lineList[_currentChannelLineIdx]
 
     private var _currentPlaybackEpgProgramme by mutableStateOf<EpgProgramme?>(null)
     val currentPlaybackEpgProgramme get() = _currentPlaybackEpgProgramme
@@ -90,11 +94,11 @@ class MainContentState(
             _isEpgScreenVisible = value
         }
 
-    private var _isChannelUrlScreenVisible by mutableStateOf(false)
-    var isChannelUrlScreenVisible
-        get() = _isChannelUrlScreenVisible
+    private var _isChannelLineScreenVisible by mutableStateOf(false)
+    var isChannelLineScreenVisible
+        get() = _isChannelLineScreenVisible
         set(value) {
-            _isChannelUrlScreenVisible = value
+            _isChannelLineScreenVisible = value
         }
 
     private var _isVideoPlayerDisplayModeScreenVisible by mutableStateOf(false)
@@ -112,12 +116,12 @@ class MainContentState(
         })
 
         videoPlayerState.onReady {
-            settingsViewModel.iptvPlayableHostList += getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
+            settingsViewModel.iptvPlayableHostList += getUrlHost(currentChannelLine.url)
             coroutineScope.launch {
                 val name = _currentChannel.name
-                val urlIdx = _currentChannelUrlIdx
+                val lineIdx = _currentChannelLineIdx
                 delay(Constants.UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION)
-                if (name == _currentChannel.name && urlIdx == _currentChannelUrlIdx) {
+                if (name == _currentChannel.name && lineIdx == _currentChannelLineIdx) {
                     _isTempChannelScreenVisible = false
                 }
             }
@@ -126,17 +130,17 @@ class MainContentState(
         videoPlayerState.onError {
             if (_currentPlaybackEpgProgramme != null) return@onError
 
-            settingsViewModel.iptvPlayableHostList -= getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
+            settingsViewModel.iptvPlayableHostList -= getUrlHost(currentChannelLine.url)
 
-            if (_currentChannelUrlIdx < _currentChannel.urlList.size - 1) {
-                changeCurrentChannel(_currentChannel, _currentChannelUrlIdx + 1)
+            if (_currentChannelLineIdx < _currentChannel.lineList.size - 1) {
+                changeCurrentChannel(_currentChannel, _currentChannelLineIdx + 1)
             }
         }
 
         videoPlayerState.onInterrupt {
             changeCurrentChannel(
                 _currentChannel,
-                _currentChannelUrlIdx,
+                _currentChannelLineIdx,
                 _currentPlaybackEpgProgramme
             )
         }
@@ -203,24 +207,24 @@ class MainContentState(
         }
     }
 
-    private fun getUrlIdx(urlList: List<String>, urlIdx: Int? = null): Int {
-        val idx = if (urlIdx == null) urlList.indexOfFirst {
-            settingsViewModel.iptvPlayableHostList.contains(getUrlHost(it))
+    private fun getLineIdx(lineList: ChannelLineList, lineIdx: Int? = null): Int {
+        val idx = if (lineIdx == null) lineList.indexOfFirst {
+            settingsViewModel.iptvPlayableHostList.contains(getUrlHost(it.url))
         }
-        else (urlIdx + urlList.size) % urlList.size
+        else (lineIdx + lineList.size) % lineList.size
 
-        return max(0, min(idx, urlList.size - 1))
+        return max(0, min(idx, lineList.size - 1))
     }
 
     fun changeCurrentChannel(
         channel: Channel,
-        urlIdx: Int? = null,
+        lineIdx: Int? = null,
         playbackEpgProgramme: EpgProgramme? = null,
     ) {
-        if (channel == _currentChannel && urlIdx == _currentChannelUrlIdx && playbackEpgProgramme == _currentPlaybackEpgProgramme) return
+        if (channel == _currentChannel && lineIdx == _currentChannelLineIdx && playbackEpgProgramme == _currentPlaybackEpgProgramme) return
 
-        if (channel == _currentChannel && urlIdx != _currentChannelUrlIdx) {
-            settingsViewModel.iptvPlayableHostList -= getUrlHost(_currentChannel.urlList[_currentChannelUrlIdx])
+        if (channel == _currentChannel && lineIdx != _currentChannelLineIdx) {
+            settingsViewModel.iptvPlayableHostList -= getUrlHost(currentChannelLine.url)
         }
 
         _isTempChannelScreenVisible = true
@@ -229,11 +233,11 @@ class MainContentState(
         settingsViewModel.iptvLastChannelIdx =
             channelGroupListProvider().channelIdx(_currentChannel)
 
-        _currentChannelUrlIdx = getUrlIdx(_currentChannel.urlList, urlIdx)
+        _currentChannelLineIdx = getLineIdx(_currentChannel.lineList, lineIdx)
 
         _currentPlaybackEpgProgramme = playbackEpgProgramme
 
-        var url = _currentChannel.urlList[_currentChannelUrlIdx]
+        var url = currentChannelLine.url
         if (_currentPlaybackEpgProgramme != null) {
             val timeFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
             val query = listOf(
@@ -245,13 +249,14 @@ class MainContentState(
             url = if (URI(url).query.isNullOrBlank()) "$url?$query" else "$url&$query"
             url = ChannelUtil.urlToCanPlayback(url)
         }
+        val line = currentChannelLine.copy(url = url)
 
-        log.d("播放${_currentChannel.name}（${_currentChannelUrlIdx + 1}/${_currentChannel.urlList.size}）: $url")
+        log.d("播放${_currentChannel.name}（${_currentChannelLineIdx + 1}/${_currentChannel.lineList.size}）: $line")
 
-        if (ChannelUtil.isHybridWebViewUrl(url)) {
+        if (line.hybridType == ChannelLine.HybridType.WebView) {
             videoPlayerState.stop()
         } else {
-            videoPlayerState.prepare(url)
+            videoPlayerState.prepare(line)
         }
     }
 
@@ -300,10 +305,10 @@ class MainContentState(
 
     fun supportPlayback(
         channel: Channel = _currentChannel,
-        urlIdx: Int? = _currentChannelUrlIdx,
+        lineIdx: Int? = _currentChannelLineIdx,
     ): Boolean {
-        val currentUrlIdx = getUrlIdx(channel.urlList, urlIdx)
-        return ChannelUtil.urlSupportPlayback(channel.urlList[currentUrlIdx])
+        val currentLineIdx = getLineIdx(channel.lineList, lineIdx)
+        return ChannelUtil.urlSupportPlayback(channel.lineList[currentLineIdx].url)
     }
 }
 

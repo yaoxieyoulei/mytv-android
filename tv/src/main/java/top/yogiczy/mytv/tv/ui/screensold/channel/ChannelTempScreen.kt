@@ -31,7 +31,7 @@ import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 fun ChannelTempScreen(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
-    channelUrlIdxProvider: () -> Int = { 0 },
+    channelLineIdxProvider: () -> Int = { 0 },
     channelNumberProvider: () -> Int = { 0 },
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
@@ -60,7 +60,7 @@ fun ChannelTempScreen(
                         .sizeIn(maxWidth = 412.dp)
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     channelProvider = channelProvider,
-                    channelUrlIdxProvider = channelUrlIdxProvider,
+                    channelLineIdxProvider = channelLineIdxProvider,
                     recentEpgProgrammeProvider = recentEpgProgrammeProvider,
                     isInTimeShiftProvider = isInTimeShiftProvider,
                     currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
@@ -111,7 +111,7 @@ private fun ChannelTempScreenPreview() {
         PreviewWithLayoutGrids {
             ChannelTempScreen(
                 channelProvider = { Channel.EXAMPLE.copy(name = "长标题".repeat(4)) },
-                channelUrlIdxProvider = { 0 },
+                channelLineIdxProvider = { 0 },
                 channelNumberProvider = { 8 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
                 showEpgProgrammeProgressProvider = { true },

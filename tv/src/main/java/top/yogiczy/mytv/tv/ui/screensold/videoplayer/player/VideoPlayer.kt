@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
 abstract class VideoPlayer(
@@ -20,7 +21,7 @@ abstract class VideoPlayer(
         clearAllListeners()
     }
 
-    abstract fun prepare(url: String)
+    abstract fun prepare(line: ChannelLine)
 
     abstract fun play()
 

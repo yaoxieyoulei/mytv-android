@@ -1,5 +1,8 @@
 package top.yogiczy.mytv.core.data.utils
 
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
+
 
 object ChannelUtil {
     private val hybridWebViewUrl by lazy {
@@ -138,14 +141,9 @@ object ChannelUtil {
         )
     }
 
-    const val HYBRID_WEB_VIEW_URL_PREFIX = "hybrid-webview://"
-
-    fun getHybridWebViewUrl(channelName: String): List<String>? {
-        return hybridWebViewUrl[ChannelAlias.standardChannelName(channelName)]?.map { "${HYBRID_WEB_VIEW_URL_PREFIX}${it}" }
-    }
-
-    fun isHybridWebViewUrl(url: String): Boolean {
-        return url.startsWith(HYBRID_WEB_VIEW_URL_PREFIX)
+    fun getHybridWebViewLines(channelName: String): ChannelLineList {
+        return ChannelLineList(hybridWebViewUrl[ChannelAlias.standardChannelName(channelName)]
+            ?.map { ChannelLine(it, null, ChannelLine.HybridType.WebView) } ?: emptyList())
     }
 
     fun getHybridWebViewUrlProvider(url: String): String {

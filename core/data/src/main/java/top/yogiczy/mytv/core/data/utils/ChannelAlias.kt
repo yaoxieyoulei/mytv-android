@@ -12,12 +12,9 @@ object ChannelAlias : Loggable("ChannelAlias") {
     val aliasMap get() = _aliasMap
 
     suspend fun refresh() = withContext(Dispatchers.IO) {
-        try {
-            _aliasMap = Json.decodeFromString<Map<String, List<String>>>(aliasFile.readText())
-        } catch (ex: Exception) {
-            _aliasMap = emptyMap()
-            log.e("获取频道别名失败", ex)
-        }
+        _aliasMap = runCatching {
+            Json.decodeFromString<Map<String, List<String>>>(aliasFile.readText())
+        }.getOrElse { emptyMap() }
     }
 
     fun standardChannelName(name: String): String {

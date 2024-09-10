@@ -48,7 +48,7 @@ fun ChannelScreen(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
-    currentChannelUrlIdxProvider: () -> Int = { 0 },
+    currentChannelLineIdxProvider: () -> Int = { 0 },
     showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
@@ -82,7 +82,7 @@ fun ChannelScreen(
         ChannelScreenBottom(
             channelGroupListProvider = channelGroupListProvider,
             currentChannelProvider = currentChannelProvider,
-            currentChannelUrlIdxProvider = currentChannelUrlIdxProvider,
+            currentChannelLineIdxProvider = currentChannelLineIdxProvider,
             showChannelLogoProvider = showChannelLogoProvider,
             onChannelSelected = onChannelSelected,
             onChannelFavoriteToggle = onChannelFavoriteToggle,
@@ -137,7 +137,7 @@ private fun ChannelScreenBottom(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     currentChannelProvider: () -> Channel = { Channel() },
-    currentChannelUrlIdxProvider: () -> Int = { 0 },
+    currentChannelLineIdxProvider: () -> Int = { 0 },
     showChannelLogoProvider: () -> Boolean = { false },
     onChannelSelected: (Channel) -> Unit = {},
     onChannelFavoriteToggle: (Channel) -> Unit = {},
@@ -162,7 +162,7 @@ private fun ChannelScreenBottom(
             ChannelInfo(
                 modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 channelProvider = currentChannelProvider,
-                channelUrlIdxProvider = currentChannelUrlIdxProvider,
+                channelLineIdxProvider = currentChannelLineIdxProvider,
                 recentEpgProgrammeProvider = {
                     epgListProvider().recentProgramme(currentChannelProvider())
                 },
@@ -310,7 +310,7 @@ private fun ChannelScreenBottomPreview() {
             ChannelScreenBottom(
                 channelGroupListProvider = { ChannelGroupList.EXAMPLE },
                 currentChannelProvider = { ChannelGroupList.EXAMPLE.first().channelList.first() },
-                currentChannelUrlIdxProvider = { 0 },
+                currentChannelLineIdxProvider = { 0 },
                 epgListProvider = { EpgList.example(ChannelGroupList.EXAMPLE.channelList) },
                 showEpgProgrammeProgressProvider = { true },
             )
@@ -326,7 +326,7 @@ private fun ChannelScreenBottomFavoritePreview() {
             ChannelScreenBottom(
                 channelGroupListProvider = { ChannelGroupList.EXAMPLE },
                 currentChannelProvider = { ChannelGroupList.EXAMPLE.first().channelList.first() },
-                currentChannelUrlIdxProvider = { 0 },
+                currentChannelLineIdxProvider = { 0 },
                 epgListProvider = { EpgList.example(ChannelGroupList.EXAMPLE.channelList) },
                 showEpgProgrammeProgressProvider = { true },
                 channelFavoriteEnabledProvider = { true },
@@ -347,7 +347,7 @@ private fun ChannelScreenBottomFavoriteWithChannelLogoPreview() {
             ChannelScreenBottom(
                 channelGroupListProvider = { ChannelGroupList.EXAMPLE },
                 currentChannelProvider = { ChannelGroupList.EXAMPLE.first().channelList.first() },
-                currentChannelUrlIdxProvider = { 0 },
+                currentChannelLineIdxProvider = { 0 },
                 showChannelLogoProvider = { true },
                 epgListProvider = { EpgList.example(ChannelGroupList.EXAMPLE.channelList) },
                 showEpgProgrammeProgressProvider = { true },

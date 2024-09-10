@@ -131,10 +131,10 @@ private fun ChannelsChannelItemLogo(
         preview = null
 
         if (settings.uiShowChannelPreview) {
-            val url = channel.urlList.firstOrNull {
-                Configs.iptvPlayableHostList.contains(it.urlHost())
-            } ?: channel.urlList.first()
-            preview = M3u8AnalysisUtil.getFirstFrame(url)
+            val line = channel.lineList.firstOrNull {
+                Configs.iptvPlayableHostList.contains(it.url.urlHost())
+            } ?: channel.lineList.first()
+            preview = M3u8AnalysisUtil.getFirstFrame(line.url)
         }
     }
 
@@ -270,14 +270,14 @@ private fun ChannelsChannelItemTagList(
         modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (channel.urlList.size > 1) {
+        if (channel.lineList.size > 1) {
             ChannelsChannelItemTag(
-                text = "${channel.urlList.size}线路",
+                text = "${channel.lineList.size}线路",
                 isFocusedProvider = isFocusedProvider,
             )
         }
 
-        if (channel.urlList.all { it.isIPv6() }) {
+        if (channel.lineList.all { it.url.isIPv6() }) {
             ChannelsChannelItemTag(
                 text = "IPV6",
                 isFocusedProvider = isFocusedProvider,

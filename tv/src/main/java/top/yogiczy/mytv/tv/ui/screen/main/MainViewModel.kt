@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
@@ -85,7 +86,8 @@ class MainViewModel : ViewModel() {
                         .map { nameEntry ->
                             nameEntry.value.first().copy(
                                 name = nameEntry.key,
-                                urlList = nameEntry.value.map { it.urlList }.flatten().distinct()
+                                lineList = ChannelLineList(nameEntry.value.map { it.lineList }
+                                    .flatten().distinctBy { it.url })
                             )
                         })
                 )
@@ -101,8 +103,8 @@ class MainViewModel : ViewModel() {
                     ChannelGroupList(channelGroupList.map { group ->
                         group.copy(channelList = ChannelList(group.channelList.map { channel ->
                             channel.copy(
-                                urlList = channel.urlList.plus(
-                                    ChannelUtil.getHybridWebViewUrl(channel.name) ?: emptyList()
+                                lineList = ChannelLineList(
+                                    channel.lineList + ChannelUtil.getHybridWebViewLines(channel.name)
                                 )
                             )
                         }))
@@ -113,9 +115,9 @@ class MainViewModel : ViewModel() {
                     ChannelGroupList(channelGroupList.map { group ->
                         group.copy(channelList = ChannelList(group.channelList.map { channel ->
                             channel.copy(
-                                urlList = (ChannelUtil.getHybridWebViewUrl(channel.name)
-                                    ?: emptyList())
-                                    .plus(channel.urlList)
+                                lineList = ChannelLineList(
+                                    ChannelUtil.getHybridWebViewLines(channel.name) + channel.lineList
+                                )
                             )
                         }))
                     })

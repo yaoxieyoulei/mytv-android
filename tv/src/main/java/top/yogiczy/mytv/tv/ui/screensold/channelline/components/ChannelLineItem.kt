@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.tv.ui.screensold.channelurl.components
+package top.yogiczy.mytv.tv.ui.screensold.channelline.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.util.utils.isIPv6
 import top.yogiczy.mytv.tv.ui.material.Tag
@@ -36,20 +37,20 @@ import java.io.IOException
 import kotlin.system.measureTimeMillis
 
 @Composable
-fun ChannelUrlItem(
+fun ChannelLineItem(
     modifier: Modifier = Modifier,
-    urlProvider: () -> String = { "" },
-    urlIdxProvider: () -> Int = { 0 },
+    lineProvider: () -> ChannelLine = { ChannelLine() },
+    lineIdxProvider: () -> Int = { 0 },
     isSelectedProvider: () -> Boolean = { false },
     onSelected: () -> Unit = {},
 ) {
-    val url = urlProvider()
-    val urlIdx = urlIdxProvider()
+    val line = lineProvider()
+    val lineIdx = lineIdxProvider()
     val isSelected = isSelectedProvider()
 
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
-    val urlDelay = rememberUrlDelay(url)
+    val lineDelay = rememberLineDelay(line)
 
     ListItem(
         modifier = modifier
@@ -68,19 +69,19 @@ fun ChannelUrlItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("线路${urlIdx + 1}")
+                Text("线路${lineIdx + 1}")
 
-                if (ChannelUtil.isHybridWebViewUrl(url)) {
+                if (line.hybridType == ChannelLine.HybridType.WebView) {
                     Tag("混合")
-                    Tag(ChannelUtil.getHybridWebViewUrlProvider(url))
+                    Tag(ChannelUtil.getHybridWebViewUrlProvider(line.url))
                 } else {
-                    if (ChannelUtil.urlSupportPlayback(url)) Tag("回放")
-                    Tag(if (url.isIPv6()) "IPV6" else "IPV4")
-                    if (urlDelay != 0L) Tag("$urlDelay ms")
+                    if (ChannelUtil.urlSupportPlayback(line.url)) Tag("回放")
+                    Tag(if (line.url.isIPv6()) "IPV6" else "IPV4")
+                    if (lineDelay != 0L) Tag("$lineDelay ms")
                 }
             }
         },
-        supportingContent = { Text(url, maxLines = 1) },
+        supportingContent = { Text(line.url, maxLines = 1) },
         trailingContent = {
             RadioButton(selected = isSelected, onClick = {})
         },
@@ -88,7 +89,7 @@ fun ChannelUrlItem(
 }
 
 @Composable
-private fun rememberUrlDelay(url: String): Long {
+private fun rememberLineDelay(line: ChannelLine): Long {
     var elapsedTime by remember { mutableLongStateOf(0) }
     var hasError by remember { mutableStateOf(false) }
 
@@ -96,7 +97,12 @@ private fun rememberUrlDelay(url: String): Long {
         try {
             withContext(Dispatchers.IO) {
                 val client = OkHttpClient()
-                val request = Request.Builder().url(url).build()
+                val request = Request.Builder()
+                    .url(line.url)
+                    .apply {
+                        line.httpUserAgent?.let { header("User-Agent", it) }
+                    }
+                    .build()
 
                 elapsedTime = measureTimeMillis {
                     try {
@@ -117,26 +123,26 @@ private fun rememberUrlDelay(url: String): Long {
 
 @Preview
 @Composable
-private fun ChannelUrlItemPreview() {
+private fun ChannelLineItemPreview() {
     MyTvTheme {
         Column(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            ChannelUrlItem(
-                urlProvider = { "http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8" },
-                urlIdxProvider = { 0 },
+            ChannelLineItem(
+                lineProvider = { ChannelLine("http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8") },
+                lineIdxProvider = { 0 },
                 isSelectedProvider = { true },
             )
 
-            ChannelUrlItem(
-                urlProvider = { "http://[2409:8087:5e01:34::20]:6610/ZTE_CMS/00000001000000060000000000000131/index.m3u8?IAS" },
-                urlIdxProvider = { 0 },
+            ChannelLineItem(
+                lineProvider = { ChannelLine("http://[2409:8087:5e01:34::20]:6610/ZTE_CMS/00000001000000060000000000000131/index.m3u8?IAS") },
+                lineIdxProvider = { 0 },
             )
 
-            ChannelUrlItem(
-                urlProvider = { ChannelUtil.getHybridWebViewUrl("cctv1")!!.first() },
-                urlIdxProvider = { 0 },
+            ChannelLineItem(
+                lineProvider = { ChannelUtil.getHybridWebViewLines("cctv1").first() },
+                lineIdxProvider = { 0 },
                 isSelectedProvider = { true },
             )
         }

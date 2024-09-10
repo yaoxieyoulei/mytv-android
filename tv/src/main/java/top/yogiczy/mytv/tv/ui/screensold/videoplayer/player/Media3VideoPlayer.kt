@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @OptIn(UnstableApi::class)
@@ -35,30 +36,28 @@ class Media3VideoPlayer(
     private val coroutineScope: CoroutineScope,
 ) : VideoPlayer(coroutineScope) {
     private val videoPlayer by lazy {
-        val renderersFactory = DefaultRenderersFactory(context)
-            .setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
+        val renderersFactory =
+            DefaultRenderersFactory(context).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
 
-        ExoPlayer
-            .Builder(context)
-            .setRenderersFactory(renderersFactory)
-            .build()
+        ExoPlayer.Builder(context).setRenderersFactory(renderersFactory).build()
             .apply { playWhenReady = true }
     }
-    private val dataSourceFactory by lazy {
-        DefaultDataSource.Factory(
+
+    private var currentChannelLine = ChannelLine()
+    private val contentTypeAttempts = mutableMapOf<Int, Boolean>()
+    private var updatePositionJob: Job? = null
+
+    private fun getDataSourceFactory(): DefaultDataSource.Factory {
+        return DefaultDataSource.Factory(
             context,
             DefaultHttpDataSource.Factory().apply {
-                setUserAgent(Configs.videoPlayerUserAgent)
+                setUserAgent(currentChannelLine.httpUserAgent ?: Configs.videoPlayerUserAgent)
 
                 if (Configs.videoPlayerHeaders.isNotBlank()) {
-                    setDefaultRequestProperties(
-                        Configs.videoPlayerHeaders
-                            .lines()
-                            .associate {
-                                val (key, value) = it.split(":", limit = 2)
-                                key.trim() to value.trim()
-                            }
-                    )
+                    setDefaultRequestProperties(Configs.videoPlayerHeaders.lines().associate {
+                        val (key, value) = it.split(":", limit = 2)
+                        key.trim() to value.trim()
+                    })
                 }
 
                 setConnectTimeoutMs(Configs.videoPlayerLoadTimeout.toInt())
@@ -69,16 +68,15 @@ class Media3VideoPlayer(
         )
     }
 
-    private val contentTypeAttempts = mutableMapOf<Int, Boolean>()
-    private var updatePositionJob: Job? = null
-
-    private fun getMediaSource(uri: Uri, contentType: Int? = null): MediaSource? {
+    private fun getMediaSource(contentType: Int? = null): MediaSource? {
+        val uri = Uri.parse(currentChannelLine.url)
         val mediaItem = MediaItem.fromUri(uri)
 
         if (uri.toString().startsWith("rtp://")) {
             return RtspMediaSource.Factory().createMediaSource(mediaItem)
         }
 
+        val dataSourceFactory = getDataSourceFactory()
         return when (val type = contentType ?: Util.inferContentType(uri)) {
             C.CONTENT_TYPE_HLS -> {
                 HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
@@ -103,8 +101,9 @@ class Media3VideoPlayer(
         }
     }
 
-    private fun prepare(uri: Uri, contentType: Int? = null) {
-        val mediaSource = getMediaSource(uri, contentType)
+    private fun prepare(contentType: Int? = null) {
+        val uri = Uri.parse(currentChannelLine.url)
+        val mediaSource = getMediaSource(contentType)
 
         if (mediaSource != null) {
             contentTypeAttempts[contentType ?: Util.inferContentType(uri)] = true
@@ -139,11 +138,11 @@ class Media3VideoPlayer(
                 androidx.media3.common.PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED -> {
                     videoPlayer.currentMediaItem?.localConfiguration?.uri?.let {
                         if (contentTypeAttempts[C.CONTENT_TYPE_HLS] != true) {
-                            prepare(it, C.CONTENT_TYPE_HLS)
+                            prepare(C.CONTENT_TYPE_HLS)
                         } else if (contentTypeAttempts[C.CONTENT_TYPE_RTSP] != true) {
-                            prepare(it, C.CONTENT_TYPE_RTSP)
+                            prepare(C.CONTENT_TYPE_RTSP)
                         } else if (contentTypeAttempts[C.CONTENT_TYPE_OTHER] != true) {
-                            prepare(it, C.CONTENT_TYPE_OTHER)
+                            prepare(C.CONTENT_TYPE_OTHER)
                         } else {
                             val type = Util.inferContentType(it)
                             triggerError(
@@ -261,9 +260,10 @@ class Media3VideoPlayer(
         super.release()
     }
 
-    override fun prepare(url: String) {
+    override fun prepare(line: ChannelLine) {
         contentTypeAttempts.clear()
-        prepare(Uri.parse(url))
+        currentChannelLine = line
+        prepare(null)
     }
 
     override fun play() {

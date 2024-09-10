@@ -72,7 +72,7 @@ fun SettingsIptvSourceScreen(
                 detailList[index] = IptvSourceDetail.Ready(
                     channelGroupCount = channelGroupList.size,
                     channelCount = channelGroupList.channelList.size,
-                    urlCount = channelGroupList.channelList.sumOf { it.urlList.size },
+                    lineCount = channelGroupList.channelList.sumOf { it.lineList.size },
                 )
             } catch (_: Exception) {
                 detailList[index] = IptvSourceDetail.Error
@@ -219,7 +219,7 @@ private fun IptvSourceItem(
                         listOf(
                             "共${iptvSourceDetail.channelGroupCount}个分组",
                             "${iptvSourceDetail.channelCount}个频道",
-                            "${iptvSourceDetail.urlCount}条线路"
+                            "${iptvSourceDetail.lineCount}条线路"
                         ).joinToString("，")
                     )
                 }
@@ -264,7 +264,7 @@ private sealed interface IptvSourceDetail {
     data class Ready(
         val channelGroupCount: Int,
         val channelCount: Int,
-        val urlCount: Int,
+        val lineCount: Int,
     ) : IptvSourceDetail
 }
 
@@ -282,7 +282,7 @@ private fun SettingsIptvSourceItemPreview() {
 
             IptvSourceItem(
                 iptvSourceProvider = { IptvSource.EXAMPLE },
-                iptvSourceDetailProvider = { IptvSourceDetail.Ready(10, 100, urlCount = 1000) },
+                iptvSourceDetailProvider = { IptvSourceDetail.Ready(10, 100, lineCount = 1000) },
             )
 
             IptvSourceItem(
