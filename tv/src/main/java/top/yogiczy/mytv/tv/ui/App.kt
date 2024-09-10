@@ -76,6 +76,7 @@ fun App(
             uiShowEpgProgrammeProgress = settingsViewModel.uiShowEpgProgrammeProgress,
             uiShowChannelLogo = settingsViewModel.uiShowChannelLogo,
             uiShowChannelPreview = settingsViewModel.uiShowChannelPreview,
+            themeAppCurrent = settingsViewModel.themeAppCurrent,
         ),
     ) {
         PopupHandleableApplication {

@@ -9,6 +9,7 @@ import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.SP
+import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 
 /**
@@ -145,6 +146,10 @@ object Configs {
 
         /** 播放器 显示模式 */
         VIDEO_PLAYER_DISPLAY_MODE,
+
+        /** ==================== 主题 ==================== */
+        /** 当前应用主题 */
+        THEME_APP_CURRENT,
     }
 
     /** ==================== 应用 ==================== */
@@ -377,6 +382,17 @@ object Configs {
             SP.getInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, VideoPlayerDisplayMode.ORIGINAL.value)
         )
         set(value) = SP.putInt(KEY.VIDEO_PLAYER_DISPLAY_MODE.name, value.value)
+
+    /** ==================== 主题 ==================== */
+    /** 当前应用主题 */
+    var themeAppCurrent: AppThemeDef?
+        get() = SP.getString(KEY.THEME_APP_CURRENT.name, "").let {
+            if (it.isBlank()) null else Json.decodeFromString(it)
+        }
+        set(value) = SP.putString(
+            KEY.THEME_APP_CURRENT.name,
+            value?.let { Json.encodeToString(value) } ?: "")
+
 
     enum class UiTimeShowMode(val value: Int) {
         /** 隐藏 */

@@ -12,6 +12,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
+import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
@@ -343,6 +344,14 @@ class SettingsViewModel : ViewModel() {
             Configs.videoPlayerDisplayMode = value
         }
 
+    private var _themeAppCurrent by mutableStateOf<AppThemeDef?>(null)
+    var themeAppCurrent: AppThemeDef?
+        get() = _themeAppCurrent
+        set(value) {
+            _themeAppCurrent = value
+            Configs.themeAppCurrent = value
+        }
+
     init {
         try {
             refresh()
@@ -399,5 +408,6 @@ class SettingsViewModel : ViewModel() {
         _videoPlayerHeaders = Configs.videoPlayerHeaders
         _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout
         _videoPlayerAspectRatio = Configs.videoPlayerDisplayMode
+        _themeAppCurrent = Configs.themeAppCurrent
     }
 }

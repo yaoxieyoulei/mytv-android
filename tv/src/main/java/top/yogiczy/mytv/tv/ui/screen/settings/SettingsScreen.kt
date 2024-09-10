@@ -1,10 +1,8 @@
 package top.yogiczy.mytv.tv.ui.screen.settings
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +19,7 @@ import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsIptvScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsLogScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsNetworkScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsSystemScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsThemeScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsUiScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsUpdateScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsVideoPlayerScreen
@@ -61,12 +60,8 @@ fun SettingsScreen(
 
     val navController = rememberNavController()
 
-    AppScreen(
-        modifier = modifier.padding(top = 10.dp),
-        onBackPressed = onBackPressed,
-    ) {
+    AppScreen(modifier = modifier, onBackPressed = onBackPressed) {
         NavHost(
-            modifier = modifier,
             navController = navController,
             startDestination = startDestinationProvider() ?: "categories",
             builder = {
@@ -153,6 +148,13 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.NETWORK.name) {
                     SettingsNetworkScreen(
+                        onBackPressed = { navController.navigateUp() },
+                    )
+                }
+
+                composable(SettingsCategories.THEME.name) {
+                    SettingsThemeScreen(
+                        settingsViewModel = settingsViewModel,
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
