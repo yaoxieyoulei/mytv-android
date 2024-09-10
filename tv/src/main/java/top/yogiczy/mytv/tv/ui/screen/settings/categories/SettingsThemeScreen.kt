@@ -16,10 +16,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DoNotDisturb
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,10 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
@@ -50,18 +56,17 @@ fun SettingsThemeScreen(
 ) {
     val context = LocalContext.current
     val resources = context.resources
-    val nameList = resources.getStringArray(R.array.app_theme_name)
-    val base64List = resources.getStringArray(R.array.app_theme_base64)
-    val colorList = resources.getStringArray(R.array.app_theme_color)
-    val imageList = resources.getStringArray(R.array.app_theme_image)
 
-    val allAppThemeDef = nameList.indices.map { index ->
-        AppThemeDef(
-            name = nameList[index],
-            base64 = base64List[index],
-            color = colorList[index].removePrefix("0x").toLong(16),
-            image = imageList[index]
-        )
+    val allAppThemeDefGroup = remember { mutableStateListOf<AppThemeDefGroup>() }
+
+    LaunchedEffect(Unit) {
+        allAppThemeDefGroup.clear()
+        withContext(Dispatchers.IO) {
+            allAppThemeDefGroup.addAll(
+                resources.openRawResource(R.raw.app_themes).bufferedReader().use {
+                    Json.decodeFromString<List<AppThemeDefGroup>>(it.readText())
+                })
+        }
     }
 
     AppScreen(
@@ -96,65 +101,11 @@ fun SettingsThemeScreen(
             contentPadding = PaddingValues(38.dp, 10.dp, 38.dp, 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            item {
+            items(allAppThemeDefGroup) { group ->
                 AppThemeDefList(
-                    title = "基础色彩",
-                    description = "感受色彩活力，定制你的主题",
-                    appThemeDefList = allAppThemeDef.subList(0, 5),
-                    onSelected = { settingsViewModel.themeAppCurrent = it },
-                )
-            }
-
-            item {
-                AppThemeDefList(
-                    title = "故宫美学",
-                    description = "处处座之旁，率陈如意常",
-                    appThemeDefList = allAppThemeDef.subList(5, 10),
-                    onSelected = { settingsViewModel.themeAppCurrent = it },
-                )
-            }
-
-            item {
-                AppThemeDefList(
-                    title = "敦煌美学",
-                    description = "沉睡千年，一醒惊天下",
-                    appThemeDefList = allAppThemeDef.subList(10, 15),
-                    onSelected = { settingsViewModel.themeAppCurrent = it },
-                )
-            }
-
-            item {
-                AppThemeDefList(
-                    title = "水墨国风",
-                    description = "秋水共长天一色",
-                    appThemeDefList = allAppThemeDef.subList(15, 19),
-                    onSelected = { settingsViewModel.themeAppCurrent = it },
-                )
-            }
-
-            item {
-                AppThemeDefList(
-                    title = "神秘美学",
-                    description = "每天一点甜，生活好运连连",
-                    appThemeDefList = allAppThemeDef.subList(19, 23),
-                    onSelected = { settingsViewModel.themeAppCurrent = it },
-                )
-            }
-
-            item {
-                AppThemeDefList(
-                    title = "缤纷时刻",
-                    description = "小小画板上映射生活的美好",
-                    appThemeDefList = allAppThemeDef.subList(23, 27),
-                    onSelected = { settingsViewModel.themeAppCurrent = it },
-                )
-            }
-
-            item {
-                AppThemeDefList(
-                    title = "幻彩机核",
-                    description = "永不止境的黑夜和炽热不羁的心跳",
-                    appThemeDefList = allAppThemeDef.subList(27, 31),
+                    title = group.name,
+                    description = group.description,
+                    appThemeDefList = group.list,
                     onSelected = { settingsViewModel.themeAppCurrent = it },
                 )
             }
@@ -173,10 +124,7 @@ private fun AppThemeDefItem(
             .size(2.4f.gridColumns(), 100.dp)
             .handleKeyEvents(onSelect = onSelected),
         border = ClickableSurfaceDefaults.border(
-            focusedBorder = Border(
-                BorderStroke(2.dp, Color(appThemeDef.color)),
-                4.dp,
-            )
+            focusedBorder = Border(BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface))
         ),
         onClick = {},
     ) {
@@ -237,6 +185,13 @@ private fun AppThemeDefList(
         }
     }
 }
+
+@Serializable
+private data class AppThemeDefGroup(
+    val name: String,
+    val description: String,
+    val list: List<AppThemeDef>,
+)
 
 @Preview(device = "id:Android TV (720p)")
 @Composable

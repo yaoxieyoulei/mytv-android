@@ -199,9 +199,9 @@ private fun AppScaffoldPreview() {
 @Serializable
 data class AppThemeDef(
     val name: String,
-    val base64: String,
-    val color: Long,
-    val image: String? = null,
+    val background: String,
+    val texture: String? = null,
+    val textureAlpha: Float? = null,
 )
 
 /**
@@ -227,15 +227,11 @@ fun AppThemeWrapper(
                 )
         )
     } else {
-        val imageBytes = Base64.decode(appThemeDef.base64, Base64.DEFAULT)
+        val imageBytes = Base64.decode(appThemeDef.background, Base64.DEFAULT)
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         val imageBitmap = bitmap.asImageBitmap()
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(appThemeDef.color))
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 bitmap = imageBitmap,
                 contentDescription = null,
@@ -243,15 +239,15 @@ fun AppThemeWrapper(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            appThemeDef.image?.let { nnImage ->
+            appThemeDef.texture?.let { nnTexture ->
                 SubcomposeAsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(nnImage)
+                        .data(nnTexture)
                         .decoderFactory(SvgDecoder.Factory())
                         .build(),
                     modifier = Modifier
                         .fillMaxSize()
-                        .alpha(if (nnImage.endsWith(".svg")) 0.12f else 0.8f),
+                        .alpha(appThemeDef.textureAlpha ?: 1f),
                     contentScale = ContentScale.Crop,
                     contentDescription = null,
                 )
