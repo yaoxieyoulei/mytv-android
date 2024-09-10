@@ -45,6 +45,15 @@ class VideoPlayerState(
     /** 当前播放位置 */
     var currentPosition by mutableLongStateOf(0L)
 
+    /** 当前音量 */
+    private var _volume by mutableFloatStateOf(1f)
+    var volume: Float
+        get() = _volume
+        set(value) {
+            _volume = value
+            instance.setVolume(value)
+        }
+
     /** 元数据 */
     var metadata by mutableStateOf(VideoPlayer.Metadata())
 

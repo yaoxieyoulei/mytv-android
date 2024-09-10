@@ -278,6 +278,14 @@ class Media3VideoPlayer(
         videoPlayer.seekTo(position)
     }
 
+    override fun setVolume(volume: Float) {
+        videoPlayer.volume = volume
+    }
+
+    override fun getVolume(): Float {
+        return videoPlayer.volume
+    }
+
     override fun stop() {
         videoPlayer.stop()
         updatePositionJob?.cancel()

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.theme.colors
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
@@ -38,6 +39,7 @@ fun Drawer(
         DrawerPosition.End -> Alignment.TopEnd
         DrawerPosition.Top -> Alignment.TopStart
         DrawerPosition.Bottom -> Alignment.BottomStart
+        DrawerPosition.Center -> Alignment.Center
     }
 
     val positionModifier = when (position) {
@@ -45,23 +47,25 @@ fun Drawer(
         DrawerPosition.End -> Modifier.fillMaxHeight()
         DrawerPosition.Top -> Modifier.fillMaxWidth()
         DrawerPosition.Bottom -> Modifier.fillMaxWidth()
+        DrawerPosition.Center -> Modifier
     }
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
             .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } },
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .align(alignment)
                 .then(positionModifier)
                 .background(
-                    MaterialTheme.colors.surfaceContainer,
+                    MaterialTheme.colors.surfaceContainer.copy(0.95f),
                     MaterialTheme.shapes.large,
                 )
-                .padding(20.dp)
+                .pointerInput(Unit) { detectTapGestures { } }
+                .padding(20.dp),
         ) {
             Column {
                 header?.let { nnHeader ->
@@ -88,7 +92,7 @@ fun Drawer(
 }
 
 enum class DrawerPosition {
-    Start, End, Top, Bottom
+    Start, End, Top, Bottom, Center
 }
 
 @Preview(device = "id:Android TV (720p)")
@@ -145,11 +149,39 @@ private fun DrawerPreviewBottom() {
 
 @Preview(device = "id:Android TV (720p)")
 @Composable
+private fun DrawerPreviewCenter() {
+    MyTvTheme {
+        PreviewWithLayoutGrids {
+            Drawer(
+                position = DrawerPosition.Center,
+                header = { Text("Header") },
+            )
+        }
+    }
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
 private fun DrawerPreviewBottomNoHeader() {
     MyTvTheme {
         PreviewWithLayoutGrids {
             Drawer(
                 position = DrawerPosition.Bottom,
+            ) {
+                Text("Content")
+            }
+        }
+    }
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun DrawerPreview() {
+    MyTvTheme {
+        AppScreen {
+            Drawer(
+                position = DrawerPosition.End,
+                header = { Text("Header") },
             ) {
                 Text("Content")
             }

@@ -29,6 +29,10 @@ abstract class VideoPlayer(
 
     abstract fun seekTo(position: Long)
 
+    abstract fun setVolume(volume: Float)
+
+    abstract fun getVolume(): Float
+
     open fun stop() {
         loadTimeoutJob?.cancel()
         interruptJob?.cancel()

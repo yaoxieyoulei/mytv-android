@@ -39,8 +39,9 @@ fun MultiViewScreen(
                 channelGroupListProvider = channelGroupListProvider,
                 epgListProvider = epgListProvider,
                 channelProvider = { channelList[index] },
+                viewIndexProvider = { index },
                 viewCountProvider = { channelList.size },
-                isZoomInProvider = { zoomInIndex == index },
+                zoomInIndexProvider = { zoomInIndex },
                 onAddChannel = {
                     if (channelList.size >= MULTI_VIEW_MAX_COUNT) {
                         Snackbar.show("最多只能添加${MULTI_VIEW_MAX_COUNT}个频道")
@@ -75,6 +76,13 @@ fun MultiViewScreen(
                 },
                 onZoomIn = { zoomInIndex = index },
                 onZoomOut = { zoomInIndex = null },
+                onMoveTo = { newIndex ->
+                    if (newIndex == index) return@MultiViewItem
+
+                    val temp = channelList[index]
+                    channelList[index] = channelList[newIndex]
+                    channelList[newIndex] = temp
+                },
             )
         }
     }
