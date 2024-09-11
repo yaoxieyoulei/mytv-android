@@ -3,6 +3,7 @@ package top.yogiczy.mytv.tv
 import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
+import coil.decode.SvgDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
@@ -24,6 +25,10 @@ class MyTVApplication : Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader(this).newBuilder()
+            .components {
+                add(SvgDecoder.Factory())
+            }
+            .crossfade(true)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .memoryCache {
                 MemoryCache.Builder(this)
@@ -33,7 +38,7 @@ class MyTVApplication : Application(), ImageLoaderFactory {
             .diskCachePolicy(CachePolicy.ENABLED)
             .diskCache {
                 DiskCache.Builder()
-                    .directory(cacheDir)
+                    .directory(cacheDir.resolve("image_cache"))
                     .build()
             }
             .build()

@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -48,8 +47,6 @@ import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.SubcomposeAsyncImage
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
 import kotlinx.serialization.Serializable
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
@@ -241,10 +238,7 @@ fun AppThemeWrapper(
 
             appThemeDef.texture?.let { nnTexture ->
                 SubcomposeAsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(nnTexture)
-                        .decoderFactory(SvgDecoder.Factory())
-                        .build(),
+                    model = nnTexture,
                     modifier = Modifier
                         .fillMaxSize()
                         .alpha(appThemeDef.textureAlpha ?: 1f),
