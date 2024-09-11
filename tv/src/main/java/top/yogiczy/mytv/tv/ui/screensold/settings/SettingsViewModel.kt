@@ -177,6 +177,22 @@ class SettingsViewModel : ViewModel() {
             Configs.iptvSimilarChannelMerge = value
         }
 
+    private var _iptvChannelLogoProvider by mutableStateOf("")
+    var iptvChannelLogoProvider: String
+        get() = _iptvChannelLogoProvider
+        set(value) {
+            _iptvChannelLogoProvider = value
+            Configs.iptvChannelLogoProvider = value
+        }
+
+    private var _iptvChannelLogoOverride by mutableStateOf(false)
+    var iptvChannelLogoOverride: Boolean
+        get() = _iptvChannelLogoOverride
+        set(value) {
+            _iptvChannelLogoOverride = value
+            Configs.iptvChannelLogoOverride = value
+        }
+
     private var _epgEnable by mutableStateOf(false)
     var epgEnable: Boolean
         get() = _epgEnable
@@ -387,6 +403,8 @@ class SettingsViewModel : ViewModel() {
         _iptvChannelGroupHiddenList = Configs.iptvChannelGroupHiddenList
         _iptvHybridMode = Configs.iptvHybridMode
         _iptvSimilarChannelMerge = Configs.iptvSimilarChannelMerge
+        _iptvChannelLogoProvider = Configs.iptvChannelLogoProvider
+        _iptvChannelLogoOverride = Configs.iptvChannelLogoOverride
         _epgEnable = Configs.epgEnable
         _epgSourceCurrent = Configs.epgSourceCurrent
         _epgSourceList = Configs.epgSourceList

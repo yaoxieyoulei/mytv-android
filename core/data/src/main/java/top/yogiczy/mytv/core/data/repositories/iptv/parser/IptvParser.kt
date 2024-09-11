@@ -14,7 +14,10 @@ interface IptvParser {
     /**
      * 解析直播源数据
      */
-    suspend fun parse(data: String): ChannelGroupList
+    suspend fun parse(
+        data: String,
+        logoProvider: (name: String, logo: String?) -> String?,
+    ): ChannelGroupList
 
     companion object {
         val instances = listOf(

@@ -3,9 +3,9 @@ package top.yogiczy.mytv.core.data.repositories.iptv.parser
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
-import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 
 /**
  * 缺省直播源解析
@@ -16,7 +16,10 @@ class DefaultIptvParser : IptvParser {
         return true
     }
 
-    override suspend fun parse(data: String): ChannelGroupList {
+    override suspend fun parse(
+        data: String,
+        logoProvider: (name: String, logo: String?) -> String?,
+    ): ChannelGroupList {
         val channelList = ChannelList(
             listOf(
                 Channel(

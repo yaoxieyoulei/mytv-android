@@ -132,6 +132,30 @@ fun SettingsIptvScreen(
             }
 
             item {
+                val provider = settingsViewModel.iptvChannelLogoProvider
+
+                SettingsListItem(
+                    headlineContent = "频道图标提供",
+                    trailingContent = { Text(provider) },
+                    remoteConfig = true,
+                )
+            }
+
+            item {
+                SettingsListItem(
+                    headlineContent = "频道图标覆盖",
+                    supportingContent = "使用频道图标提供覆盖直播源中定义的频道图标",
+                    trailingContent = {
+                        Switch(settingsViewModel.iptvChannelLogoOverride, null)
+                    },
+                    onSelected = {
+                        settingsViewModel.iptvChannelLogoOverride =
+                            !settingsViewModel.iptvChannelLogoOverride
+                    },
+                )
+            }
+
+            item {
                 val hybridMode = settingsViewModel.iptvHybridMode
 
                 SettingsListItem(

@@ -5,9 +5,9 @@ import kotlinx.coroutines.withContext
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
-import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 
 /**
  * txt直播源解析
@@ -18,7 +18,10 @@ class TxtIptvParser : IptvParser {
         return data.contains("#genre#")
     }
 
-    override suspend fun parse(data: String): ChannelGroupList = withContext(Dispatchers.Default) {
+    override suspend fun parse(
+        data: String,
+        logoProvider: (name: String, logo: String?) -> String?,
+    ): ChannelGroupList = withContext(Dispatchers.Default) {
         val lines = data.split("\r\n", "\n")
         val iptvList = mutableListOf<ChannelItem>()
 
@@ -53,7 +56,7 @@ class TxtIptvParser : IptvParser {
                         lineList = ChannelLineList(
                             nameEntry.value.map { it.url }.distinct().map { ChannelLine(it) }
                         ),
-                        logo = "https://live.fanmingming.com/tv/${nameEntry.value.first().epgName}.png"
+                        logo = logoProvider(nameEntry.key, null),
                     )
                 }),
             )

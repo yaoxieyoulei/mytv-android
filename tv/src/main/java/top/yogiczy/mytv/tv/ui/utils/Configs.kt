@@ -80,6 +80,12 @@ object Configs {
         /** 相似频道合并 */
         IPTV_SIMILAR_CHANNEL_MERGE,
 
+        /** 频道图标提供 */
+        IPTV_CHANNEL_LOGO_PROVIDER,
+
+        /** 频道图标覆盖 */
+        IPTV_CHANNEL_LOGO_OVERRIDE,
+
         /** ==================== 节目单 ==================== */
         /** 启用节目单 */
         EPG_ENABLE,
@@ -259,6 +265,16 @@ object Configs {
     var iptvSimilarChannelMerge: Boolean
         get() = SP.getBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, false)
         set(value) = SP.putBoolean(KEY.IPTV_SIMILAR_CHANNEL_MERGE.name, value)
+
+    /** 频道图标提供 */
+    var iptvChannelLogoProvider: String
+        get() = SP.getString(KEY.IPTV_CHANNEL_LOGO_PROVIDER.name, Constants.CHANNEL_LOGO_PROVIDER)
+        set(value) = SP.putString(KEY.IPTV_CHANNEL_LOGO_PROVIDER.name, value)
+
+    /** 频道图标覆盖 */
+    var iptvChannelLogoOverride: Boolean
+        get() = SP.getBoolean(KEY.IPTV_CHANNEL_LOGO_OVERRIDE.name, false)
+        set(value) = SP.putBoolean(KEY.IPTV_CHANNEL_LOGO_OVERRIDE.name, value)
 
     /** ==================== 节目单 ==================== */
     /** 启用节目单 */

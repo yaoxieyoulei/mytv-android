@@ -45,12 +45,11 @@
                                     <van-field class="!pl-0" input-align="right" label="名称" placeholder="直播源名称"
                                         v-model="iptvSource.name"></van-field>
 
-                                    <van-field class="!pl-0" input-align="right" label="链接" placeholder="直播源链接" rows="2"
-                                        type="textarea" v-if="iptvSource.type === 'url'"
-                                        v-model="iptvSource.url"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="链接" placeholder="直播源链接"
+                                        v-if="iptvSource.type === 'url'" v-model="iptvSource.url"></van-field>
 
                                     <van-field class="!pl-0" input-align="right" label="文件路径" placeholder="直播源文件路径"
-                                        rows="2" type="textarea" v-else-if="iptvSource.type === 'file'"
+                                        v-else-if="iptvSource.type === 'file'"
                                         v-model="iptvSource.filePath"></van-field>
 
                                     <template v-else-if="iptvSource.type === 'content'">
@@ -69,6 +68,23 @@
                                     <div class="flex justify-end">
                                         <van-button @click="pushIptvSource" size="small" type="primary">
                                             推送直播源
+                                        </van-button>
+                                    </div>
+                                </van-space>
+                            </template>
+                        </van-cell>
+
+                        <van-cell title="频道图标提供">
+                            <template #label>
+                                <van-space class="w-full" direction="vertical" size="small">
+                                    <span>格式：{name} - 保持不变，{name|lowercase} - 小写，{name|uppercase} - 大写</span>
+
+                                    <van-field placeholder="https://live.fanmingming.com/tv/{name}.png" class="!p-0"
+                                        v-model="configs.iptvChannelLogoProvider"></van-field>
+
+                                    <div class="flex justify-end">
+                                        <van-button @click="pushConfigs" size="small" type="primary">
+                                            推送
                                         </van-button>
                                     </div>
                                 </van-space>
@@ -99,8 +115,8 @@
                                     <van-field class="!pl-0" input-align="right" label="名称" placeholder="节目单名称"
                                         v-model="epgSource.name"></van-field>
 
-                                    <van-field class="!pl-0" input-align="right" label="链接" placeholder="节目单链接" rows="2"
-                                        type="textarea" v-model="epgSource.url"></van-field>
+                                    <van-field class="!pl-0" input-align="right" label="链接" placeholder="节目单链接"
+                                        v-model="epgSource.url"></van-field>
 
                                     <div class="flex justify-end">
                                         <van-button @click="pushEpgSource" size="small" type="primary">
@@ -116,11 +132,11 @@
                         <van-cell title="自定义ua">
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
-                                    <van-field class="!p-0" placeholder="播放器自定义ua" rows="2" type="textarea"
-                                        v-model="videoPlayerUserAgent"></van-field>
+                                    <van-field class="!p-0" placeholder="播放器自定义ua"
+                                        v-model="configs.videoPlayerUserAgent"></van-field>
 
                                     <div class="flex justify-end">
-                                        <van-button @click="pushVideoPlayerUserAgent" size="small" type="primary">
+                                        <van-button @click="pushConfigs" size="small" type="primary">
                                             推送
                                         </van-button>
                                     </div>
@@ -132,10 +148,10 @@
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
                                     <van-field :placeholder="videoPlayerHeadersExample" autosize class="!p-0" rows="3"
-                                        type="textarea" v-model="videoPlayerHeaders"></van-field>
+                                        type="textarea" v-model="configs.videoPlayerHeaders"></van-field>
 
                                     <div class="flex justify-end">
-                                        <van-button @click="pushVideoPlayerHeaders" size="small" type="primary">
+                                        <van-button @click="pushConfigs" size="small" type="primary">
                                             推送
                                         </van-button>
                                     </div>
@@ -220,6 +236,31 @@
                     }
                 }
 
+                const configs = ref({})
+                async function refreshConfigs() {
+                    try {
+                        configs.value = await (await requestApi('/api/configs')).json()
+                    } catch (e) {
+                        vant.showFailToast('无法获取配置')
+                        console.error(e)
+                    }
+                }
+                async function pushConfigs() {
+                    try {
+                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
+                        await requestApi('/api/configs', {
+                            method: "POST",
+                            body: JSON.stringify(configs.value),
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                        await refreshConfigs()
+                        vant.showSuccessToast("推送配置成功")
+                    } catch (e) {
+                        vant.showFailToast('推送配置失败')
+                        console.error(e)
+                    }
+                }
+
                 const iptvSource = ref({
                     name: `添加于${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
                     type: 'url',
@@ -270,7 +311,6 @@
                     reader.readAsText(file.file);
                 }
 
-
                 const epgSource = ref({ name: `添加于${dayjs().format('YYYY-MM-DD HH:mm:ss')}`, url: '' })
                 async function pushEpgSource() {
                     if (!epgSource.value.name) {
@@ -297,54 +337,12 @@
                     }
                 }
 
-                const videoPlayerUserAgent = ref('')
-                async function pushVideoPlayerUserAgent() {
-                    if (!videoPlayerUserAgent.value) {
-                        vant.showFailToast('请填写播放器自定义ua')
-                        return
-                    }
-
-                    try {
-                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
-                        await requestApi('/api/video-player-user-agent/push', {
-                            method: "POST",
-                            body: JSON.stringify({ ua: videoPlayerUserAgent.value }),
-                            headers: { 'Content-Type': 'application/json' }
-                        })
-                        vant.showSuccessToast("推送ua成功")
-                    } catch (e) {
-                        vant.showFailToast('推送ua失败')
-                        console.error(e)
-                    }
-                }
-
-                const videoPlayerHeadersExample = "Header-Name-1: Header-Value-1\nHeader-Name-2: Header-Value-2"
-                const videoPlayerHeaders = ref('')
-                async function pushVideoPlayerHeaders() {
-                    if (!videoPlayerHeaders.value) {
-                        vant.showFailToast('请填写播放器自定义headers')
-                        return
-                    }
-
-                    try {
-                        vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
-                        await requestApi('/api/video-player-headers/push', {
-                            method: "POST",
-                            body: JSON.stringify({ headers: videoPlayerHeaders.value }),
-                            headers: { 'Content-Type': 'application/json' }
-                        })
-                        vant.showSuccessToast("推送headers成功")
-                    } catch (e) {
-                        vant.showFailToast('推送headers失败')
-                        console.error(e)
-                    }
-                }
-
                 const channelAliasExample = '{\n  "CCTV1": [\n    "cctv1 综合",\n    "cctv1-综合",\n    "cctv-1综合HD"\n  ]\n}'
                 const channelAlias = ref('')
                 async function refreshChannelAlias() {
                     channelAlias.value = await (await requestApi('/api/channel-alias')).text()
-                } async function updateChannelAlias() {
+                }
+                async function updateChannelAlias() {
                     try {
                         vant.showLoadingToast({ message: '加载中...', forbidClick: true, duration: 0 })
                         await requestApi('/api/channel-alias', {
@@ -372,9 +370,12 @@
                     }
                 }
 
+                const videoPlayerHeadersExample = "Header-Name-1: Header-Value-1\nHeader-Name-2: Header-Value-2"
+
                 onMounted(async () => {
                     await refreshInfo()
                     await refreshChannelAlias()
+                    await refreshConfigs()
                 })
 
                 return {
@@ -382,20 +383,18 @@
                     isDark,
                     tabActive,
                     info,
+                    configs,
+                    pushConfigs,
                     iptvSource,
                     pushIptvSource,
                     uploadIptvSourceContentAfterRead,
                     epgSource,
                     pushEpgSource,
-                    videoPlayerUserAgent,
-                    pushVideoPlayerUserAgent,
-                    videoPlayerHeadersExample,
-                    videoPlayerHeaders,
-                    pushVideoPlayerHeaders,
-                    uploadApkAfterRead,
                     channelAliasExample,
                     channelAlias,
                     updateChannelAlias,
+                    uploadApkAfterRead,
+                    videoPlayerHeadersExample,
                 }
             }
         })

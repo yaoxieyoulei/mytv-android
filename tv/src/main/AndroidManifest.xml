@@ -40,7 +40,6 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|screenLayout|keyboardHidden"
             android:exported="true"
             android:resizeableActivity="true"
-            android:screenOrientation="sensorLandscape"
             android:supportsPictureInPicture="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

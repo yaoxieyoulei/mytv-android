@@ -49,7 +49,11 @@ class IptvRepository(
     /**
      * 获取直播源分组列表
      */
-    suspend fun getChannelGroupList(cacheTime: Long): ChannelGroupList {
+    suspend fun getChannelGroupList(
+        cacheTime: Long,
+        logoProvider: String? = null,
+        overrideLogo: Boolean = false,
+    ): ChannelGroupList {
         try {
             val sourceData = getOrRefresh(if (source.isLocal) Long.MAX_VALUE else cacheTime) {
                 fetchSource(source.url)
@@ -57,7 +61,16 @@ class IptvRepository(
 
             val parser = IptvParser.instances.first { it.isSupport(source.url, sourceData) }
             val startTime = System.currentTimeMillis()
-            val groupList = parser.parse(sourceData)
+            val groupList = parser.parse(sourceData) { name, logo ->
+                logoProvider?.let { nnLogoProvider ->
+                    if (overrideLogo || logo.isNullOrBlank()) {
+                        nnLogoProvider
+                            .replace("{name}", name)
+                            .replace("{name|lowercase}", name.lowercase())
+                            .replace("{name|uppercase}", name.uppercase())
+                    } else logo
+                }
+            }
             log.i(
                 listOf(
                     "解析直播源（${source.name}）完成：${groupList.size}个分组",

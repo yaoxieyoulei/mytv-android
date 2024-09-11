@@ -25,7 +25,7 @@ object Constants {
     const val GROUP_TELEGRAM = "https://t.me/mytv_android"
 
     /**
-     * IPTV直播源
+     * 直播源
      */
     val IPTV_SOURCE_LIST = IptvSourceList(
         listOf(
@@ -45,7 +45,7 @@ object Constants {
     )
 
     /**
-     * IPTV源缓存时间（毫秒）
+     * 直播源缓存时间（毫秒）
      */
     const val IPTV_SOURCE_CACHE_TIME = 1000 * 60 * 60 * 24L // 24小时
 
@@ -71,13 +71,24 @@ object Constants {
     const val EPG_REFRESH_TIME_THRESHOLD = 2 // 不到2点不刷新
 
     /**
+     * 频道图标提供
+     *
+     * {name} 频道名称
+     *
+     * {name|lowercase} 转成小写
+     *
+     * {name|uppercase} 转成大写
+     *
+     */
+    const val CHANNEL_LOGO_PROVIDER = "https://live.fanmingming.com/tv/{name|uppercase}.png"
+
+    /**
      * Git最新版本信息
      */
     val GIT_RELEASE_LATEST_URL = mapOf(
         "stable" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-stable.json",
         "beta" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-beta.json",
         "dev" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-dev.json",
-        // "dev" to "http://192.168.2.29:8080/tv-dev.json?t=raw.githubusercontent.com",
     )
 
     /**
