@@ -41,6 +41,7 @@ fun VideoPlayerScreen(
             VideoPlayerDisplayMode.CROP -> Modifier
                 .fillMaxWidth()
                 .aspectRatio(state.aspectRatio)
+
             VideoPlayerDisplayMode.FOUR_THREE -> Modifier.aspectRatio(4f / 3)
             VideoPlayerDisplayMode.SIXTEEN_NINE -> Modifier.aspectRatio(16f / 9)
             VideoPlayerDisplayMode.WIDE -> Modifier.aspectRatio(2.35f / 1)

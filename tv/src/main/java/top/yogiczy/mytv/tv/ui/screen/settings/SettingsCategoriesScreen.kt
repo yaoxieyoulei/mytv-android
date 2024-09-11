@@ -1,8 +1,17 @@
 package top.yogiczy.mytv.tv.ui.screen.settings
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,10 +31,20 @@ import androidx.compose.material.icons.outlined.SmartDisplay
 import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.Icon
@@ -36,6 +55,7 @@ import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
@@ -77,15 +97,22 @@ private fun SettingsCategoryItem(
     imageVector: ImageVector,
     onSelected: () -> Unit = {},
 ) {
+    var isFocused by remember { mutableStateOf(false) }
+
     Surface(
         modifier = modifier
             .size(2.gridColumns())
+            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(onSelect = onSelected),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
         ),
         onClick = {},
     ) {
+        if (title == SettingsCategories.THEME.title && isFocused) {
+            SettingsCategoryItemThemeBackground()
+        }
+
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,6 +123,51 @@ private fun SettingsCategoryItem(
             Text(title, style = MaterialTheme.typography.titleLarge)
         }
     }
+}
+
+@Composable
+private fun SettingsCategoryItemThemeBackground() {
+    val colors = listOf(
+        Color(0xFFE8FBFC),
+        Color(0xFFB3EAFD),
+        Color(0xFFBED6FF),
+        Color(0xFFD7CFFE),
+        Color(0xFFE8CEF2),
+        Color(0xFFFBCFDB),
+        Color(0xFFFFECC0),
+    )
+
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val animatedOffset = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "",
+    )
+
+    var size by remember { mutableStateOf(IntSize(0, 0)) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onSizeChanged { size = it }
+            .background(
+                Brush.linearGradient(
+                    colors = colors,
+                    start = Offset(
+                        -animatedOffset.value * size.width / 2,
+                        -animatedOffset.value * size.height / 2
+                    ),
+                    end = Offset(
+                        -animatedOffset.value * size.width + size.width * 2,
+                        -animatedOffset.value * size.height + size.height * 2
+                    ),
+                )
+            )
+    )
 }
 
 enum class SettingsCategories(
@@ -140,5 +212,19 @@ private fun SettingsCategoriesScreenPreview() {
     MyTvTheme {
         SettingsCategoriesScreen()
         PreviewWithLayoutGrids { }
+    }
+}
+
+@Preview
+@Composable
+private fun SettingsCategoryItemThemePreview() {
+    MyTvTheme {
+        SettingsCategoryItem(
+            modifier = Modifier
+                .focusOnLaunched()
+                .padding(20.dp),
+            title = SettingsCategories.THEME.title,
+            imageVector = SettingsCategories.THEME.icon,
+        )
     }
 }
