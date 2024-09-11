@@ -6,14 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,24 +58,26 @@ fun SettingsIptvSourceScreen(
     val iptvSourceList = IptvSourceList(Constants.IPTV_SOURCE_LIST + iptvSourceListProvider())
 
     val coroutineScope = rememberCoroutineScope()
-    val detailList = remember { mutableStateListOf<IptvSourceDetail>() }
+    val iptvSourceDetails = remember { mutableStateMapOf<Int, IptvSourceDetail>() }
 
     suspend fun refreshAll() {
-        if (detailList.any { it == IptvSourceDetail.Loading }) return
+        if (iptvSourceDetails.values.any { it == IptvSourceDetail.Loading }) return
 
-        detailList.clear()
-        detailList.addAll(List(iptvSourceList.size) { IptvSourceDetail.Loading })
+        iptvSourceDetails.clear()
+        iptvSourceList.forEach { source ->
+            iptvSourceDetails[source.hashCode()] = IptvSourceDetail.Loading
+        }
 
-        iptvSourceList.forEachIndexed { index, iptvSource ->
+        iptvSourceList.forEach { iptvSource ->
             try {
                 val channelGroupList = IptvRepository(iptvSource).getChannelGroupList(0)
-                detailList[index] = IptvSourceDetail.Ready(
+                iptvSourceDetails[iptvSource.hashCode()] = IptvSourceDetail.Ready(
                     channelGroupCount = channelGroupList.size,
                     channelCount = channelGroupList.channelList.size,
                     lineCount = channelGroupList.channelList.sumOf { it.lineList.size },
                 )
             } catch (_: Exception) {
-                detailList[index] = IptvSourceDetail.Error
+                iptvSourceDetails[iptvSource.hashCode()] = IptvSourceDetail.Error
             }
         }
     }
@@ -115,7 +117,7 @@ fun SettingsIptvSourceScreen(
         SettingsIptvSourceContent(
             currentIptvSourceProvider = currentIptvSourceProvider,
             iptvSourceListProvider = { iptvSourceList },
-            iptvSourceDetailListProvider = { detailList },
+            iptvSourceDetailsProvider = { iptvSourceDetails },
             onIptvSourceSelected = onIptvSourceSelected,
             onIptvSourceDelete = onIptvSourceDelete,
         )
@@ -127,7 +129,7 @@ private fun SettingsIptvSourceContent(
     modifier: Modifier = Modifier,
     currentIptvSourceProvider: () -> IptvSource = { IptvSource() },
     iptvSourceListProvider: () -> IptvSourceList = { IptvSourceList() },
-    iptvSourceDetailListProvider: () -> List<IptvSourceDetail> = { listOf() },
+    iptvSourceDetailsProvider: () -> Map<Int, IptvSourceDetail> = { emptyMap() },
     onIptvSourceSelected: (IptvSource) -> Unit = {},
     onIptvSourceDelete: (IptvSource) -> Unit = {},
 ) {
@@ -140,14 +142,11 @@ private fun SettingsIptvSourceContent(
         contentPadding = childPadding.copy(top = 10.dp).paddingValues,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        itemsIndexed(
-            iptvSourceList,
-            key = { _, source -> source.hashCode() },
-        ) { index, iptvSource ->
+        items(iptvSourceList) { iptvSource ->
             IptvSourceItem(
                 iptvSourceProvider = { iptvSource },
                 iptvSourceDetailProvider = {
-                    iptvSourceDetailListProvider().getOrNull(index) ?: IptvSourceDetail.None
+                    iptvSourceDetailsProvider()[iptvSource.hashCode()] ?: IptvSourceDetail.None
                 },
                 isSelectedProvider = { currentIptvSourceProvider() == iptvSource },
                 onIptvSourceSelected = { onIptvSourceSelected(iptvSource) },
@@ -190,6 +189,7 @@ private fun IptvSourceItem(
 
     ListItem(
         modifier = modifier.handleKeyEvents(
+            key = iptvSource,
             onSelect = onIptvSourceSelected,
             onLongSelect = onIptvSourceDelete,
         ),
