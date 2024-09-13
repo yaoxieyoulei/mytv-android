@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -133,8 +134,25 @@ fun Modifier.handleDragGestures(
         }
 }
 
+fun Modifier.clickableNoIndication(
+    onLongClick: () -> Unit = { },
+    onDoubleClick: () -> Unit = { },
+    onClick: () -> Unit,
+) = composed {
+    val currentOnClick by rememberUpdatedState(onClick)
+    val currentOnLongClick by rememberUpdatedState(onLongClick)
+    val currentOnDoubleClick by rememberUpdatedState(onDoubleClick)
+
+    pointerInput(Unit) {
+        detectTapGestures(
+            onTap = { currentOnClick() },
+            onDoubleTap = { currentOnDoubleClick() },
+            onLongPress = { currentOnLongClick() }
+        )
+    }
+}
+
 fun Modifier.handleKeyEvents(
-    key: Any = Unit,
     onLeft: () -> Unit = {},
     onLongLeft: () -> Unit = {},
     onRight: () -> Unit = {},
@@ -202,16 +220,13 @@ fun Modifier.handleKeyEvents(
         KeyEvent.KEYCODE_DPAD_CENTER to onLongSelect,
     ),
 )
-    .pointerInput(key) {
-        detectTapGestures(
-            onTap = { onSelect() },
-            onLongPress = { onLongSelect() },
-            onDoubleTap = { onSettings() },
-        )
-    }
+    .clickableNoIndication(
+        onLongClick = onLongSelect,
+        onDoubleClick = onSettings,
+        onClick = onSelect,
+    )
 
 fun Modifier.handleKeyEvents(
-    key: Any = Unit,
     isFocused: () -> Boolean,
     focusRequester: FocusRequester,
     onLeft: () -> Unit = {},
@@ -227,7 +242,6 @@ fun Modifier.handleKeyEvents(
     onSettings: () -> Unit = {},
     onNumber: (Int) -> Unit = {},
 ) = handleKeyEvents(
-    key = key,
     onLeft = { if (isFocused()) onLeft() else focusRequester.requestFocus() },
     onLongLeft = { if (isFocused()) onLongLeft() else focusRequester.requestFocus() },
     onRight = { if (isFocused()) onRight() else focusRequester.requestFocus() },

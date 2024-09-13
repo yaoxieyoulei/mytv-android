@@ -68,8 +68,6 @@ fun ChannelItem(
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
                 onSelect = onChannelSelected,
                 onLongSelect = onChannelFavoriteToggle,
             ),

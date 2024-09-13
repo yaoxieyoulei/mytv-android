@@ -20,8 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -103,20 +101,14 @@ private fun ChannelGroupManageItem(
     val isHidden = isHiddenProvider()
 
     var isFocused by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
 
     Card(
         onClick = {},
         modifier = modifier
-            .focusRequester(focusRequester)
             .onFocusChanged {
                 isFocused = it.isFocused || it.hasFocus
             }
-            .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
-                onSelect = onToggleHidden,
-            ),
+            .handleKeyEvents(onSelect = onToggleHidden),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colors.surfaceContainerHigh,
             focusedContainerColor = MaterialTheme.colorScheme.onSurface,

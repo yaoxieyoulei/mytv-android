@@ -15,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +40,6 @@ fun SettingsListItem(
 ) {
     val popupManager = LocalPopupManager.current
     val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
 
     var showPush by remember { mutableStateOf(false) }
 
@@ -79,10 +77,7 @@ fun SettingsListItem(
         supportingContent = { supportingContent?.let { Text(it) } },
         modifier = modifier
             .focusRequester(focusRequester)
-            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
                 onSelect = {
                     if (onSelected != null) onSelected()
                     else if (remoteConfig) {

@@ -198,8 +198,6 @@ private fun ClassicChannelItem(
                         if (isFocused) onChannelFocused()
                     }
                     .handleKeyEvents(
-                        isFocused = { isFocused },
-                        focusRequester = focusRequester,
                         onSelect = onChannelSelected,
                         onLongSelect = onChannelFavoriteToggle,
                     ),

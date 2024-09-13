@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,16 +86,12 @@ fun EpgSourceScreen(
             item {
                 val popupManager = LocalPopupManager.current
                 val focusRequester = remember { FocusRequester() }
-                var isFocused by remember { mutableStateOf(false) }
                 var showPush by remember { mutableStateOf(false) }
 
                 ListItem(
                     modifier = modifier
                         .focusRequester(focusRequester)
-                        .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
                         .handleKeyEvents(
-                            isFocused = { isFocused },
-                            focusRequester = focusRequester,
                             onSelect = {
                                 popupManager.push(focusRequester, true)
                                 showPush = true
