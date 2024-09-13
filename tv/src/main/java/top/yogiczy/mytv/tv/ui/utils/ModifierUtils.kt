@@ -27,6 +27,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_SPACING
 import top.yogiczy.mytv.tv.ui.theme.LAYOUT_GRID_WIDTH
 import kotlin.math.absoluteValue
@@ -293,3 +294,10 @@ fun Modifier.customBackground() = background(
 
 fun Int.gridColumns() = (LAYOUT_GRID_WIDTH * this + LAYOUT_GRID_SPACING * (this - 1)).dp
 fun Float.gridColumns() = (LAYOUT_GRID_WIDTH * this + LAYOUT_GRID_SPACING * (this - 1)).dp
+
+fun NavHostController.navigateSingleTop(route: String) {
+    navigate(route) {
+        popUpTo(route) { inclusive = true }
+        launchSingleTop = true
+    }
+}

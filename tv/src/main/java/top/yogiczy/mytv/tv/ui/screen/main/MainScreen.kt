@@ -34,6 +34,7 @@ import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
 import top.yogiczy.mytv.tv.ui.screen.update.UpdateScreen
 import top.yogiczy.mytv.tv.ui.screen.update.UpdateViewModel
 import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.utils.navigateSingleTop
 
 @Composable
 fun MainScreen(
@@ -65,7 +66,7 @@ fun MainScreen(
     fun onChannelSelected(channel: Channel) {
         settingsViewModel.iptvLastChannelIdx =
             filteredChannelGroupListProvider().channelIdx(channel)
-        navController.navigate(Screens.Live())
+        navController.navigateSingleTop(Screens.Live())
     }
 
     fun onChannelFavoriteToggle(channel: Channel) {
@@ -98,7 +99,7 @@ fun MainScreen(
 
             settingsViewModel.appLastLatestVersion = updateViewModel.latestRelease.version
             if (settingsViewModel.updateForceRemind) {
-                navController.navigate(Screens.Update())
+                navController.navigateSingleTop(Screens.Update())
             } else {
                 Snackbar.show("发现新版本: v${updateViewModel.latestRelease.version}")
             }
@@ -115,10 +116,10 @@ fun MainScreen(
                     mainUiState = uiState,
                     toDashboardScreen = {
                         navController.navigateUp()
-                        navController.navigate(Screens.Dashboard())
+                        navController.navigateSingleTop(Screens.Dashboard())
                         checkUpdate()
                     },
-                    toSettingsScreen = { navController.navigate(Screens.Settings()) },
+                    toSettingsScreen = { navController.navigateSingleTop(Screens.Settings()) },
                     onBackPressed = onBackPressed,
                 )
             }
@@ -129,16 +130,16 @@ fun MainScreen(
                     favoriteChannelListProvider = favoriteChannelListProvider,
                     onChannelSelected = { onChannelSelected(it) },
                     epgListProvider = epgListProvider,
-                    toLiveScreen = { navController.navigate(Screens.Live()) },
-                    toChannelsScreen = { navController.navigate(Screens.Channels()) },
-                    toFavoritesScreen = { navController.navigate(Screens.Favorites()) },
-                    toSearchScreen = { navController.navigate(Screens.Search()) },
-                    toMultiViewScreen = { navController.navigate(Screens.MultiView()) },
-                    toPushScreen = { navController.navigate(Screens.Push()) },
-                    toSettingsScreen = { navController.navigate(Screens.Settings()) },
-                    toAboutScreen = { navController.navigate(Screens.About()) },
+                    toLiveScreen = { navController.navigateSingleTop(Screens.Live()) },
+                    toChannelsScreen = { navController.navigateSingleTop(Screens.Channels()) },
+                    toFavoritesScreen = { navController.navigateSingleTop(Screens.Favorites()) },
+                    toSearchScreen = { navController.navigateSingleTop(Screens.Search()) },
+                    toMultiViewScreen = { navController.navigateSingleTop(Screens.MultiView()) },
+                    toPushScreen = { navController.navigateSingleTop(Screens.Push()) },
+                    toSettingsScreen = { navController.navigateSingleTop(Screens.Settings()) },
+                    toAboutScreen = { navController.navigateSingleTop(Screens.About()) },
                     toSettingsIptvSourceScreen = {
-                        navController.navigate(
+                        navController.navigateSingleTop(
                             Screens.Settings.withArgs(SettingsSubCategories.IPTV_SOURCE)
                         )
                     },
@@ -209,7 +210,7 @@ fun MainScreen(
                     onReload = {
                         mainViewModel.init()
                         navController.navigateUp()
-                        navController.navigate(Screens.Loading())
+                        navController.navigateSingleTop(Screens.Loading())
                     },
                     onBackPressed = { navController.navigateUp() },
                 )
@@ -218,7 +219,7 @@ fun MainScreen(
             composable(Screens.About()) {
                 AboutScreen(
                     latestVersionProvider = { updateViewModel.latestRelease.version },
-                    toUpdateScreen = { navController.navigate(Screens.Update()) },
+                    toUpdateScreen = { navController.navigateSingleTop(Screens.Update()) },
                     onBackPressed = { navController.navigateUp() },
                 )
             }

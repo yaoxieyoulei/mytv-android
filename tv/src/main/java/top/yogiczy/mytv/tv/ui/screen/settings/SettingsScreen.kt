@@ -37,6 +37,7 @@ import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsUpdateChanne
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsVideoPlayerDisplayModeScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsVideoPlayerLoadTimeoutScreen
 import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.utils.navigateSingleTop
 
 object SettingsScreen {
     const val START_DESTINATION = "startDestination"
@@ -67,7 +68,7 @@ fun SettingsScreen(
             builder = {
                 composable(route = "categories") {
                     SettingsCategoriesScreen(
-                        toSettingsCategoryScreen = { navController.navigate(it.name) },
+                        toSettingsCategoryScreen = { navController.navigateSingleTop(it.name) },
                         onBackPressed = onBackPressed,
                     )
                 }
@@ -84,12 +85,16 @@ fun SettingsScreen(
                     SettingsIptvScreen(
                         channelGroupListProvider = channelGroupListProvider,
                         settingsViewModel = settingsViewModel,
-                        toIptvSourceScreen = { navController.navigate(SettingsSubCategories.IPTV_SOURCE.name) },
-                        toIptvSourceCacheTimeScreen = { navController.navigate(SettingsSubCategories.IPTV_SOURCE_CACHE_TIME.name) },
-                        toChannelGroupVisibilityScreen = {
-                            navController.navigate(SettingsSubCategories.CHANNEL_GROUP_VISIBILITY.name)
+                        toIptvSourceScreen = { navController.navigateSingleTop(SettingsSubCategories.IPTV_SOURCE.name) },
+                        toIptvSourceCacheTimeScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.IPTV_SOURCE_CACHE_TIME.name)
                         },
-                        toIptvHybridModeScreen = { navController.navigate(SettingsSubCategories.IPTV_HYBRID_MODE.name) },
+                        toChannelGroupVisibilityScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.CHANNEL_GROUP_VISIBILITY.name)
+                        },
+                        toIptvHybridModeScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.IPTV_HYBRID_MODE.name)
+                        },
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
@@ -97,9 +102,9 @@ fun SettingsScreen(
                 composable(SettingsCategories.EPG.name) {
                     SettingsEpgScreen(
                         settingsViewModel = settingsViewModel,
-                        toEpgSourceScreen = { navController.navigate(SettingsSubCategories.EPG_SOURCE.name) },
+                        toEpgSourceScreen = { navController.navigateSingleTop(SettingsSubCategories.EPG_SOURCE.name) },
                         toEpgRefreshTimeThresholdScreen = {
-                            navController.navigate(SettingsSubCategories.EPG_REFRESH_TIME_THRESHOLD.name)
+                            navController.navigateSingleTop(SettingsSubCategories.EPG_REFRESH_TIME_THRESHOLD.name)
                         },
                         onBackPressed = { navController.navigateUp() },
                     )
@@ -108,12 +113,18 @@ fun SettingsScreen(
                 composable(SettingsCategories.UI.name) {
                     SettingsUiScreen(
                         settingsViewModel = settingsViewModel,
-                        toUiTimeShowModeScreen = { navController.navigate(SettingsSubCategories.UI_TIME_SHOW_MODE.name) },
-                        toUiScreenAutoCloseDelayScreen = {
-                            navController.navigate(SettingsSubCategories.UI_SCREEN_AUTO_CLOSE_DELAY.name)
+                        toUiTimeShowModeScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.UI_TIME_SHOW_MODE.name)
                         },
-                        toUiDensityScaleRatioScreen = { navController.navigate(SettingsSubCategories.UI_DENSITY_SCALE_RATIO.name) },
-                        toUiFontScaleRatioScreen = { navController.navigate(SettingsSubCategories.UI_FONT_SCALE_RATIO.name) },
+                        toUiScreenAutoCloseDelayScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.UI_SCREEN_AUTO_CLOSE_DELAY.name)
+                        },
+                        toUiDensityScaleRatioScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.UI_DENSITY_SCALE_RATIO.name)
+                        },
+                        toUiFontScaleRatioScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.UI_FONT_SCALE_RATIO.name)
+                        },
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
@@ -129,10 +140,10 @@ fun SettingsScreen(
                     SettingsVideoPlayerScreen(
                         settingsViewModel = settingsViewModel,
                         toVideoPlayerDisplayModeScreen = {
-                            navController.navigate(SettingsSubCategories.VIDEO_PLAYER_DISPLAY_MODE.name)
+                            navController.navigateSingleTop(SettingsSubCategories.VIDEO_PLAYER_DISPLAY_MODE.name)
                         },
                         toVideoPlayerLoadTimeoutScreen = {
-                            navController.navigate(SettingsSubCategories.VIDEO_PLAYER_LOAD_TIMEOUT.name)
+                            navController.navigateSingleTop(SettingsSubCategories.VIDEO_PLAYER_LOAD_TIMEOUT.name)
                         },
                         onBackPressed = { navController.navigateUp() },
                     )
@@ -141,7 +152,9 @@ fun SettingsScreen(
                 composable(SettingsCategories.UPDATE.name) {
                     SettingsUpdateScreen(
                         settingsViewModel = settingsViewModel,
-                        toUpdateChannelScreen = { navController.navigate(SettingsSubCategories.UPDATE_CHANNEL.name) },
+                        toUpdateChannelScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.UPDATE_CHANNEL.name)
+                        },
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
