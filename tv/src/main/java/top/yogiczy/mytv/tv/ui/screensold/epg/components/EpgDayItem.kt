@@ -5,14 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,18 +34,9 @@ fun EpgDayItem(
     val dayAfterTomorrow =
         dateFormat.format(System.currentTimeMillis() + 48 * 3600 * 1000)
 
-    val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
-
     ListItem(
         modifier = modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
-                onSelect = onDaySelected,
-            ),
+            .handleKeyEvents(onSelect = onDaySelected),
         colors = ListItemDefaults.colors(
             selectedContainerColor = MaterialTheme.colorScheme.inverseSurface.copy(0.1f),
             selectedContentColor = MaterialTheme.colorScheme.onSurface,

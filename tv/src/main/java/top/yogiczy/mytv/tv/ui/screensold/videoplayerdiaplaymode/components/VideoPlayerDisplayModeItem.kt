@@ -4,14 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
@@ -33,19 +26,10 @@ fun VideoPlayerDisplayModeItem(
     val displayMode = displayModeProvider()
     val isSelected = isSelectedProvider()
 
-    val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
-
     ListItem(
         modifier = modifier
             .ifElse(isSelected, Modifier.focusOnLaunchedSaveable())
-            .focusRequester(focusRequester)
-            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
-                onSelect = onSelected,
-            ),
+            .handleKeyEvents(onSelect = onSelected),
         selected = false,
         onClick = {},
         headlineContent = { Text(displayMode.label) },

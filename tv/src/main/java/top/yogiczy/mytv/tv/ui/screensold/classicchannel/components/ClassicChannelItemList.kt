@@ -197,12 +197,7 @@ private fun ClassicChannelItem(
                         isFocused = it.isFocused || it.hasFocus
                         if (isFocused) onChannelFocused()
                     }
-                    .handleKeyEvents(
-                        isFocused = { isFocused },
-                        focusRequester = focusRequester,
-                        onSelect = onChannelSelected,
-                        onLongSelect = onChannelFavoriteToggle,
-                    ),
+                    .handleKeyEvents(onSelect = onChannelSelected, onLongSelect = onChannelFavoriteToggle),
                 colors = ListItemDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.onSurface,
                     selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),

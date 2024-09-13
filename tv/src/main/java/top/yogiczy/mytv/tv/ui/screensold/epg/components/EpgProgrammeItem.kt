@@ -44,17 +44,13 @@ fun EpgProgrammeItem(
     val programme = epgProgrammeProvider()
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     ListItem(
         modifier = modifier
             .ifElse(programme.isLive() && focusOnLive, Modifier.focusOnLaunchedSaveable())
-            .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
                 onSelect = {
                     if (programme.endAt < System.currentTimeMillis() && supportPlaybackProvider()) onPlayback()
                     else if (programme.startAt > System.currentTimeMillis()) onReserve()

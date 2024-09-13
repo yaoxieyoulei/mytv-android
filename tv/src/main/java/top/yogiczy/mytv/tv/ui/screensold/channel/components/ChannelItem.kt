@@ -67,12 +67,7 @@ fun ChannelItem(
             .width(124.dp)
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
-                onSelect = onChannelSelected,
-                onLongSelect = onChannelFavoriteToggle,
-            ),
+            .handleKeyEvents(onSelect = onChannelSelected, onLongSelect = onChannelFavoriteToggle),
         colors = CardDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface.copy(0.8f),
             focusedContainerColor = MaterialTheme.colorScheme.onSurface,

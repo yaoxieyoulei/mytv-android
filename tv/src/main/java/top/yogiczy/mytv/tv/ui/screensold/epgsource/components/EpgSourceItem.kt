@@ -42,12 +42,7 @@ fun EpgSourceItem(
             .ifElse(isSelected, Modifier.focusOnLaunchedSaveable())
             .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-            .handleKeyEvents(
-                isFocused = { isFocused },
-                focusRequester = focusRequester,
-                onSelect = onSelected,
-                onLongSelect = onDeleted,
-            ),
+            .handleKeyEvents(onSelect = onSelected, onLongSelect = onDeleted),
         selected = false,
         onClick = {},
         headlineContent = { Text(epgSource.name) },
