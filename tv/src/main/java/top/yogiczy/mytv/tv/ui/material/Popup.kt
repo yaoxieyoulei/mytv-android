@@ -2,7 +2,6 @@ package top.yogiczy.mytv.tv.ui.material
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.tv.ui.utils.backHandler
+import top.yogiczy.mytv.tv.ui.utils.clickableNoIndication
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 import java.util.UUID
 
@@ -79,7 +78,7 @@ fun PopupContent(
         modifier
             .fillMaxSize()
             .popupable()
-            .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } }
+            .clickableNoIndication { onDismissRequest?.invoke() }
             .backHandler { onDismissRequest?.invoke() }
             .ifElse(
                 withBackground,

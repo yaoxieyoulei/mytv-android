@@ -1,7 +1,6 @@
 package top.yogiczy.mytv.tv.ui.material
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.LocalTextStyle
@@ -22,6 +20,7 @@ import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.theme.colors
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.clickableNoIndication
 
 @Composable
 fun Drawer(
@@ -54,7 +53,7 @@ fun Drawer(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
-            .pointerInput(Unit) { detectTapGestures { onDismissRequest?.invoke() } },
+            .clickableNoIndication { onDismissRequest?.invoke() },
     ) {
         Box(
             modifier = modifier
@@ -64,7 +63,7 @@ fun Drawer(
                     MaterialTheme.colors.surfaceContainer.copy(0.95f),
                     MaterialTheme.shapes.large,
                 )
-                .pointerInput(Unit) { detectTapGestures { } }
+                .clickableNoIndication { }
                 .padding(20.dp),
         ) {
             Column {

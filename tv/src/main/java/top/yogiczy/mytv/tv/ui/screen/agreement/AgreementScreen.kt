@@ -1,6 +1,5 @@
 package top.yogiczy.mytv.tv.ui.screen.agreement
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
@@ -29,6 +27,7 @@ import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.clickableNoIndication
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -86,11 +85,9 @@ fun AgreementScreen(
                                 modifier = Modifier
                                     .focusOnLaunched()
                                     .handleKeyEvents(onSelect = onAgree)
-                                    .pointerInput(Unit) {
-                                        detectTapGestures(onTap = {
-                                            onTouchTested()
-                                            onAgree()
-                                        })
+                                    .clickableNoIndication {
+                                        onTouchTested()
+                                        onAgree()
                                     },
                                 colors = btnColors,
                                 onClick = { },

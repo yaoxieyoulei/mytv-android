@@ -123,7 +123,6 @@ private fun EpgSourceItem(
 
     ListItem(
         modifier = modifier.handleKeyEvents(
-            key = epgSource,
             onSelect = onEpgSourceSelected,
             onLongSelect = onEpgSourceDelete,
         ),

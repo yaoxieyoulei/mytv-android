@@ -10,13 +10,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
@@ -136,8 +136,25 @@ fun Modifier.handleDragGestures(
         }
 }
 
+fun Modifier.clickableNoIndication(
+    onLongClick: () -> Unit = { },
+    onDoubleClick: () -> Unit = { },
+    onClick: () -> Unit,
+) = composed {
+    val currentOnClick by rememberUpdatedState(onClick)
+    val currentOnLongClick by rememberUpdatedState(onLongClick)
+    val currentOnDoubleClick by rememberUpdatedState(onDoubleClick)
+
+    pointerInput(Unit) {
+        detectTapGestures(
+            onTap = { currentOnClick() },
+            onDoubleTap = { currentOnDoubleClick() },
+            onLongPress = { currentOnLongClick() }
+        )
+    }
+}
+
 fun Modifier.handleKeyEvents(
-    key: Any = Unit,
     onLeft: () -> Unit = {},
     onLongLeft: () -> Unit = {},
     onRight: () -> Unit = {},
@@ -205,16 +222,13 @@ fun Modifier.handleKeyEvents(
         KeyEvent.KEYCODE_DPAD_CENTER to onLongSelect,
     ),
 )
-    .pointerInput(key) {
-        detectTapGestures(
-            onTap = { onSelect() },
-            onLongPress = { onLongSelect() },
-            onDoubleTap = { onSettings() },
-        )
-    }
+    .clickableNoIndication(
+        onClick = onSelect,
+        onLongClick = onLongSelect,
+        onDoubleClick = onSettings,
+    )
 
 fun Modifier.handleKeyEvents(
-    key: Any = Unit,
     isFocused: () -> Boolean,
     focusRequester: FocusRequester,
     onLeft: () -> Unit = {},
@@ -230,7 +244,6 @@ fun Modifier.handleKeyEvents(
     onSettings: () -> Unit = {},
     onNumber: (Int) -> Unit = {},
 ) = handleKeyEvents(
-    key = key,
     onLeft = { if (isFocused()) onLeft() else focusRequester.requestFocus() },
     onLongLeft = { if (isFocused()) onLongLeft() else focusRequester.requestFocus() },
     onRight = { if (isFocused()) onRight() else focusRequester.requestFocus() },
@@ -244,44 +257,6 @@ fun Modifier.handleKeyEvents(
     onSettings = { if (isFocused()) onSettings() else focusRequester.requestFocus() },
     onNumber = { if (isFocused()) onNumber(it) else focusRequester.requestFocus() },
 )
-
-fun Modifier.handleKeyEventsOnFocused(
-    key: Any = Unit,
-    onLeft: () -> Unit = {},
-    onLongLeft: () -> Unit = {},
-    onRight: () -> Unit = {},
-    onLongRight: () -> Unit = {},
-    onUp: () -> Unit = {},
-    onLongUp: () -> Unit = {},
-    onDown: () -> Unit = {},
-    onLongDown: () -> Unit = {},
-    onSelect: () -> Unit = {},
-    onLongSelect: () -> Unit = {},
-    onSettings: () -> Unit = {},
-    onNumber: (Int) -> Unit = {},
-): Modifier = composed {
-    val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
-
-    this
-        .focusRequester(focusRequester)
-        .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
-        .handleKeyEvents(
-            key = key,
-            onLeft = { if (isFocused) onLeft() else focusRequester.requestFocus() },
-            onLongLeft = { if (isFocused) onLongLeft() else focusRequester.requestFocus() },
-            onRight = { if (isFocused) onRight() else focusRequester.requestFocus() },
-            onLongRight = { if (isFocused) onLongRight() else focusRequester.requestFocus() },
-            onUp = { if (isFocused) onUp() else focusRequester.requestFocus() },
-            onLongUp = { if (isFocused) onLongUp() else focusRequester.requestFocus() },
-            onDown = { if (isFocused) onDown() else focusRequester.requestFocus() },
-            onLongDown = { if (isFocused) onLongDown() else focusRequester.requestFocus() },
-            onSelect = { if (isFocused) onSelect() else focusRequester.requestFocus() },
-            onLongSelect = { if (isFocused) onLongSelect() else focusRequester.requestFocus() },
-            onSettings = { if (isFocused) onSettings() else focusRequester.requestFocus() },
-            onNumber = { if (isFocused) onNumber(it) else focusRequester.requestFocus() },
-        )
-}
 
 fun Modifier.backHandler(onBackPressed: () -> Unit) = this.onPreviewKeyEvent {
     if (it.key == Key.Back && it.type == KeyEventType.KeyUp) {

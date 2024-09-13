@@ -189,7 +189,6 @@ private fun IptvSourceItem(
 
     ListItem(
         modifier = modifier.handleKeyEvents(
-            key = iptvSource,
             onSelect = onIptvSourceSelected,
             onLongSelect = onIptvSourceDelete,
         ),

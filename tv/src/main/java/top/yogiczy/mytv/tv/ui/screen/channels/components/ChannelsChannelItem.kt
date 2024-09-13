@@ -72,7 +72,6 @@ fun ChannelsChannelItem(
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .width(2.4f.gridColumns())
             .handleKeyEvents(
-                key = channelProvider(),
                 onSelect = onChannelSelected,
                 onLongSelect = onChannelFavoriteToggle,
             ),
