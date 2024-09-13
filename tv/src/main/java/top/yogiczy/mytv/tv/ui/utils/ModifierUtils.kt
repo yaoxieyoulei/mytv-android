@@ -41,7 +41,9 @@ fun Modifier.ifElse(
 
 fun Modifier.focusOnLaunched(key: Any = Unit): Modifier = composed {
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(key) { focusRequester.requestFocus() }
+    LaunchedEffect(key) {
+        focusRequester.requestFocus()
+    }
     focusRequester(focusRequester)
 }
 

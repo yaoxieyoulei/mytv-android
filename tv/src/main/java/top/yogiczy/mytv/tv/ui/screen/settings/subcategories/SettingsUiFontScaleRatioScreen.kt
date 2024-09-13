@@ -38,7 +38,7 @@ fun SettingsUiFontScaleRatioScreen(
 
     AppScreen(
         modifier = Modifier.padding(top = 20.dp),
-        header = { Text("设置 / 界面 / 界面整体缩放比例") },
+        header = { Text("设置 / 界面 / 界面字体缩放比例") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {

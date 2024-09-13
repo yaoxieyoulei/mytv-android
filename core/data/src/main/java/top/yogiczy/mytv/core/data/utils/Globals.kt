@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.core.data.utils
 
+import android.content.res.Resources
 import java.io.File
 
 /**
@@ -10,4 +11,6 @@ object Globals {
      * 缓存目录
      */
     lateinit var cacheDir: File
+
+    lateinit var resources: Resources
 }
