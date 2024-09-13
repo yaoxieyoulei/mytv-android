@@ -70,6 +70,7 @@ fun MultiViewItem(
             ),
         onClick = {},
         colors = ClickableSurfaceDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
             focusedContentColor = MaterialTheme.colorScheme.onSurface,
         ),
         border = ClickableSurfaceDefaults.border(

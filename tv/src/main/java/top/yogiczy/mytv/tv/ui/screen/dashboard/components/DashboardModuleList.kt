@@ -67,7 +67,10 @@ fun DashboardModuleList(
             }
             .ifElse(
                 LocalSettings.current.uiFocusOptimize,
-                Modifier.focusRestorer { firstItemFocusRequester },
+                Modifier.focusRestorer {
+                    if (listState.firstVisibleItemIndex == 0) firstItemFocusRequester
+                    else FocusRequester.Default
+                },
             ),
         state = listState,
         horizontalArrangement = Arrangement.spacedBy(20.dp),

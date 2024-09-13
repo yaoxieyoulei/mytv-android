@@ -36,7 +36,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -53,12 +57,15 @@ import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
+import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SettingsCategoriesScreen(
     modifier: Modifier = Modifier,
@@ -68,12 +75,20 @@ fun SettingsCategoriesScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = modifier.padding(top = 10.dp),
+        modifier = modifier
+            .padding(top = 10.dp)
+            .focusOnLaunched(),
         header = { Text("设置") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
+        val firstItemFocusRequester = remember { FocusRequester() }
+
         LazyVerticalGrid(
+            modifier = Modifier.ifElse(
+                LocalSettings.current.uiFocusOptimize,
+                Modifier.focusRestorer { firstItemFocusRequester },
+            ),
             columns = GridCells.Fixed(6),
             contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -81,6 +96,10 @@ fun SettingsCategoriesScreen(
         ) {
             items(SettingsCategories.entries) {
                 SettingsCategoryItem(
+                    modifier = Modifier.ifElse(
+                        it == SettingsCategories.entries.first(),
+                        Modifier.focusRequester(firstItemFocusRequester)
+                    ),
                     title = it.title,
                     imageVector = it.icon,
                     onSelected = { toSettingsCategoryScreen(it) },

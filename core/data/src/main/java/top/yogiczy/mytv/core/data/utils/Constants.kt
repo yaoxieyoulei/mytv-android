@@ -25,6 +25,11 @@ object Constants {
     const val GROUP_TELEGRAM = "https://t.me/mytv_android"
 
     /**
+     * 交流群 qq
+     */
+    const val GROUP_QQ = "807328577"
+
+    /**
      * 直播源
      */
     val IPTV_SOURCE_LIST = IptvSourceList(

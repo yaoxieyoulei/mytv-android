@@ -177,7 +177,7 @@ fun SettingsScreen(
                         currentIptvSourceProvider = { settingsViewModel.iptvSourceCurrent },
                         iptvSourceListProvider = { settingsViewModel.iptvSourceList },
                         onIptvSourceSelected = {
-                            if(settingsViewModel.iptvSourceCurrent != it) {
+                            if (settingsViewModel.iptvSourceCurrent != it) {
                                 settingsViewModel.iptvSourceCurrent = it
                                 settingsViewModel.iptvChannelGroupHiddenList = emptySet()
                             }

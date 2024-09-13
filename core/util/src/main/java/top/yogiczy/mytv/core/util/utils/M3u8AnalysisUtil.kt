@@ -8,6 +8,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.net.URL
 
+
 object M3u8AnalysisUtil {
     private suspend fun getFirstTsUrl(m3u8Url: String): String? = withContext(Dispatchers.IO) {
         if (!m3u8Url.split("?").first().endsWith(".m3u8")) return@withContext null
@@ -16,12 +17,9 @@ object M3u8AnalysisUtil {
             val m3u8Content = URL(m3u8Url).readText()
             val lines = m3u8Content.lines()
             for (line in lines) {
-                if (!line.startsWith("#") && line.split("?").first().endsWith(".ts")) {
-                    return@withContext if (line.startsWith("http")) {
-                        line
-                    } else {
-                        URL(URL(m3u8Url), line).toString()
-                    }
+                if (!line.startsWith("#") && line.contains(".ts", ignoreCase = true)) {
+                    return@withContext if (line.startsWith("http")) line
+                    else URL(URL(m3u8Url), line).toString()
                 }
             }
 

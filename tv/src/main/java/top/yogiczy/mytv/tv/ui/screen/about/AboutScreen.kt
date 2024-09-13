@@ -139,6 +139,15 @@ fun AboutScreen(
             }
 
             item {
+                ListItem(
+                    headlineContent = { Text("技术交流 QQ") },
+                    trailingContent = { Text(Constants.GROUP_QQ) },
+                    selected = false,
+                    onClick = {},
+                )
+            }
+
+            item {
                 var visible by remember { mutableStateOf(false) }
 
                 ListItem(

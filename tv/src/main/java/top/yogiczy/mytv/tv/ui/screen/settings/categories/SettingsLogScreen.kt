@@ -1,19 +1,16 @@
 package top.yogiczy.mytv.tv.ui.screen.settings.categories
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.utils.Logger
-import top.yogiczy.mytv.tv.ui.rememberChildPadding
-import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.utils.ifElse
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -24,28 +21,25 @@ fun SettingsLogScreen(
     onBackPressed: () -> Unit = {},
 ) {
     val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-    val childPadding = rememberChildPadding()
 
-    AppScreen(
-        modifier = modifier.padding(top = 10.dp),
+    SettingsCategoryScreen(
+        modifier = modifier,
         header = { Text("设置 / 日志") },
-        canBack = true,
         onBackPressed = onBackPressed,
-    ) {
-        LazyColumn(
-            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            items(historyItemList.reversed()) { log ->
-                ListItem(
-                    leadingContent = { Text(log.level.toString()[0].toString()) },
-                    headlineContent = { Text(log.tag) },
-                    supportingContent = { Text(log.message) },
-                    trailingContent = { Text(timeFormat.format(log.time)) },
-                    selected = false,
-                    onClick = {},
-                )
-            }
+    ) { firstItemFocusRequester ->
+        itemsIndexed(historyItemList.reversed()) { index, log ->
+            ListItem(
+                modifier = Modifier.ifElse(
+                    index == 0,
+                    Modifier.focusRequester(firstItemFocusRequester)
+                ),
+                leadingContent = { Text(log.level.toString()[0].toString()) },
+                headlineContent = { Text(log.tag) },
+                supportingContent = { Text(log.message) },
+                trailingContent = { Text(timeFormat.format(log.time)) },
+                selected = false,
+                onClick = {},
+            )
         }
     }
 }
