@@ -1,14 +1,16 @@
 package top.yogiczy.mytv.tv.ui.utils
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.SP
+import top.yogiczy.mytv.tv.sync.CloudSyncProvider
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 
@@ -156,6 +158,28 @@ object Configs {
         /** ==================== 主题 ==================== */
         /** 当前应用主题 */
         THEME_APP_CURRENT,
+
+        /** ==================== 云同步 ==================== */
+        /** 云同步 自动拉取 */
+        CLOUD_SYNC_AUTO_PULL,
+
+        /** 云同步 提供商 */
+        CLOUD_SYNC_PROVIDER,
+
+        /** 云同步 github gist id */
+        CLOUD_SYNC_GITHUB_GIST_ID,
+
+        /** 云同步 github gist token */
+        CLOUD_SYNC_GITHUB_GIST_TOKEN,
+
+        /** 云同步 gitee gist id */
+        CLOUD_SYNC_GITEE_GIST_ID,
+
+        /** 云同步 gitee gist token */
+        CLOUD_SYNC_GITEE_GIST_TOKEN,
+
+        /** 云同步 网络链接 */
+        CLOUD_SYNC_NETWORK_URL,
     }
 
     /** ==================== 应用 ==================== */
@@ -203,16 +227,16 @@ object Configs {
 
     /** 当前直播源 */
     var iptvSourceCurrent: IptvSource
-        get() = Json.decodeFromString(SP.getString(KEY.IPTV_SOURCE_CURRENT.name, "")
-            .ifBlank { Json.encodeToString(Constants.IPTV_SOURCE_LIST.first()) })
-        set(value) = SP.putString(KEY.IPTV_SOURCE_CURRENT.name, Json.encodeToString(value))
+        get() = Globals.json.decodeFromString(SP.getString(KEY.IPTV_SOURCE_CURRENT.name, "")
+            .ifBlank { Globals.json.encodeToString(Constants.IPTV_SOURCE_LIST.first()) })
+        set(value) = SP.putString(KEY.IPTV_SOURCE_CURRENT.name, Globals.json.encodeToString(value))
 
     /** 直播源列表 */
     var iptvSourceList: IptvSourceList
-        get() = Json.decodeFromString(
-            SP.getString(KEY.IPTV_SOURCE_LIST.name, Json.encodeToString(IptvSourceList()))
+        get() = Globals.json.decodeFromString(
+            SP.getString(KEY.IPTV_SOURCE_LIST.name, Globals.json.encodeToString(IptvSourceList()))
         )
-        set(value) = SP.putString(KEY.IPTV_SOURCE_LIST.name, Json.encodeToString(value))
+        set(value) = SP.putString(KEY.IPTV_SOURCE_LIST.name, Globals.json.encodeToString(value))
 
     /** 直播源缓存时间（毫秒） */
     var iptvSourceCacheTime: Long
@@ -284,16 +308,16 @@ object Configs {
 
     /** 当前节目单来源 */
     var epgSourceCurrent: EpgSource
-        get() = Json.decodeFromString(SP.getString(KEY.EPG_SOURCE_CURRENT.name, "")
-            .ifBlank { Json.encodeToString(Constants.EPG_SOURCE_LIST.first()) })
-        set(value) = SP.putString(KEY.EPG_SOURCE_CURRENT.name, Json.encodeToString(value))
+        get() = Globals.json.decodeFromString(SP.getString(KEY.EPG_SOURCE_CURRENT.name, "")
+            .ifBlank { Globals.json.encodeToString(Constants.EPG_SOURCE_LIST.first()) })
+        set(value) = SP.putString(KEY.EPG_SOURCE_CURRENT.name, Globals.json.encodeToString(value))
 
     /** 节目单来源列表 */
     var epgSourceList: EpgSourceList
-        get() = Json.decodeFromString(
-            SP.getString(KEY.EPG_SOURCE_LIST.name, Json.encodeToString(EpgSourceList()))
+        get() = Globals.json.decodeFromString(
+            SP.getString(KEY.EPG_SOURCE_LIST.name, Globals.json.encodeToString(EpgSourceList()))
         )
-        set(value) = SP.putString(KEY.EPG_SOURCE_LIST.name, Json.encodeToString(value))
+        set(value) = SP.putString(KEY.EPG_SOURCE_LIST.name, Globals.json.encodeToString(value))
 
     /** 节目单刷新时间阈值（小时） */
     var epgRefreshTimeThreshold: Int
@@ -302,12 +326,16 @@ object Configs {
 
     /** 节目预约列表 */
     var epgChannelReserveList: EpgProgrammeReserveList
-        get() = Json.decodeFromString(
+        get() = Globals.json.decodeFromString(
             SP.getString(
-                KEY.EPG_CHANNEL_RESERVE_LIST.name, Json.encodeToString(EpgProgrammeReserveList())
+                KEY.EPG_CHANNEL_RESERVE_LIST.name,
+                Globals.json.encodeToString(EpgProgrammeReserveList())
             )
         )
-        set(value) = SP.putString(KEY.EPG_CHANNEL_RESERVE_LIST.name, Json.encodeToString(value))
+        set(value) = SP.putString(
+            KEY.EPG_CHANNEL_RESERVE_LIST.name,
+            Globals.json.encodeToString(value)
+        )
 
     /** ==================== 界面 ==================== */
     /** 显示节目进度 */
@@ -403,12 +431,49 @@ object Configs {
     /** 当前应用主题 */
     var themeAppCurrent: AppThemeDef?
         get() = SP.getString(KEY.THEME_APP_CURRENT.name, "").let {
-            if (it.isBlank()) null else Json.decodeFromString(it)
+            if (it.isBlank()) null else Globals.json.decodeFromString(it)
         }
         set(value) = SP.putString(
             KEY.THEME_APP_CURRENT.name,
-            value?.let { Json.encodeToString(value) } ?: "")
+            value?.let { Globals.json.encodeToString(value) } ?: "")
 
+    /** ==================== 云同步 ==================== */
+    /** 云同步 自动拉取 */
+    var cloudSyncAutoPull: Boolean
+        get() = SP.getBoolean(KEY.CLOUD_SYNC_AUTO_PULL.name, false)
+        set(value) = SP.putBoolean(KEY.CLOUD_SYNC_AUTO_PULL.name, value)
+
+    /** 云同步 提供商 */
+    var cloudSyncProvider: CloudSyncProvider
+        get() = CloudSyncProvider.fromValue(
+            SP.getInt(KEY.CLOUD_SYNC_PROVIDER.name, CloudSyncProvider.GITHUB_GIST.value)
+        )
+        set(value) = SP.putInt(KEY.CLOUD_SYNC_PROVIDER.name, value.value)
+
+    /** 云同步 github gist id */
+    var cloudSyncGithubGistId: String
+        get() = SP.getString(KEY.CLOUD_SYNC_GITHUB_GIST_ID.name, "")
+        set(value) = SP.putString(KEY.CLOUD_SYNC_GITHUB_GIST_ID.name, value)
+
+    /** 云同步 github gist token */
+    var cloudSyncGithubGistToken: String
+        get() = SP.getString(KEY.CLOUD_SYNC_GITHUB_GIST_TOKEN.name, "")
+        set(value) = SP.putString(KEY.CLOUD_SYNC_GITHUB_GIST_TOKEN.name, value)
+
+    /** 云同步 gitee gist id */
+    var cloudSyncGiteeGistId: String
+        get() = SP.getString(KEY.CLOUD_SYNC_GITEE_GIST_ID.name, "")
+        set(value) = SP.putString(KEY.CLOUD_SYNC_GITEE_GIST_ID.name, value)
+
+    /** 云同步 gitee gist token */
+    var cloudSyncGiteeGistToken: String
+        get() = SP.getString(KEY.CLOUD_SYNC_GITEE_GIST_TOKEN.name, "")
+        set(value) = SP.putString(KEY.CLOUD_SYNC_GITEE_GIST_TOKEN.name, value)
+
+    /** 云同步 网络链接 */
+    var cloudSyncNetworkUrl: String
+        get() = SP.getString(KEY.CLOUD_SYNC_NETWORK_URL.name, "")
+        set(value) = SP.putString(KEY.CLOUD_SYNC_NETWORK_URL.name, value)
 
     enum class UiTimeShowMode(val value: Int) {
         /** 隐藏 */
@@ -445,5 +510,184 @@ object Configs {
                 return entries.firstOrNull { it.value == value } ?: DISABLE
             }
         }
+    }
+
+    fun toPartial(): Partial {
+        return Partial(
+            appBootLaunch = appBootLaunch,
+            appLastLatestVersion = appLastLatestVersion,
+            appAgreementAgreed = appAgreementAgreed,
+            debugShowFps = debugShowFps,
+            debugShowVideoPlayerMetadata = debugShowVideoPlayerMetadata,
+            debugShowLayoutGrids = debugShowLayoutGrids,
+            iptvLastChannelIdx = iptvLastChannelIdx,
+            iptvChannelChangeFlip = iptvChannelChangeFlip,
+            iptvSourceCacheTime = iptvSourceCacheTime,
+            iptvSourceCurrent = iptvSourceCurrent,
+            iptvSourceList = iptvSourceList,
+            iptvPlayableHostList = iptvPlayableHostList,
+            iptvChannelNoSelectEnable = iptvChannelNoSelectEnable,
+            iptvChannelFavoriteEnable = iptvChannelFavoriteEnable,
+            iptvChannelFavoriteListVisible = iptvChannelFavoriteListVisible,
+            iptvChannelFavoriteList = iptvChannelFavoriteList,
+            iptvChannelFavoriteChangeBoundaryJumpOut = iptvChannelFavoriteChangeBoundaryJumpOut,
+            iptvChannelGroupHiddenList = iptvChannelGroupHiddenList,
+            iptvHybridMode = iptvHybridMode,
+            iptvSimilarChannelMerge = iptvSimilarChannelMerge,
+            iptvChannelLogoProvider = iptvChannelLogoProvider,
+            iptvChannelLogoOverride = iptvChannelLogoOverride,
+            epgEnable = epgEnable,
+            epgSourceCurrent = epgSourceCurrent,
+            epgSourceList = epgSourceList,
+            epgRefreshTimeThreshold = epgRefreshTimeThreshold,
+            epgChannelReserveList = epgChannelReserveList,
+            uiShowEpgProgrammeProgress = uiShowEpgProgrammeProgress,
+            uiShowEpgProgrammePermanentProgress = uiShowEpgProgrammePermanentProgress,
+            uiShowChannelLogo = uiShowChannelLogo,
+            uiShowChannelPreview = uiShowChannelPreview,
+            uiUseClassicPanelScreen = uiUseClassicPanelScreen,
+            uiDensityScaleRatio = uiDensityScaleRatio,
+            uiFontScaleRatio = uiFontScaleRatio,
+            uiTimeShowMode = uiTimeShowMode,
+            uiFocusOptimize = uiFocusOptimize,
+            uiScreenAutoCloseDelay = uiScreenAutoCloseDelay,
+            updateForceRemind = updateForceRemind,
+            updateChannel = updateChannel,
+            videoPlayerUserAgent = videoPlayerUserAgent,
+            videoPlayerHeaders = videoPlayerHeaders,
+            videoPlayerLoadTimeout = videoPlayerLoadTimeout,
+            videoPlayerDisplayMode = videoPlayerDisplayMode,
+            themeAppCurrent = themeAppCurrent,
+            cloudSyncAutoPull = cloudSyncAutoPull,
+            cloudSyncProvider = cloudSyncProvider,
+            cloudSyncGithubGistId = cloudSyncGithubGistId,
+            cloudSyncGithubGistToken = cloudSyncGithubGistToken,
+            cloudSyncGiteeGistId = cloudSyncGiteeGistId,
+            cloudSyncGiteeGistToken = cloudSyncGiteeGistToken,
+            cloudSyncNetworkUrl = cloudSyncNetworkUrl,
+        )
+    }
+
+    fun fromPartial(configs: Partial) {
+        configs.appBootLaunch?.let { appBootLaunch = it }
+        configs.appLastLatestVersion?.let { appLastLatestVersion = it }
+        configs.appAgreementAgreed?.let { appAgreementAgreed = it }
+        configs.debugShowFps?.let { debugShowFps = it }
+        configs.debugShowVideoPlayerMetadata?.let { debugShowVideoPlayerMetadata = it }
+        configs.debugShowLayoutGrids?.let { debugShowLayoutGrids = it }
+        configs.iptvLastChannelIdx?.let { iptvLastChannelIdx = it }
+        configs.iptvChannelChangeFlip?.let { iptvChannelChangeFlip = it }
+        configs.iptvSourceCacheTime?.let { iptvSourceCacheTime = it }
+        configs.iptvSourceCurrent?.let { iptvSourceCurrent = it }
+        configs.iptvSourceList?.let { iptvSourceList = it }
+        configs.iptvPlayableHostList?.let { iptvPlayableHostList = it }
+        configs.iptvChannelNoSelectEnable?.let { iptvChannelNoSelectEnable = it }
+        configs.iptvChannelFavoriteEnable?.let { iptvChannelFavoriteEnable = it }
+        configs.iptvChannelFavoriteListVisible?.let { iptvChannelFavoriteListVisible = it }
+        configs.iptvChannelFavoriteList?.let { iptvChannelFavoriteList = it }
+        configs.iptvChannelFavoriteChangeBoundaryJumpOut?.let {
+            iptvChannelFavoriteChangeBoundaryJumpOut = it
+        }
+        configs.iptvChannelGroupHiddenList?.let { iptvChannelGroupHiddenList = it }
+        configs.iptvHybridMode?.let { iptvHybridMode = it }
+        configs.iptvSimilarChannelMerge?.let { iptvSimilarChannelMerge = it }
+        configs.iptvChannelLogoProvider?.let { iptvChannelLogoProvider = it }
+        configs.iptvChannelLogoOverride?.let { iptvChannelLogoOverride = it }
+        configs.epgEnable?.let { epgEnable = it }
+        configs.epgSourceCurrent?.let { epgSourceCurrent = it }
+        configs.epgSourceList?.let { epgSourceList = it }
+        configs.epgRefreshTimeThreshold?.let { epgRefreshTimeThreshold = it }
+        configs.epgChannelReserveList?.let { epgChannelReserveList = it }
+        configs.uiShowEpgProgrammeProgress?.let { uiShowEpgProgrammeProgress = it }
+        configs.uiShowEpgProgrammePermanentProgress?.let {
+            uiShowEpgProgrammePermanentProgress = it
+        }
+        configs.uiShowChannelLogo?.let { uiShowChannelLogo = it }
+        configs.uiShowChannelPreview?.let { uiShowChannelPreview = it }
+        configs.uiUseClassicPanelScreen?.let { uiUseClassicPanelScreen = it }
+        configs.uiDensityScaleRatio?.let { uiDensityScaleRatio = it }
+        configs.uiFontScaleRatio?.let { uiFontScaleRatio = it }
+        configs.uiTimeShowMode?.let { uiTimeShowMode = it }
+        configs.uiFocusOptimize?.let { uiFocusOptimize = it }
+        configs.uiScreenAutoCloseDelay?.let { uiScreenAutoCloseDelay = it }
+        configs.updateForceRemind?.let { updateForceRemind = it }
+        configs.updateChannel?.let { updateChannel = it }
+        configs.videoPlayerUserAgent?.let { videoPlayerUserAgent = it }
+        configs.videoPlayerHeaders?.let { videoPlayerHeaders = it }
+        configs.videoPlayerLoadTimeout?.let { videoPlayerLoadTimeout = it }
+        configs.videoPlayerDisplayMode?.let { videoPlayerDisplayMode = it }
+        configs.themeAppCurrent?.let { themeAppCurrent = it }
+        configs.cloudSyncAutoPull?.let { cloudSyncAutoPull = it }
+        configs.cloudSyncProvider?.let { cloudSyncProvider = it }
+        configs.cloudSyncGithubGistId?.let { cloudSyncGithubGistId = it }
+        configs.cloudSyncGithubGistToken?.let { cloudSyncGithubGistToken = it }
+        configs.cloudSyncGiteeGistId?.let { cloudSyncGiteeGistId = it }
+        configs.cloudSyncGiteeGistToken?.let { cloudSyncGiteeGistToken = it }
+        configs.cloudSyncNetworkUrl?.let { cloudSyncNetworkUrl = it }
+    }
+
+    @Serializable
+    data class Partial(
+        val appBootLaunch: Boolean? = null,
+        val appLastLatestVersion: String? = null,
+        val appAgreementAgreed: Boolean? = null,
+        val debugShowFps: Boolean? = null,
+        val debugShowVideoPlayerMetadata: Boolean? = null,
+        val debugShowLayoutGrids: Boolean? = null,
+        val iptvLastChannelIdx: Int? = null,
+        val iptvChannelChangeFlip: Boolean? = null,
+        val iptvSourceCacheTime: Long? = null,
+        val iptvSourceCurrent: IptvSource? = null,
+        val iptvSourceList: IptvSourceList? = null,
+        val iptvPlayableHostList: Set<String>? = null,
+        val iptvChannelNoSelectEnable: Boolean? = null,
+        val iptvChannelFavoriteEnable: Boolean? = null,
+        val iptvChannelFavoriteListVisible: Boolean? = null,
+        val iptvChannelFavoriteList: Set<String>? = null,
+        val iptvChannelFavoriteChangeBoundaryJumpOut: Boolean? = null,
+        val iptvChannelGroupHiddenList: Set<String>? = null,
+        val iptvHybridMode: IptvHybridMode? = null,
+        val iptvSimilarChannelMerge: Boolean? = null,
+        val iptvChannelLogoProvider: String? = null,
+        val iptvChannelLogoOverride: Boolean? = null,
+        val epgEnable: Boolean? = null,
+        val epgSourceCurrent: EpgSource? = null,
+        val epgSourceList: EpgSourceList? = null,
+        val epgRefreshTimeThreshold: Int? = null,
+        val epgChannelReserveList: EpgProgrammeReserveList? = null,
+        val uiShowEpgProgrammeProgress: Boolean? = null,
+        val uiShowEpgProgrammePermanentProgress: Boolean? = null,
+        val uiShowChannelLogo: Boolean? = null,
+        val uiShowChannelPreview: Boolean? = null,
+        val uiUseClassicPanelScreen: Boolean? = null,
+        val uiDensityScaleRatio: Float? = null,
+        val uiFontScaleRatio: Float? = null,
+        val uiTimeShowMode: UiTimeShowMode? = null,
+        val uiFocusOptimize: Boolean? = null,
+        val uiScreenAutoCloseDelay: Long? = null,
+        val updateForceRemind: Boolean? = null,
+        val updateChannel: String? = null,
+        val videoPlayerUserAgent: String? = null,
+        val videoPlayerHeaders: String? = null,
+        val videoPlayerLoadTimeout: Long? = null,
+        val videoPlayerDisplayMode: VideoPlayerDisplayMode? = null,
+        val themeAppCurrent: AppThemeDef? = null,
+        val cloudSyncAutoPull: Boolean? = null,
+        val cloudSyncProvider: CloudSyncProvider? = null,
+        val cloudSyncGithubGistId: String? = null,
+        val cloudSyncGithubGistToken: String? = null,
+        val cloudSyncGiteeGistId: String? = null,
+        val cloudSyncGiteeGistToken: String? = null,
+        val cloudSyncNetworkUrl: String? = null,
+    ) {
+        fun desensitized() = copy(
+            cloudSyncAutoPull = null,
+            cloudSyncProvider = null,
+            cloudSyncGithubGistId = null,
+            cloudSyncGithubGistToken = null,
+            cloudSyncGiteeGistId = null,
+            cloudSyncGiteeGistToken = null,
+            cloudSyncNetworkUrl = null,
+        )
     }
 }

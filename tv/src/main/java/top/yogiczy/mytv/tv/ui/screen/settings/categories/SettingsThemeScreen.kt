@@ -27,10 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Border
-import androidx.tv.material3.Button
-import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
@@ -38,8 +35,9 @@ import androidx.tv.material3.Text
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.tv.R
+import top.yogiczy.mytv.tv.ui.screen.components.AppScaffoldHeaderBtn
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeWrapper
@@ -64,7 +62,7 @@ fun SettingsThemeScreen(
         withContext(Dispatchers.IO) {
             allAppThemeDefGroup.addAll(
                 resources.openRawResource(R.raw.app_themes).bufferedReader().use {
-                    Json.decodeFromString<List<AppThemeDefGroup>>(it.readText())
+                    Globals.json.decodeFromString<List<AppThemeDefGroup>>(it.readText())
                 })
         }
     }
@@ -73,26 +71,11 @@ fun SettingsThemeScreen(
         modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 主题") },
         headerExtra = {
-            Button(
-                modifier = modifier
-                    .handleKeyEvents(onSelect = { settingsViewModel.themeAppCurrent = null }),
-                colors = ButtonDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                ),
-                onClick = {},
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        Icons.Default.DoNotDisturb,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Text("恢复默认")
-                }
-            }
+            AppScaffoldHeaderBtn(
+                title = "恢复默认",
+                imageVector = Icons.Default.DoNotDisturb,
+                onSelect = { settingsViewModel.themeAppCurrent = null },
+            )
         },
         canBack = true,
         onBackPressed = onBackPressed,

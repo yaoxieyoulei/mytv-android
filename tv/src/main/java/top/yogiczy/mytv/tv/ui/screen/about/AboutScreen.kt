@@ -27,6 +27,7 @@ import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
 import io.sentry.Sentry
 import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.util.utils.compareVersion
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
@@ -148,37 +149,12 @@ fun AboutScreen(
             }
 
             item {
-                var visible by remember { mutableStateOf(false) }
-
                 ListItem(
-                    modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
-                    headlineContent = { Text("赞赏") },
-                    supportingContent = { Text("仅支持微信赞赏码") },
-                    trailingContent = {
-                        Icon(
-                            Icons.AutoMirrored.Default.OpenInNew,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    },
+                    headlineContent = { Text("设备名称") },
+                    trailingContent = { Text(Globals.deviceName) },
                     selected = false,
                     onClick = {},
                 )
-
-                SimplePopup(
-                    visibleProvider = { visible },
-                    onDismissRequest = { visible = false },
-                ) {
-                    val painter = painterResource(R.drawable.mm_reward_qrcode)
-
-                    Image(
-                        painter,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .size(300.dp),
-                    )
-                }
             }
 
             @Suppress("UnstableApiUsage")
@@ -216,6 +192,40 @@ fun AboutScreen(
                             text = distinctId,
                         )
                     }
+                }
+            }
+
+            item {
+                var visible by remember { mutableStateOf(false) }
+
+                ListItem(
+                    modifier = Modifier.handleKeyEvents(onSelect = { visible = true }),
+                    headlineContent = { Text("赞赏") },
+                    supportingContent = { Text("仅支持微信赞赏码") },
+                    trailingContent = {
+                        Icon(
+                            Icons.AutoMirrored.Default.OpenInNew,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    },
+                    selected = false,
+                    onClick = {},
+                )
+
+                SimplePopup(
+                    visibleProvider = { visible },
+                    onDismissRequest = { visible = false },
+                ) {
+                    val painter = painterResource(R.drawable.mm_reward_qrcode)
+
+                    Image(
+                        painter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(300.dp),
+                    )
                 }
             }
 

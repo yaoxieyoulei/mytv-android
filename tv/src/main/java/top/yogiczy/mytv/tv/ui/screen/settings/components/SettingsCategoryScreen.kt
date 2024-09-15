@@ -25,6 +25,7 @@ import top.yogiczy.mytv.tv.ui.utils.ifElse
 fun SettingsCategoryScreen(
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit = {},
+    headerExtra: @Composable (() -> Unit)? = null,
     onBackPressed: () -> Unit = {},
     content: LazyListScope.(FocusRequester) -> Unit,
 ) {
@@ -35,6 +36,7 @@ fun SettingsCategoryScreen(
             .padding(top = 10.dp)
             .focusOnLaunched(),
         header = header,
+        headerExtra = headerExtra,
         canBack = true,
         onBackPressed = onBackPressed,
     ) {

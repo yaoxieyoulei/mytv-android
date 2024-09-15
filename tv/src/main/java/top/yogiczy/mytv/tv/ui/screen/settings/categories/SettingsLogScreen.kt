@@ -35,7 +35,7 @@ fun SettingsLogScreen(
                 ),
                 leadingContent = { Text(log.level.toString()[0].toString()) },
                 headlineContent = { Text(log.tag) },
-                supportingContent = { Text(log.message) },
+                supportingContent = { Text("${log.message} ${log.cause ?: ""}") },
                 trailingContent = { Text(timeFormat.format(log.time)) },
                 selected = false,
                 onClick = {},
@@ -72,6 +72,7 @@ private fun Preview() {
                     level = Logger.LevelType.ERROR,
                     tag = "SettingsLogScreen",
                     message = "message level = Logger.LevelType.INFO,",
+                    cause = "java.lang.Exception: 401: Unauthorized",
                     time = System.currentTimeMillis(),
                 ),
             )

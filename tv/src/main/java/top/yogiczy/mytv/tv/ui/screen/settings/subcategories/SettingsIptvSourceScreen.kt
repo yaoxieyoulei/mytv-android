@@ -22,8 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.Button
-import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.LocalContentColor
@@ -40,6 +38,7 @@ import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.material.TagDefaults
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
+import top.yogiczy.mytv.tv.ui.screen.components.AppScaffoldHeaderBtn
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.push.PushContent
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
@@ -86,30 +85,15 @@ fun SettingsIptvSourceScreen(
         modifier = modifier,
         header = { Text("设置 / 直播源 / 自定义直播源") },
         headerExtra = {
-            Button(
-                modifier = modifier
-                    .handleKeyEvents(onSelect = {
-                        coroutineScope.launch {
-                            refreshAll()
-                        }
-                    }),
-                colors = ButtonDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                ),
-                onClick = {},
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Text("刷新全部")
-                }
-            }
+            AppScaffoldHeaderBtn(
+                title = "刷新全部",
+                imageVector = Icons.Default.Refresh,
+                onSelect = {
+                    coroutineScope.launch {
+                        refreshAll()
+                    }
+                },
+            )
         },
         canBack = true,
         onBackPressed = onBackPressed,

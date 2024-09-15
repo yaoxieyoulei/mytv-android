@@ -12,6 +12,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
+import top.yogiczy.mytv.tv.sync.CloudSyncProvider
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -368,6 +369,62 @@ class SettingsViewModel : ViewModel() {
             Configs.themeAppCurrent = value
         }
 
+    private var _cloudSyncAutoPull by mutableStateOf(false)
+    var cloudSyncAutoPull: Boolean
+        get() = _cloudSyncAutoPull
+        set(value) {
+            _cloudSyncAutoPull = value
+            Configs.cloudSyncAutoPull = value
+        }
+
+    private var _cloudSyncProvider by mutableStateOf(CloudSyncProvider.GITHUB_GIST)
+    var cloudSyncProvider: CloudSyncProvider
+        get() = _cloudSyncProvider
+        set(value) {
+            _cloudSyncProvider = value
+            Configs.cloudSyncProvider = value
+        }
+
+    private var _cloudSyncGithubGistId by mutableStateOf("")
+    var cloudSyncGithubGistId: String
+        get() = _cloudSyncGithubGistId
+        set(value) {
+            _cloudSyncGithubGistId = value
+            Configs.cloudSyncGithubGistId = value
+        }
+
+    private var _cloudSyncGithubGistToken by mutableStateOf("")
+    var cloudSyncGithubGistToken: String
+        get() = _cloudSyncGithubGistToken
+        set(value) {
+            _cloudSyncGithubGistToken = value
+            Configs.cloudSyncGithubGistToken = value
+        }
+
+    private var _cloudSyncGiteeGistId by mutableStateOf("")
+    var cloudSyncGiteeGistId: String
+        get() = _cloudSyncGiteeGistId
+        set(value) {
+            _cloudSyncGiteeGistId = value
+            Configs.cloudSyncGiteeGistId = value
+        }
+
+    private var _cloudSyncGiteeGistToken by mutableStateOf("")
+    var cloudSyncGiteeGistToken: String
+        get() = _cloudSyncGiteeGistToken
+        set(value) {
+            _cloudSyncGiteeGistToken = value
+            Configs.cloudSyncGiteeGistToken = value
+        }
+
+    private var _cloudSyncNetworkUrl by mutableStateOf("")
+    var cloudSyncNetworkUrl: String
+        get() = _cloudSyncNetworkUrl
+        set(value) {
+            _cloudSyncNetworkUrl = value
+            Configs.cloudSyncNetworkUrl = value
+        }
+
     init {
         try {
             refresh()
@@ -427,5 +484,12 @@ class SettingsViewModel : ViewModel() {
         _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout
         _videoPlayerAspectRatio = Configs.videoPlayerDisplayMode
         _themeAppCurrent = Configs.themeAppCurrent
+        _cloudSyncAutoPull = Configs.cloudSyncAutoPull
+        _cloudSyncProvider = Configs.cloudSyncProvider
+        _cloudSyncGithubGistId = Configs.cloudSyncGithubGistId
+        _cloudSyncGithubGistToken = Configs.cloudSyncGithubGistToken
+        _cloudSyncGiteeGistId = Configs.cloudSyncGiteeGistId
+        _cloudSyncGiteeGistToken = Configs.cloudSyncGiteeGistToken
+        _cloudSyncNetworkUrl = Configs.cloudSyncNetworkUrl
     }
 }

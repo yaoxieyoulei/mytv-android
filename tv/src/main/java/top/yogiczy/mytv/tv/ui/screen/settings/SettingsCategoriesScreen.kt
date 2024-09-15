@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
 import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
 import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.ControlCamera
 import androidx.compose.material.icons.outlined.Devices
@@ -193,7 +194,7 @@ enum class SettingsCategories(
     val icon: ImageVector,
     val title: String,
 ) {
-    SYSTEM(Icons.Outlined.Devices, "系统"),
+    APP(Icons.Outlined.Devices, "应用"),
     IPTV(Icons.Outlined.LiveTv, "直播源"),
     EPG(Icons.AutoMirrored.Outlined.LibraryBooks, "节目单"),
     UI(Icons.Outlined.DisplaySettings, "界面"),
@@ -205,6 +206,7 @@ enum class SettingsCategories(
     // EPG_RESERVE(Icons.Default.BookmarkBorder, "预约"),
     NETWORK(Icons.Outlined.Wifi, "网络"),
     THEME(Icons.Outlined.ColorLens, "主题"),
+    CLOUD_SYNC(Icons.Outlined.CloudSync, "云同步"),
     DEBUG(Icons.Outlined.BugReport, "调试"),
     LOG(Icons.AutoMirrored.Outlined.FormatListBulleted, "日志"),
 }
@@ -223,6 +225,7 @@ enum class SettingsSubCategories {
     VIDEO_PLAYER_DISPLAY_MODE,
     VIDEO_PLAYER_LOAD_TIMEOUT,
     UPDATE_CHANNEL,
+    CLOUD_SYNC_PROVIDER,
 }
 
 @Preview(device = "id:Android TV (720p)")

@@ -13,8 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
@@ -28,8 +26,6 @@ import top.yogiczy.mytv.core.util.utils.ApkInstaller
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
-import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
-import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.io.File
 import java.net.Inet4Address
@@ -124,7 +120,7 @@ object HttpServer : Loggable() {
         wrapResponse(response).apply {
             setContentType("application/json")
             send(
-                Json.encodeToString(
+                Globals.json.encodeToString(
                     AppInfo(
                         appTitle = Constants.APP_TITLE,
                         appRepo = Constants.APP_REPO,
@@ -207,57 +203,7 @@ object HttpServer : Loggable() {
     private fun handleConfigsGet(response: AsyncHttpServerResponse) {
         wrapResponse(response).apply {
             setContentType("application/json")
-            val json = Json { encodeDefaults = true }
-            send(
-                json.encodeToString(
-                    AllConfigs(
-                        appBootLaunch = Configs.appBootLaunch,
-                        appLastLatestVersion = Configs.appLastLatestVersion,
-                        appAgreementAgreed = Configs.appAgreementAgreed,
-                        debugShowFps = Configs.debugShowFps,
-                        debugShowVideoPlayerMetadata = Configs.debugShowVideoPlayerMetadata,
-                        debugShowLayoutGrids = Configs.debugShowLayoutGrids,
-                        iptvLastChannelIdx = Configs.iptvLastChannelIdx,
-                        iptvChannelChangeFlip = Configs.iptvChannelChangeFlip,
-                        iptvSourceCacheTime = Configs.iptvSourceCacheTime,
-                        iptvSourceCurrent = Configs.iptvSourceCurrent,
-                        iptvSourceList = Configs.iptvSourceList,
-                        iptvPlayableHostList = Configs.iptvPlayableHostList,
-                        iptvChannelNoSelectEnable = Configs.iptvChannelNoSelectEnable,
-                        iptvChannelFavoriteEnable = Configs.iptvChannelFavoriteEnable,
-                        iptvChannelFavoriteListVisible = Configs.iptvChannelFavoriteListVisible,
-                        iptvChannelFavoriteList = Configs.iptvChannelFavoriteList,
-                        iptvChannelFavoriteChangeBoundaryJumpOut = Configs.iptvChannelFavoriteChangeBoundaryJumpOut,
-                        iptvChannelGroupHiddenList = Configs.iptvChannelGroupHiddenList,
-                        iptvHybridMode = Configs.iptvHybridMode,
-                        iptvSimilarChannelMerge = Configs.iptvSimilarChannelMerge,
-                        iptvChannelLogoProvider = Configs.iptvChannelLogoProvider,
-                        iptvChannelLogoOverride = Configs.iptvChannelLogoOverride,
-                        epgEnable = Configs.epgEnable,
-                        epgSourceCurrent = Configs.epgSourceCurrent,
-                        epgSourceList = Configs.epgSourceList,
-                        epgRefreshTimeThreshold = Configs.epgRefreshTimeThreshold,
-                        epgChannelReserveList = Configs.epgChannelReserveList,
-                        uiShowEpgProgrammeProgress = Configs.uiShowEpgProgrammeProgress,
-                        uiShowEpgProgrammePermanentProgress = Configs.uiShowEpgProgrammePermanentProgress,
-                        uiShowChannelLogo = Configs.uiShowChannelLogo,
-                        uiShowChannelPreview = Configs.uiShowChannelPreview,
-                        uiUseClassicPanelScreen = Configs.uiUseClassicPanelScreen,
-                        uiDensityScaleRatio = Configs.uiDensityScaleRatio,
-                        uiFontScaleRatio = Configs.uiFontScaleRatio,
-                        uiTimeShowMode = Configs.uiTimeShowMode,
-                        uiFocusOptimize = Configs.uiFocusOptimize,
-                        uiScreenAutoCloseDelay = Configs.uiScreenAutoCloseDelay,
-                        updateForceRemind = Configs.updateForceRemind,
-                        updateChannel = Configs.updateChannel,
-                        videoPlayerUserAgent = Configs.videoPlayerUserAgent,
-                        videoPlayerHeaders = Configs.videoPlayerHeaders,
-                        videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout,
-                        videoPlayerDisplayMode = Configs.videoPlayerDisplayMode,
-                        themeAppCurrent = Configs.themeAppCurrent,
-                    )
-                )
-            )
+            send(Globals.json.encodeToString(Configs.toPartial()))
         }
     }
 
@@ -266,98 +212,8 @@ object HttpServer : Loggable() {
         response: AsyncHttpServerResponse,
     ) {
         val body = request.getBody<JSONObjectBody>().get()
-        val configs = Json.decodeFromString<AllConfigs>(body.toString())
-
-        if (configs.appBootLaunch != null)
-            Configs.appBootLaunch = configs.appBootLaunch
-        if (configs.appLastLatestVersion != null)
-            Configs.appLastLatestVersion = configs.appLastLatestVersion
-        if (configs.appAgreementAgreed != null)
-            Configs.appAgreementAgreed = configs.appAgreementAgreed
-        if (configs.debugShowFps != null)
-            Configs.debugShowFps = configs.debugShowFps
-        if (configs.debugShowVideoPlayerMetadata != null)
-            Configs.debugShowVideoPlayerMetadata = configs.debugShowVideoPlayerMetadata
-        if (configs.debugShowLayoutGrids != null)
-            Configs.debugShowLayoutGrids = configs.debugShowLayoutGrids
-        if (configs.iptvLastChannelIdx != null)
-            Configs.iptvLastChannelIdx = configs.iptvLastChannelIdx
-        if (configs.iptvChannelChangeFlip != null)
-            Configs.iptvChannelChangeFlip = configs.iptvChannelChangeFlip
-        if (configs.iptvSourceCacheTime != null)
-            Configs.iptvSourceCacheTime = configs.iptvSourceCacheTime
-        if (configs.iptvSourceCurrent != null)
-            Configs.iptvSourceCurrent = configs.iptvSourceCurrent
-        if (configs.iptvSourceList != null)
-            Configs.iptvSourceList = configs.iptvSourceList
-        if (configs.iptvPlayableHostList != null)
-            Configs.iptvPlayableHostList = configs.iptvPlayableHostList
-        if (configs.iptvChannelNoSelectEnable != null)
-            Configs.iptvChannelNoSelectEnable = configs.iptvChannelNoSelectEnable
-        if (configs.iptvChannelFavoriteEnable != null)
-            Configs.iptvChannelFavoriteEnable = configs.iptvChannelFavoriteEnable
-        if (configs.iptvChannelFavoriteListVisible != null)
-            Configs.iptvChannelFavoriteListVisible = configs.iptvChannelFavoriteListVisible
-        if (configs.iptvChannelFavoriteList != null)
-            Configs.iptvChannelFavoriteList = configs.iptvChannelFavoriteList
-        if (configs.iptvChannelFavoriteChangeBoundaryJumpOut != null)
-            Configs.iptvChannelFavoriteChangeBoundaryJumpOut =
-                configs.iptvChannelFavoriteChangeBoundaryJumpOut
-        if (configs.iptvChannelGroupHiddenList != null)
-            Configs.iptvChannelGroupHiddenList = configs.iptvChannelGroupHiddenList
-        if (configs.iptvHybridMode != null)
-            Configs.iptvHybridMode = configs.iptvHybridMode
-        if (configs.iptvSimilarChannelMerge != null)
-            Configs.iptvSimilarChannelMerge = configs.iptvSimilarChannelMerge
-        if (configs.iptvChannelLogoProvider != null)
-            Configs.iptvChannelLogoProvider = configs.iptvChannelLogoProvider
-        if (configs.iptvChannelLogoOverride != null)
-            Configs.iptvChannelLogoOverride = configs.iptvChannelLogoOverride
-        if (configs.epgEnable != null)
-            Configs.epgEnable = configs.epgEnable
-        if (configs.epgSourceCurrent != null)
-            Configs.epgSourceCurrent = configs.epgSourceCurrent
-        if (configs.epgSourceList != null)
-            Configs.epgSourceList = configs.epgSourceList
-        if (configs.epgRefreshTimeThreshold != null)
-            Configs.epgRefreshTimeThreshold = configs.epgRefreshTimeThreshold
-        if (configs.epgChannelReserveList != null)
-            Configs.epgChannelReserveList = configs.epgChannelReserveList
-        if (configs.uiShowEpgProgrammeProgress != null)
-            Configs.uiShowEpgProgrammeProgress = configs.uiShowEpgProgrammeProgress
-        if (configs.uiShowEpgProgrammePermanentProgress != null)
-            Configs.uiShowEpgProgrammePermanentProgress =
-                configs.uiShowEpgProgrammePermanentProgress
-        if (configs.uiShowChannelLogo != null)
-            Configs.uiShowChannelLogo = configs.uiShowChannelLogo
-        if (configs.uiShowChannelPreview != null)
-            Configs.uiShowChannelPreview = configs.uiShowChannelPreview
-        if (configs.uiUseClassicPanelScreen != null)
-            Configs.uiUseClassicPanelScreen = configs.uiUseClassicPanelScreen
-        if (configs.uiDensityScaleRatio != null)
-            Configs.uiDensityScaleRatio = configs.uiDensityScaleRatio
-        if (configs.uiFontScaleRatio != null)
-            Configs.uiFontScaleRatio = configs.uiFontScaleRatio
-        if (configs.uiTimeShowMode != null)
-            Configs.uiTimeShowMode = configs.uiTimeShowMode
-        if (configs.uiFocusOptimize != null)
-            Configs.uiFocusOptimize = configs.uiFocusOptimize
-        if (configs.uiScreenAutoCloseDelay != null)
-            Configs.uiScreenAutoCloseDelay = configs.uiScreenAutoCloseDelay
-        if (configs.updateForceRemind != null)
-            Configs.updateForceRemind = configs.updateForceRemind
-        if (configs.updateChannel != null)
-            Configs.updateChannel = configs.updateChannel
-        if (configs.videoPlayerUserAgent != null)
-            Configs.videoPlayerUserAgent = configs.videoPlayerUserAgent
-        if (configs.videoPlayerHeaders != null)
-            Configs.videoPlayerHeaders = configs.videoPlayerHeaders
-        if (configs.videoPlayerLoadTimeout != null)
-            Configs.videoPlayerLoadTimeout = configs.videoPlayerLoadTimeout
-        if (configs.videoPlayerDisplayMode != null)
-            Configs.videoPlayerDisplayMode = configs.videoPlayerDisplayMode
-        if (configs.themeAppCurrent != null)
-            Configs.themeAppCurrent = configs.themeAppCurrent
+        val configs = Globals.json.decodeFromString<Configs.Partial>(body.toString())
+        Configs.fromPartial(configs)
 
         wrapResponse(response).send("success")
     }
@@ -427,52 +283,4 @@ private data class AppInfo(
     val appTitle: String,
     val appRepo: String,
     val logHistory: List<Logger.HistoryItem>,
-)
-
-@Serializable
-private data class AllConfigs(
-    val appBootLaunch: Boolean? = null,
-    val appLastLatestVersion: String? = null,
-    val appAgreementAgreed: Boolean? = null,
-    val debugShowFps: Boolean? = null,
-    val debugShowVideoPlayerMetadata: Boolean? = null,
-    val debugShowLayoutGrids: Boolean? = null,
-    val iptvLastChannelIdx: Int? = null,
-    val iptvChannelChangeFlip: Boolean? = null,
-    val iptvSourceCacheTime: Long? = null,
-    val iptvSourceCurrent: IptvSource? = null,
-    val iptvSourceList: IptvSourceList? = null,
-    val iptvPlayableHostList: Set<String>? = null,
-    val iptvChannelNoSelectEnable: Boolean? = null,
-    val iptvChannelFavoriteEnable: Boolean? = null,
-    val iptvChannelFavoriteListVisible: Boolean? = null,
-    val iptvChannelFavoriteList: Set<String>? = null,
-    val iptvChannelFavoriteChangeBoundaryJumpOut: Boolean? = null,
-    val iptvChannelGroupHiddenList: Set<String>? = null,
-    val iptvHybridMode: Configs.IptvHybridMode? = null,
-    val iptvSimilarChannelMerge: Boolean? = null,
-    val iptvChannelLogoProvider: String? = null,
-    val iptvChannelLogoOverride: Boolean? = null,
-    val epgEnable: Boolean? = null,
-    val epgSourceCurrent: EpgSource? = null,
-    val epgSourceList: EpgSourceList? = null,
-    val epgRefreshTimeThreshold: Int? = null,
-    val epgChannelReserveList: EpgProgrammeReserveList? = null,
-    val uiShowEpgProgrammeProgress: Boolean? = null,
-    val uiShowEpgProgrammePermanentProgress: Boolean? = null,
-    val uiShowChannelLogo: Boolean? = null,
-    val uiShowChannelPreview: Boolean? = null,
-    val uiUseClassicPanelScreen: Boolean? = null,
-    val uiDensityScaleRatio: Float? = null,
-    val uiFontScaleRatio: Float? = null,
-    val uiTimeShowMode: Configs.UiTimeShowMode? = null,
-    val uiFocusOptimize: Boolean? = null,
-    val uiScreenAutoCloseDelay: Long? = null,
-    val updateForceRemind: Boolean? = null,
-    val updateChannel: String? = null,
-    val videoPlayerUserAgent: String? = null,
-    val videoPlayerHeaders: String? = null,
-    val videoPlayerLoadTimeout: Long? = null,
-    val videoPlayerDisplayMode: VideoPlayerDisplayMode? = null,
-    val themeAppCurrent: AppThemeDef? = null,
 )

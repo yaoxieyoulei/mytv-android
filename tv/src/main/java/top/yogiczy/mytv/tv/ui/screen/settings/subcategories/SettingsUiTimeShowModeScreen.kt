@@ -35,21 +35,21 @@ fun SettingsUiTimeShowModeScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = modifier.padding(top = 20.dp),
+        modifier = modifier.padding(top = 1.dp),
         header = { Text("设置 / 界面 / 时间显示") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            modifier = modifier,
+            modifier = Modifier,
             columns = GridCells.Fixed(4),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(Configs.UiTimeShowMode.entries) { mode ->
                 ListItem(
-                    modifier = modifier
+                    modifier = Modifier
                         .handleKeyEvents(onSelect = { onTimeShowModeChanged(mode) }),
                     headlineContent = {
                         Text(

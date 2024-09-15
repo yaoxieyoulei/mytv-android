@@ -4,7 +4,6 @@ import android.util.Xml
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.xmlpull.v1.XmlPullParser
@@ -16,6 +15,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.network.await
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.epg.fetcher.EpgFetcher
+import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Logger
 import java.io.StringReader
 import java.text.SimpleDateFormat
@@ -112,7 +112,7 @@ class EpgRepository(
                 dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
             }) {
                 val xmlString = epgXmlRepository.getEpgXml()
-                Json.encodeToString(
+                Globals.json.encodeToString(
                     parseFromXml(
                         xmlString,
                         filteredChannels.map { it.lowercase() },
@@ -120,7 +120,7 @@ class EpgRepository(
                 )
             }
 
-            return@withContext Json.decodeFromString(xmlJson)
+            return@withContext Globals.json.decodeFromString(xmlJson)
         } catch (ex: Exception) {
             log.e("获取节目单失败", ex)
             throw Exception(ex)

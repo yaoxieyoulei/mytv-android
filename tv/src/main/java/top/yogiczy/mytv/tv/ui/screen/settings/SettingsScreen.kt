@@ -12,18 +12,20 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsCloudSyncScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsControlScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsDebugScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsEpgScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsIptvScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsLogScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsNetworkScreen
-import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsSystemScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsAppScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsThemeScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsUiScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsUpdateScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.categories.SettingsVideoPlayerScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsChannelGroupVisibilityScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsCloudSyncProviderScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsEpgRefreshTimeThresholdScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsEpgSourceScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsIptvHybridModeScreen
@@ -73,8 +75,8 @@ fun SettingsScreen(
                     )
                 }
 
-                composable(SettingsCategories.SYSTEM.name) {
-                    SettingsSystemScreen(
+                composable(SettingsCategories.APP.name) {
+                    SettingsAppScreen(
                         settingsViewModel = settingsViewModel,
                         onReload = onReload,
                         onBackPressed = { navController.navigateUp() },
@@ -168,6 +170,17 @@ fun SettingsScreen(
                 composable(SettingsCategories.THEME.name) {
                     SettingsThemeScreen(
                         settingsViewModel = settingsViewModel,
+                        onBackPressed = { navController.navigateUp() },
+                    )
+                }
+
+                composable(SettingsCategories.CLOUD_SYNC.name) {
+                    SettingsCloudSyncScreen(
+                        settingsViewModel = settingsViewModel,
+                        toCloudSyncProviderScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.CLOUD_SYNC_PROVIDER.name)
+                        },
+                        onReload = onReload,
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
@@ -325,6 +338,17 @@ fun SettingsScreen(
                         updateChannelProvider = { settingsViewModel.updateChannel },
                         onUpdateChannelChanged = {
                             settingsViewModel.updateChannel = it
+                            navController.navigateUp()
+                        },
+                        onBackPressed = { navController.navigateUp() },
+                    )
+                }
+
+                composable(SettingsSubCategories.CLOUD_SYNC_PROVIDER.name) {
+                    SettingsCloudSyncProviderScreen(
+                        providerProvider = { settingsViewModel.cloudSyncProvider },
+                        onProviderChanged = {
+                            settingsViewModel.cloudSyncProvider = it
                             navController.navigateUp()
                         },
                         onBackPressed = { navController.navigateUp() },

@@ -41,13 +41,12 @@ fun SettingsChannelGroupVisibilityScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = Modifier.padding(top = 10.dp),
+        modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 直播源 / 频道分组管理") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            modifier = modifier,
             columns = GridCells.Fixed(4),
             contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(20.dp),

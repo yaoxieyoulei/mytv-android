@@ -19,7 +19,7 @@ import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 
 @Composable
-fun SettingsSystemScreen(
+fun SettingsAppScreen(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = viewModel(),
     onReload: () -> Unit = {},
@@ -29,7 +29,7 @@ fun SettingsSystemScreen(
 
     SettingsCategoryScreen(
         modifier = modifier,
-        header = { Text("设置 / 系统") },
+        header = { Text("设置 / 应用") },
         onBackPressed = onBackPressed,
     ) { firstItemFocusRequester ->
         item {
@@ -78,6 +78,6 @@ fun SettingsSystemScreen(
 @Composable
 private fun SettingsSystemScreenPreview() {
     MyTvTheme {
-        SettingsSystemScreen()
+        SettingsAppScreen()
     }
 }

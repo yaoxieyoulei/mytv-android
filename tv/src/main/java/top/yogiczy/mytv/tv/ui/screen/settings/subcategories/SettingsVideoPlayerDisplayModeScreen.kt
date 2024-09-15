@@ -35,21 +35,21 @@ fun SettingsVideoPlayerDisplayModeScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = modifier.padding(top = 20.dp),
+        modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 播放器 / 全局显示模式") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            modifier = modifier,
+            modifier = Modifier,
             columns = GridCells.Fixed(6),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(VideoPlayerDisplayMode.entries) { mode ->
                 ListItem(
-                    modifier = modifier
+                    modifier = Modifier
                         .handleKeyEvents(onSelect = { onDisplayModeChanged(mode) }),
                     headlineContent = {
                         Text(

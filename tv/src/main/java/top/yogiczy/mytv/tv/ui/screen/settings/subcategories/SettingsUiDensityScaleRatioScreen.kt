@@ -37,7 +37,7 @@ fun SettingsUiDensityScaleRatioScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = Modifier.padding(top = 20.dp),
+        modifier = Modifier.padding(top = 10.dp),
         header = { Text("设置 / 界面 / 界面整体缩放比例") },
         canBack = true,
         onBackPressed = onBackPressed,
@@ -45,13 +45,13 @@ fun SettingsUiDensityScaleRatioScreen(
         LazyVerticalGrid(
             modifier = modifier,
             columns = GridCells.Fixed(6),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(scaleRatioList) { scaleRatio ->
                 ListItem(
-                    modifier = modifier
+                    modifier = Modifier
                         .handleKeyEvents(onSelect = { onScaleRatioChanged(scaleRatio) }),
                     headlineContent = {
                         Text(

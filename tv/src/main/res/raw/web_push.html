@@ -79,7 +79,7 @@
                                 <van-space class="w-full" direction="vertical" size="small">
                                     <span>格式：{name} - 保持不变，{name|lowercase} - 小写，{name|uppercase} - 大写</span>
 
-                                    <van-field placeholder="https://live.fanmingming.com/tv/{name}.png" class="!p-0"
+                                    <van-field class="!p-0" placeholder="https://live.fanmingming.com/tv/{name}.png"
                                         v-model="configs.iptvChannelLogoProvider"></van-field>
 
                                     <div class="flex justify-end">
@@ -94,7 +94,7 @@
                         <van-cell title="频道别名">
                             <template #label>
                                 <van-space class="w-full" direction="vertical" size="small">
-                                    <van-field class="!p-0" :placeholder="channelAliasExample" rows="5" type="textarea"
+                                    <van-field :placeholder="channelAliasExample" class="!p-0" rows="5" type="textarea"
                                         v-model="channelAlias"></van-field>
 
                                     <div class="flex justify-end">
@@ -157,6 +157,62 @@
                                     </div>
                                 </van-space>
                             </template>
+                        </van-cell>
+                    </van-cell-group>
+
+                    <van-cell-group inset title="云同步">
+                        <van-cell title="服务商">
+                            <template #label>
+                                <van-radio-group direction="horizontal" v-model="configs.cloudSyncProvider">
+                                    <van-radio name="GITHUB_GIST">GitHub Gist</van-radio>
+                                    <van-radio name="GITEE_GIST">Gitee 代码片段</van-radio>
+                                    <van-radio name="NETWORK_URL">网络链接</van-radio>
+                                </van-radio-group>
+                            </template>
+                        </van-cell>
+
+                        <template v-if="configs.cloudSyncProvider === 'GITHUB_GIST'">
+                            <van-cell title="Github Gist Id">
+                                <template #label>
+                                    <van-field class="!p-0" v-model="configs.cloudSyncGithubGistId"></van-field>
+                                </template>
+                            </van-cell>
+
+                            <van-cell title="Github Gist Token">
+                                <template #label>
+                                    <van-field class="!p-0" v-model="configs.cloudSyncGithubGistToken"></van-field>
+                                </template>
+                            </van-cell>
+                        </template>
+
+                        <template v-if="configs.cloudSyncProvider === 'GITEE_GIST'">
+                            <van-cell title="Gitee 代码片段 Id">
+                                <template #label>
+                                    <van-field class="!p-0" v-model="configs.cloudSyncGiteeGistId"></van-field>
+                                </template>
+                            </van-cell>
+
+                            <van-cell title="Gitee 代码片段 Token">
+                                <template #label>
+                                    <van-field class="!p-0" v-model="configs.cloudSyncGiteeGistToken"></van-field>
+                                </template>
+                            </van-cell>
+                        </template>
+
+                        <template v-if="configs.cloudSyncProvider === 'NETWORK_URL'">
+                            <van-cell title="网络链接">
+                                <template #label>
+                                    <van-field class="!p-0" v-model="configs.cloudSyncNetworkUrl"></van-field>
+                                </template>
+                            </van-cell>
+                        </template>
+
+                        <van-cell>
+                            <div class="flex justify-end">
+                                <van-button @click="pushConfigs" size="small" type="primary">
+                                    推送
+                                </van-button>
+                            </div>
                         </van-cell>
                     </van-cell-group>
 

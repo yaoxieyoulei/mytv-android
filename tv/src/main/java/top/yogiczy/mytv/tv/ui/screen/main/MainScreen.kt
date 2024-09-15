@@ -39,14 +39,16 @@ import top.yogiczy.mytv.tv.ui.utils.navigateSingleTop
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = viewModel(),
     settingsViewModel: SettingsViewModel = viewModel(),
     updateViewModel: UpdateViewModel = viewModel(),
+    mainViewModel: MainViewModel = viewModel(),
     onBackPressed: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val uiState by mainViewModel.uiState.collectAsState()
+
+    mainViewModel.onCloudSyncDone = { settingsViewModel.refresh() }
 
     val channelGroupListProvider = {
         (uiState as? MainUiState.Ready)?.channelGroupList ?: ChannelGroupList()

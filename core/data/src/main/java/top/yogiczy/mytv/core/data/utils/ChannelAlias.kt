@@ -2,7 +2,6 @@ package top.yogiczy.mytv.core.data.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import top.yogiczy.mytv.core.data.R
 import java.io.File
 
@@ -14,7 +13,7 @@ object ChannelAlias : Loggable("ChannelAlias") {
 
     suspend fun refresh() = withContext(Dispatchers.IO) {
         _aliasMap = runCatching {
-            Json.decodeFromString<Map<String, List<String>>>(aliasFile.readText())
+            Globals.json.decodeFromString<Map<String, List<String>>>(aliasFile.readText())
         }.getOrElse { emptyMap() }
     }
 
@@ -38,7 +37,7 @@ object ChannelAlias : Loggable("ChannelAlias") {
     }
 
     private val defaultAlias by lazy {
-        Json.decodeFromString<Map<String, List<String>>>(
+        Globals.json.decodeFromString<Map<String, List<String>>>(
             Globals.resources.openRawResource(R.raw.channel_name_alias).bufferedReader()
                 .use { it.readText() })
     }

@@ -2,9 +2,8 @@ package top.yogiczy.mytv.tv.ui.screen.settings.subcategories
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
@@ -32,16 +31,13 @@ fun SettingsIptvHybridModeScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = modifier.padding(top = 20.dp),
+        modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 直播源 / 混合模式") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
-        LazyVerticalGrid(
-            modifier = modifier,
-            columns = GridCells.Fixed(1),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        LazyColumn(
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(Configs.IptvHybridMode.entries) { mode ->

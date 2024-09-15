@@ -35,21 +35,21 @@ fun SettingsUpdateChannelScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = modifier.padding(top = 20.dp),
+        modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 更新 / 更新通道") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            modifier = modifier,
+            modifier = Modifier,
             columns = GridCells.Fixed(6),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(updateChannelList) { channel ->
                 ListItem(
-                    modifier = modifier
+                    modifier = Modifier
                         .handleKeyEvents(onSelect = { onUpdateChannelChanged(channel) }),
                     headlineContent = {
                         Text(

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -43,11 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Icon
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.SubcomposeAsyncImage
 import kotlinx.serialization.Serializable
+import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
@@ -140,7 +144,15 @@ private fun AppScaffoldTopBar(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (canBack) AppScaffoldBack(onBack = onBackPressed)
+                if (canBack) {
+                    AppScaffoldHeaderBtn(
+                        modifier = Modifier.focusOnLaunched(),
+                        title = "返回",
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        onSelect = onBackPressed
+                    )
+                }
+
                 CompositionLocalProvider(
                     LocalTextStyle provides MaterialTheme.typography.titleLarge
                 ) { header?.let { nnHeader -> nnHeader() } }
@@ -151,14 +163,15 @@ private fun AppScaffoldTopBar(
 }
 
 @Composable
-private fun AppScaffoldBack(
+fun AppScaffoldHeaderBtn(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit = {},
+    title: String,
+    imageVector: ImageVector,
+    loading: Boolean = false,
+    onSelect: () -> Unit = {},
 ) {
     Button(
-        modifier = modifier
-            .focusOnLaunched()
-            .handleKeyEvents(onSelect = onBack),
+        modifier = modifier.handleKeyEvents(onSelect = { if (!loading) onSelect() }),
         colors = ButtonDefaults.colors(
             containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
         ),
@@ -168,28 +181,23 @@ private fun AppScaffoldBack(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-            )
-            Text("返回")
-        }
-    }
-}
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = LocalContentColor.current,
+                    trackColor = MaterialTheme.colorScheme.surface.copy(0.1f),
+                    strokeWidth = 3.dp,
+                )
+            } else {
+                Icon(
+                    imageVector,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
 
-@Preview(device = "id:Android TV (720p)")
-@Composable
-private fun AppScaffoldPreview() {
-    MyTvTheme {
-        AppScreen(
-            header = { Text("Header头部") },
-            headerExtra = { Text("Header Extra") },
-            canBack = true,
-        ) {
-            Text("Content".repeat(10))
+            Text(title)
         }
-//        PreviewWithLayoutGrids { }
     }
 }
 
@@ -256,4 +264,25 @@ fun AppThemeWrapper(
     }
 
     content()
+}
+
+@Preview(device = "id:Android TV (720p)")
+@Composable
+private fun AppScaffoldPreview() {
+    MyTvTheme {
+        AppScreen(
+            header = { Text("Header头部") },
+            headerExtra = {
+                AppScaffoldHeaderBtn(
+                    title = "操作",
+                    imageVector = Icons.Default.Circle,
+                    loading = true,
+                )
+            },
+            canBack = true,
+        ) {
+            Text("Content".repeat(10))
+        }
+//        PreviewWithLayoutGrids { }
+    }
 }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -281,6 +282,8 @@ fun Modifier.backHandler(
         false
     }
 }
+
+fun Modifier.visible(visible: Boolean) = alpha(if (visible) 1f else 0f)
 
 fun Modifier.customBackground() = background(
     brush = Brush.linearGradient(

@@ -25,6 +25,8 @@ import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.ChannelAlias
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.tv.sync.CloudSync
+import top.yogiczy.mytv.tv.sync.CloudSyncDate
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -33,7 +35,12 @@ class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
+    var onCloudSyncDone: () -> Unit = {}
+
     init {
+        viewModelScope.launch {
+            pullCloudSyncData()
+        }
         init()
     }
 
@@ -43,6 +50,19 @@ class MainViewModel : ViewModel() {
             ChannelAlias.refresh()
             refreshChannel()
             refreshEpg()
+        }
+    }
+
+    private suspend fun pullCloudSyncData() {
+        if (!Configs.cloudSyncAutoPull) return
+
+        runCatching {
+            val syncData = CloudSync.pull()
+
+            if (syncData != CloudSyncDate.EMPTY) {
+                Configs.fromPartial(syncData.configs)
+                onCloudSyncDone()
+            }
         }
     }
 

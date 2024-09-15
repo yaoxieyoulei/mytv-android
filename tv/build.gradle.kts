@@ -75,7 +75,7 @@ android {
 
         create("disguised") {
             dimension = "version"
-            applicationId = "com.chinablue.tv"
+            applicationId = "com.tencent.map"
         }
     }
 

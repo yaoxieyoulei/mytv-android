@@ -39,21 +39,20 @@ fun SettingsIptvSourceCacheTimeScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = Modifier.padding(top = 20.dp),
+        modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 直播源 / 缓存时间") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            modifier = modifier,
             columns = GridCells.Fixed(6),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(cacheTimeList) { cacheTime ->
                 ListItem(
-                    modifier = modifier
+                    modifier = Modifier
                         .handleKeyEvents(onSelect = { onCacheTimeChanged(cacheTime) }),
                     headlineContent = {
                         Text(

@@ -36,21 +36,20 @@ fun SettingsEpgRefreshTimeThresholdScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = Modifier.padding(top = 20.dp),
+        modifier = Modifier.padding(top = 10.dp),
         header = { Text("设置 / 节目单 / 刷新时间阈值") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            modifier = modifier,
             columns = GridCells.Fixed(6),
-            contentPadding = childPadding.copy(top = 4.dp).paddingValues,
+            contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(timeThresholdList) { timeThreshold ->
                 ListItem(
-                    modifier = modifier
+                    modifier = Modifier
                         .handleKeyEvents(onSelect = { onTimeThresholdChanged(timeThreshold) }),
                     headlineContent = {
                         Text(
