@@ -20,6 +20,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
+import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.ChannelAlias
@@ -50,6 +51,7 @@ class MainViewModel : ViewModel() {
             ChannelAlias.refresh()
             refreshChannel()
             refreshEpg()
+            mergeEpgMetadata()
         }
     }
 
@@ -178,6 +180,26 @@ class MainViewModel : ViewModel() {
                     _uiState.value = (_uiState.value as MainUiState.Ready).copy(epgList = epgList)
                 }
                 .collect()
+        }
+    }
+
+    private suspend fun mergeEpgMetadata() = withContext(Dispatchers.Default) {
+        if (_uiState.value is MainUiState.Ready) {
+            val channelGroupList = (_uiState.value as MainUiState.Ready).channelGroupList
+            val epgList = (_uiState.value as MainUiState.Ready).epgList
+
+            if (epgList.all { epg -> epg.logo == null }) return@withContext
+
+            _uiState.value = (_uiState.value as MainUiState.Ready).copy(
+                channelGroupList = ChannelGroupList(channelGroupList.map { group ->
+                    group.copy(channelList = ChannelList(group.channelList.map { channel ->
+                        channel.copy(
+                            logo = epgList.match(channel)?.logo ?: channel.logo
+                        )
+                    }))
+                }),
+                epgList = epgList,
+            )
         }
     }
 }

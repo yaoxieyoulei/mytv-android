@@ -41,47 +41,81 @@ class EpgRepository(
         fun parseTime(time: String): Long {
             if (time.length < 14) return 0
 
-            return SimpleDateFormat("yyyyMMddHHmmss Z", Locale.getDefault())
-                .parse(time)?.time ?: 0
+            return SimpleDateFormat("yyyyMMddHHmmss Z", Locale.getDefault()).parse(time)?.time ?: 0
         }
+
+        data class ChannelItem(
+            val id: String,
+            val displayNames: MutableList<String> = mutableListOf(),
+            var icon: String? = null,
+        )
+
+        data class ProgrammeItem(
+            val channel: String,
+            val start: Long,
+            val end: Long,
+            val title: String,
+        )
 
         val parser: XmlPullParser = Xml.newPullParser()
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
         parser.setInput(StringReader(xmlString))
 
-        val epgMap = mutableMapOf<String, Epg>()
+        var lastChannel: ChannelItem? = null
+        val channelList = mutableListOf<ChannelItem>()
+        val programmeList = mutableListOf<ProgrammeItem>()
 
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT) {
             when (eventType) {
                 XmlPullParser.START_TAG -> {
-                    if (parser.name == "channel") {
-                        val channelId = parser.getAttributeValue(null, "id")
-                        parser.nextTag()
-                        val channelName = parser.nextText()
-
-                        if (filteredChannels.isEmpty() || filteredChannels.contains(channelName.lowercase())) {
-                            epgMap[channelId] = Epg(channelName, EpgProgrammeList())
+                    when (parser.name) {
+                        "channel" -> {
+                            lastChannel = ChannelItem(parser.getAttributeValue(null, "id"))
                         }
-                    } else if (parser.name == "programme") {
-                        val channelId = parser.getAttributeValue(null, "channel")
-                        val startTime = parser.getAttributeValue(null, "start")
-                        val stopTime = parser.getAttributeValue(null, "stop")
-                        parser.nextTag()
-                        val title = parser.nextText()
 
-                        epgMap[channelId]?.let { epg ->
-                            epgMap[channelId] = epg.copy(
-                                programmeList = EpgProgrammeList(
-                                    epg.programmeList + listOf(
-                                        EpgProgramme(
-                                            startAt = parseTime(startTime),
-                                            endAt = parseTime(stopTime),
-                                            title = title,
-                                        )
+                        "display-name" -> {
+                            lastChannel?.let {
+                                val displayName = parser.nextText()
+                                if (filteredChannels.isEmpty() || filteredChannels.contains(
+                                        displayName.lowercase()
                                     )
+                                ) {
+                                    lastChannel.displayNames.add(displayName)
+                                }
+                            }
+                        }
+
+                        "icon" -> {
+                            lastChannel?.let {
+                                lastChannel.icon = parser.getAttributeValue(null, "src")
+                            }
+                        }
+
+                        "programme" -> {
+                            val channel = parser.getAttributeValue(null, "channel")
+                            if (channelList.any { it.id == channel }) {
+                                val start = parser.getAttributeValue(null, "start")
+                                val stop = parser.getAttributeValue(null, "stop")
+                                parser.nextTag()
+                                val title = parser.nextText()
+
+                                programmeList.add(
+                                    ProgrammeItem(channel, parseTime(start), parseTime(stop), title)
                                 )
-                            )
+                            }
+                        }
+                    }
+                }
+
+                XmlPullParser.END_TAG -> {
+                    when (parser.name) {
+                        "channel" -> {
+                            lastChannel?.let {
+                                if (it.displayNames.isNotEmpty()) {
+                                    channelList.add(it)
+                                }
+                            }
                         }
                     }
                 }
@@ -89,8 +123,20 @@ class EpgRepository(
             eventType = parser.next()
         }
 
-        log.i("解析节目单完成，共${epgMap.size}个频道，${epgMap.values.sumOf { it.programmeList.size }}个节目")
-        return@withContext EpgList(epgMap.values.toList())
+        val epgList = EpgList(channelList.map { channel ->
+            Epg(
+                channelList = channel.displayNames,
+                logo = channel.icon,
+                programmeList = EpgProgrammeList(programmeList
+                    .filter { it.channel == channel.id }
+                    .map { programme ->
+                        EpgProgramme(programme.start, programme.end, programme.title)
+                    }),
+            )
+        })
+
+        log.i("解析节目单完成，共${epgList.size}个频道，${epgList.sumOf { it.programmeList.size }}个节目")
+        return@withContext epgList
     }
 
     /**

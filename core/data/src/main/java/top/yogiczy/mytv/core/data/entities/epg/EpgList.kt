@@ -20,7 +20,9 @@ data class EpgList(
         }
 
         fun EpgList.match(channel: Channel): Epg? {
-            return firstOrNull { it.channel.lowercase() == channel.epgName.lowercase() }
+            return firstOrNull { epg ->
+                epg.channelList.map { it.lowercase() }.contains(channel.epgName.lowercase())
+            }
         }
 
         fun example(channelList: ChannelList): EpgList {

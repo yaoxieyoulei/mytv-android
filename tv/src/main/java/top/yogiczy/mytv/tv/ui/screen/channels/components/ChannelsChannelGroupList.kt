@@ -36,6 +36,8 @@ fun ChannelsChannelGroupList(
     val childPadding = rememberChildPadding()
     val firstItemFocusRequester = remember { FocusRequester() }
 
+    if (channelGroupList.size <= 1) return
+
     Box(
         modifier = modifier
             .fillMaxWidth()

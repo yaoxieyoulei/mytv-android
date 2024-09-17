@@ -13,7 +13,12 @@ data class Epg(
     /**
      * 频道名称
      */
-    val channel: String = "",
+    val channelList: List<String> = emptyList(),
+
+    /**
+     * 图标
+     */
+    val logo: String? = null,
 
     /**
      * 节目列表
@@ -39,7 +44,7 @@ data class Epg(
 
         fun example(channel: Channel): Epg {
             return Epg(
-                channel = channel.epgName,
+                channelList = listOf(channel.epgName),
                 programmeList = EpgProgrammeList(
                     List(100) { index ->
                         val startAt =
@@ -70,7 +75,7 @@ data class Epg(
             }
 
             return Epg(
-                channel = channel.epgName,
+                channelList = listOf(channel.epgName),
                 programmeList = EpgProgrammeList(
                     listOf(
                         EpgProgramme(
