@@ -51,7 +51,7 @@ fun SettingsUpdateScreen(
                 trailingContent = {
                     Switch(forceRemind, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.updateForceRemind = !forceRemind
                 },
             )

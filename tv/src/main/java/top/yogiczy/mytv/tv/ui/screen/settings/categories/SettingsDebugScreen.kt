@@ -31,7 +31,7 @@ fun SettingsDebugScreen(
                 trailingContent = {
                     Switch(settingsViewModel.debugShowFps, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.debugShowFps = !settingsViewModel.debugShowFps
                 },
             )
@@ -44,7 +44,7 @@ fun SettingsDebugScreen(
                 trailingContent = {
                     Switch(settingsViewModel.debugShowVideoPlayerMetadata, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.debugShowVideoPlayerMetadata =
                         !settingsViewModel.debugShowVideoPlayerMetadata
                 },
@@ -57,7 +57,7 @@ fun SettingsDebugScreen(
                 trailingContent = {
                     Switch(settingsViewModel.debugShowLayoutGrids, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.debugShowLayoutGrids =
                         !settingsViewModel.debugShowLayoutGrids
                 },

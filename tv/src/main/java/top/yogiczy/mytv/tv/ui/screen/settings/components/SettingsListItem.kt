@@ -37,8 +37,8 @@ fun SettingsListItem(
     supportingContent: String? = null,
     trailingContent: @Composable () -> Unit = {},
     trailingIcon: ImageVector? = null,
-    onSelected: (() -> Unit)? = null,
-    onLongSelected: () -> Unit = {},
+    onSelect: (() -> Unit)? = null,
+    onLongSelect: () -> Unit = {},
     locK: Boolean = false,
     remoteConfig: Boolean = false,
     link: Boolean = false,
@@ -47,7 +47,7 @@ fun SettingsListItem(
     val focusRequester = remember { FocusRequester() }
 
     var showPush by remember { mutableStateOf(false) }
-
+   
     ListItem(
         selected = false,
         onClick = {},
@@ -92,13 +92,13 @@ fun SettingsListItem(
             .focusRequester(focusRequester)
             .handleKeyEvents(
                 onSelect = {
-                    if (onSelected != null) onSelected()
+                    if (onSelect != null) onSelect()
                     else if (remoteConfig) {
                         popupManager.push(focusRequester, true)
                         showPush = true
                     }
                 },
-                onLongSelect = { onLongSelected() },
+                onLongSelect = { onLongSelect() },
             ),
     )
 
@@ -135,8 +135,8 @@ fun SettingsListItem(
             )
         },
         trailingIcon = trailingIcon,
-        onSelected = onSelected,
-        onLongSelected = onLongSelected,
+        onSelect = onSelected,
+        onLongSelect = onLongSelected,
         locK = locK,
         remoteConfig = remoteConfig,
         link = link,

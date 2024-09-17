@@ -132,7 +132,7 @@ fun SettingsCloudSyncScreen(
                         }
                     }
                 },
-                onLongSelected = {
+                onLongSelect = {
                     syncData?.let { nnSyncData ->
                         if (syncData != CloudSyncDate.EMPTY) {
                             Configs.fromPartial(nnSyncData.configs)
@@ -152,7 +152,7 @@ fun SettingsCloudSyncScreen(
                 trailingContent = {
                     Switch(settingsViewModel.cloudSyncAutoPull, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.cloudSyncAutoPull = !settingsViewModel.cloudSyncAutoPull
                 },
             )

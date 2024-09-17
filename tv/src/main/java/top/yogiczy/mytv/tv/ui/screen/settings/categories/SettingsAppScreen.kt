@@ -40,7 +40,7 @@ fun SettingsAppScreen(
                 trailingContent = {
                     Switch(settingsViewModel.appBootLaunch, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.appBootLaunch = !settingsViewModel.appBootLaunch
                 },
             )
@@ -49,7 +49,7 @@ fun SettingsAppScreen(
         item {
             SettingsListItem(
                 headlineContent = "清除缓存",
-                onSelected = {
+                onSelect = {
                     settingsViewModel.iptvPlayableHostList = emptySet()
                     coroutineScope.launch {
                         IptvRepository(settingsViewModel.iptvSourceCurrent).clearCache()
@@ -64,7 +64,7 @@ fun SettingsAppScreen(
         item {
             SettingsListItem(
                 headlineContent = "恢复初始化",
-                onSelected = {
+                onSelect = {
                     SP.clear()
                     Snackbar.show("已恢复初始化")
                     onReload()

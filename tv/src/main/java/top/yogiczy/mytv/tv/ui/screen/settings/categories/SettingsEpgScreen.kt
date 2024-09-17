@@ -31,7 +31,7 @@ fun SettingsEpgScreen(
                 headlineContent = "节目单启用",
                 supportingContent = "首次加载时可能会较为缓慢",
                 trailingContent = { Switch(settingsViewModel.epgEnable, null) },
-                onSelected = { settingsViewModel.epgEnable = !settingsViewModel.epgEnable },
+                onSelect = { settingsViewModel.epgEnable = !settingsViewModel.epgEnable },
             )
         }
 
@@ -41,7 +41,7 @@ fun SettingsEpgScreen(
             SettingsListItem(
                 headlineContent = "自定义节目单",
                 trailingContent = { Text(currentEpgSource.name) },
-                onSelected = toEpgSourceScreen,
+                onSelect = toEpgSourceScreen,
                 link = true,
             )
         }
@@ -53,7 +53,7 @@ fun SettingsEpgScreen(
                 headlineContent = "节目单刷新时间阈值",
                 trailingContent = { Text("${epgRefreshTimeThreshold}:00") },
                 supportingContent = "时间不到${epgRefreshTimeThreshold}:00节目单将不会刷新",
-                onSelected = toEpgRefreshTimeThresholdScreen,
+                onSelect = toEpgRefreshTimeThresholdScreen,
                 link = true,
             )
         }

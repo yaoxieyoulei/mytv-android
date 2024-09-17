@@ -33,7 +33,7 @@ fun SettingsControlScreen(
                 trailingContent = {
                     Switch(enable, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.iptvChannelNoSelectEnable = !enable
                 },
             )
@@ -49,7 +49,7 @@ fun SettingsControlScreen(
                 trailingContent = {
                     Switch(flip, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.iptvChannelChangeFlip = !flip
                 },
             )

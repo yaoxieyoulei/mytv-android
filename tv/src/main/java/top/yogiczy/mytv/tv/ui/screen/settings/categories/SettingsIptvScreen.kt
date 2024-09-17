@@ -59,7 +59,7 @@ fun SettingsIptvScreen(
                         Text(currentIptvSource.name)
                     }
                 },
-                onSelected = toIptvSourceScreen,
+                onSelect = toIptvSourceScreen,
                 link = true,
             )
         }
@@ -92,7 +92,7 @@ fun SettingsIptvScreen(
                         Text("共${allCount}个分组，已隐藏${hiddenCount}个分组")
                     }
                 },
-                onSelected = toChannelGroupVisibilityScreen,
+                onSelect = toChannelGroupVisibilityScreen,
                 link = true,
             )
         }
@@ -116,7 +116,7 @@ fun SettingsIptvScreen(
                 trailingContent = {
                     Switch(settingsViewModel.iptvSimilarChannelMerge, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.iptvSimilarChannelMerge =
                         !settingsViewModel.iptvSimilarChannelMerge
                 },
@@ -140,7 +140,7 @@ fun SettingsIptvScreen(
                 trailingContent = {
                     Switch(settingsViewModel.iptvChannelLogoOverride, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.iptvChannelLogoOverride =
                         !settingsViewModel.iptvChannelLogoOverride
                 },
@@ -161,7 +161,7 @@ fun SettingsIptvScreen(
                         }
                     )
                 },
-                onSelected = toIptvHybridModeScreen,
+                onSelect = toIptvHybridModeScreen,
                 link = true,
             )
         }

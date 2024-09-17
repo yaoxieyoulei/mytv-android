@@ -56,6 +56,7 @@ class MainViewModel : ViewModel() {
     private suspend fun pullCloudSyncData() {
         if (!Configs.cloudSyncAutoPull) return
 
+        _uiState.value = MainUiState.Loading("拉取云端数据")
         runCatching {
             val syncData = CloudSync.pull()
 
@@ -67,6 +68,8 @@ class MainViewModel : ViewModel() {
     }
 
     private suspend fun refreshChannel() {
+        _uiState.value = MainUiState.Loading("获取直播源")
+
         flow {
             emit(
                 IptvRepository(Configs.iptvSourceCurrent)
@@ -81,7 +84,7 @@ class MainViewModel : ViewModel() {
                 if (attempt >= Constants.NETWORK_RETRY_COUNT) return@retryWhen false
 
                 _uiState.value =
-                    MainUiState.Loading("获取远程直播源(${attempt + 1}/${Constants.NETWORK_RETRY_COUNT})...")
+                    MainUiState.Loading("获取直播源(${attempt + 1}/${Constants.NETWORK_RETRY_COUNT})...")
                 delay(Constants.NETWORK_RETRY_INTERVAL)
                 true
             }
@@ -101,6 +104,7 @@ class MainViewModel : ViewModel() {
         withContext(Dispatchers.Default) {
             if (!Configs.iptvSimilarChannelMerge) return@withContext channelGroupList
 
+            _uiState.value = MainUiState.Loading("合并相似频道")
             return@withContext ChannelGroupList(channelGroupList.map { group ->
                 group.copy(
                     channelList = ChannelList(group.channelList
@@ -120,6 +124,8 @@ class MainViewModel : ViewModel() {
 
     private suspend fun hybridChannel(channelGroupList: ChannelGroupList) =
         withContext(Dispatchers.Default) {
+            _uiState.value = MainUiState.Loading("混合直播源")
+
             val hybridMode = Configs.iptvHybridMode
             return@withContext when (hybridMode) {
                 Configs.IptvHybridMode.DISABLE -> channelGroupList

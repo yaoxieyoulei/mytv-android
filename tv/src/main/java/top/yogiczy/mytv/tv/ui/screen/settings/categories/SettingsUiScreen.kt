@@ -38,7 +38,7 @@ fun SettingsUiScreen(
                 headlineContent = "节目进度",
                 supportingContent = "在频道底部显示当前节目进度条",
                 trailingContent = { Switch(showProgress, null) },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.uiShowEpgProgrammeProgress = !showProgress
                 },
             )
@@ -53,7 +53,7 @@ fun SettingsUiScreen(
                 trailingContent = {
                     Switch(showProgress, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.uiShowEpgProgrammePermanentProgress = !showProgress
                 },
             )
@@ -67,7 +67,7 @@ fun SettingsUiScreen(
                 trailingContent = {
                     Switch(showChannelLogo, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.uiShowChannelLogo = !showChannelLogo
                 },
             )
@@ -81,7 +81,7 @@ fun SettingsUiScreen(
                 trailingContent = {
                     Switch(showChannelPreview, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.uiShowChannelPreview = !showChannelPreview
                 },
             )
@@ -96,7 +96,7 @@ fun SettingsUiScreen(
                 trailingContent = {
                     Switch(useClassicPanelScreen, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.uiUseClassicPanelScreen = !useClassicPanelScreen
                 },
             )
@@ -117,7 +117,7 @@ fun SettingsUiScreen(
                         }
                     )
                 },
-                onSelected = toUiTimeShowModeScreen,
+                onSelect = toUiTimeShowModeScreen,
                 link = true,
             )
         }
@@ -170,7 +170,7 @@ fun SettingsUiScreen(
                 trailingContent = {
                     Switch(focusOptimize, null)
                 },
-                onSelected = {
+                onSelect = {
                     settingsViewModel.uiFocusOptimize = !focusOptimize
                 },
             )

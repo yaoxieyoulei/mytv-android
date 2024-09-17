@@ -32,6 +32,7 @@ import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.SocketException
 
+
 object HttpServer : Loggable() {
     private const val SERVER_PORT = 10481
     private val uploadedApkFile by lazy {
@@ -44,6 +45,12 @@ object HttpServer : Loggable() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val server = AsyncHttpServer()
+
+                server.addAction("OPTIONS", ".+") { _, response ->
+                    wrapResponse(response)
+                    response.send("ok")
+                }
+
                 server.listen(AsyncServer.getDefault(), SERVER_PORT)
 
                 server.get("/") { _, response ->
