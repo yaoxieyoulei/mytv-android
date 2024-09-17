@@ -21,6 +21,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.ChannelAlias
@@ -164,8 +165,15 @@ class MainViewModel : ViewModel() {
             val channelGroupList = (_uiState.value as MainUiState.Ready).channelGroupList
 
             flow {
+                val epgSource = if (Configs.epgSourceFollowIptv) {
+                    val iptvRepository = IptvRepository(Configs.iptvSourceCurrent)
+                    iptvRepository.getEpgUrl()?.let { epgUrl ->
+                        EpgSource(Configs.iptvSourceCurrent.name, epgUrl)
+                    } ?: Configs.epgSourceCurrent
+                } else Configs.epgSourceCurrent
+
                 emit(
-                    EpgRepository(Configs.epgSourceCurrent).getEpgList(
+                    EpgRepository(epgSource).getEpgList(
                         filteredChannels = channelGroupList.channelList.map { it.epgName },
                         refreshTimeThreshold = Configs.epgRefreshTimeThreshold,
                     )

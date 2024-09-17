@@ -1,10 +1,16 @@
 package top.yogiczy.mytv.core.data.network
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import okhttp3.internal.closeQuietly
 import java.io.IOException
 import kotlin.coroutines.resumeWithException
@@ -34,4 +40,21 @@ suspend fun Call.await(): Response = suspendCancellableCoroutine { continuation 
             // Ignore cancel exception
         }
     }
+}
+
+suspend fun <T> String.request(
+    builder: (Request.Builder) -> Request.Builder = { it -> it },
+    action: suspend CoroutineScope.(ResponseBody) -> T,
+): T? {
+    val client = OkHttpClient()
+    val request = Request.Builder()
+        .url(this)
+        .let(builder)
+        .build()
+
+    val response = client.newCall(request).await()
+
+    if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
+
+    return withContext(Dispatchers.IO) { response.body?.let { action(it) } }
 }

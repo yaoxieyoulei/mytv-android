@@ -75,6 +75,13 @@ class M3uIptvParser : IptvParser {
                 })
         }
 
+    override suspend fun getEpgUrl(data: String): String? {
+        val lines = data.split("\r\n", "\n")
+        return lines.firstOrNull { it.startsWith("#EXTM3U") }?.let { defLine ->
+            Regex("x-tvg-url=\"(.+?)\"").find(defLine)?.groupValues?.get(1)?.trim()
+        }
+    }
+
     private data class ChannelItem(
         val name: String,
         val epgName: String,

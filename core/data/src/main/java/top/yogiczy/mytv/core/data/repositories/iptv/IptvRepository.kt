@@ -1,12 +1,8 @@
 package top.yogiczy.mytv.core.data.repositories.iptv
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
-import top.yogiczy.mytv.core.data.network.await
+import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.parser.IptvParser
 import top.yogiczy.mytv.core.data.utils.Logger
@@ -29,17 +25,8 @@ class IptvRepository(
     private suspend fun fetchSource(sourceUrl: String): String {
         log.d("获取远程直播源: $source")
 
-        val client = OkHttpClient()
-        val request = Request.Builder().url(sourceUrl).build()
-
         try {
-            val response = client.newCall(request).await()
-
-            if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
-
-            return withContext(Dispatchers.IO) {
-                response.body?.string() ?: ""
-            }
+            return sourceUrl.request { body -> body.string() } ?: ""
         } catch (ex: Exception) {
             log.e("获取直播源失败", ex)
             throw Exception("获取直播源失败，请检查网络连接", ex)
@@ -90,5 +77,13 @@ class IptvRepository(
     override suspend fun clearCache() {
         if (source.isLocal) return
         super.clearCache()
+    }
+
+    suspend fun getEpgUrl(): String? {
+        return source.url.request { body ->
+            val sourceData = body.string()
+            val parser = IptvParser.instances.first { it.isSupport(source.url, sourceData) }
+            parser.getEpgUrl(sourceData)
+        }
     }
 }

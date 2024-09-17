@@ -226,6 +226,14 @@ class SettingsViewModel : ViewModel() {
             Configs.epgRefreshTimeThreshold = value
         }
 
+    private var _epgSourceFollowIptv by mutableStateOf(false)
+    var epgSourceFollowIptv: Boolean
+        get() = _epgSourceFollowIptv
+        set(value) {
+            _epgSourceFollowIptv = value
+            Configs.epgSourceFollowIptv = value
+        }
+
     private var _epgChannelReserveList by mutableStateOf(EpgProgrammeReserveList())
     var epgChannelReserveList: EpgProgrammeReserveList
         get() = _epgChannelReserveList
@@ -466,6 +474,7 @@ class SettingsViewModel : ViewModel() {
         _epgSourceCurrent = Configs.epgSourceCurrent
         _epgSourceList = Configs.epgSourceList
         _epgRefreshTimeThreshold = Configs.epgRefreshTimeThreshold
+        _epgSourceFollowIptv = Configs.epgSourceFollowIptv
         _epgChannelReserveList = Configs.epgChannelReserveList
         _uiShowEpgProgrammeProgress = Configs.uiShowEpgProgrammeProgress
         _uiShowEpgProgrammePermanentProgress = Configs.uiShowEpgProgrammePermanentProgress

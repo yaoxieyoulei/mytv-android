@@ -19,6 +19,10 @@ interface IptvParser {
         logoProvider: (name: String, logo: String?) -> String?,
     ): ChannelGroupList
 
+    suspend fun getEpgUrl(data: String): String? {
+        return null
+    }
+
     companion object {
         val instances = listOf(
             M3uIptvParser(),

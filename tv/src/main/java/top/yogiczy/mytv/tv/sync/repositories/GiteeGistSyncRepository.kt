@@ -6,10 +6,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import top.yogiczy.mytv.core.data.network.await
+import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Loggable
 import top.yogiczy.mytv.tv.sync.CloudSyncDate
@@ -20,22 +18,16 @@ class GiteeGistSyncRepository(
     private val token: String,
 ) : CloudSyncRepository, Loggable("GiteeGistSyncRepository") {
     override suspend fun push(data: CloudSyncDate) = withContext(Dispatchers.IO) {
-        val client = OkHttpClient()
-        val request = Request.Builder().url("https://gitee.com/api/v5/gists/${gistId}")
-            .addHeader("Content-Type", "application/json")
-            .patch(
-                "{ \"access_token\": \"$token\", \"files\": { \"all_configs.json\": ${
-                    Globals.json.encodeToString(mapOf("content" to Globals.json.encodeToString(data)))
-                }}}".toRequestBody()
-            )
-            .build()
-
         try {
-            val response = client.newCall(request).await()
+            return@withContext "https://gitee.com/api/v5/gists/${gistId}".request({ builder ->
+                val body = "{ \"access_token\": \"$token\", \"files\": { \"all_configs.json\": ${
+                    Globals.json.encodeToString(mapOf("content" to Globals.json.encodeToString(data)))
+                }}}"
 
-            if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
-
-            return@withContext true
+                builder
+                    .addHeader("Content-Type", "application/json")
+                    .patch(body.toRequestBody())
+            }) { true }!!
         } catch (ex: Exception) {
             log.e("推送云端失败", ex)
             throw Exception("推送云端失败", ex)
@@ -43,18 +35,9 @@ class GiteeGistSyncRepository(
     }
 
     override suspend fun pull() = withContext(Dispatchers.IO) {
-        val client = OkHttpClient()
-        val request =
-            Request.Builder().url("https://gitee.com/api/v5/gists/${gistId}?access_token=${token}")
-                .build()
-
         try {
-            val response = client.newCall(request).await()
-
-            if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
-
-            return@withContext response.body?.string()?.let { body ->
-                val res = Globals.json.parseToJsonElement(body).jsonObject
+            return@withContext "https://gitee.com/api/v5/gists/${gistId}?access_token=${token}".request { body ->
+                val res = Globals.json.parseToJsonElement(body.string()).jsonObject
                 val file = res["files"]?.jsonObject?.get("all_configs.json")?.jsonObject
 
                 file?.get("truncated")?.jsonPrimitive?.booleanOrNull?.let { nnTruncated ->

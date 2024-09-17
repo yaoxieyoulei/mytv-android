@@ -20,9 +20,8 @@ import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.util.utils.isIPv6
 import top.yogiczy.mytv.tv.ui.material.Tag
@@ -85,19 +84,13 @@ private fun rememberLineDelay(line: ChannelLine): Long {
     LaunchedEffect(Unit) {
         try {
             withContext(Dispatchers.IO) {
-                val client = OkHttpClient()
-                val request = Request.Builder()
-                    .url(line.url)
-                    .apply {
-                        line.httpUserAgent?.let { header("User-Agent", it) }
-                    }
-                    .build()
-
                 elapsedTime = measureTimeMillis {
                     try {
-                        client.newCall(request).execute().use { response ->
-                            if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                        }
+                        line.url.request({ builder ->
+                            builder.apply {
+                                line.httpUserAgent?.let { header("User-Agent", it) }
+                            }
+                        }) { body -> body.string() }
                     } catch (_: IOException) {
                         hasError = true
                     }

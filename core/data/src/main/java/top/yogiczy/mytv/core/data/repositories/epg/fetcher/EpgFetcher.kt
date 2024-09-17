@@ -1,6 +1,6 @@
 package top.yogiczy.mytv.core.data.repositories.epg.fetcher
 
-import okhttp3.Response
+import okhttp3.ResponseBody
 
 /**
  * 节目单数据获取接口
@@ -14,7 +14,7 @@ interface EpgFetcher {
     /**
      * 获取节目单
      */
-    suspend fun fetch(response: Response): String
+    suspend fun fetch(body: ResponseBody): String
 
     companion object {
         val instances = listOf(

@@ -6,10 +6,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import top.yogiczy.mytv.core.data.network.await
+import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Loggable
 import top.yogiczy.mytv.tv.sync.CloudSyncDate
@@ -20,29 +18,23 @@ class GithubGistSyncRepository(
     private val token: String,
 ) : CloudSyncRepository, Loggable("GithubGistSyncRepository") {
     override suspend fun push(data: CloudSyncDate) = withContext(Dispatchers.IO) {
-        val client = OkHttpClient()
-        val request = Request.Builder().url("https://api.github.com/gists/${gistId}")
-            .header("Authorization", "Bearer $token")
-            .header("X-GitHub-Api-Version", "2022-11-28")
-            .patch(
-                Globals.json.encodeToString(
-                    mapOf(
-                        "files" to mapOf(
-                            "all_configs.json" to mapOf(
-                                "content" to Globals.json.encodeToString(data)
-                            )
-                        )
-                    )
-                ).toRequestBody()
-            )
-            .build()
-
         try {
-            val response = client.newCall(request).await()
-
-            if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
-
-            return@withContext true
+            return@withContext "https://api.github.com/gists/${gistId}".request({ builder ->
+                builder
+                    .header("Authorization", "Bearer $token")
+                    .header("X-GitHub-Api-Version", "2022-11-28")
+                    .patch(
+                        Globals.json.encodeToString(
+                            mapOf(
+                                "files" to mapOf(
+                                    "all_configs.json" to mapOf(
+                                        "content" to Globals.json.encodeToString(data)
+                                    )
+                                )
+                            )
+                        ).toRequestBody()
+                    )
+            }) { true }!!
         } catch (ex: Exception) {
             log.e("推送云端失败", ex)
             throw Exception("推送云端失败", ex)
@@ -50,19 +42,14 @@ class GithubGistSyncRepository(
     }
 
     override suspend fun pull() = withContext(Dispatchers.IO) {
-        val client = OkHttpClient()
-        val request = Request.Builder().url("https://api.github.com/gists/${gistId}")
-            .header("Authorization", "Bearer $token")
-            .header("X-GitHub-Api-Version", "2022-11-28")
-            .build()
 
         try {
-            val response = client.newCall(request).await()
-
-            if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
-
-            return@withContext response.body?.string()?.let { body ->
-                val res = Globals.json.parseToJsonElement(body).jsonObject
+            return@withContext "https://api.github.com/gists/${gistId}".request({ builder ->
+                builder
+                    .header("Authorization", "Bearer $token")
+                    .header("X-GitHub-Api-Version", "2022-11-28")
+            }) { body ->
+                val res = Globals.json.parseToJsonElement(body.string()).jsonObject
                 val file = res["files"]?.jsonObject?.get("all_configs.json")?.jsonObject
 
                 file?.get("truncated")?.jsonPrimitive?.booleanOrNull?.let { nnTruncated ->

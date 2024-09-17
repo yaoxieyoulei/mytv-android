@@ -101,6 +101,9 @@ object Configs {
         /** 节目单刷新时间阈值（小时） */
         EPG_REFRESH_TIME_THRESHOLD,
 
+        /** 节目单跟随直播源 */
+        EPG_SOURCE_FOLLOW_IPTV,
+
         /** 节目预约列表 */
         EPG_CHANNEL_RESERVE_LIST,
 
@@ -324,6 +327,11 @@ object Configs {
         get() = SP.getInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, Constants.EPG_REFRESH_TIME_THRESHOLD)
         set(value) = SP.putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value)
 
+    /** 节目单跟随直播源 */
+    var epgSourceFollowIptv: Boolean
+        get() = SP.getBoolean(KEY.EPG_SOURCE_FOLLOW_IPTV.name, false)
+        set(value) = SP.putBoolean(KEY.EPG_SOURCE_FOLLOW_IPTV.name, value)
+
     /** 节目预约列表 */
     var epgChannelReserveList: EpgProgrammeReserveList
         get() = Globals.json.decodeFromString(
@@ -540,6 +548,7 @@ object Configs {
             epgSourceCurrent = epgSourceCurrent,
             epgSourceList = epgSourceList,
             epgRefreshTimeThreshold = epgRefreshTimeThreshold,
+            epgSourceFollowIptv = epgSourceFollowIptv,
             epgChannelReserveList = epgChannelReserveList,
             uiShowEpgProgrammeProgress = uiShowEpgProgrammeProgress,
             uiShowEpgProgrammePermanentProgress = uiShowEpgProgrammePermanentProgress,
@@ -597,6 +606,7 @@ object Configs {
         configs.epgSourceCurrent?.let { epgSourceCurrent = it }
         configs.epgSourceList?.let { epgSourceList = it }
         configs.epgRefreshTimeThreshold?.let { epgRefreshTimeThreshold = it }
+        configs.epgSourceFollowIptv?.let { epgSourceFollowIptv = it }
         configs.epgChannelReserveList?.let { epgChannelReserveList = it }
         configs.uiShowEpgProgrammeProgress?.let { uiShowEpgProgrammeProgress = it }
         configs.uiShowEpgProgrammePermanentProgress?.let {
@@ -654,6 +664,7 @@ object Configs {
         val epgSourceCurrent: EpgSource? = null,
         val epgSourceList: EpgSourceList? = null,
         val epgRefreshTimeThreshold: Int? = null,
+        val epgSourceFollowIptv: Boolean? = null,
         val epgChannelReserveList: EpgProgrammeReserveList? = null,
         val uiShowEpgProgrammeProgress: Boolean? = null,
         val uiShowEpgProgrammePermanentProgress: Boolean? = null,

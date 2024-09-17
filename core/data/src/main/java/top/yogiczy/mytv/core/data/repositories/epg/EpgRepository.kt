@@ -4,15 +4,13 @@ import android.util.Xml
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.xmlpull.v1.XmlPullParser
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
-import top.yogiczy.mytv.core.data.network.await
+import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.epg.fetcher.EpgFetcher
 import top.yogiczy.mytv.core.data.utils.Globals
@@ -188,18 +186,9 @@ private class EpgXmlRepository(
     private suspend fun fetchXml(): String {
         log.i("获取节目单xml: $url")
 
-        val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-
         try {
-            val response = client.newCall(request).await()
-
-            if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
-
             val fetcher = EpgFetcher.instances.first { it.isSupport(url) }
-            return withContext(Dispatchers.IO) {
-                fetcher.fetch(response)
-            }
+            return url.request { body -> fetcher.fetch(body) }!!
         } catch (ex: Exception) {
             log.e("获取节目单xml失败", ex)
             throw Exception("获取节目单xml失败，请检查网络连接", ex)
