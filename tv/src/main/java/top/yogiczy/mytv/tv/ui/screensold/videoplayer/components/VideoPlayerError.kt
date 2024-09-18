@@ -2,8 +2,6 @@ package top.yogiczy.mytv.tv.ui.screensold.videoplayer.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,8 +34,6 @@ fun VideoPlayerError(
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.error,
         )
-
-        Spacer(Modifier.height(10.dp))
 
         Text(
             text = error,

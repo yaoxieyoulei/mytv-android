@@ -104,7 +104,7 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun DashboardScreeIptvSource(
+fun DashboardScreeIptvSource(
     modifier: Modifier = Modifier,
     currentIptvSourceProvider: () -> IptvSource = { IptvSource() },
     toSettingsIptvSourceScreen: () -> Unit = {},

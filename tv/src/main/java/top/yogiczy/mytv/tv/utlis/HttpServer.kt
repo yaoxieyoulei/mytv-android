@@ -24,6 +24,7 @@ import top.yogiczy.mytv.core.data.utils.Loggable
 import top.yogiczy.mytv.core.data.utils.Logger
 import top.yogiczy.mytv.core.util.utils.ApkInstaller
 import top.yogiczy.mytv.tv.R
+import top.yogiczy.mytv.tv.sync.CloudSync
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -93,6 +94,10 @@ object HttpServer : Loggable() {
 
                 server.post("/api/upload/apk") { request, response ->
                     handleUploadApk(request, response, context)
+                }
+
+                server.get("/api/cloud-sync/data") { _, response ->
+                    handleCloudSyncDataGet(response)
                 }
 
                 log.i("设置服务已启动: $serverUrl")
@@ -260,6 +265,13 @@ object HttpServer : Loggable() {
         }
 
         wrapResponse(response).send("success")
+    }
+
+    private fun handleCloudSyncDataGet(response: AsyncHttpServerResponse) {
+        wrapResponse(response).apply {
+            setContentType("application/json")
+            send(Globals.json.encodeToString(CloudSync.getData()))
+        }
     }
 
     private fun getLocalIpAddress(): String {

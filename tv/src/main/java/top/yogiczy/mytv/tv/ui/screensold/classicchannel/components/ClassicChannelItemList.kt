@@ -46,8 +46,8 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
+import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelItemLogo
-import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
@@ -73,7 +73,8 @@ fun ClassicChannelItemList(
     val channelGroup = channelGroupProvider()
     val channelList = channelListProvider()
     val initialChannel = initialChannelProvider()
-    val itemFocusRequesterList = remember(channelList) { List(channelList.size) { FocusRequester() } }
+    val itemFocusRequesterList =
+        remember(channelList) { List(channelList.size) { FocusRequester() } }
 
     var hasFocused by rememberSaveable { mutableStateOf(!channelList.contains(initialChannel)) }
     var focusedChannel by remember(channelList) {
@@ -197,7 +198,10 @@ private fun ClassicChannelItem(
                         isFocused = it.isFocused || it.hasFocus
                         if (isFocused) onChannelFocused()
                     }
-                    .handleKeyEvents(onSelect = onChannelSelected, onLongSelect = onChannelFavoriteToggle),
+                    .handleKeyEvents(
+                        onSelect = onChannelSelected,
+                        onLongSelect = onChannelFavoriteToggle
+                    ),
                 colors = ListItemDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.onSurface,
                     selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),

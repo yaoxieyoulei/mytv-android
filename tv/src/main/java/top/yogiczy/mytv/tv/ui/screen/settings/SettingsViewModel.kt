@@ -1,4 +1,4 @@
-package top.yogiczy.mytv.tv.ui.screensold.settings
+package top.yogiczy.mytv.tv.ui.screen.settings
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -351,6 +351,7 @@ class SettingsViewModel : ViewModel() {
         get() = _videoPlayerHeaders
         set(value) {
             _videoPlayerHeaders = value
+            Configs.videoPlayerHeaders = value
         }
 
     private var _videoPlayerLoadTimeout by mutableLongStateOf(0)
@@ -361,11 +362,11 @@ class SettingsViewModel : ViewModel() {
             Configs.videoPlayerLoadTimeout = value
         }
 
-    private var _videoPlayerAspectRatio by mutableStateOf(VideoPlayerDisplayMode.ORIGINAL)
+    private var _videoPlayerDisplayMode by mutableStateOf(VideoPlayerDisplayMode.ORIGINAL)
     var videoPlayerDisplayMode: VideoPlayerDisplayMode
-        get() = _videoPlayerAspectRatio
+        get() = _videoPlayerDisplayMode
         set(value) {
-            _videoPlayerAspectRatio = value
+            _videoPlayerDisplayMode = value
             Configs.videoPlayerDisplayMode = value
         }
 
@@ -491,7 +492,7 @@ class SettingsViewModel : ViewModel() {
         _videoPlayerUserAgent = Configs.videoPlayerUserAgent
         _videoPlayerHeaders = Configs.videoPlayerHeaders
         _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout
-        _videoPlayerAspectRatio = Configs.videoPlayerDisplayMode
+        _videoPlayerDisplayMode = Configs.videoPlayerDisplayMode
         _themeAppCurrent = Configs.themeAppCurrent
         _cloudSyncAutoPull = Configs.cloudSyncAutoPull
         _cloudSyncProvider = Configs.cloudSyncProvider
@@ -500,5 +501,62 @@ class SettingsViewModel : ViewModel() {
         _cloudSyncGiteeGistId = Configs.cloudSyncGiteeGistId
         _cloudSyncGiteeGistToken = Configs.cloudSyncGiteeGistToken
         _cloudSyncNetworkUrl = Configs.cloudSyncNetworkUrl
+    }
+
+    fun toLocalSettings(): Configs.Required {
+        return Configs.Required(
+            appBootLaunch = _appBootLaunch,
+            appLastLatestVersion = _appLastLatestVersion,
+            appAgreementAgreed = _appAgreementAgreed,
+            debugShowFps = _debugShowFps,
+            debugShowVideoPlayerMetadata = _debugShowVideoPlayerMetadata,
+            debugShowLayoutGrids = _debugShowLayoutGrids,
+            iptvLastChannelIdx = _iptvLastChannelIdx,
+            iptvChannelChangeFlip = _iptvChannelChangeFlip,
+            iptvSourceCacheTime = _iptvSourceCacheTime,
+            iptvSourceCurrent = _iptvSourceCurrent,
+            iptvSourceList = _iptvSourceList,
+            iptvPlayableHostList = _iptvPlayableHostList,
+            iptvChannelNoSelectEnable = _iptvChannelNoSelectEnable,
+            iptvChannelFavoriteEnable = _iptvChannelFavoriteEnable,
+            iptvChannelFavoriteListVisible = _iptvChannelFavoriteListVisible,
+            iptvChannelFavoriteList = _iptvChannelFavoriteList,
+            iptvChannelFavoriteChangeBoundaryJumpOut = _iptvChannelFavoriteChangeBoundaryJumpOut,
+            iptvChannelGroupHiddenList = _iptvChannelGroupHiddenList,
+            iptvHybridMode = _iptvHybridMode,
+            iptvSimilarChannelMerge = _iptvSimilarChannelMerge,
+            iptvChannelLogoProvider = _iptvChannelLogoProvider,
+            iptvChannelLogoOverride = _iptvChannelLogoOverride,
+            epgEnable = _epgEnable,
+            epgSourceCurrent = _epgSourceCurrent,
+            epgSourceList = _epgSourceList,
+            epgRefreshTimeThreshold = _epgRefreshTimeThreshold,
+            epgSourceFollowIptv = _epgSourceFollowIptv,
+            epgChannelReserveList = _epgChannelReserveList,
+            uiShowEpgProgrammeProgress = _uiShowEpgProgrammeProgress,
+            uiShowEpgProgrammePermanentProgress = _uiShowEpgProgrammePermanentProgress,
+            uiShowChannelLogo = _uiShowChannelLogo,
+            uiShowChannelPreview = _uiShowChannelPreview,
+            uiUseClassicPanelScreen = _uiUseClassicPanelScreen,
+            uiDensityScaleRatio = _uiDensityScaleRatio,
+            uiFontScaleRatio = _uiFontScaleRatio,
+            uiTimeShowMode = _uiTimeShowMode,
+            uiFocusOptimize = _uiFocusOptimize,
+            uiScreenAutoCloseDelay = _uiScreenAutoCloseDelay,
+            updateForceRemind = _updateForceRemind,
+            updateChannel = _updateChannel,
+            videoPlayerUserAgent = _videoPlayerUserAgent,
+            videoPlayerHeaders = _videoPlayerHeaders,
+            videoPlayerLoadTimeout = _videoPlayerLoadTimeout,
+            videoPlayerDisplayMode = _videoPlayerDisplayMode,
+            themeAppCurrent = _themeAppCurrent,
+            cloudSyncAutoPull = _cloudSyncAutoPull,
+            cloudSyncProvider = _cloudSyncProvider,
+            cloudSyncGithubGistId = _cloudSyncGithubGistId,
+            cloudSyncGithubGistToken = _cloudSyncGithubGistToken,
+            cloudSyncGiteeGistId = _cloudSyncGiteeGistId,
+            cloudSyncGiteeGistToken = _cloudSyncGiteeGistToken,
+            cloudSyncNetworkUrl = _cloudSyncNetworkUrl,
+        )
     }
 }

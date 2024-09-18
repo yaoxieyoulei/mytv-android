@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -25,6 +29,7 @@ import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.main.MainUiState
+import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -37,8 +42,13 @@ fun LoadingScreen(
     toSettingsScreen: () -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
+    var hasReady by remember { mutableStateOf(false) }
+
     LaunchedEffect(mainUiState) {
-        if (mainUiState is MainUiState.Ready && mainUiState.epgList.isEmpty()) {
+        if (hasReady) return@LaunchedEffect
+
+        if (mainUiState is MainUiState.Ready) {
+            hasReady = true
             toDashboardScreen()
         }
     }
@@ -50,6 +60,9 @@ fun LoadingScreen(
                 onLongSelect = toSettingsScreen,
                 onSettings = toSettingsScreen,
             ),
+        header = {
+            Text(LocalSettings.current.iptvSourceCurrent.name)
+        },
         onBackPressed = onBackPressed,
     ) {
         when (mainUiState) {
@@ -64,7 +77,7 @@ fun LoadingScreen(
 private fun LoadingState(
     modifier: Modifier = Modifier,
     title: @Composable () -> Unit,
-    messageProvider: () -> String? = { null }
+    messageProvider: () -> String? = { null },
 ) {
     val childPadding = rememberChildPadding()
 
@@ -76,9 +89,7 @@ private fun LoadingState(
         ) {
             CompositionLocalProvider(
                 LocalTextStyle provides MaterialTheme.typography.titleLarge
-            ) {
-                title()
-            }
+            ) { title() }
 
             val message = messageProvider()
             if (message != null) {
@@ -123,7 +134,7 @@ private fun LoadingStateLoading(
 @Composable
 private fun LoadingStateError(
     modifier: Modifier = Modifier,
-    messageProvider: () -> String? = { null }
+    messageProvider: () -> String? = { null },
 ) {
     CompositionLocalProvider(
         LocalContentColor provides MaterialTheme.colorScheme.error

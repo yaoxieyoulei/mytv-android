@@ -30,11 +30,10 @@ import top.yogiczy.mytv.tv.sync.CloudSyncProvider
 import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screen.components.AppScaffoldHeaderBtn
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -84,7 +83,7 @@ fun SettingsCloudSyncScreen(
                         onSelect = {
                             coroutineScope.launch {
                                 pushLoading = true
-                                runCatching { CloudSync.push(Configs.toPartial()) }
+                                runCatching { CloudSync.push() }
                                     .onSuccess {
                                         Snackbar.show("推送云端成功")
                                         pullSyncData()
@@ -135,10 +134,12 @@ fun SettingsCloudSyncScreen(
                 onLongSelect = {
                     syncData?.let { nnSyncData ->
                         if (syncData != CloudSyncDate.EMPTY) {
-                            Configs.fromPartial(nnSyncData.configs)
-                            settingsViewModel.refresh()
-                            Snackbar.show("应用云端数据成功")
-                            onReload()
+                            coroutineScope.launch {
+                                nnSyncData.apply()
+                                settingsViewModel.refresh()
+                                Snackbar.show("应用云端数据成功")
+                                onReload()
+                            }
                         }
                     }
                 },

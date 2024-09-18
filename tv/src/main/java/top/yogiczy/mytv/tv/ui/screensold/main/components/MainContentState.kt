@@ -25,7 +25,7 @@ import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Loggable
 import top.yogiczy.mytv.tv.ui.material.Snackbar
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerState
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.rememberVideoPlayerState
 import java.net.URI
@@ -64,13 +64,6 @@ class MainContentState(
         get() = _isChannelScreenVisible
         set(value) {
             _isChannelScreenVisible = value
-        }
-
-    private var _isSettingsScreenVisible by mutableStateOf(false)
-    var isSettingsScreenVisible
-        get() = _isSettingsScreenVisible
-        set(value) {
-            _isSettingsScreenVisible = value
         }
 
     private var _isVideoPlayerControllerScreenVisible by mutableStateOf(false)

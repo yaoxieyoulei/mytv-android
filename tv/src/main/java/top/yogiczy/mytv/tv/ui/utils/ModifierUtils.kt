@@ -2,7 +2,6 @@ package top.yogiczy.mytv.tv.ui.utils
 
 import android.os.Build
 import android.view.KeyEvent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -18,8 +17,6 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -284,16 +281,6 @@ fun Modifier.backHandler(
 }
 
 fun Modifier.visible(visible: Boolean) = alpha(if (visible) 1f else 0f)
-
-fun Modifier.customBackground() = background(
-    brush = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFF141E30),
-            Color(0xFF243B55),
-            Color(0xFF141E30)
-        ),
-    )
-)
 
 fun Int.gridColumns() = (LAYOUT_GRID_WIDTH * this + LAYOUT_GRID_SPACING * (this - 1)).dp
 fun Float.gridColumns() = (LAYOUT_GRID_WIDTH * this + LAYOUT_GRID_SPACING * (this - 1)).dp

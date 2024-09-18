@@ -1,6 +1,9 @@
 package top.yogiczy.mytv.tv.sync
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import top.yogiczy.mytv.core.data.utils.ChannelAlias
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Loggable
 import top.yogiczy.mytv.tv.BuildConfig
@@ -9,6 +12,7 @@ import top.yogiczy.mytv.tv.sync.repositories.GiteeGistSyncRepository
 import top.yogiczy.mytv.tv.sync.repositories.GithubGistSyncRepository
 import top.yogiczy.mytv.tv.sync.repositories.NetworkUrlSyncRepository
 import top.yogiczy.mytv.tv.ui.utils.Configs
+import java.io.File
 
 object CloudSync : Loggable("CloudSync") {
     private fun getRepository(): CloudSyncRepository {
@@ -29,16 +33,24 @@ object CloudSync : Loggable("CloudSync") {
         }
     }
 
-    suspend fun push(configs: Configs.Partial): Boolean {
-        log.i("推送云端数据")
-        return getRepository().push(
-            CloudSyncDate(
-                version = BuildConfig.VERSION_NAME,
-                syncAt = System.currentTimeMillis(),
-                syncFrom = Globals.deviceName,
-                configs = configs.desensitized()
-            )
+    fun getData(): CloudSyncDate {
+        val configs = Configs.toPartial()
+        return CloudSyncDate(
+            version = BuildConfig.VERSION_NAME,
+            syncAt = System.currentTimeMillis(),
+            syncFrom = Globals.deviceName,
+            configs = configs.desensitized(),
+            extraLocalIptvSourceList = configs.iptvSourceList
+                ?.filter { it.isLocal && it.url.startsWith(Globals.cacheDir.path) }
+                ?.associate { it.url to runCatching { File(it.url).readText() }.getOrDefault("") },
+            extraChannelNameAlias = runCatching { ChannelAlias.aliasFile.readText() }
+                .getOrDefault(""),
         )
+    }
+
+    suspend fun push(): Boolean {
+        log.i("推送云端数据")
+        return getRepository().push(getData())
     }
 
     suspend fun pull(): CloudSyncDate {
@@ -54,11 +66,26 @@ data class CloudSyncDate(
     val version: String = "",
     val syncAt: Long = 0,
     val syncFrom: String = "",
-    val configs: Configs.Partial = Configs.Partial(),
     val description: String? = null,
+    val configs: Configs.Partial = Configs.Partial(),
+    val extraLocalIptvSourceList: Map<String, String>? = null,
+    val extraChannelNameAlias: String? = null,
 ) {
     companion object {
         val EMPTY = CloudSyncDate()
+    }
+
+    suspend fun apply() {
+        val that = this
+        withContext(Dispatchers.IO) {
+            Configs.fromPartial(that.configs)
+            that.extraLocalIptvSourceList?.entries?.forEach { entry ->
+                File(entry.key).writeText(entry.value)
+            }
+            that.extraChannelNameAlias?.let {
+                ChannelAlias.aliasFile.writeText(it)
+            }
+        }
     }
 }
 

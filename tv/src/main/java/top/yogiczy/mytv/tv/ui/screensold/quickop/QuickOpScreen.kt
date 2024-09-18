@@ -8,23 +8,30 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
+import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
+import top.yogiczy.mytv.tv.ui.screen.dashboard.DashboardScreeIptvSource
+import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelNumber
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelPlayerInfo
@@ -50,8 +57,8 @@ fun QuickOpScreen(
     onShowChannelLine: () -> Unit = {},
     onShowVideoPlayerController: () -> Unit = {},
     onShowVideoPlayerDisplayMode: () -> Unit = {},
-    onShowMoreSettings: () -> Unit = {},
     onClearCache: () -> Unit = {},
+    toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
     onClose: () -> Unit = {},
 ) {
     val screenAutoCloseState = rememberScreenAutoCloseState(onTimeout = onClose)
@@ -63,10 +70,11 @@ fun QuickOpScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
     ) {
-        QuickOpScreenTopRight(
+        QuickOpScreenTop(
             channelNumberProvider = {
                 currentChannelNumberProvider().padStart(2, '0')
             },
+            toSettingsIptvSourceScreen = { toSettingsScreen(SettingsSubCategories.IPTV_SOURCE) },
         )
 
         QuickOpScreenBottom(
@@ -80,7 +88,7 @@ fun QuickOpScreen(
             onShowChannelLine = onShowChannelLine,
             onShowVideoPlayerController = onShowVideoPlayerController,
             onShowVideoPlayerDisplayMode = onShowVideoPlayerDisplayMode,
-            onShowMoreSettings = onShowMoreSettings,
+            onShowMoreSettings = { toSettingsScreen(null) },
             onClearCache = onClearCache,
             onUserAction = { screenAutoCloseState.active() },
         )
@@ -88,19 +96,32 @@ fun QuickOpScreen(
 }
 
 @Composable
-private fun QuickOpScreenTopRight(
+private fun QuickOpScreenTop(
     modifier: Modifier = Modifier,
     channelNumberProvider: () -> String = { "" },
+    toSettingsIptvSourceScreen: () -> Unit = {},
 ) {
+    val settings = LocalSettings.current
     val childPadding = rememberChildPadding()
 
-    Box(
+    Row(
         modifier = modifier
-            .fillMaxSize()
-            .padding(top = childPadding.top, end = childPadding.end),
+            .fillMaxWidth()
+            .padding(childPadding.paddingValues),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.titleLarge
+        ) {
+            DashboardScreeIptvSource(
+                currentIptvSourceProvider = { settings.iptvSourceCurrent },
+                toSettingsIptvSourceScreen = toSettingsIptvSourceScreen,
+            )
+        }
+
         Row(
-            modifier = Modifier.align(Alignment.TopEnd),
+            // modifier = Modifier.align(Alignment.TopEnd),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ChannelNumber(channelNumberProvider = channelNumberProvider)
@@ -182,13 +203,17 @@ private fun QuickOpScreenBottom(
 private fun QuickOpScreenPreview() {
     MyTvTheme {
         PreviewWithLayoutGrids {
-            QuickOpScreen(
-                currentChannelProvider = { Channel.EXAMPLE },
-                currentChannelNumberProvider = { "1" },
-                epgListProvider = {
-                    EpgList.example(ChannelList(listOf(Channel.EXAMPLE)))
-                },
-            )
+            CompositionLocalProvider(
+                LocalSettings provides LocalSettings.current.copy(iptvSourceCurrent = IptvSource.EXAMPLE)
+            ) {
+                QuickOpScreen(
+                    currentChannelProvider = { Channel.EXAMPLE },
+                    currentChannelNumberProvider = { "1" },
+                    epgListProvider = {
+                        EpgList.example(ChannelList(listOf(Channel.EXAMPLE)))
+                    },
+                )
+            }
         }
     }
 }

@@ -31,9 +31,10 @@ import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.main.MainUiState
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screensold.main.components.MainContent
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsScreen
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.backHandler
@@ -46,15 +47,16 @@ fun MainScreen(
     onBackPressed: () -> Unit = {},
     mainUiState: MainUiState.Ready,
     settingsViewModel: SettingsViewModel = viewModel(),
+    toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
 ) {
     MainContent(
         modifier = modifier,
-        channelGroupListProvider = { mainUiState.channelGroupList },
         filteredChannelGroupListProvider = {
             ChannelGroupList(mainUiState.channelGroupList.filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
         },
         epgListProvider = { mainUiState.epgList },
         onBackPressed = onBackPressed,
+        toSettingsScreen = toSettingsScreen,
     )
 }
 

@@ -22,6 +22,8 @@ import top.yogiczy.mytv.tv.ui.material.PopupContent
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.material.popupable
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelNumberSelectScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelTempScreen
@@ -32,11 +34,7 @@ import top.yogiczy.mytv.tv.ui.screensold.datetime.DatetimeScreen
 import top.yogiczy.mytv.tv.ui.screensold.epg.EpgProgrammeProgressScreen
 import top.yogiczy.mytv.tv.ui.screensold.epg.EpgScreen
 import top.yogiczy.mytv.tv.ui.screensold.epgreverse.EpgReverseScreen
-import top.yogiczy.mytv.tv.ui.screensold.monitor.MonitorScreen
 import top.yogiczy.mytv.tv.ui.screensold.quickop.QuickOpScreen
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsScreen
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
-import top.yogiczy.mytv.tv.ui.screensold.update.UpdateScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.rememberVideoPlayerState
 import top.yogiczy.mytv.tv.ui.screensold.videoplayercontroller.VideoPlayerControllerScreen
@@ -50,10 +48,10 @@ import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 fun MainContent(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
-    channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     filteredChannelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     epgListProvider: () -> EpgList = { EpgList() },
     settingsViewModel: SettingsViewModel = viewModel(),
+    toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -166,7 +164,6 @@ fun MainContent(
     Visible({
         !mainContentState.isTempChannelScreenVisible
                 && !mainContentState.isChannelScreenVisible
-                && !mainContentState.isSettingsScreenVisible
                 && !mainContentState.isQuickOpScreenVisible
                 && !mainContentState.isEpgScreenVisible
                 && !mainContentState.isChannelLineScreenVisible
@@ -180,7 +177,6 @@ fun MainContent(
     Visible({
         mainContentState.isTempChannelScreenVisible
                 && !mainContentState.isChannelScreenVisible
-                && !mainContentState.isSettingsScreenVisible
                 && !mainContentState.isQuickOpScreenVisible
                 && !mainContentState.isEpgScreenVisible
                 && !mainContentState.isChannelLineScreenVisible
@@ -331,9 +327,9 @@ fun MainContent(
                 mainContentState.isQuickOpScreenVisible = false
                 mainContentState.isVideoPlayerDisplayModeScreenVisible = true
             },
-            onShowMoreSettings = {
+            toSettingsScreen = {
                 mainContentState.isQuickOpScreenVisible = false
-                mainContentState.isSettingsScreenVisible = true
+                toSettingsScreen(it)
             },
             onClearCache = {
                 settingsViewModel.iptvPlayableHostList = emptySet()
@@ -414,16 +410,6 @@ fun MainContent(
         )
     }
 
-    PopupContent(
-        visibleProvider = { mainContentState.isSettingsScreenVisible },
-        onDismissRequest = { mainContentState.isSettingsScreenVisible = false },
-    ) {
-        SettingsScreen(
-            channelGroupListProvider = channelGroupListProvider,
-            onClose = { mainContentState.isSettingsScreenVisible = false },
-        )
-    }
-
     EpgReverseScreen(
         epgProgrammeReserveListProvider = { settingsViewModel.epgChannelReserveList },
         onConfirmReserve = { reserve ->
@@ -437,8 +423,4 @@ fun MainContent(
                 EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList - reserve)
         },
     )
-
-    UpdateScreen()
-
-    Visible({ settingsViewModel.debugShowFps }) { MonitorScreen() }
 }

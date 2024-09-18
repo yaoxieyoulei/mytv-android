@@ -22,6 +22,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screen.Screens
 import top.yogiczy.mytv.tv.ui.screen.about.AboutScreen
+import top.yogiczy.mytv.tv.ui.screen.agreement.AgreementScreen
 import top.yogiczy.mytv.tv.ui.screen.channels.ChannelsScreen
 import top.yogiczy.mytv.tv.ui.screen.dashboard.DashboardScreen
 import top.yogiczy.mytv.tv.ui.screen.favorites.FavoritesScreen
@@ -31,9 +32,9 @@ import top.yogiczy.mytv.tv.ui.screen.push.PushScreen
 import top.yogiczy.mytv.tv.ui.screen.search.SearchScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screen.update.UpdateScreen
 import top.yogiczy.mytv.tv.ui.screen.update.UpdateViewModel
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.utils.navigateSingleTop
 
 @Composable
@@ -111,8 +112,19 @@ fun MainScreen(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Screens.Loading(),
+        startDestination = if (settingsViewModel.appAgreementAgreed) Screens.Loading() else Screens.Agreement(),
         builder = {
+            composable(Screens.Agreement()) {
+                AgreementScreen(
+                    onAgree = {
+                        settingsViewModel.appAgreementAgreed = true
+                        navController.navigateSingleTop(Screens.Loading())
+                    },
+                    onDisagree = onBackPressed,
+                    onTouchTested = { settingsViewModel.uiFocusOptimize = false },
+                )
+            }
+
             composable(Screens.Loading()) {
                 LoadingScreen(
                     mainUiState = uiState,
@@ -153,6 +165,13 @@ fun MainScreen(
                 top.yogiczy.mytv.tv.ui.screensold.main.MainScreen(
                     mainUiState = uiState as MainUiState.Ready,
                     onBackPressed = { navController.navigateUp() },
+                    toSettingsScreen = {
+                        if (it != null) {
+                            navController.navigateSingleTop(Screens.Settings.withArgs(it))
+                        } else {
+                            navController.navigateSingleTop(Screens.Settings())
+                        }
+                    },
                 )
             }
 

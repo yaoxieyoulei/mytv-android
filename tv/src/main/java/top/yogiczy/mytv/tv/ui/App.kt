@@ -41,10 +41,9 @@ import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visible
 import top.yogiczy.mytv.tv.ui.screen.main.MainScreen
-import top.yogiczy.mytv.tv.ui.screensold.agreement.AgreementScreen
-import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettings
-import top.yogiczy.mytv.tv.ui.screensold.settings.LocalSettingsCurrent
-import top.yogiczy.mytv.tv.ui.screensold.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.monitor.MonitorPopup
+import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.theme.DESIGN_WIDTH
 import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_HORIZONTAL_PADDING
 import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_VERTICAL_PADDING
@@ -71,37 +70,24 @@ fun App(
             },
             fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
         ),
-        LocalSettings provides LocalSettingsCurrent(
-            uiFocusOptimize = settingsViewModel.uiFocusOptimize,
-            uiShowEpgProgrammeProgress = settingsViewModel.uiShowEpgProgrammeProgress,
-            uiShowChannelLogo = settingsViewModel.uiShowChannelLogo,
-            uiShowChannelPreview = settingsViewModel.uiShowChannelPreview,
-            themeAppCurrent = settingsViewModel.themeAppCurrent,
-        ),
+        LocalSettings provides settingsViewModel.toLocalSettings(),
     ) {
         PopupHandleableApplication {
-            if (settingsViewModel.appAgreementAgreed) {
-                MainScreen(
-                    modifier = modifier,
-                    onBackPressed = {
-                        if (doubleBackPressedExitState.allowExit) {
-                            onBackPressed()
-                        } else {
-                            doubleBackPressedExitState.backPress()
-                            Snackbar.show("再按一次退出")
-                        }
-                    },
-                )
-            } else {
-                AgreementScreen(
-                    onAgree = { settingsViewModel.appAgreementAgreed = true },
-                    onDisagree = { onBackPressed() },
-                    onDisableUiFocusOptimize = { settingsViewModel.uiFocusOptimize = false },
-                )
-            }
+            MainScreen(
+                modifier = modifier,
+                onBackPressed = {
+                    if (doubleBackPressedExitState.allowExit) {
+                        onBackPressed()
+                    } else {
+                        doubleBackPressedExitState.backPress()
+                        Snackbar.show("再按一次退出")
+                    }
+                },
+            )
         }
 
         SnackbarUI()
+        Visible({ settingsViewModel.debugShowFps }) { MonitorPopup() }
         Visible({ settingsViewModel.debugShowLayoutGrids }) { PreviewWithLayoutGrids { } }
     }
 }

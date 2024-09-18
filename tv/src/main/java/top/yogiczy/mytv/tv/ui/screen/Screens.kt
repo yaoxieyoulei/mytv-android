@@ -5,6 +5,7 @@ import top.yogiczy.mytv.tv.ui.screen.settings.SettingsScreen
 enum class Screens(
     private val args: List<String>? = null,
 ) {
+    Agreement,
     Loading,
     Dashboard,
     Live,

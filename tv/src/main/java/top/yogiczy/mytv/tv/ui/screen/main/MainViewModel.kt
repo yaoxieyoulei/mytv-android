@@ -48,7 +48,6 @@ class MainViewModel : ViewModel() {
 
     fun init() {
         viewModelScope.launch {
-            _uiState.value = MainUiState.Loading()
             ChannelAlias.refresh()
             refreshChannel()
             refreshEpg()
@@ -64,7 +63,7 @@ class MainViewModel : ViewModel() {
             val syncData = CloudSync.pull()
 
             if (syncData != CloudSyncDate.EMPTY) {
-                Configs.fromPartial(syncData.configs)
+                syncData.apply()
                 onCloudSyncDone()
             }
         }
