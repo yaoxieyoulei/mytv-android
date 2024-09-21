@@ -12,7 +12,8 @@ data class ChannelLine(
     val hybridType: HybridType = HybridType.None,
 ) {
     companion object {
-        val EXAMPLE = ChannelLine("http://1.2.3.4", "okhttp")
+        val EXAMPLE =
+            ChannelLine(url = "http://1.2.3.4\$LR•IPV6『线路1』", httpUserAgent = "okhttp")
     }
 
     enum class HybridType {

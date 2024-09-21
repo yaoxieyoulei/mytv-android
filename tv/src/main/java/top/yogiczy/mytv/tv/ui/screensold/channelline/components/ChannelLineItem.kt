@@ -57,7 +57,10 @@ fun ChannelLineItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("线路${lineIdx + 1}")
+                Text(line.url.let { url ->
+                    if (url.contains("$")) url.split("$").last()
+                    else "线路${lineIdx + 1}"
+                })
 
                 if (line.hybridType == ChannelLine.HybridType.WebView) {
                     Tag("混合")
@@ -112,7 +115,7 @@ private fun ChannelLineItemPreview() {
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             ChannelLineItem(
-                lineProvider = { ChannelLine("http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8") },
+                lineProvider = { ChannelLine.EXAMPLE },
                 lineIdxProvider = { 0 },
                 isSelectedProvider = { true },
             )
@@ -123,7 +126,12 @@ private fun ChannelLineItemPreview() {
             )
 
             ChannelLineItem(
-                lineProvider = { ChannelUtil.getHybridWebViewLines("cctv1").first() },
+                lineProvider = {
+                    ChannelLine(
+                        url = "https://tv.cctv.com/live/cctv1/",
+                        hybridType = ChannelLine.HybridType.WebView,
+                    )
+                },
                 lineIdxProvider = { 0 },
                 isSelectedProvider = { true },
             )

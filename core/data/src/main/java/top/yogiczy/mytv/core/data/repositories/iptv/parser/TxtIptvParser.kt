@@ -54,7 +54,9 @@ class TxtIptvParser : IptvParser {
                         name = nameEntry.key,
                         epgName = nameEntry.value.first().epgName,
                         lineList = ChannelLineList(
-                            nameEntry.value.map { it.url }.distinct().map { ChannelLine(it) }
+                            nameEntry.value.map { it.url }.distinct().map {
+                                ChannelLine(it)
+                            }
                         ),
                         logo = logoProvider(nameEntry.key, null),
                     )

@@ -143,7 +143,8 @@ object ChannelUtil {
 
     fun getHybridWebViewLines(channelName: String): ChannelLineList {
         return ChannelLineList(hybridWebViewUrl[ChannelAlias.standardChannelName(channelName)]
-            ?.map { ChannelLine(it, null, ChannelLine.HybridType.WebView) } ?: emptyList())
+            ?.map { ChannelLine(url = it, hybridType = ChannelLine.HybridType.WebView) }
+            ?: emptyList())
     }
 
     fun getHybridWebViewUrlProvider(url: String): String {
