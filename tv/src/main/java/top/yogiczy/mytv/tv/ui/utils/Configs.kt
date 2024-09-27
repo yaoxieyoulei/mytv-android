@@ -23,6 +23,9 @@ object Configs {
         /** 开机自启 */
         APP_BOOT_LAUNCH,
 
+        /** 画中画启用 */
+        APP_PIP_ENABLE,
+
         /** 上一次最新版本 */
         APP_LAST_LATEST_VERSION,
 
@@ -190,6 +193,11 @@ object Configs {
     var appBootLaunch: Boolean
         get() = SP.getBoolean(KEY.APP_BOOT_LAUNCH.name, false)
         set(value) = SP.putBoolean(KEY.APP_BOOT_LAUNCH.name, value)
+
+    /** 画中画启用 */
+    var appPipEnable: Boolean
+        get() = SP.getBoolean(KEY.APP_PIP_ENABLE.name, false)
+        set(value) = SP.putBoolean(KEY.APP_PIP_ENABLE.name, value)
 
     /** 上一次最新版本 */
     var appLastLatestVersion: String
@@ -523,6 +531,7 @@ object Configs {
     fun toPartial(): Partial {
         return Partial(
             appBootLaunch = appBootLaunch,
+            appPipEnable = appPipEnable,
             appLastLatestVersion = appLastLatestVersion,
             appAgreementAgreed = appAgreementAgreed,
             debugShowFps = debugShowFps,
@@ -579,6 +588,7 @@ object Configs {
 
     fun fromPartial(configs: Partial) {
         configs.appBootLaunch?.let { appBootLaunch = it }
+        configs.appPipEnable?.let { appPipEnable = it }
         configs.appLastLatestVersion?.let { appLastLatestVersion = it }
         configs.appAgreementAgreed?.let { appAgreementAgreed = it }
         configs.debugShowFps?.let { debugShowFps = it }
@@ -639,6 +649,7 @@ object Configs {
     @Serializable
     data class Partial(
         val appBootLaunch: Boolean? = null,
+        val appPipEnable: Boolean? = null,
         val appLastLatestVersion: String? = null,
         val appAgreementAgreed: Boolean? = null,
         val debugShowFps: Boolean? = null,
@@ -705,6 +716,7 @@ object Configs {
     @Serializable
     data class Required(
         val appBootLaunch: Boolean = false,
+        val appPipEnable: Boolean = false,
         val appLastLatestVersion: String = "",
         val appAgreementAgreed: Boolean = false,
         val debugShowFps: Boolean = false,

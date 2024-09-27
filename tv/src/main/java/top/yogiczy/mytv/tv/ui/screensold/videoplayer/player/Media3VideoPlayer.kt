@@ -124,12 +124,9 @@ class Media3VideoPlayer(
         override fun onPlayerError(ex: androidx.media3.common.PlaybackException) {
             when (ex.errorCode) {
                 // 如果是直播加载位置错误，尝试重新播放
-                androidx.media3.common.PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW -> {
-                    videoPlayer.seekToDefaultPosition()
-                    videoPlayer.prepare()
-                }
-
-                androidx.media3.common.PlaybackException.ERROR_CODE_DECODING_FAILED -> {
+                androidx.media3.common.PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW,
+                androidx.media3.common.PlaybackException.ERROR_CODE_DECODING_FAILED,
+                androidx.media3.common.PlaybackException.ERROR_CODE_IO_UNSPECIFIED -> {
                     videoPlayer.seekToDefaultPosition()
                     videoPlayer.prepare()
                 }

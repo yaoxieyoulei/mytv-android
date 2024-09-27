@@ -17,8 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -111,7 +109,6 @@ fun DashboardScreeIptvSource(
 ) {
     val currentIptvSource = currentIptvSourceProvider()
 
-    val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     val alpha = remember { Animatable(1f) }
@@ -128,7 +125,6 @@ fun DashboardScreeIptvSource(
 
     Surface(
         modifier = modifier
-            .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(onSelect = toSettingsIptvSourceScreen)
             .alpha(alpha.value),

@@ -30,11 +30,10 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.dashboard.DashboardScreeIptvSource
+import top.yogiczy.mytv.tv.ui.screen.live.channels.components.LiveChannelsChannelInfo
 import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
-import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelNumber
-import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelPlayerInfo
 import top.yogiczy.mytv.tv.ui.screensold.components.rememberScreenAutoCloseState
 import top.yogiczy.mytv.tv.ui.screensold.datetime.components.DateTimeDetail
 import top.yogiczy.mytv.tv.ui.screensold.quickop.components.QuickOpBtnList
@@ -166,7 +165,7 @@ private fun QuickOpScreenBottom(
                 .padding(bottom = childPadding.bottom),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            ChannelInfo(
+            LiveChannelsChannelInfo(
                 modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 channelProvider = currentChannelProvider,
                 channelLineIdxProvider = currentChannelLineIdxProvider,
@@ -175,14 +174,7 @@ private fun QuickOpScreenBottom(
                 },
                 isInTimeShiftProvider = isInTimeShiftProvider,
                 currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
-            )
-
-            ChannelPlayerInfo(
-                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
-                resolutionProvider = {
-                    val metadata = videoPlayerMetadataProvider()
-                    metadata.videoWidth to metadata.videoHeight
-                },
+                playerMetadataProvider = videoPlayerMetadataProvider,
             )
 
             QuickOpBtnList(

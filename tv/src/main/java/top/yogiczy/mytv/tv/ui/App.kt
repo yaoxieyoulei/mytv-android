@@ -39,7 +39,7 @@ import top.yogiczy.mytv.tv.ui.material.Padding
 import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarUI
-import top.yogiczy.mytv.tv.ui.material.Visible
+import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.screen.main.MainScreen
 import top.yogiczy.mytv.tv.ui.screen.monitor.MonitorPopup
 import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
@@ -52,8 +52,8 @@ import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 @Composable
 fun App(
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit = {},
     settingsViewModel: SettingsViewModel = viewModel(),
+    onBackPressed: () -> Unit = {},
 ) {
     if (settingsViewModel.iptvSourceCurrent.needExternalStoragePermission()) {
         requestExternalStoragePermission()
@@ -75,6 +75,7 @@ fun App(
         PopupHandleableApplication {
             MainScreen(
                 modifier = modifier,
+                settingsViewModel = settingsViewModel,
                 onBackPressed = {
                     if (doubleBackPressedExitState.allowExit) {
                         onBackPressed()
@@ -87,8 +88,8 @@ fun App(
         }
 
         SnackbarUI()
-        Visible({ settingsViewModel.debugShowFps }) { MonitorPopup() }
-        Visible({ settingsViewModel.debugShowLayoutGrids }) { PreviewWithLayoutGrids { } }
+        Visibility({ settingsViewModel.debugShowFps }) { MonitorPopup() }
+        Visibility({ settingsViewModel.debugShowLayoutGrids }) { PreviewWithLayoutGrids { } }
     }
 }
 

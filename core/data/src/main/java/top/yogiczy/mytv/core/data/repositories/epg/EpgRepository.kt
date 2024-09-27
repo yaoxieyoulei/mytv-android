@@ -10,6 +10,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
+import top.yogiczy.mytv.core.data.network.HttpException
 import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.epg.fetcher.EpgFetcher
@@ -26,16 +27,13 @@ import java.util.Locale
 class EpgRepository(
     source: EpgSource,
 ) : FileCacheRepository("epg-${source.url.hashCode().toUInt().toString(16)}.json") {
-    private val log = Logger.create(javaClass.simpleName)
+    private val log = Logger.create("EpgRepository")
     private val epgXmlRepository = EpgXmlRepository(source.url)
 
     /**
      * 解析节目单xml
      */
-    private suspend fun parseFromXml(
-        xmlString: String,
-        filteredChannels: List<String> = emptyList(),
-    ) = withContext(Dispatchers.Default) {
+    private suspend fun parseFromXml(xmlString: String) = withContext(Dispatchers.Default) {
         fun parseTime(time: String): Long {
             if (time.length < 14) return 0
 
@@ -75,12 +73,7 @@ class EpgRepository(
                         "display-name" -> {
                             lastChannel?.let {
                                 val displayName = parser.nextText()
-                                if (filteredChannels.isEmpty() || filteredChannels.contains(
-                                        displayName.lowercase()
-                                    )
-                                ) {
-                                    lastChannel.displayNames.add(displayName)
-                                }
+                                lastChannel.displayNames.add(displayName)
                             }
                         }
 
@@ -141,7 +134,6 @@ class EpgRepository(
      * 获取节目单列表
      */
     suspend fun getEpgList(
-        filteredChannels: List<String> = emptyList(),
         refreshTimeThreshold: Int,
     ): EpgList = withContext(Dispatchers.Default) {
         try {
@@ -152,22 +144,20 @@ class EpgRepository(
 
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-            val xmlJson = getOrRefresh({ lastModified, _ ->
+            val xmlJson = getOrRefresh({ lastModified, cacheData ->
                 dateFormat.format(System.currentTimeMillis()) != dateFormat.format(lastModified)
+                        || (cacheData?.let { Globals.json.decodeFromString(it) }
+                    ?: EpgList()).size == 0
             }) {
                 val xmlString = epgXmlRepository.getEpgXml()
-                Globals.json.encodeToString(
-                    parseFromXml(
-                        xmlString,
-                        filteredChannels.map { it.lowercase() },
-                    )
-                )
+                val epgList = parseFromXml(xmlString)
+                Globals.json.encodeToString(epgList)
             }
 
             return@withContext Globals.json.decodeFromString(xmlJson)
         } catch (ex: Exception) {
             log.e("获取节目单失败", ex)
-            throw Exception(ex)
+            throw ex
         }
     }
 }
@@ -178,7 +168,7 @@ class EpgRepository(
 private class EpgXmlRepository(
     private val url: String
 ) : FileCacheRepository("epg-${url.hashCode().toUInt().toString(16)}.xml") {
-    private val log = Logger.create(javaClass.simpleName)
+    private val log = Logger.create("EpgXmlRepository")
 
     /**
      * 获取远程xml
@@ -187,11 +177,13 @@ private class EpgXmlRepository(
         log.i("获取节目单xml: $url")
 
         try {
-            val fetcher = EpgFetcher.instances.first { it.isSupport(url) }
-            return url.request { body -> fetcher.fetch(body) }!!
+            return url.request { response, request ->
+                val fetcher = EpgFetcher.instances.first { it.isSupport(request.url.toString()) }
+                fetcher.fetch(response.body!!)
+            }
         } catch (ex: Exception) {
             log.e("获取节目单xml失败", ex)
-            throw Exception("获取节目单xml失败，请检查网络连接", ex)
+            throw HttpException("获取节目单xml失败，请检查网络连接", ex)
         }
     }
 

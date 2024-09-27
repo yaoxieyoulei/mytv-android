@@ -8,7 +8,7 @@ import top.yogiczy.mytv.core.data.utils.Loggable
 /**
  * git数据获取
  */
-class GitRepository : Loggable() {
+class GitRepository : Loggable("GitRepository") {
 
     /**
      * 获取最新发行版

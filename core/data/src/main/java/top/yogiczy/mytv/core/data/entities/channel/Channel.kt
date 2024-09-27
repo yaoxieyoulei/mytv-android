@@ -26,6 +26,11 @@ data class Channel(
      * 台标
      */
     val logo: String? = null,
+
+    /**
+     * 频道号
+     */
+    val index: Int = 0,
 ) {
     companion object {
         val EXAMPLE = Channel(
@@ -40,7 +45,10 @@ data class Channel(
                     ),
                 )
             ),
-            logo = "https://live.fanmingming.com/tv/CCTV1.png"
+            logo = "https://live.fanmingming.com/tv/CCTV1.png",
         )
     }
+
+    val no: String
+        get() = (index + 1).toString().padStart(2, '0')
 }

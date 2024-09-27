@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
-import top.yogiczy.mytv.tv.ui.material.Visible
+import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.screensold.webview.components.WebViewPlaceholder
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -89,7 +89,7 @@ fun WebViewScreen(
             update = { it.loadUrl(url) },
         )
 
-        Visible({ placeholderVisible }) { WebViewPlaceholder() }
+        Visibility({ placeholderVisible }) { WebViewPlaceholder() }
     }
 }
 

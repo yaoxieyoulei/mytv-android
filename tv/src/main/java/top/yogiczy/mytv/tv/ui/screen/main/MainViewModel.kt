@@ -3,6 +3,7 @@ package top.yogiczy.mytv.tv.ui.screen.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,6 +22,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
+import top.yogiczy.mytv.core.data.network.HttpException
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.ChannelAlias
@@ -37,17 +38,20 @@ class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
+    private var _lastJob: Job? = null
+
     var onCloudSyncDone: () -> Unit = {}
 
     init {
         viewModelScope.launch {
             pullCloudSyncData()
+            init()
         }
-        init()
     }
 
     fun init() {
-        viewModelScope.launch {
+        _lastJob?.cancel()
+        _lastJob = viewModelScope.launch {
             ChannelAlias.refresh()
             refreshChannel()
             refreshEpg()
@@ -70,7 +74,7 @@ class MainViewModel : ViewModel() {
     }
 
     private suspend fun refreshChannel() {
-        _uiState.value = MainUiState.Loading("获取直播源")
+        _uiState.value = MainUiState.Loading("加载直播源")
 
         flow {
             emit(
@@ -82,11 +86,12 @@ class MainViewModel : ViewModel() {
                     )
             )
         }
-            .retryWhen { _, attempt ->
+            .retryWhen { e, attempt ->
                 if (attempt >= Constants.NETWORK_RETRY_COUNT) return@retryWhen false
+                if (e !is HttpException) return@retryWhen false
 
                 _uiState.value =
-                    MainUiState.Loading("获取直播源(${attempt + 1}/${Constants.NETWORK_RETRY_COUNT})...")
+                    MainUiState.Loading("加载直播源(${attempt + 1}/${Constants.NETWORK_RETRY_COUNT})...")
                 delay(Constants.NETWORK_RETRY_INTERVAL)
                 true
             }
@@ -116,8 +121,14 @@ class MainViewModel : ViewModel() {
                         .map { nameEntry ->
                             nameEntry.value.first().copy(
                                 name = nameEntry.key,
-                                lineList = ChannelLineList(nameEntry.value.map { it.lineList }
-                                    .flatten().distinctBy { it.url })
+                                lineList = ChannelLineList(nameEntry.value
+                                    .map { channel ->
+                                        if (nameEntry.value.size > 1) {
+                                            channel.lineList.map { line -> line.copy(name = channel.name) }
+                                        } else channel.lineList
+                                    }
+                                    .flatten()
+                                    .distinctBy { it.url })
                             )
                         })
                 )
@@ -166,22 +177,32 @@ class MainViewModel : ViewModel() {
             flow {
                 val epgSource = if (Configs.epgSourceFollowIptv) {
                     val iptvRepository = IptvRepository(Configs.iptvSourceCurrent)
-                    iptvRepository.getEpgUrl()?.let { epgUrl ->
-                        EpgSource(Configs.iptvSourceCurrent.name, epgUrl)
-                    } ?: Configs.epgSourceCurrent
+                    iptvRepository.getEpgUrl()?.let { epgUrl -> EpgSource(url = epgUrl) }
+                        ?: Configs.epgSourceCurrent
                 } else Configs.epgSourceCurrent
 
                 emit(
                     EpgRepository(epgSource).getEpgList(
-                        filteredChannels = channelGroupList.channelList.map { it.epgName },
                         refreshTimeThreshold = Configs.epgRefreshTimeThreshold,
                     )
                 )
             }
-                .retry(Constants.NETWORK_RETRY_COUNT) { delay(Constants.NETWORK_RETRY_INTERVAL); true }
+                .retryWhen { e, attempt ->
+                    if (attempt >= Constants.NETWORK_RETRY_COUNT) return@retryWhen false
+                    if (e !is HttpException) return@retryWhen false
+
+                    delay(Constants.NETWORK_RETRY_INTERVAL)
+                    true
+                }
                 .catch {
                     emit(EpgList())
                     Snackbar.show("节目单获取失败，请检查网络连接", type = SnackbarType.ERROR)
+                }
+                .map { epgList ->
+                    val filteredChannels =
+                        channelGroupList.channelList.map { it.epgName.lowercase() }
+
+                    EpgList(epgList.filter { epg -> epg.channelList.any { it.lowercase() in filteredChannels } })
                 }
                 .map { epgList ->
                     _uiState.value = (_uiState.value as MainUiState.Ready).copy(epgList = epgList)

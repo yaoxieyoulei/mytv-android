@@ -32,7 +32,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyTV"
         android:usesCleartextTraffic="true"
-        tools:ignore="DiscouragedApi"
         tools:targetApi="n">
         <activity
             android:name=".MainActivity"
@@ -40,7 +39,8 @@
             android:exported="true"
             android:resizeableActivity="true"
             android:screenOrientation="sensorLandscape"
-            android:supportsPictureInPicture="true">
+            android:supportsPictureInPicture="true"
+            tools:ignore="DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

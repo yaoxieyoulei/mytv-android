@@ -1,6 +1,10 @@
 package top.yogiczy.mytv.tv
 
+import android.app.PictureInPictureParams
+import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
+import android.util.Rational
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +17,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.tv.material3.Surface
 import top.yogiczy.mytv.tv.ui.App
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.utlis.HttpServer
 import kotlin.system.exitProcess
 
@@ -20,6 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 
         setContent {
             WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -45,5 +51,15 @@ class MainActivity : ComponentActivity() {
         }
 
         HttpServer.start(applicationContext)
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Configs.appPipEnable) {
+            val aspectRatio = Rational(16, 9)
+            val params = PictureInPictureParams.Builder().setAspectRatio(aspectRatio).build()
+            enterPictureInPictureMode(params)
+        }
     }
 }

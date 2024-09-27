@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
@@ -25,11 +26,19 @@ import androidx.tv.material3.Surface
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
+import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
+import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.core.util.utils.urlHost
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
+import top.yogiczy.mytv.tv.ui.material.Visibility
+import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
+import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.channels.ChannelsScreen
 import top.yogiczy.mytv.tv.ui.screen.search.SearchScreen
+import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelTempScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.rememberVideoPlayerState
+import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
@@ -49,6 +58,18 @@ fun MultiViewItem(
     onMoveTo: (Int) -> Unit = {},
 ) {
     val channel = channelProvider()
+    val line = remember(channel) {
+        channel.lineList.firstOrNull { Configs.iptvPlayableHostList.contains(it.url.urlHost()) }
+            ?: channel.lineList.first()
+    }
+    val childPadding = rememberChildPadding()
+
+    var channelInfoVisible by remember { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
+    val closeState =
+        rememberDebounceState(Constants.UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION) {
+            channelInfoVisible = false
+        }
 
     var actionsVisible by remember { mutableStateOf(false) }
     var moveVisible by remember { mutableStateOf(false) }
@@ -56,14 +77,21 @@ fun MultiViewItem(
     var searchAndAddChannelVisible by remember { mutableStateOf(false) }
     var changeChannelVisible by remember { mutableStateOf(false) }
 
-    val videoPlayerState = rememberVideoPlayerState()
+    val playerState = rememberVideoPlayerState()
+    playerState.onReady { closeState.send() }
     LaunchedEffect(channel) {
-        // TODO 获取最优线路
-        videoPlayerState.prepare(channel.lineList.first())
+        channelInfoVisible = true
+        playerState.prepare(line)
+    }
+
+    LaunchedEffect(isFocused) {
+        if (isFocused) channelInfoVisible = true
+        closeState.send()
     }
 
     Surface(
         modifier = modifier
+            .onFocusChanged { isFocused = it.isFocused || it.hasFocus }
             .handleKeyEvents(
                 onSelect = { actionsVisible = true },
                 onLongSelect = { moveVisible = true },
@@ -80,15 +108,15 @@ fun MultiViewItem(
         ),
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1f),
     ) {
-        VideoPlayerScreen(state = videoPlayerState)
+        VideoPlayerScreen(state = playerState)
 
         Row(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(20.dp),
+                .align(Alignment.TopStart)
+                .padding(childPadding.paddingValues),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (!videoPlayerState.isPlaying) {
+            if (!playerState.isPlaying) {
                 Icon(
                     Icons.Filled.PauseCircle,
                     contentDescription = null,
@@ -96,7 +124,7 @@ fun MultiViewItem(
                 )
             }
 
-            if (videoPlayerState.volume == 0f) {
+            if (playerState.volume == 0f) {
                 Icon(
                     Icons.AutoMirrored.Filled.VolumeOff,
                     contentDescription = null,
@@ -104,7 +132,17 @@ fun MultiViewItem(
                 )
             }
         }
+
+        Visibility({ channelInfoVisible }) {
+            ChannelTempScreen(
+                channelProvider = channelProvider,
+                channelLineIdxProvider = { channel.lineList.indexOf(line) },
+                recentEpgProgrammeProvider = { epgListProvider().recentProgramme(channel) },
+                playerMetadataProvider = { playerState.metadata },
+            )
+        }
     }
+
 
     SimplePopup(
         visibleProvider = { actionsVisible },
@@ -115,8 +153,8 @@ fun MultiViewItem(
             viewIndexProvider = viewIndexProvider,
             viewCountProvider = viewCountProvider,
             isZoomInProvider = { zoomInIndexProvider() == viewIndexProvider() },
-            isPlayingProvider = { videoPlayerState.isPlaying },
-            isMutedProvider = { videoPlayerState.volume == 0f },
+            isPlayingProvider = { playerState.isPlaying },
+            isMutedProvider = { playerState.volume == 0f },
             onAddChannel = {
                 addChannelVisible = true
                 actionsVisible = false
@@ -142,24 +180,23 @@ fun MultiViewItem(
                 actionsVisible = false
             },
             onVideoPlayerPlay = {
-                videoPlayerState.play()
+                playerState.play()
                 actionsVisible = false
             },
             onVideoPlayerPause = {
-                videoPlayerState.pause()
+                playerState.pause()
                 actionsVisible = false
             },
             onVideoPlayerMute = {
-                videoPlayerState.volume = 0f
+                playerState.volume = 0f
                 actionsVisible = false
             },
             onVideoPlayerUnMute = {
-                videoPlayerState.volume = 1f
+                playerState.volume = 1f
                 actionsVisible = false
             },
             onVideoPlayerReload = {
-                // TODO 获取最优线路
-                videoPlayerState.prepare(channel.lineList.first())
+                playerState.prepare(line)
                 actionsVisible = false
             },
         )

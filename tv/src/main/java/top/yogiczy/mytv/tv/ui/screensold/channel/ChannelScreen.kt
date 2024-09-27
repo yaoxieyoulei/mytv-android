@@ -31,11 +31,10 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
-import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelInfo
+import top.yogiczy.mytv.tv.ui.screen.live.channels.components.LiveChannelsChannelInfo
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelItemGrid
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelItemGroupList
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelNumber
-import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelPlayerInfo
 import top.yogiczy.mytv.tv.ui.screensold.components.rememberScreenAutoCloseState
 import top.yogiczy.mytv.tv.ui.screensold.datetime.components.DateTimeDetail
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
@@ -101,7 +100,7 @@ fun ChannelScreen(
 }
 
 @Composable
-private fun ChannelScreenTopRight(
+fun ChannelScreenTopRight(
     modifier: Modifier = Modifier,
     channelNumberProvider: () -> String = { "" },
 ) {
@@ -159,7 +158,7 @@ private fun ChannelScreenBottom(
             modifier = Modifier.align(Alignment.BottomStart),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            ChannelInfo(
+            LiveChannelsChannelInfo(
                 modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
                 channelProvider = currentChannelProvider,
                 channelLineIdxProvider = currentChannelLineIdxProvider,
@@ -168,14 +167,7 @@ private fun ChannelScreenBottom(
                 },
                 isInTimeShiftProvider = isInTimeShiftProvider,
                 currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
-            )
-
-            ChannelPlayerInfo(
-                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
-                resolutionProvider = {
-                    val metadata = videoPlayerMetadataProvider()
-                    metadata.videoWidth to metadata.videoHeight
-                },
+                playerMetadataProvider = videoPlayerMetadataProvider,
             )
 
             ChannelScreenBottomChannelItemListAllAndFavorite(

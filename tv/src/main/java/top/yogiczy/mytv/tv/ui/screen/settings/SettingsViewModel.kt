@@ -13,6 +13,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
 import top.yogiczy.mytv.tv.sync.CloudSyncProvider
+import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerDisplayMode
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -24,6 +25,16 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _appBootLaunch = value
             Configs.appBootLaunch = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+
+    private var _appPipEnable by mutableStateOf(false)
+    var appPipEnable: Boolean
+        get() = _appPipEnable
+        set(value) {
+            _appPipEnable = value
+            Configs.appPipEnable = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _appLastLatestVersion by mutableStateOf("")
@@ -32,6 +43,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _appLastLatestVersion = value
             Configs.appLastLatestVersion = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _appAgreementAgreed by mutableStateOf(false)
@@ -40,6 +52,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _appAgreementAgreed = value
             Configs.appAgreementAgreed = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _debugShowFps by mutableStateOf(false)
@@ -48,6 +61,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _debugShowFps = value
             Configs.debugShowFps = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _debugShowVideoPlayerMetadata by mutableStateOf(false)
@@ -56,6 +70,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _debugShowVideoPlayerMetadata = value
             Configs.debugShowVideoPlayerMetadata = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _debugShowLayoutGrids by mutableStateOf(false)
@@ -64,6 +79,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _debugShowLayoutGrids = value
             Configs.debugShowLayoutGrids = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvLastChannelIdx by mutableIntStateOf(0)
@@ -72,6 +88,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvLastChannelIdx = value
             Configs.iptvLastChannelIdx = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelChangeFlip by mutableStateOf(false)
@@ -80,6 +97,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelChangeFlip = value
             Configs.iptvChannelChangeFlip = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvSourceCacheTime by mutableLongStateOf(0)
@@ -88,6 +106,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvSourceCacheTime = value
             Configs.iptvSourceCacheTime = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvSourceCurrent by mutableStateOf(IptvSource())
@@ -96,6 +115,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvSourceCurrent = value
             Configs.iptvSourceCurrent = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvSourceList by mutableStateOf(IptvSourceList())
@@ -104,6 +124,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvSourceList = value
             Configs.iptvSourceList = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvPlayableHostList by mutableStateOf(emptySet<String>())
@@ -112,6 +133,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvPlayableHostList = value
             Configs.iptvPlayableHostList = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelNoSelectEnable by mutableStateOf(false)
@@ -120,6 +142,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelNoSelectEnable = value
             Configs.iptvChannelNoSelectEnable = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelFavoriteEnable by mutableStateOf(false)
@@ -128,6 +151,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelFavoriteEnable = value
             Configs.iptvChannelFavoriteEnable = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelFavoriteListVisible by mutableStateOf(false)
@@ -136,6 +160,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelFavoriteListVisible = value
             Configs.iptvChannelFavoriteListVisible = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelFavoriteList by mutableStateOf(emptySet<String>())
@@ -144,6 +169,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelFavoriteList = value
             Configs.iptvChannelFavoriteList = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelFavoriteChangeBoundaryJumpOut by mutableStateOf(false)
@@ -152,6 +178,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelFavoriteChangeBoundaryJumpOut = value
             Configs.iptvChannelFavoriteChangeBoundaryJumpOut = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelGroupHiddenList by mutableStateOf(emptySet<String>())
@@ -160,6 +187,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelGroupHiddenList = value
             Configs.iptvChannelGroupHiddenList = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvHybridMode by mutableStateOf(Configs.IptvHybridMode.DISABLE)
@@ -168,6 +196,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvHybridMode = value
             Configs.iptvHybridMode = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvSimilarChannelMerge by mutableStateOf(false)
@@ -176,6 +205,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvSimilarChannelMerge = value
             Configs.iptvSimilarChannelMerge = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelLogoProvider by mutableStateOf("")
@@ -184,6 +214,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelLogoProvider = value
             Configs.iptvChannelLogoProvider = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _iptvChannelLogoOverride by mutableStateOf(false)
@@ -192,6 +223,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelLogoOverride = value
             Configs.iptvChannelLogoOverride = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _epgEnable by mutableStateOf(false)
@@ -200,6 +232,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _epgEnable = value
             Configs.epgEnable = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _epgSourceCurrent by mutableStateOf(EpgSource())
@@ -208,6 +241,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _epgSourceCurrent = value
             Configs.epgSourceCurrent = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _epgSourceList by mutableStateOf(EpgSourceList())
@@ -216,6 +250,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _epgSourceList = value
             Configs.epgSourceList = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _epgRefreshTimeThreshold by mutableIntStateOf(0)
@@ -224,6 +259,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _epgRefreshTimeThreshold = value
             Configs.epgRefreshTimeThreshold = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _epgSourceFollowIptv by mutableStateOf(false)
@@ -232,6 +268,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _epgSourceFollowIptv = value
             Configs.epgSourceFollowIptv = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _epgChannelReserveList by mutableStateOf(EpgProgrammeReserveList())
@@ -240,6 +277,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _epgChannelReserveList = value
             Configs.epgChannelReserveList = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiShowEpgProgrammeProgress by mutableStateOf(false)
@@ -248,6 +286,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiShowEpgProgrammeProgress = value
             Configs.uiShowEpgProgrammeProgress = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiShowEpgProgrammePermanentProgress by mutableStateOf(false)
@@ -256,6 +295,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiShowEpgProgrammePermanentProgress = value
             Configs.uiShowEpgProgrammePermanentProgress = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiShowChannelLogo by mutableStateOf(false)
@@ -264,6 +304,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiShowChannelLogo = value
             Configs.uiShowChannelLogo = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiShowChannelPreview by mutableStateOf(false)
@@ -272,6 +313,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiShowChannelPreview = value
             Configs.uiShowChannelPreview = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiUseClassicPanelScreen by mutableStateOf(false)
@@ -280,6 +322,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiUseClassicPanelScreen = value
             Configs.uiUseClassicPanelScreen = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiDensityScaleRatio by mutableFloatStateOf(0f)
@@ -288,6 +331,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiDensityScaleRatio = value
             Configs.uiDensityScaleRatio = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiFontScaleRatio by mutableFloatStateOf(1f)
@@ -296,6 +340,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiFontScaleRatio = value
             Configs.uiFontScaleRatio = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiTimeShowMode by mutableStateOf(Configs.UiTimeShowMode.HIDDEN)
@@ -304,6 +349,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiTimeShowMode = value
             Configs.uiTimeShowMode = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiFocusOptimize by mutableStateOf(false)
@@ -312,6 +358,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiFocusOptimize = value
             Configs.uiFocusOptimize = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _uiScreenAutoCloseDelay by mutableLongStateOf(0)
@@ -320,6 +367,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _uiScreenAutoCloseDelay = value
             Configs.uiScreenAutoCloseDelay = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _updateForceRemind by mutableStateOf(false)
@@ -328,6 +376,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _updateForceRemind = value
             Configs.updateForceRemind = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _updateChannel by mutableStateOf("")
@@ -336,6 +385,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _updateChannel = value
             Configs.updateChannel = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _videoPlayerUserAgent by mutableStateOf("")
@@ -344,6 +394,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _videoPlayerUserAgent = value
             Configs.videoPlayerUserAgent = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _videoPlayerHeaders by mutableStateOf("")
@@ -352,6 +403,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _videoPlayerHeaders = value
             Configs.videoPlayerHeaders = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _videoPlayerLoadTimeout by mutableLongStateOf(0)
@@ -360,6 +412,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _videoPlayerLoadTimeout = value
             Configs.videoPlayerLoadTimeout = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _videoPlayerDisplayMode by mutableStateOf(VideoPlayerDisplayMode.ORIGINAL)
@@ -368,6 +421,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _videoPlayerDisplayMode = value
             Configs.videoPlayerDisplayMode = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _themeAppCurrent by mutableStateOf<AppThemeDef?>(null)
@@ -376,6 +430,7 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _themeAppCurrent = value
             Configs.themeAppCurrent = value
+            afterSetWhenCloudSyncAutoPull()
         }
 
     private var _cloudSyncAutoPull by mutableStateOf(false)
@@ -434,11 +489,12 @@ class SettingsViewModel : ViewModel() {
             Configs.cloudSyncNetworkUrl = value
         }
 
+    private fun afterSetWhenCloudSyncAutoPull() {
+        if (_cloudSyncAutoPull) Snackbar.show("云同步：自动拉取已启用")
+    }
+
     init {
-        try {
-            refresh()
-        } catch (_: Exception) {
-        }
+        runCatching { refresh() }
 
         // 删除过期的预约
         _epgChannelReserveList = EpgProgrammeReserveList(
@@ -450,6 +506,7 @@ class SettingsViewModel : ViewModel() {
 
     fun refresh() {
         _appBootLaunch = Configs.appBootLaunch
+        _appPipEnable = Configs.appPipEnable
         _appLastLatestVersion = Configs.appLastLatestVersion
         _appAgreementAgreed = Configs.appAgreementAgreed
         _debugShowFps = Configs.debugShowFps
@@ -506,6 +563,7 @@ class SettingsViewModel : ViewModel() {
     fun toLocalSettings(): Configs.Required {
         return Configs.Required(
             appBootLaunch = _appBootLaunch,
+            appPipEnable = _appPipEnable,
             appLastLatestVersion = _appLastLatestVersion,
             appAgreementAgreed = _appAgreementAgreed,
             debugShowFps = _debugShowFps,

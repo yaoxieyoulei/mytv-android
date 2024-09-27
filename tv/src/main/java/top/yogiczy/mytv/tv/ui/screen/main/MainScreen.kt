@@ -3,6 +3,7 @@ package top.yogiczy.mytv.tv.ui.screen.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +21,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.ch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.tv.ui.material.Snackbar
+import top.yogiczy.mytv.tv.ui.rememberDoubleBackPressedExitState
 import top.yogiczy.mytv.tv.ui.screen.Screens
 import top.yogiczy.mytv.tv.ui.screen.about.AboutScreen
 import top.yogiczy.mytv.tv.ui.screen.agreement.AgreementScreen
@@ -54,21 +56,24 @@ fun MainScreen(
     val channelGroupListProvider = {
         (uiState as? MainUiState.Ready)?.channelGroupList ?: ChannelGroupList()
     }
-    val filteredChannelGroupListProvider = {
-        ChannelGroupList(channelGroupListProvider().filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
-    }
-    val favoriteChannelListProvider = {
-        val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
-        ChannelList(filteredChannelGroupListProvider().channelList
-            .filter { favoriteChannelNameList.contains(it.name) })
-    }
     val epgListProvider = { (uiState as MainUiState.Ready).epgList }
+
+    val filteredChannelGroupList = remember(uiState, settingsViewModel.iptvChannelGroupHiddenList) {
+        ChannelGroupList(channelGroupListProvider().filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
+            .withMetadata()
+    }
+
+    val favoriteChannelList =
+        remember(filteredChannelGroupList, settingsViewModel.iptvChannelFavoriteList) {
+            val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
+            ChannelList(filteredChannelGroupList.channelList
+                .filter { favoriteChannelNameList.contains(it.name) })
+        }
 
     val navController = rememberNavController()
 
     fun onChannelSelected(channel: Channel) {
-        settingsViewModel.iptvLastChannelIdx =
-            filteredChannelGroupListProvider().channelIdx(channel)
+        settingsViewModel.iptvLastChannelIdx = filteredChannelGroupList.channelIdx(channel)
         navController.navigateSingleTop(Screens.Live())
     }
 
@@ -141,7 +146,7 @@ fun MainScreen(
             composable(Screens.Dashboard()) {
                 DashboardScreen(
                     currentIptvSourceProvider = { settingsViewModel.iptvSourceCurrent },
-                    favoriteChannelListProvider = favoriteChannelListProvider,
+                    favoriteChannelListProvider = { favoriteChannelList },
                     onChannelSelected = { onChannelSelected(it) },
                     epgListProvider = epgListProvider,
                     toLiveScreen = { navController.navigateSingleTop(Screens.Live()) },
@@ -162,9 +167,20 @@ fun MainScreen(
             }
 
             composable(Screens.Live()) {
-                top.yogiczy.mytv.tv.ui.screensold.main.MainScreen(
-                    mainUiState = uiState as MainUiState.Ready,
-                    onBackPressed = { navController.navigateUp() },
+                val doubleBackPressedExitState = rememberDoubleBackPressedExitState()
+
+                top.yogiczy.mytv.tv.ui.screensold.main.components.MainContent(
+                    filteredChannelGroupListProvider = { filteredChannelGroupList },
+                    epgListProvider = epgListProvider,
+                    settingsViewModel = settingsViewModel,
+                    onBackPressed = {
+                        if (doubleBackPressedExitState.allowExit) {
+                            navController.navigateUp()
+                        } else {
+                            doubleBackPressedExitState.backPress()
+                            Snackbar.show("再按一次退出直播")
+                        }
+                    },
                     toSettingsScreen = {
                         if (it != null) {
                             navController.navigateSingleTop(Screens.Settings.withArgs(it))
@@ -177,7 +193,7 @@ fun MainScreen(
 
             composable(Screens.Channels()) {
                 ChannelsScreen(
-                    channelGroupListProvider = filteredChannelGroupListProvider,
+                    channelGroupListProvider = { filteredChannelGroupList },
                     onChannelSelected = { onChannelSelected(it) },
                     onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
                     epgListProvider = epgListProvider,
@@ -187,7 +203,7 @@ fun MainScreen(
 
             composable(Screens.Favorites()) {
                 FavoritesScreen(
-                    channelListProvider = favoriteChannelListProvider,
+                    channelListProvider = { favoriteChannelList },
                     onChannelSelected = { onChannelSelected(it) },
                     onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
                     onChannelFavoriteClear = { onChannelFavoriteClear() },
@@ -198,7 +214,7 @@ fun MainScreen(
 
             composable(Screens.Search()) {
                 SearchScreen(
-                    channelGroupListProvider = filteredChannelGroupListProvider,
+                    channelGroupListProvider = { filteredChannelGroupList },
                     onChannelSelected = { onChannelSelected(it) },
                     onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
                     epgListProvider = epgListProvider,
@@ -254,7 +270,7 @@ fun MainScreen(
 
             composable(Screens.MultiView()) {
                 MultiViewScreen(
-                    channelGroupListProvider = filteredChannelGroupListProvider,
+                    channelGroupListProvider = { filteredChannelGroupList },
                     epgListProvider = epgListProvider,
                     onBackPressed = { navController.navigateUp() },
                 )

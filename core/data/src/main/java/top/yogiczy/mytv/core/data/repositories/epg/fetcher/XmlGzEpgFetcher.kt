@@ -3,9 +3,6 @@ package top.yogiczy.mytv.core.data.repositories.epg.fetcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
-import java.io.BufferedReader
-import java.io.ByteArrayInputStream
-import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream
 
 /**
@@ -17,16 +14,8 @@ class XmlGzEpgFetcher : EpgFetcher {
     }
 
     override suspend fun fetch(body: ResponseBody) = withContext(Dispatchers.IO) {
-        val gzData = body.bytes()
-        val stringBuilder = StringBuilder()
-        GZIPInputStream(ByteArrayInputStream(gzData)).use { gzipInputStream ->
-            BufferedReader(InputStreamReader(gzipInputStream)).use { reader ->
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    stringBuilder.append(line).append("\n")
-                }
-            }
+        GZIPInputStream(body.byteStream()).bufferedReader().use { reader ->
+            reader.readText()
         }
-        stringBuilder.toString()
     }
 }

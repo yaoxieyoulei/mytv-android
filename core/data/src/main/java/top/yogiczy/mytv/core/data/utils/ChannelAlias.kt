@@ -19,7 +19,7 @@ object ChannelAlias : Loggable("ChannelAlias") {
 
     fun standardChannelName(name: String): String {
         val suffixList =
-            listOf("高码", "50-FPS", "HEVC", "HD", "高清", "IPV4", "IPV6", "「IPV4」", "「IPV6」", "-")
+            _aliasMap.getOrElse("__suffix") { emptyList() } + defaultAlias.getOrElse("__suffix") { emptyList() }
 
         val nameWithoutSuffix = suffixList.fold(name) { acc, suffix ->
             acc.removeSuffix(suffix)

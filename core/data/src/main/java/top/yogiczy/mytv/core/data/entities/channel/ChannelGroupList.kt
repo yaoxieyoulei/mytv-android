@@ -33,4 +33,12 @@ data class ChannelGroupList(
         val ChannelGroupList.channelList: ChannelList
             get() = ChannelList(this.flatMap { it.channelList })
     }
+
+    fun withMetadata() = ChannelGroupList(map { group ->
+        group.copy(channelList = ChannelList(group.channelList.map { channel ->
+            channel.copy(
+                index = channelList.indexOf(channel),
+            )
+        }))
+    })
 }

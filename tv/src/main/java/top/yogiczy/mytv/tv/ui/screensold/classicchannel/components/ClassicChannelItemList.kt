@@ -46,6 +46,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
+import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
 import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelItemLogo
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
@@ -82,7 +83,10 @@ fun ClassicChannelItemList(
             if (hasFocused) channelList.firstOrNull() ?: Channel() else initialChannel
         )
     }
-    LaunchedEffect(focusedChannel) { onChannelFocused(focusedChannel) }
+
+    val onChannelFocusedDebounce = rememberDebounceState(wait = 100L) {
+        onChannelFocused(focusedChannel)
+    }
 
     val listState = remember(channelGroup) {
         LazyListState(
@@ -131,7 +135,10 @@ fun ClassicChannelItemList(
                     }
                     onChannelFavoriteToggle(channel)
                 },
-                onChannelFocused = { focusedChannel = channel },
+                onChannelFocused = {
+                    focusedChannel = channel
+                    onChannelFocusedDebounce.send()
+                },
                 recentEpgProgrammeProvider = { epgListProvider().recentProgramme(channel) },
                 showEpgProgrammeProgressProvider = showEpgProgrammeProgressProvider,
                 focusRequesterProvider = { itemFocusRequesterList[index] },

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.core.data.utils.SP
@@ -48,10 +49,25 @@ fun SettingsAppScreen(
 
         item {
             SettingsListItem(
+                headlineContent = "画中画",
+                trailingContent = {
+                    Switch(settingsViewModel.appPipEnable, null)
+                },
+                onSelect = {
+                    settingsViewModel.appPipEnable = !settingsViewModel.appPipEnable
+                },
+            )
+        }
+
+        item {
+            SettingsListItem(
                 headlineContent = "清除缓存",
                 onSelect = {
                     settingsViewModel.iptvPlayableHostList = emptySet()
                     coroutineScope.launch {
+                        IptvRepository(settingsViewModel.iptvSourceCurrent).getEpgUrl()?.let {
+                            EpgRepository(EpgSource(url = it)).clearCache()
+                        }
                         IptvRepository(settingsViewModel.iptvSourceCurrent).clearCache()
                         EpgRepository(settingsViewModel.epgSourceCurrent).clearCache()
                     }

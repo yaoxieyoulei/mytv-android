@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.Media3VideoPlayer
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
+import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Stable
 class VideoPlayerState(
@@ -59,6 +60,7 @@ class VideoPlayerState(
 
     fun prepare(line: ChannelLine) {
         error = null
+        metadata = VideoPlayer.Metadata()
         instance.prepare(line)
     }
 
@@ -85,6 +87,7 @@ class VideoPlayerState(
     private val onReadyListeners = mutableListOf<() -> Unit>()
     private val onErrorListeners = mutableListOf<() -> Unit>()
     private val onInterruptListeners = mutableListOf<() -> Unit>()
+    private val onBufferingListeners = mutableListOf<() -> Unit>()
 
     fun onReady(listener: () -> Unit) {
         onReadyListeners.add(listener)
@@ -96,6 +99,10 @@ class VideoPlayerState(
 
     fun onInterrupt(listener: () -> Unit) {
         onInterruptListeners.add(listener)
+    }
+
+    fun onBuffering(listener: () -> Unit) {
+        onBufferingListeners.add(listener)
     }
 
     fun initialize() {
@@ -116,6 +123,8 @@ class VideoPlayerState(
         instance.onBuffering {
             isBuffering = it
             if (it) error = null
+
+            if (isBuffering) onBufferingListeners.forEach { cb -> cb.invoke() }
         }
         instance.onPrepared { }
         instance.onIsPlayingChanged { isPlaying = it }
@@ -128,6 +137,8 @@ class VideoPlayerState(
     fun release() {
         onReadyListeners.clear()
         onErrorListeners.clear()
+        onInterruptListeners.clear()
+        onBufferingListeners.clear()
         instance.release()
     }
 }
@@ -154,7 +165,9 @@ fun rememberVideoPlayerState(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) state.play()
-            else if (event == Lifecycle.Event.ON_STOP) state.pause()
+            else if (event == Lifecycle.Event.ON_STOP) {
+                if (!Configs.appPipEnable) state.pause()
+            }
         }
 
         lifecycleOwner.lifecycle.addObserver(observer)

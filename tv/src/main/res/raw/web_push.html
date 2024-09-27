@@ -393,7 +393,16 @@
                     }
                 }
 
-                const channelAliasExample = '{\n  "CCTV1": [\n    "cctv1 综合",\n    "cctv1-综合",\n    "cctv-1综合HD"\n  ]\n}'
+                const channelAliasExample = `{
+    "__suffix": [
+        "高码",
+        "HD"
+    ],
+    "频道1": [
+        "别名1",
+        "别名2"
+    ]
+}`
                 const channelAlias = ref('')
                 async function refreshChannelAlias() {
                     channelAlias.value = await (await requestApi('/api/channel-alias')).text()

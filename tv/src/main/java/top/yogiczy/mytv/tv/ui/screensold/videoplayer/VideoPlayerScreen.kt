@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import top.yogiczy.mytv.tv.ui.material.Visible
+import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.components.VideoPlayerError
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.components.VideoPlayerMetadata
@@ -73,7 +73,7 @@ private fun VideoPlayerScreenCover(
     val childPadding = rememberChildPadding()
 
     Box(modifier = modifier.fillMaxSize()) {
-        Visible(showMetadataProvider) {
+        Visibility(showMetadataProvider) {
             VideoPlayerMetadata(
                 modifier = Modifier.padding(start = childPadding.start, top = childPadding.top),
                 metadataProvider = metadataProvider,

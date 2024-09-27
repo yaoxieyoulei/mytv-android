@@ -2,6 +2,7 @@ package top.yogiczy.mytv.core.data.repositories.iptv
 
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
+import top.yogiczy.mytv.core.data.network.HttpException
 import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.parser.IptvParser
@@ -17,7 +18,7 @@ class IptvRepository(
     else "iptv-${source.url.hashCode().toUInt().toString(16)}.txt",
     source.isLocal,
 ) {
-    private val log = Logger.create(javaClass.simpleName)
+    private val log = Logger.create("IptvRepository")
 
     /**
      * 获取直播源数据
@@ -29,7 +30,7 @@ class IptvRepository(
             return sourceUrl.request { body -> body.string() } ?: ""
         } catch (ex: Exception) {
             log.e("获取直播源失败", ex)
-            throw Exception("获取直播源失败，请检查网络连接", ex)
+            throw HttpException("获取直播源失败，请检查网络连接", ex)
         }
     }
 
@@ -70,7 +71,7 @@ class IptvRepository(
             return groupList
         } catch (ex: Exception) {
             log.e("获取直播源失败", ex)
-            throw Exception(ex)
+            throw ex
         }
     }
 
@@ -80,10 +81,12 @@ class IptvRepository(
     }
 
     suspend fun getEpgUrl(): String? {
-        return source.url.request { body ->
-            val sourceData = body.string()
+        return runCatching {
+            val sourceData = getOrRefresh(Long.MAX_VALUE) {
+                fetchSource(source.url)
+            }
             val parser = IptvParser.instances.first { it.isSupport(source.url, sourceData) }
             parser.getEpgUrl(sourceData)
-        }
+        }.getOrNull()
     }
 }

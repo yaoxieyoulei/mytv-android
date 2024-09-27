@@ -38,6 +38,14 @@ object Constants {
                 name = "默认直播源 fanmingming（IPV6）",
                 url = "https://live.fanmingming.com/tv/m3u/ipv6.m3u",
             ),
+            IptvSource(
+                name = "默认直播源 YanG-1989（电视）",
+                url = "https://tv.iill.top/m3u/Gather",
+            ),
+            IptvSource(
+                name = "默认直播源 YanG-1989（直播）",
+                url = "https://tv.iill.top/m3u/Live",
+            ),
         )
     )
 
@@ -80,18 +88,18 @@ object Constants {
     const val CHANNEL_LOGO_PROVIDER = "https://live.fanmingming.com/tv/{name|uppercase}.png"
 
     /**
+     * GitHub加速代理地址
+     */
+    const val GITHUB_PROXY = "https://ghp.ci/"
+
+    /**
      * Git最新版本信息
      */
     val GIT_RELEASE_LATEST_URL = mapOf(
-        "stable" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-stable.json",
-        "beta" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-beta.json",
-        "dev" to "https://mirror.ghproxy.com/https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-dev.json",
+        "stable" to "${GITHUB_PROXY}https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-stable.json",
+        "beta" to "${GITHUB_PROXY}https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-beta.json",
+        "dev" to "${GITHUB_PROXY}https://raw.githubusercontent.com/yaoxieyoulei/mytv-android-update/main/tv-dev.json",
     )
-
-    /**
-     * GitHub加速代理地址
-     */
-    const val GITHUB_PROXY = "https://mirror.ghproxy.com/"
 
     /**
      * 网络请求重试次数
@@ -121,7 +129,7 @@ object Constants {
     /**
      * 界面 临时频道界面显示时间
      */
-    const val UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION = 1500L // 1.5秒
+    const val UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION = 2000L // 2秒
 
     /**
      * 界面 超时未操作自动关闭界面

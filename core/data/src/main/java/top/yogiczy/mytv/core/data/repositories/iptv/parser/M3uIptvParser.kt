@@ -73,7 +73,7 @@ class M3uIptvParser : IptvParser {
                                                 )
                                             }
                                     ),
-                                    logo = nameEntry.value.first().logo
+                                    logo = nameEntry.value.first().logo,
                                 )
                             })
                     )

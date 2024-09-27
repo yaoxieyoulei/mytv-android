@@ -31,6 +31,7 @@ import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.main.MainUiState
 import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
@@ -56,6 +57,7 @@ fun LoadingScreen(
     AppScreen(
         modifier = modifier
             .focusable()
+            .focusOnLaunched()
             .handleKeyEvents(
                 onLongSelect = toSettingsScreen,
                 onSettings = toSettingsScreen,

@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.core.util.utils
 
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 fun Long.humanizeMs(): String {
@@ -50,4 +51,21 @@ fun String.compareVersion(version2: String): Int {
 
 fun String.urlHost(): String {
     return this.split("://").getOrElse(1) { "" }.split("/").firstOrNull() ?: this
+}
+
+fun Long.timeAgo(): String {
+    val currentTime = System.currentTimeMillis()
+    val diff = currentTime - this
+
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(diff)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+    val hours = TimeUnit.MILLISECONDS.toHours(diff)
+    val days = TimeUnit.MILLISECONDS.toDays(diff)
+
+    return when {
+        seconds < 60 -> "$seconds 秒前"
+        minutes < 60 -> "$minutes 分钟前"
+        hours < 24 -> "$hours 小时前"
+        else -> "$days 天前"
+    }
 }

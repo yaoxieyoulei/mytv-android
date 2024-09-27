@@ -10,10 +10,14 @@ data class ChannelLine(
     val url: String = "",
     val httpUserAgent: String? = null,
     val hybridType: HybridType = HybridType.None,
+    val name: String? = if (url.contains("$")) url.split("$").lastOrNull() else null,
 ) {
     companion object {
         val EXAMPLE =
-            ChannelLine(url = "http://1.2.3.4\$LR•IPV6『线路1』", httpUserAgent = "okhttp")
+            ChannelLine(
+                url = "http://1.2.3.4\$LR•IPV6『线路1』",
+                httpUserAgent = "okhttp",
+            )
     }
 
     enum class HybridType {

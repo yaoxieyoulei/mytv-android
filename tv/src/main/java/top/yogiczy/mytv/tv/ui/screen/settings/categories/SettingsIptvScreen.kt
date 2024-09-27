@@ -124,11 +124,9 @@ fun SettingsIptvScreen(
         }
 
         item {
-            val provider = settingsViewModel.iptvChannelLogoProvider
-
             SettingsListItem(
                 headlineContent = "频道图标提供",
-                trailingContent = { Text(provider) },
+                trailingContent = settingsViewModel.iptvChannelLogoProvider,
                 remoteConfig = true,
             )
         }

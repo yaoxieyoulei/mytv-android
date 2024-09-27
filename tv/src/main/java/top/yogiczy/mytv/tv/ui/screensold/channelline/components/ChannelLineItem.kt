@@ -13,9 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
+import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,7 @@ import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.util.utils.isIPv6
 import top.yogiczy.mytv.tv.ui.material.Tag
+import top.yogiczy.mytv.tv.ui.material.TagDefaults
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -52,27 +55,39 @@ fun ChannelLineItem(
             .handleKeyEvents(onSelect = onSelected),
         selected = false,
         onClick = {},
-        headlineContent = {
+        headlineContent = { Text(line.name ?: "线路${lineIdx + 1}", maxLines = 1) },
+        overlineContent = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(line.url.let { url ->
-                    if (url.contains("$")) url.split("$").last()
-                    else "线路${lineIdx + 1}"
-                })
-
                 if (line.hybridType == ChannelLine.HybridType.WebView) {
                     Tag("混合")
                     Tag(ChannelUtil.getHybridWebViewUrlProvider(line.url))
                 } else {
+                    Tag(if (line.url.isIPv6()) "IPv6" else "IPv4")
+
                     if (ChannelUtil.urlSupportPlayback(line.url)) Tag("回放")
-                    Tag(if (line.url.isIPv6()) "IPV6" else "IPV4")
-                    if (lineDelay != 0L) Tag("$lineDelay ms")
+
+                    if (lineDelay > 0L) {
+                        if (lineDelay < 500) {
+                            Tag(
+                                "$lineDelay ms",
+                                colors = TagDefaults.colors(containerColor = MaterialTheme.colorScheme.tertiary),
+                            )
+                        } else {
+                            Tag("$lineDelay ms")
+                        }
+                    } else if (lineDelay < 0L) {
+                        Tag(
+                            "超时",
+                            colors = TagDefaults.colors(containerColor = MaterialTheme.colorScheme.error),
+                        )
+                    }
                 }
             }
         },
-        supportingContent = { Text(line.url, maxLines = 1) },
+        supportingContent = { Text(line.url, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         trailingContent = {
             RadioButton(selected = isSelected, onClick = {})
         },
@@ -85,25 +100,25 @@ private fun rememberLineDelay(line: ChannelLine): Long {
     var hasError by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        try {
+        runCatching {
             withContext(Dispatchers.IO) {
                 elapsedTime = measureTimeMillis {
                     try {
                         line.url.request({ builder ->
-                            builder.apply {
-                                line.httpUserAgent?.let { header("User-Agent", it) }
-                            }
+                            builder
+                                .apply {
+                                    line.httpUserAgent?.let { header("User-Agent", it) }
+                                }
                         }) { body -> body.string() }
                     } catch (_: IOException) {
                         hasError = true
                     }
                 }
             }
-        } catch (_: Exception) {
         }
     }
 
-    return if (hasError) 0 else elapsedTime
+    return if (hasError) -1 else elapsedTime
 }
 
 @Preview

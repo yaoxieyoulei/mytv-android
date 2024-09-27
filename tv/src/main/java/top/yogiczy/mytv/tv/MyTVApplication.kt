@@ -31,9 +31,7 @@ class MyTVApplication : Application(), ImageLoaderFactory {
             .crossfade(true)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .memoryCache {
-                MemoryCache.Builder(this)
-                    .strongReferencesEnabled(true)
-                    .build()
+                MemoryCache.Builder(this).build()
             }
             .diskCachePolicy(CachePolicy.ENABLED)
             .diskCache {

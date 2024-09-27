@@ -45,7 +45,12 @@ suspend fun Call.await(): Response = suspendCancellableCoroutine { continuation 
 suspend fun <T> String.request(
     builder: (Request.Builder) -> Request.Builder = { it -> it },
     action: suspend CoroutineScope.(ResponseBody) -> T,
-): T? {
+) = request(builder) { response, _ -> response.body?.let { action(it) } }
+
+suspend fun <T> String.request(
+    builder: (Request.Builder) -> Request.Builder = { it -> it },
+    action: suspend CoroutineScope.(Response, Request) -> T,
+): T {
     val client = OkHttpClient()
     val request = Request.Builder()
         .url(this)
@@ -56,5 +61,5 @@ suspend fun <T> String.request(
 
     if (!response.isSuccessful) throw Exception("${response.code}: ${response.message}")
 
-    return withContext(Dispatchers.IO) { response.body?.let { action(it) } }
+    return withContext(Dispatchers.IO) { action(response, response.request) }
 }

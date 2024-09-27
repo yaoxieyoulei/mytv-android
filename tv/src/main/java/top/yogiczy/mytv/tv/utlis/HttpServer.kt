@@ -34,7 +34,7 @@ import java.net.NetworkInterface
 import java.net.SocketException
 
 
-object HttpServer : Loggable() {
+object HttpServer : Loggable("HttpServer") {
     private const val SERVER_PORT = 10481
     private val uploadedApkFile by lazy {
         File(Globals.cacheDir, "uploaded_apk.apk").apply { deleteOnExit() }

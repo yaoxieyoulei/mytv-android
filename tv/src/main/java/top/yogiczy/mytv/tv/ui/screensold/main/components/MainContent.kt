@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
-import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.entities.epg.Epg
@@ -20,7 +19,7 @@ import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
 import top.yogiczy.mytv.tv.ui.material.PopupContent
 import top.yogiczy.mytv.tv.ui.material.Snackbar
-import top.yogiczy.mytv.tv.ui.material.Visible
+import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.material.popupable
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
@@ -137,7 +136,7 @@ fun MainContent(
             showMetadataProvider = { settingsViewModel.debugShowVideoPlayerMetadata },
         )
 
-        Visible({ mainContentState.currentChannelLine.hybridType == ChannelLine.HybridType.WebView }) {
+        Visibility({ mainContentState.currentChannelLine.hybridType == ChannelLine.HybridType.WebView }) {
             WebViewScreen(
                 urlProvider = { mainContentState.currentChannelLine.url },
                 onVideoResolutionChanged = { width, height ->
@@ -151,46 +150,36 @@ fun MainContent(
         }
     }
 
-    Visible({ settingsViewModel.uiShowEpgProgrammePermanentProgress }) {
+    Visibility({ settingsViewModel.uiShowEpgProgrammePermanentProgress }) {
         EpgProgrammeProgressScreen(
             currentEpgProgrammeProvider = {
-                mainContentState.currentPlaybackEpgProgramme
-                    ?: epgListProvider().recentProgramme(mainContentState.currentChannel)?.now
+                mainContentState.currentPlaybackEpgProgramme ?: epgListProvider().recentProgramme(
+                    mainContentState.currentChannel
+                )?.now
             },
             videoPlayerCurrentPositionProvider = { videoPlayerState.currentPosition },
         )
     }
 
-    Visible({
-        !mainContentState.isTempChannelScreenVisible
-                && !mainContentState.isChannelScreenVisible
-                && !mainContentState.isQuickOpScreenVisible
-                && !mainContentState.isEpgScreenVisible
-                && !mainContentState.isChannelLineScreenVisible
-                && channelNumberSelectState.channelNumber.isEmpty()
+    Visibility({
+        !mainContentState.isTempChannelScreenVisible && !mainContentState.isChannelScreenVisible && !mainContentState.isQuickOpScreenVisible && !mainContentState.isEpgScreenVisible && !mainContentState.isChannelLineScreenVisible && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         DatetimeScreen(showModeProvider = { settingsViewModel.uiTimeShowMode })
     }
 
     ChannelNumberSelectScreen(channelNumberProvider = { channelNumberSelectState.channelNumber })
 
-    Visible({
-        mainContentState.isTempChannelScreenVisible
-                && !mainContentState.isChannelScreenVisible
-                && !mainContentState.isQuickOpScreenVisible
-                && !mainContentState.isEpgScreenVisible
-                && !mainContentState.isChannelLineScreenVisible
-                && channelNumberSelectState.channelNumber.isEmpty()
+    Visibility({
+        mainContentState.isTempChannelScreenVisible && !mainContentState.isChannelScreenVisible && !mainContentState.isQuickOpScreenVisible && !mainContentState.isEpgScreenVisible && !mainContentState.isChannelLineScreenVisible && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         ChannelTempScreen(
             channelProvider = { mainContentState.currentChannel },
             channelLineIdxProvider = { mainContentState.currentChannelLineIdx },
-            channelNumberProvider = { filteredChannelGroupListProvider().channelIdx(mainContentState.currentChannel) + 1 },
             recentEpgProgrammeProvider = {
                 epgListProvider().recentProgramme(mainContentState.currentChannel)
             },
-            showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
             currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
+            playerMetadataProvider = { videoPlayerState.metadata },
         )
     }
 
@@ -200,8 +189,9 @@ fun MainContent(
     ) {
         EpgScreen(
             epgProvider = {
-                epgListProvider().match(mainContentState.currentChannel)
-                    ?: Epg.empty(mainContentState.currentChannel)
+                epgListProvider().match(mainContentState.currentChannel) ?: Epg.empty(
+                    mainContentState.currentChannel
+                )
             },
             epgProgrammeReserveListProvider = {
                 EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList.filter {
@@ -220,8 +210,7 @@ fun MainContent(
             },
             onEpgProgrammeReserve = { programme ->
                 mainContentState.reverseEpgProgrammeOrNot(
-                    mainContentState.currentChannel,
-                    programme
+                    mainContentState.currentChannel, programme
                 )
             },
             onClose = { mainContentState.isEpgScreenVisible = false },

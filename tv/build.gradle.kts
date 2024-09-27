@@ -28,7 +28,7 @@ android {
         }
 
         ndk {
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
+            abiFilters.addAll(listOf("arm64-v8a"))
         }
 
         buildConfigField("String", "SENTRY_DSN", "\"${getProperty("sentry.dsn") ?: ""}\"")

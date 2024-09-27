@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -168,8 +169,33 @@ private fun ChannelsChannelItemLogo(
                     .fillMaxSize(0.6f),
                 model = channel.logo,
                 contentDescription = null,
+                loading = { ChannelsChannelItemNo(channelProvider = channelProvider) },
+                error = { ChannelsChannelItemNo(channelProvider = channelProvider) },
             )
         }
+    }
+}
+
+@Composable
+private fun ChannelsChannelItemNo(
+    modifier: Modifier = Modifier,
+    channelProvider: () -> Channel = { Channel() },
+) {
+    val channel = channelProvider()
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        colors = SurfaceDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
+        ),
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Text(
+            channel.no,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.align(Alignment.Center),
+        )
     }
 }
 
@@ -290,10 +316,14 @@ private fun ChannelsChannelItemTagList(
 @Composable
 private fun ChannelsChannelItemPreview() {
     MyTvTheme {
-        ChannelsChannelItem(
-            modifier = Modifier.padding(16.dp),
-            channelProvider = { Channel.EXAMPLE },
-            recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
-        )
+        CompositionLocalProvider(
+            LocalSettings provides LocalSettings.current.copy(uiShowChannelLogo = true)
+        ) {
+            ChannelsChannelItem(
+                modifier = Modifier.padding(16.dp),
+                channelProvider = { Channel.EXAMPLE.copy(index = 9999) },
+                recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
+            )
+        }
     }
 }

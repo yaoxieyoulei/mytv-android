@@ -110,19 +110,11 @@ private fun ChannelInfoPreview() {
                 isInTimeShiftProvider = { true },
             )
 
-            ChannelInfo(channelProvider = { Channel.EXAMPLE },
-                channelLineIdxProvider = { 0 },
-                recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
-                currentPlaybackEpgProgrammeProvider = { EpgProgramme(title = "回放电视节目") })
-
             ChannelInfo(
-                channelProvider = {
-                    Channel.EXAMPLE.copy(
-                        lineList = ChannelUtil.getHybridWebViewLines("cctv1"),
-                    )
-                },
+                channelProvider = { Channel.EXAMPLE },
                 channelLineIdxProvider = { 0 },
                 recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
+                currentPlaybackEpgProgrammeProvider = { EpgProgramme(title = "回放电视节目") },
             )
         }
     }

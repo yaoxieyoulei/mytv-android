@@ -1,6 +1,8 @@
 package top.yogiczy.mytv.core.data.entities.epg
 
 import kotlinx.serialization.Serializable
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 /**
  * 频道节目
@@ -33,6 +35,9 @@ data class EpgProgramme(
          */
         fun EpgProgramme.progress(current: Long = System.currentTimeMillis()) =
             (current - startAt).toFloat() / (endAt - startAt)
+
+        fun EpgProgramme.remainingMinutes(current: Long = System.currentTimeMillis()) =
+            ceil((endAt - current) / 60_000f).roundToInt()
 
         val EXAMPLE = EpgProgramme(
             startAt = System.currentTimeMillis() - 3600 * 1000,
