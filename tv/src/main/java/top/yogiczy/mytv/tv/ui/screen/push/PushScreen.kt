@@ -1,7 +1,5 @@
 package top.yogiczy.mytv.tv.ui.screen.push
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.core.util.utils.actionView
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.components.Qrcode
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
@@ -51,11 +50,7 @@ fun PushContent(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .width(200.dp)
                     .height(200.dp)
-                    .clickableNoIndication {
-                        val uri = Uri.parse(serverUrl)
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        context.startActivity(intent)
-                    },
+                    .clickableNoIndication { context.actionView(serverUrl) },
                 text = serverUrl,
             )
 

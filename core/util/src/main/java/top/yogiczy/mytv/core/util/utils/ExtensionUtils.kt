@@ -1,5 +1,8 @@
 package top.yogiczy.mytv.core.util.utils
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.net.toUri
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -67,5 +70,12 @@ fun Long.timeAgo(): String {
         minutes < 60 -> "$minutes 分钟前"
         hours < 24 -> "$hours 小时前"
         else -> "$days 天前"
+    }
+}
+
+fun Context.actionView(url: String) {
+    runCatching {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        startActivity(intent)
     }
 }

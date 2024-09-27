@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
@@ -24,9 +25,11 @@ import io.github.alexzhirkevich.qrose.options.circle
 import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.core.util.utils.actionView
 import top.yogiczy.mytv.tv.ui.material.PopupHandleableApplication
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.utils.clickableNoIndication
 
 
 @Composable
@@ -63,6 +66,8 @@ fun QrcodePopup(
     text: String,
     description: String? = null,
 ) {
+    val context = LocalContext.current
+
     SimplePopup(
         visibleProvider = visibleProvider,
         onDismissRequest = onDismissRequest,
@@ -76,7 +81,8 @@ fun QrcodePopup(
                     modifier = Modifier
                         .padding(bottom = 10.dp)
                         .width(200.dp)
-                        .height(200.dp),
+                        .height(200.dp)
+                        .clickableNoIndication { context.actionView(text) },
                     text = text,
                 )
 

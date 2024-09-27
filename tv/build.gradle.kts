@@ -27,9 +27,9 @@ android {
             useSupportLibrary = true
         }
 
-        ndk {
-            abiFilters.addAll(listOf("arm64-v8a"))
-        }
+        // ndk {
+        //     abiFilters.addAll(listOf("arm64-v8a"))
+        // }
 
         buildConfigField("String", "SENTRY_DSN", "\"${getProperty("sentry.dsn") ?: ""}\"")
     }
@@ -79,14 +79,15 @@ android {
         }
     }
 
-//    splits {
-//        abi {
-//            isEnable = true
-//            isUniversalApk = false
-//            reset()
-//            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-//        }
-//    }
+    splits {
+        abi {
+            isEnable = true
+            isUniversalApk = false
+            reset()
+            // noinspection ChromeOsAbiSupport
+            include("arm64-v8a")
+        }
+    }
 }
 
 dependencies {
