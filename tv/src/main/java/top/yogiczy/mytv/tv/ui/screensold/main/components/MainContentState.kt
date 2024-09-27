@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.Channel
@@ -53,6 +54,8 @@ class MainContentState(
 
     private var _currentPlaybackEpgProgramme by mutableStateOf<EpgProgramme?>(null)
     val currentPlaybackEpgProgramme get() = _currentPlaybackEpgProgramme
+
+    private var _tempChannelScreenHideJob: Job? = null
 
     private var _isTempChannelScreenVisible by mutableStateOf(false)
     var isTempChannelScreenVisible
@@ -112,7 +115,8 @@ class MainContentState(
 
         videoPlayerState.onReady {
             settingsViewModel.iptvPlayableHostList += currentChannelLine.url.urlHost()
-            coroutineScope.launch {
+            _tempChannelScreenHideJob?.cancel()
+            _tempChannelScreenHideJob = coroutineScope.launch {
                 val name = _currentChannel.name
                 val lineIdx = _currentChannelLineIdx
                 delay(Constants.UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION)

@@ -136,7 +136,7 @@ dependencies {
 sentry {
     org.set("yogiczy")
     projectName.set("mytv-android")
-    authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
+    authToken.set(getProperty("sentry.auth_token") ?: System.getenv("SENTRY_AUTH_TOKEN"))
     ignoredBuildTypes.set(setOf("debug"))
 }
 

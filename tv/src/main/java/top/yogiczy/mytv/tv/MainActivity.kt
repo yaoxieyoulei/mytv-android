@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv
 
 import android.app.PictureInPictureParams
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
@@ -18,7 +19,6 @@ import androidx.tv.material3.Surface
 import top.yogiczy.mytv.tv.ui.App
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.Configs
-import top.yogiczy.mytv.tv.utlis.HttpServer
 import kotlin.system.exitProcess
 
 class MainActivity : ComponentActivity() {
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        HttpServer.start(applicationContext)
+        applicationContext.startService(Intent(applicationContext, HttpServerService::class.java))
     }
 
     override fun onUserLeaveHint() {

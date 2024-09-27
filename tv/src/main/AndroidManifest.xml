@@ -60,6 +60,8 @@
             </intent-filter>
         </receiver>
 
+        <service android:name=".HttpServerService" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.FileProvider"
