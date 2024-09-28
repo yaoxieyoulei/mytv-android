@@ -34,7 +34,7 @@ class GithubGistSyncRepository(
                             )
                         ).toRequestBody()
                     )
-            }) { true }!!
+            }) { _ -> true }!!
         } catch (ex: Exception) {
             log.e("推送云端失败", ex)
             throw Exception("推送云端失败", ex)
@@ -42,7 +42,6 @@ class GithubGistSyncRepository(
     }
 
     override suspend fun pull() = withContext(Dispatchers.IO) {
-
         try {
             return@withContext "https://api.github.com/gists/${gistId}".request({ builder ->
                 builder

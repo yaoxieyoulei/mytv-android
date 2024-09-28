@@ -27,7 +27,7 @@ class GiteeGistSyncRepository(
                 builder
                     .addHeader("Content-Type", "application/json")
                     .patch(body.toRequestBody())
-            }) { true }!!
+            }) { _ -> true }!!
         } catch (ex: Exception) {
             log.e("推送云端失败", ex)
             throw Exception("推送云端失败", ex)

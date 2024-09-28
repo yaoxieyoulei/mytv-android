@@ -1,7 +1,5 @@
 package top.yogiczy.mytv.tv.ui.screen.about
 
-import android.content.Context
-import android.content.pm.PackageInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +26,7 @@ import io.sentry.Sentry
 import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.util.utils.compareVersion
+import top.yogiczy.mytv.tv.BuildConfig
 import top.yogiczy.mytv.tv.R
 import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
@@ -40,7 +38,6 @@ import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 @Composable
 fun AboutScreen(
     modifier: Modifier = Modifier,
-    packageInfo: PackageInfo = rememberPackageInfo(),
     latestVersionProvider: () -> String = { "" },
     toUpdateScreen: () -> Unit = {},
     onBackPressed: () -> Unit = {},
@@ -60,17 +57,17 @@ fun AboutScreen(
         ) {
             item {
                 ListItem(
-                    headlineContent = { Text("应用名称") },
-                    trailingContent = { Text(Constants.APP_TITLE) },
-                    selected = false,
-                    onClick = {},
-                )
-            }
-
-            item {
-                ListItem(
-                    headlineContent = { Text("应用版本") },
-                    trailingContent = { Text(packageInfo.versionName) },
+                    headlineContent = { Text("应用标识") },
+                    trailingContent = {
+                        Text(
+                            listOf(
+                                BuildConfig.APPLICATION_ID,
+                                BuildConfig.FLAVOR,
+                                BuildConfig.BUILD_TYPE,
+                                "${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})",
+                            ).joinToString("_")
+                        )
+                    },
                     selected = false,
                     onClick = {},
                 )
@@ -234,7 +231,7 @@ fun AboutScreen(
                     modifier = Modifier.handleKeyEvents(onSelect = toUpdateScreen),
                     headlineContent = { Text("检查更新") },
                     trailingContent = {
-                        val currentVersion = packageInfo.versionName
+                        val currentVersion = BuildConfig.VERSION_NAME
                         val latestVersion = latestVersionProvider().ifBlank { currentVersion }
 
                         Row(
@@ -262,16 +259,11 @@ fun AboutScreen(
     }
 }
 
-@Composable
-private fun rememberPackageInfo(context: Context = LocalContext.current): PackageInfo =
-    context.packageManager.getPackageInfo(context.packageName, 0)
-
 @Preview(device = "id:Android TV (720p)")
 @Composable
 private fun AboutScreenPreview() {
     MyTvTheme {
         AboutScreen(
-            packageInfo = PackageInfo().apply { versionName = "1.2.3" },
             latestVersionProvider = { "9.0.0" },
         )
     }

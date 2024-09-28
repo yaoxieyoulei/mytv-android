@@ -72,8 +72,10 @@ class EpgRepository(
 
                         "display-name" -> {
                             lastChannel?.let {
-                                val displayName = parser.nextText()
-                                lastChannel.displayNames.add(displayName)
+                                runCatching {
+                                    val displayName = parser.nextText()
+                                    lastChannel.displayNames.add(displayName)
+                                }
                             }
                         }
 

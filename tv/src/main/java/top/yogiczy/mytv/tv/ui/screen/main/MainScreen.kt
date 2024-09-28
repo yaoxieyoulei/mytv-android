@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,6 +19,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
+import top.yogiczy.mytv.tv.BuildConfig
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.rememberDoubleBackPressedExitState
 import top.yogiczy.mytv.tv.ui.screen.Screens
@@ -47,7 +47,6 @@ fun MainScreen(
     mainViewModel: MainViewModel = viewModel(),
     onBackPressed: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val uiState by mainViewModel.uiState.collectAsState()
 
@@ -99,9 +98,7 @@ fun MainScreen(
     fun checkUpdate() {
         coroutineScope.launch {
             delay(3000)
-            val currentVersion =
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName
-            updateViewModel.checkUpdate(currentVersion, settingsViewModel.updateChannel)
+            updateViewModel.checkUpdate(BuildConfig.VERSION_NAME, settingsViewModel.updateChannel)
             if (!updateViewModel.isUpdateAvailable) return@launch
             if (settingsViewModel.appLastLatestVersion == updateViewModel.latestRelease.version) return@launch
 

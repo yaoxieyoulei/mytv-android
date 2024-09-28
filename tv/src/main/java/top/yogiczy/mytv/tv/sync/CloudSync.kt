@@ -18,7 +18,7 @@ object CloudSync : Loggable("CloudSync") {
     private fun getRepository(): CloudSyncRepository {
         return when (Configs.cloudSyncProvider) {
             CloudSyncProvider.GITHUB_GIST -> GithubGistSyncRepository(
-                Configs.cloudSyncGiteeGistId,
+                Configs.cloudSyncGithubGistId,
                 Configs.cloudSyncGithubGistToken,
             )
 
