@@ -59,6 +59,7 @@ fun MainContent(
     val mainContentState = rememberMainContentState(
         videoPlayerState = videoPlayerState,
         channelGroupListProvider = filteredChannelGroupListProvider,
+        settingsViewModel = settingsViewModel,
     )
     val channelNumberSelectState = rememberChannelNumberSelectState {
         val idx = it.toInt() - 1
