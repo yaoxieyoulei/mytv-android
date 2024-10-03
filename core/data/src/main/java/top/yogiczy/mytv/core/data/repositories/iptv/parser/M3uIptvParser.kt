@@ -33,24 +33,27 @@ class M3uIptvParser : IptvParser {
                 val channelName =
                     Regex("tvg-name=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                         ?: name
-                val groupName =
-                    Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
-                        ?: "其他"
+                val groupNames =
+                    Regex("group-title=\"(.+?)\"").find(line)?.groupValues?.get(1)?.split(";")
+                        ?.map { it.trim() }
+                        ?: listOf("其他")
                 val logo = Regex("tvg-logo=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                 val httpUserAgent =
                     Regex("http-user-agent=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                 val url = lines.getOrNull(index + 1)?.trim()
 
                 url?.let {
-                    iptvList.add(
-                        ChannelItem(
-                            name = name,
-                            epgName = channelName,
-                            groupName = groupName,
-                            url = url,
-                            logo = logo,
-                            httpUserAgent = httpUserAgent,
-                        )
+                    iptvList.addAll(
+                        groupNames.map { groupName ->
+                            ChannelItem(
+                                name = name,
+                                epgName = channelName,
+                                groupName = groupName,
+                                url = url,
+                                logo = logo,
+                                httpUserAgent = httpUserAgent,
+                            )
+                        }
                     )
                 }
             }
