@@ -46,6 +46,7 @@ class MyTVApplication : Application(), ImageLoaderFactory {
         SentryAndroid.init(this) { options ->
             options.environment = BuildConfig.BUILD_TYPE
             options.dsn = BuildConfig.SENTRY_DSN
+            options.tracesSampleRate = 1.0
             options.beforeSend =
                 SentryOptions.BeforeSendCallback { event: SentryEvent, _: Hint ->
                     if (SentryLevel.ERROR == event.level || SentryLevel.FATAL == event.level) {
