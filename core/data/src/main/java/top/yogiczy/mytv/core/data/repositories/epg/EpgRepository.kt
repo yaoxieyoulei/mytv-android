@@ -116,15 +116,16 @@ class EpgRepository(
             eventType = parser.next()
         }
 
+        val programmesByChannel = programmeList.groupBy { it.channel }
         val epgList = EpgList(channelList.map { channel ->
             Epg(
                 channelList = channel.displayNames,
                 logo = channel.icon,
-                programmeList = EpgProgrammeList(programmeList
-                    .filter { it.channel == channel.id }
-                    .map { programme ->
+                programmeList = EpgProgrammeList(
+                    programmesByChannel[channel.id]?.map { programme ->
                         EpgProgramme(programme.start, programme.end, programme.title)
-                    }),
+                    } ?: emptyList()
+                ),
             )
         })
 

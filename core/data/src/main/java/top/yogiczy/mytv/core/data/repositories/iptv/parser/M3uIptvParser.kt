@@ -48,7 +48,7 @@ class M3uIptvParser : IptvParser {
                             epgName = channelName,
                             groupName = groupName,
                             url = url,
-                            logo = logoProvider(channelName, logo) ?: logo,
+                            logo = logo,
                             httpUserAgent = httpUserAgent,
                         )
                     )
@@ -56,16 +56,16 @@ class M3uIptvParser : IptvParser {
             }
 
             return@withContext ChannelGroupList(iptvList.groupBy { it.groupName }
-                .map { groupEntry ->
+                .map { (groupName, channelList) ->
                     ChannelGroup(
-                        name = groupEntry.key,
-                        channelList = ChannelList(groupEntry.value.groupBy { it.name }
-                            .map { nameEntry ->
+                        name = groupName,
+                        channelList = ChannelList(channelList.groupBy { it.name }
+                            .map { (channelName, channelList) ->
                                 Channel(
-                                    name = nameEntry.key,
-                                    epgName = nameEntry.value.first().epgName,
+                                    name = channelName,
+                                    epgName = channelList.first().epgName,
                                     lineList = ChannelLineList(
-                                        nameEntry.value.distinctBy { it.url }
+                                        channelList.distinctBy { it.url }
                                             .map {
                                                 ChannelLine(
                                                     url = it.url,
@@ -73,7 +73,7 @@ class M3uIptvParser : IptvParser {
                                                 )
                                             }
                                     ),
-                                    logo = nameEntry.value.first().logo,
+                                    logo = logoProvider(channelName, channelList.first().logo),
                                 )
                             })
                     )

@@ -21,7 +21,7 @@ data class EpgList(
 
         fun EpgList.match(channel: Channel): Epg? {
             return firstOrNull { epg ->
-                epg.channelList.map { it.lowercase() }.contains(channel.epgName.lowercase())
+                epg.channelList.any { it.equals(channel.epgName, ignoreCase = true) }
             }
         }
 

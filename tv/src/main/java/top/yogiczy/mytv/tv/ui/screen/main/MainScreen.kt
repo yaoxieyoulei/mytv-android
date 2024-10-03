@@ -55,24 +55,22 @@ fun MainScreen(
     val channelGroupListProvider = {
         (uiState as? MainUiState.Ready)?.channelGroupList ?: ChannelGroupList()
     }
-    val epgListProvider = { (uiState as MainUiState.Ready).epgList }
-
-    val filteredChannelGroupList = remember(uiState, settingsViewModel.iptvChannelGroupHiddenList) {
-        ChannelGroupList(channelGroupListProvider().filter { it.name !in settingsViewModel.iptvChannelGroupHiddenList })
-            .withMetadata()
+    val filteredChannelGroupListProvider = {
+        (uiState as? MainUiState.Ready)?.filteredChannelGroupList ?: ChannelGroupList()
     }
-
+    val epgListProvider = { (uiState as MainUiState.Ready).epgList }
     val favoriteChannelList =
-        remember(filteredChannelGroupList, settingsViewModel.iptvChannelFavoriteList) {
+        remember(uiState, settingsViewModel.iptvChannelFavoriteList) {
             val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
-            ChannelList(filteredChannelGroupList.channelList
+            ChannelList(filteredChannelGroupListProvider().channelList
                 .filter { favoriteChannelNameList.contains(it.name) })
         }
 
     val navController = rememberNavController()
 
     fun onChannelSelected(channel: Channel) {
-        settingsViewModel.iptvLastChannelIdx = filteredChannelGroupList.channelIdx(channel)
+        settingsViewModel.iptvLastChannelIdx =
+            filteredChannelGroupListProvider().channelIdx(channel)
         navController.navigateSingleTop(Screens.Live())
     }
 
@@ -167,7 +165,7 @@ fun MainScreen(
                 val doubleBackPressedExitState = rememberDoubleBackPressedExitState()
 
                 top.yogiczy.mytv.tv.ui.screensold.main.components.MainContent(
-                    filteredChannelGroupListProvider = { filteredChannelGroupList },
+                    filteredChannelGroupListProvider = filteredChannelGroupListProvider,
                     epgListProvider = epgListProvider,
                     settingsViewModel = settingsViewModel,
                     onBackPressed = {
@@ -190,7 +188,7 @@ fun MainScreen(
 
             composable(Screens.Channels()) {
                 ChannelsScreen(
-                    channelGroupListProvider = { filteredChannelGroupList },
+                    channelGroupListProvider = filteredChannelGroupListProvider,
                     onChannelSelected = { onChannelSelected(it) },
                     onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
                     epgListProvider = epgListProvider,
@@ -211,7 +209,7 @@ fun MainScreen(
 
             composable(Screens.Search()) {
                 SearchScreen(
-                    channelGroupListProvider = { filteredChannelGroupList },
+                    channelGroupListProvider = filteredChannelGroupListProvider,
                     onChannelSelected = { onChannelSelected(it) },
                     onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
                     epgListProvider = epgListProvider,
@@ -267,7 +265,7 @@ fun MainScreen(
 
             composable(Screens.MultiView()) {
                 MultiViewScreen(
-                    channelGroupListProvider = { filteredChannelGroupList },
+                    channelGroupListProvider = filteredChannelGroupListProvider,
                     epgListProvider = epgListProvider,
                     onBackPressed = { navController.navigateUp() },
                 )

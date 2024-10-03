@@ -100,37 +100,48 @@ class MainViewModel : ViewModel() {
             }
             .map { mergeSimilarChannel(it) }
             .map { hybridChannel(it) }
-            .map {
-                _uiState.value = MainUiState.Ready(channelGroupList = it)
-                it
+            .map { groupList ->
+                _uiState.value = MainUiState.Ready(
+                    channelGroupList = groupList,
+                    filteredChannelGroupList = withContext(Dispatchers.Default) {
+                        ChannelGroupList(groupList.filter { it.name !in Configs.iptvChannelGroupHiddenList })
+                            .withMetadata()
+                    }
+                )
+                groupList
             }
             .collect()
     }
 
-    private suspend fun mergeSimilarChannel(channelGroupList: ChannelGroupList) =
+    private suspend fun mergeSimilarChannel(channelGroupList: ChannelGroupList): ChannelGroupList =
         withContext(Dispatchers.Default) {
             if (!Configs.iptvSimilarChannelMerge) return@withContext channelGroupList
 
             _uiState.value = MainUiState.Loading("合并相似频道")
+
             return@withContext ChannelGroupList(channelGroupList.map { group ->
                 group.copy(
                     channelList = ChannelList(group.channelList
-                        .groupBy { channel ->
-                            ChannelAlias.standardChannelName(channel.name)
-                        }
-                        .map { nameEntry ->
-                            nameEntry.value.first().copy(
-                                name = nameEntry.key,
-                                lineList = ChannelLineList(nameEntry.value
-                                    .map { channel ->
-                                        if (nameEntry.value.size > 1) {
-                                            channel.lineList.map { line -> line.copy(name = channel.name) }
-                                        } else channel.lineList
+                        .groupBy { channel -> ChannelAlias.standardChannelName(channel.name) }
+                        .map { (standardName, similarChannels) ->
+                            val firstChannel = similarChannels.first()
+                            val mergedLineList = similarChannels
+                                .asSequence()
+                                .flatMap { channel ->
+                                    channel.lineList.asSequence().map { line ->
+                                        if (similarChannels.size > 1) line.copy(name = channel.name)
+                                        else line
                                     }
-                                    .flatten()
-                                    .distinctBy { it.url })
+                                }
+                                .distinctBy { it.url }
+                                .toList()
+
+                            firstChannel.copy(
+                                name = standardName,
+                                lineList = ChannelLineList(mergedLineList)
                             )
-                        })
+                        }
+                    )
                 )
             })
         }
@@ -147,7 +158,7 @@ class MainViewModel : ViewModel() {
                         group.copy(channelList = ChannelList(group.channelList.map { channel ->
                             channel.copy(
                                 lineList = ChannelLineList(
-                                    channel.lineList + ChannelUtil.getHybridWebViewLines(channel.name)
+                                    channel.lineList + ChannelUtil.getHybridWebViewLines(channel.epgName)
                                 )
                             )
                         }))
@@ -159,7 +170,7 @@ class MainViewModel : ViewModel() {
                         group.copy(channelList = ChannelList(group.channelList.map { channel ->
                             channel.copy(
                                 lineList = ChannelLineList(
-                                    ChannelUtil.getHybridWebViewLines(channel.name) + channel.lineList
+                                    ChannelUtil.getHybridWebViewLines(channel.epgName) + channel.lineList
                                 )
                             )
                         }))
@@ -237,6 +248,7 @@ sealed interface MainUiState {
     data class Error(val message: String? = null) : MainUiState
     data class Ready(
         val channelGroupList: ChannelGroupList = ChannelGroupList(),
+        val filteredChannelGroupList: ChannelGroupList = ChannelGroupList(),
         val epgList: EpgList = EpgList(),
     ) : MainUiState
 }

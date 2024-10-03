@@ -236,7 +236,7 @@ fun SettingsScreen(
                         onChannelGroupNameHiddenListChange = {
                             settingsViewModel.iptvChannelGroupHiddenList = it.toSet()
                         },
-                        onBackPressed = { navController.navigateUp() },
+                        onBackPressed = { onReload() },
                     )
                 }
 

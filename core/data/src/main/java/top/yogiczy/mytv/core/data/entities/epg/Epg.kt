@@ -27,19 +27,16 @@ data class Epg(
 ) {
     companion object {
         fun Epg.recentProgramme(): EpgProgrammeRecent {
-            var current = EpgProgrammeRecent(
-                now = programmeList.firstOrNull { it.isLive() },
-            )
+            val liveProgramIndex = programmeList.indexOfFirst { it.isLive() }
 
-            current.now?.let { now ->
-                current = current.copy(
-                    next = programmeList.indexOf(now).let {
-                        programmeList.getOrNull(it + 1)
-                    }
-                )
+            return if (liveProgramIndex != -1) {
+                val now = programmeList[liveProgramIndex]
+                val next = programmeList.getOrNull(liveProgramIndex + 1)
+
+                EpgProgrammeRecent(now = now, next = next)
+            } else {
+                EpgProgrammeRecent(now = null, next = null)
             }
-
-            return current
         }
 
         fun example(channel: Channel): Epg {

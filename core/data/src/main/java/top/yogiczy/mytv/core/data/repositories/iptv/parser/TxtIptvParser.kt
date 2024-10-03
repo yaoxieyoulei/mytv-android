@@ -46,23 +46,24 @@ class TxtIptvParser : IptvParser {
             }
         }
 
-        return@withContext ChannelGroupList(iptvList.groupBy { it.groupName }.map { groupEntry ->
-            ChannelGroup(
-                name = groupEntry.key,
-                channelList = ChannelList(groupEntry.value.groupBy { it.name }.map { nameEntry ->
-                    Channel(
-                        name = nameEntry.key,
-                        epgName = nameEntry.value.first().epgName,
-                        lineList = ChannelLineList(
-                            nameEntry.value.map { it.url }.distinct().map {
-                                ChannelLine(it)
-                            }
-                        ),
-                        logo = logoProvider(nameEntry.key, null),
-                    )
-                }),
-            )
-        })
+        return@withContext ChannelGroupList(iptvList.groupBy { it.groupName }
+            .map { (groupName, channelList) ->
+                ChannelGroup(
+                    name = groupName,
+                    channelList = ChannelList(channelList.groupBy { it.name }
+                        .map { (channelName, channelList) ->
+                            Channel(
+                                name = channelName,
+                                epgName = channelList.first().epgName,
+                                lineList = ChannelLineList(
+                                    channelList.distinctBy { it.url }
+                                        .map { ChannelLine(url = it.url) }
+                                ),
+                                logo = logoProvider(channelName, null),
+                            )
+                        }),
+                )
+            })
     }
 
     private data class ChannelItem(

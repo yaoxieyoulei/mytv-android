@@ -31,14 +31,14 @@ data class ChannelGroupList(
             this.flatMap { it.channelList }.indexOfFirst { it == channel }
 
         val ChannelGroupList.channelList: ChannelList
-            get() = ChannelList(this.flatMap { it.channelList })
+            get() = ChannelList(this.asSequence().flatMap { it.channelList.asSequence() }.toList())
     }
 
     fun withMetadata() = ChannelGroupList(map { group ->
+        val channelIndexMap = channelList.withIndex().associate { it.value to it.index }
+
         group.copy(channelList = ChannelList(group.channelList.map { channel ->
-            channel.copy(
-                index = channelList.indexOf(channel),
-            )
+            channel.copy(index = channelIndexMap[channel] ?: -1)
         }))
     })
 }

@@ -18,22 +18,27 @@ object ChannelAlias : Loggable("ChannelAlias") {
     }
 
     fun standardChannelName(name: String): String {
-        val suffixList =
-            _aliasMap.getOrElse("__suffix") { emptyList() } + defaultAlias.getOrElse("__suffix") { emptyList() }
+        val normalizedSuffixes = getNormalizedSuffixes()
+        val nameWithoutSuffix =
+            normalizedSuffixes.fold(name) { acc, suffix -> acc.removeSuffix(suffix) }.trim()
 
-        val nameWithoutSuffix = suffixList.fold(name) { acc, suffix ->
-            acc.removeSuffix(suffix)
-                .removeSuffix(suffix.lowercase())
-        }.trim()
+        return findAliasName(nameWithoutSuffix) ?: name
+    }
 
-        fun getName(aliasMap: Map<String, List<String>>): String? {
-            return aliasMap.keys.firstOrNull { it.lowercase() == nameWithoutSuffix.lowercase() }
-                ?: aliasMap.entries.firstOrNull { entry ->
-                    entry.value.map { it.lowercase() }.contains(nameWithoutSuffix.lowercase())
-                }?.key
-        }
+    private fun getNormalizedSuffixes(): List<String> {
+        return (_aliasMap.getOrElse("__suffix") { emptyList() } +
+                defaultAlias.getOrElse("__suffix") { emptyList() })
+    }
 
-        return getName(aliasMap) ?: getName(defaultAlias) ?: name
+    private fun findAliasName(name: String): String? {
+        return aliasMap.keys.firstOrNull { it.equals(name, ignoreCase = true) }
+            ?: aliasMap.entries.firstOrNull { entry ->
+                entry.value.any { it.equals(name, ignoreCase = true) }
+            }?.key
+            ?: defaultAlias.keys.firstOrNull { it.equals(name, ignoreCase = true) }
+            ?: defaultAlias.entries.firstOrNull { entry ->
+                entry.value.any { it.equals(name, ignoreCase = true) }
+            }?.key
     }
 
     private val defaultAlias by lazy {
