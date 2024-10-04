@@ -47,7 +47,7 @@ fun SettingsListItem(
     val focusRequester = remember { FocusRequester() }
 
     var showPush by remember { mutableStateOf(false) }
-   
+
     ListItem(
         selected = false,
         onClick = {},

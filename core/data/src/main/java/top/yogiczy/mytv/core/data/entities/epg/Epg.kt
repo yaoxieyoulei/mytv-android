@@ -2,7 +2,6 @@ package top.yogiczy.mytv.core.data.entities.epg
 
 import kotlinx.serialization.Serializable
 import top.yogiczy.mytv.core.data.entities.channel.Channel
-import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.isLive
 import java.util.Calendar
 
 /**
@@ -27,15 +26,23 @@ data class Epg(
 ) {
     companion object {
         fun Epg.recentProgramme(): EpgProgrammeRecent {
-            val liveProgramIndex = programmeList.indexOfFirst { it.isLive() }
+            val currentTime = System.currentTimeMillis()
+
+            val liveProgramIndex = programmeList.binarySearch {
+                when {
+                    currentTime < it.startAt -> 1
+                    currentTime > it.endAt -> -1
+                    else -> 0
+                }
+            }
 
             return if (liveProgramIndex != -1) {
-                val now = programmeList[liveProgramIndex]
-                val next = programmeList.getOrNull(liveProgramIndex + 1)
-
-                EpgProgrammeRecent(now = now, next = next)
+                EpgProgrammeRecent(
+                    now = programmeList[liveProgramIndex],
+                    next = programmeList.getOrNull(liveProgramIndex + 1)
+                )
             } else {
-                EpgProgrammeRecent(now = null, next = null)
+                EpgProgrammeRecent()
             }
         }
 
