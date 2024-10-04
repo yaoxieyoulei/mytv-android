@@ -93,10 +93,18 @@ fun MainScreen(
         Snackbar.show("已清空所有收藏")
     }
 
-    fun checkUpdate() {
+    fun checkUpdate(quiet: Boolean = true) {
         coroutineScope.launch {
+            if (!quiet) Snackbar.show("正在检查更新...", leadingLoading = true, duration = 5000)
+
             delay(3000)
             updateViewModel.checkUpdate(BuildConfig.VERSION_NAME, settingsViewModel.updateChannel)
+
+            if (!quiet) {
+                if (updateViewModel.isUpdateAvailable) Snackbar.show("发现新版本: v${updateViewModel.latestRelease.version}")
+                else Snackbar.show("当前已是最新版本")
+            }
+
             if (!updateViewModel.isUpdateAvailable) return@launch
             if (settingsViewModel.appLastLatestVersion == updateViewModel.latestRelease.version) return@launch
 
@@ -104,7 +112,7 @@ fun MainScreen(
             if (settingsViewModel.updateForceRemind) {
                 navController.navigateSingleTop(Screens.Update())
             } else {
-                Snackbar.show("发现新版本: v${updateViewModel.latestRelease.version}")
+                if (quiet) Snackbar.show("发现新版本: v${updateViewModel.latestRelease.version}")
             }
         }
     }
@@ -239,6 +247,7 @@ fun MainScreen(
                     },
                     channelGroupListProvider = channelGroupListProvider,
                     settingsViewModel = settingsViewModel,
+                    onCheckUpdate = { checkUpdate(false) },
                     onReload = {
                         mainViewModel.init()
                         navController.navigateUp()

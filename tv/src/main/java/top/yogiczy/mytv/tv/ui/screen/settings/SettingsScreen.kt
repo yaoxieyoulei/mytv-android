@@ -2,6 +2,10 @@ package top.yogiczy.mytv.tv.ui.screen.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -50,6 +54,7 @@ fun SettingsScreen(
     startDestinationProvider: () -> String? = { null },
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     settingsViewModel: SettingsViewModel = viewModel(),
+    onCheckUpdate: () -> Unit = {},
     onReload: () -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
@@ -230,13 +235,18 @@ fun SettingsScreen(
                 }
 
                 composable(SettingsSubCategories.CHANNEL_GROUP_VISIBILITY.name) {
+                    var hasChanged by remember { mutableStateOf(false) }
                     SettingsChannelGroupVisibilityScreen(
                         channelGroupListProvider = channelGroupListProvider,
                         channelGroupNameHiddenListProvider = { settingsViewModel.iptvChannelGroupHiddenList.toList() },
                         onChannelGroupNameHiddenListChange = {
                             settingsViewModel.iptvChannelGroupHiddenList = it.toSet()
+                            hasChanged = true
                         },
-                        onBackPressed = { onReload() },
+                        onBackPressed = {
+                            if (hasChanged) onReload()
+                            else navController.navigateUp()
+                        },
                     )
                 }
 
@@ -338,6 +348,7 @@ fun SettingsScreen(
                         onUpdateChannelChanged = {
                             settingsViewModel.updateChannel = it
                             navController.navigateUp()
+                            onCheckUpdate()
                         },
                         onBackPressed = { navController.navigateUp() },
                     )
