@@ -54,6 +54,20 @@ fun SettingsControlScreen(
                 },
             )
         }
+
+        item {
+            val loop = settingsViewModel.iptvChannelChangeListLoop
+
+            SettingsListItem(
+                headlineContent = "换台列表首尾循环",
+                trailingContent = {
+                    Switch(loop, null)
+                },
+                onSelect = {
+                    settingsViewModel.iptvChannelChangeListLoop = !loop
+                },
+            )
+        }
     }
 }
 

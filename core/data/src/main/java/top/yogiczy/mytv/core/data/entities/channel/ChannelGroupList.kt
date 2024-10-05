@@ -30,6 +30,10 @@ data class ChannelGroupList(
         fun ChannelGroupList.channelIdx(channel: Channel) =
             this.flatMap { it.channelList }.indexOfFirst { it == channel }
 
+        fun ChannelGroupList.channelFirstOrNull() = this.firstOrNull()?.channelList?.firstOrNull()
+
+        fun ChannelGroupList.channelLastOrNull() = this.lastOrNull()?.channelList?.lastOrNull()
+
         val ChannelGroupList.channelList: ChannelList
             get() = ChannelList(this.asSequence().flatMap { it.channelList.asSequence() }.toList())
     }

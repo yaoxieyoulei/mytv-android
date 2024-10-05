@@ -81,7 +81,6 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.APP.name) {
                     SettingsAppScreen(
-                        settingsViewModel = settingsViewModel,
                         onReload = onReload,
                         onBackPressed = { navController.navigateUp() },
                     )
@@ -90,7 +89,6 @@ fun SettingsScreen(
                 composable(SettingsCategories.IPTV.name) {
                     SettingsIptvScreen(
                         channelGroupListProvider = channelGroupListProvider,
-                        settingsViewModel = settingsViewModel,
                         toIptvSourceScreen = { navController.navigateSingleTop(SettingsSubCategories.IPTV_SOURCE.name) },
                         toIptvSourceCacheTimeScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.IPTV_SOURCE_CACHE_TIME.name)
@@ -107,7 +105,6 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.EPG.name) {
                     SettingsEpgScreen(
-                        settingsViewModel = settingsViewModel,
                         toEpgSourceScreen = { navController.navigateSingleTop(SettingsSubCategories.EPG_SOURCE.name) },
                         toEpgRefreshTimeThresholdScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.EPG_REFRESH_TIME_THRESHOLD.name)
@@ -118,7 +115,6 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.UI.name) {
                     SettingsUiScreen(
-                        settingsViewModel = settingsViewModel,
                         toUiTimeShowModeScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.UI_TIME_SHOW_MODE.name)
                         },
@@ -137,14 +133,12 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.CONTROL.name) {
                     SettingsControlScreen(
-                        settingsViewModel = settingsViewModel,
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
 
                 composable(SettingsCategories.VIDEO_PLAYER.name) {
                     SettingsVideoPlayerScreen(
-                        settingsViewModel = settingsViewModel,
                         toVideoPlayerDisplayModeScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.VIDEO_PLAYER_DISPLAY_MODE.name)
                         },
@@ -157,7 +151,6 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.UPDATE.name) {
                     SettingsUpdateScreen(
-                        settingsViewModel = settingsViewModel,
                         toUpdateChannelScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.UPDATE_CHANNEL.name)
                         },
@@ -173,14 +166,12 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.THEME.name) {
                     SettingsThemeScreen(
-                        settingsViewModel = settingsViewModel,
                         onBackPressed = { navController.navigateUp() },
                     )
                 }
 
                 composable(SettingsCategories.CLOUD_SYNC.name) {
                     SettingsCloudSyncScreen(
-                        settingsViewModel = settingsViewModel,
                         toCloudSyncProviderScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.CLOUD_SYNC_PROVIDER.name)
                         },
@@ -191,7 +182,6 @@ fun SettingsScreen(
 
                 composable(SettingsCategories.DEBUG.name) {
                     SettingsDebugScreen(
-                        settingsViewModel = settingsViewModel,
                         onBackPressed = { navController.navigateUp() },
                     )
                 }

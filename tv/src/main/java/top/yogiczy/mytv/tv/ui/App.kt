@@ -76,7 +76,6 @@ fun App(
         PopupHandleableApplication {
             MainScreen(
                 modifier = modifier,
-                settingsViewModel = settingsViewModel,
                 onBackPressed = {
                     if (doubleBackPressedExitState.allowExit) {
                         onBackPressed()

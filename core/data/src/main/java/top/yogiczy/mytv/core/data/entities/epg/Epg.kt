@@ -36,7 +36,7 @@ data class Epg(
                 }
             }
 
-            return if (liveProgramIndex != -1) {
+            return if (liveProgramIndex > -1) {
                 EpgProgrammeRecent(
                     now = programmeList[liveProgramIndex],
                     next = programmeList.getOrNull(liveProgramIndex + 1)

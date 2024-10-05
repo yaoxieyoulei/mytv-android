@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
@@ -15,10 +16,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelFirstOrNull
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelGroupIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelLastOrNull
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLineList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserve
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
@@ -42,6 +47,7 @@ class MainContentState(
     private val coroutineScope: CoroutineScope,
     private val videoPlayerState: VideoPlayerState,
     private val channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
+    private val favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
     private val settingsViewModel: SettingsViewModel,
 ) : Loggable("MainContentState") {
     private var _currentChannel by mutableStateOf(Channel())
@@ -153,49 +159,47 @@ class MainContentState(
         if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
 
         val channelGroupList = channelGroupListProvider()
+        val favoriteChannelList = favoriteChannelListProvider()
 
-        val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
-        val favoriteChannelList =
-            channelGroupList.channelList.filter { it.name in favoriteChannelNameList }
+        if (_currentChannel !in favoriteChannelList) return null
 
-        return if (_currentChannel in favoriteChannelList && _currentChannel != favoriteChannelList.first()) {
-            val currentIdx = favoriteChannelList.indexOf(_currentChannel)
-            favoriteChannelList[currentIdx - 1]
-        } else if (settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut) {
-            settingsViewModel.iptvChannelFavoriteListVisible = false
-            channelGroupList.channelList.lastOrNull()
-        } else {
-            favoriteChannelList.lastOrNull()
+        val currentIdx = favoriteChannelList.indexOf(_currentChannel)
+
+        return favoriteChannelList.getOrElse(currentIdx - 1) {
+            if (settingsViewModel.iptvChannelChangeListLoop) favoriteChannelList.lastOrNull()
+            else channelGroupList.channelLastOrNull()
         }
-
     }
 
     private fun getNextFavoriteChannel(): Channel? {
         if (!settingsViewModel.iptvChannelFavoriteListVisible) return null
 
         val channelGroupList = channelGroupListProvider()
+        val favoriteChannelList = favoriteChannelListProvider()
 
-        val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
-        val favoriteChannelList =
-            channelGroupList.channelList.filter { it.name in favoriteChannelNameList }
+        if (_currentChannel !in favoriteChannelList) return null
 
-        return if (_currentChannel in favoriteChannelList && _currentChannel != favoriteChannelList.last()) {
-            val currentIdx = favoriteChannelList.indexOf(_currentChannel)
-            favoriteChannelList[currentIdx + 1]
-        } else if (settingsViewModel.iptvChannelFavoriteChangeBoundaryJumpOut) {
-            settingsViewModel.iptvChannelFavoriteListVisible = false
-            channelGroupList.channelList.firstOrNull()
-        } else {
-            favoriteChannelList.firstOrNull()
+        val currentIdx = favoriteChannelList.indexOf(_currentChannel)
+
+        return favoriteChannelList.getOrElse(currentIdx + 1) {
+            if (settingsViewModel.iptvChannelChangeListLoop) favoriteChannelList.firstOrNull()
+            else channelGroupList.channelFirstOrNull()
         }
     }
 
     private fun getPrevChannel(): Channel {
         return getPrevFavoriteChannel() ?: run {
             val channelGroupList = channelGroupListProvider()
-            val currentIdx = channelGroupList.channelIdx(_currentChannel)
-            return channelGroupList.channelList.getOrElse(currentIdx - 1) {
-                channelGroupList.channelList.lastOrNull() ?: Channel()
+            return if (settingsViewModel.iptvChannelChangeListLoop) {
+                val group =
+                    channelGroupList.getOrElse(channelGroupList.channelGroupIdx(_currentChannel)) { channelGroupList.first() }
+                val currentIdx = group.channelList.indexOf(_currentChannel)
+                group.channelList.getOrElse(currentIdx - 1) { group.channelList.last() }
+            } else {
+                val currentIdx = channelGroupList.channelIdx(_currentChannel)
+                channelGroupList.channelList.getOrElse(currentIdx - 1) {
+                    channelGroupList.channelLastOrNull() ?: Channel()
+                }
             }
         }
     }
@@ -203,9 +207,16 @@ class MainContentState(
     private fun getNextChannel(): Channel {
         return getNextFavoriteChannel() ?: run {
             val channelGroupList = channelGroupListProvider()
-            val currentIdx = channelGroupList.channelIdx(_currentChannel)
-            return channelGroupList.channelList.getOrElse(currentIdx + 1) {
-                channelGroupList.channelList.firstOrNull() ?: Channel()
+            return if (settingsViewModel.iptvChannelChangeListLoop) {
+                val group =
+                    channelGroupList.getOrElse(channelGroupList.channelGroupIdx(_currentChannel)) { channelGroupList.first() }
+                val currentIdx = group.channelList.indexOf(_currentChannel)
+                group.channelList.getOrElse(currentIdx + 1) { group.channelList.first() }
+            } else {
+                val currentIdx = channelGroupList.channelIdx(_currentChannel)
+                channelGroupList.channelList.getOrElse(currentIdx + 1) {
+                    channelGroupList.channelFirstOrNull() ?: Channel()
+                }
             }
         }
     }
@@ -272,18 +283,6 @@ class MainContentState(
         changeCurrentChannel(getNextChannel())
     }
 
-    fun favoriteChannelOrNot(channel: Channel) {
-        if (!settingsViewModel.iptvChannelFavoriteEnable) return
-
-        if (settingsViewModel.iptvChannelFavoriteList.contains(channel.name)) {
-            settingsViewModel.iptvChannelFavoriteList -= channel.name
-            Snackbar.show("取消收藏：${channel.name}")
-        } else {
-            settingsViewModel.iptvChannelFavoriteList += channel.name
-            Snackbar.show("已收藏：${channel.name}")
-        }
-    }
-
     fun reverseEpgProgrammeOrNot(channel: Channel, programme: EpgProgramme) {
         val reverse = settingsViewModel.epgChannelReserveList.firstOrNull {
             it.test(channel, programme)
@@ -321,12 +320,18 @@ fun rememberMainContentState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     videoPlayerState: VideoPlayerState = rememberVideoPlayerState(),
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
+    favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
     settingsViewModel: SettingsViewModel = viewModel(),
-) = remember {
-    MainContentState(
-        coroutineScope = coroutineScope,
-        videoPlayerState = videoPlayerState,
-        channelGroupListProvider = channelGroupListProvider,
-        settingsViewModel = settingsViewModel,
-    )
+): MainContentState {
+    val favoriteChannelListProviderUpdated by rememberUpdatedState(favoriteChannelListProvider)
+
+    return remember {
+        MainContentState(
+            coroutineScope = coroutineScope,
+            videoPlayerState = videoPlayerState,
+            channelGroupListProvider = channelGroupListProvider,
+            favoriteChannelListProvider = favoriteChannelListProviderUpdated,
+            settingsViewModel = settingsViewModel,
+        )
+    }
 }

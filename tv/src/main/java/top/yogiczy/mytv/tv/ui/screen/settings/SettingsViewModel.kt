@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.tv.ui.screen.settings
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
@@ -91,15 +93,6 @@ class SettingsViewModel : ViewModel() {
             afterSetWhenCloudSyncAutoPull()
         }
 
-    private var _iptvChannelChangeFlip by mutableStateOf(false)
-    var iptvChannelChangeFlip: Boolean
-        get() = _iptvChannelChangeFlip
-        set(value) {
-            _iptvChannelChangeFlip = value
-            Configs.iptvChannelChangeFlip = value
-            afterSetWhenCloudSyncAutoPull()
-        }
-
     private var _iptvSourceCacheTime by mutableLongStateOf(0)
     var iptvSourceCacheTime: Long
         get() = _iptvSourceCacheTime
@@ -136,15 +129,6 @@ class SettingsViewModel : ViewModel() {
             afterSetWhenCloudSyncAutoPull()
         }
 
-    private var _iptvChannelNoSelectEnable by mutableStateOf(false)
-    var iptvChannelNoSelectEnable: Boolean
-        get() = _iptvChannelNoSelectEnable
-        set(value) {
-            _iptvChannelNoSelectEnable = value
-            Configs.iptvChannelNoSelectEnable = value
-            afterSetWhenCloudSyncAutoPull()
-        }
-
     private var _iptvChannelFavoriteEnable by mutableStateOf(false)
     var iptvChannelFavoriteEnable: Boolean
         get() = _iptvChannelFavoriteEnable
@@ -169,15 +153,6 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelFavoriteList = value
             Configs.iptvChannelFavoriteList = value
-            afterSetWhenCloudSyncAutoPull()
-        }
-
-    private var _iptvChannelFavoriteChangeBoundaryJumpOut by mutableStateOf(false)
-    var iptvChannelFavoriteChangeBoundaryJumpOut: Boolean
-        get() = _iptvChannelFavoriteChangeBoundaryJumpOut
-        set(value) {
-            _iptvChannelFavoriteChangeBoundaryJumpOut = value
-            Configs.iptvChannelFavoriteChangeBoundaryJumpOut = value
             afterSetWhenCloudSyncAutoPull()
         }
 
@@ -223,6 +198,33 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _iptvChannelLogoOverride = value
             Configs.iptvChannelLogoOverride = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+
+    private var _iptvChannelChangeFlip by mutableStateOf(false)
+    var iptvChannelChangeFlip: Boolean
+        get() = _iptvChannelChangeFlip
+        set(value) {
+            _iptvChannelChangeFlip = value
+            Configs.iptvChannelChangeFlip = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+
+    private var _iptvChannelNoSelectEnable by mutableStateOf(false)
+    var iptvChannelNoSelectEnable: Boolean
+        get() = _iptvChannelNoSelectEnable
+        set(value) {
+            _iptvChannelNoSelectEnable = value
+            Configs.iptvChannelNoSelectEnable = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+
+    private var _iptvChannelChangeListLoop by mutableStateOf(false)
+    var iptvChannelChangeListLoop: Boolean
+        get() = _iptvChannelChangeListLoop
+        set(value) {
+            _iptvChannelChangeListLoop = value
+            Configs.iptvChannelChangeListLoop = value
             afterSetWhenCloudSyncAutoPull()
         }
 
@@ -513,21 +515,21 @@ class SettingsViewModel : ViewModel() {
         _debugShowVideoPlayerMetadata = Configs.debugShowVideoPlayerMetadata
         _debugShowLayoutGrids = Configs.debugShowLayoutGrids
         _iptvLastChannelIdx = Configs.iptvLastChannelIdx
-        _iptvChannelChangeFlip = Configs.iptvChannelChangeFlip
         _iptvSourceCacheTime = Configs.iptvSourceCacheTime
         _iptvSourceCurrent = Configs.iptvSourceCurrent
         _iptvSourceList = Configs.iptvSourceList
         _iptvPlayableHostList = Configs.iptvPlayableHostList
-        _iptvChannelNoSelectEnable = Configs.iptvChannelNoSelectEnable
         _iptvChannelFavoriteEnable = Configs.iptvChannelFavoriteEnable
         _iptvChannelFavoriteListVisible = Configs.iptvChannelFavoriteListVisible
         _iptvChannelFavoriteList = Configs.iptvChannelFavoriteList
-        _iptvChannelFavoriteChangeBoundaryJumpOut = Configs.iptvChannelFavoriteChangeBoundaryJumpOut
         _iptvChannelGroupHiddenList = Configs.iptvChannelGroupHiddenList
         _iptvHybridMode = Configs.iptvHybridMode
         _iptvSimilarChannelMerge = Configs.iptvSimilarChannelMerge
         _iptvChannelLogoProvider = Configs.iptvChannelLogoProvider
         _iptvChannelLogoOverride = Configs.iptvChannelLogoOverride
+        _iptvChannelChangeFlip = Configs.iptvChannelChangeFlip
+        _iptvChannelNoSelectEnable = Configs.iptvChannelNoSelectEnable
+        _iptvChannelChangeListLoop = Configs.iptvChannelChangeListLoop
         _epgEnable = Configs.epgEnable
         _epgSourceCurrent = Configs.epgSourceCurrent
         _epgSourceList = Configs.epgSourceList
@@ -562,59 +564,68 @@ class SettingsViewModel : ViewModel() {
 
     fun toLocalSettings(): Configs.Required {
         return Configs.Required(
-            appBootLaunch = _appBootLaunch,
-            appPipEnable = _appPipEnable,
-            appLastLatestVersion = _appLastLatestVersion,
-            appAgreementAgreed = _appAgreementAgreed,
-            debugShowFps = _debugShowFps,
-            debugShowVideoPlayerMetadata = _debugShowVideoPlayerMetadata,
-            debugShowLayoutGrids = _debugShowLayoutGrids,
-            iptvLastChannelIdx = _iptvLastChannelIdx,
-            iptvChannelChangeFlip = _iptvChannelChangeFlip,
-            iptvSourceCacheTime = _iptvSourceCacheTime,
+            // appBootLaunch = _appBootLaunch,
+            // appPipEnable = _appPipEnable,
+            // appLastLatestVersion = _appLastLatestVersion,
+            // appAgreementAgreed = _appAgreementAgreed,
+            // debugShowFps = _debugShowFps,
+            // debugShowVideoPlayerMetadata = _debugShowVideoPlayerMetadata,
+            // debugShowLayoutGrids = _debugShowLayoutGrids,
+            // iptvLastChannelIdx = _iptvLastChannelIdx,
+            // iptvSourceCacheTime = _iptvSourceCacheTime,
             iptvSourceCurrent = _iptvSourceCurrent,
-            iptvSourceList = _iptvSourceList,
-            iptvPlayableHostList = _iptvPlayableHostList,
-            iptvChannelNoSelectEnable = _iptvChannelNoSelectEnable,
-            iptvChannelFavoriteEnable = _iptvChannelFavoriteEnable,
-            iptvChannelFavoriteListVisible = _iptvChannelFavoriteListVisible,
-            iptvChannelFavoriteList = _iptvChannelFavoriteList,
-            iptvChannelFavoriteChangeBoundaryJumpOut = _iptvChannelFavoriteChangeBoundaryJumpOut,
-            iptvChannelGroupHiddenList = _iptvChannelGroupHiddenList,
-            iptvHybridMode = _iptvHybridMode,
-            iptvSimilarChannelMerge = _iptvSimilarChannelMerge,
-            iptvChannelLogoProvider = _iptvChannelLogoProvider,
-            iptvChannelLogoOverride = _iptvChannelLogoOverride,
-            epgEnable = _epgEnable,
-            epgSourceCurrent = _epgSourceCurrent,
-            epgSourceList = _epgSourceList,
-            epgRefreshTimeThreshold = _epgRefreshTimeThreshold,
-            epgSourceFollowIptv = _epgSourceFollowIptv,
-            epgChannelReserveList = _epgChannelReserveList,
+            // iptvSourceList = _iptvSourceList,
+            // iptvPlayableHostList = _iptvPlayableHostList,
+            // iptvChannelFavoriteEnable = _iptvChannelFavoriteEnable,
+            // iptvChannelFavoriteListVisible = _iptvChannelFavoriteListVisible,
+            // iptvChannelFavoriteList = _iptvChannelFavoriteList,
+            // iptvChannelGroupHiddenList = _iptvChannelGroupHiddenList,
+            // iptvHybridMode = _iptvHybridMode,
+            // iptvSimilarChannelMerge = _iptvSimilarChannelMerge,
+            // iptvChannelLogoProvider = _iptvChannelLogoProvider,
+            // iptvChannelLogoOverride = _iptvChannelLogoOverride,
+            // iptvChannelChangeFlip = _iptvChannelChangeFlip,
+            // iptvChannelNoSelectEnable = _iptvChannelNoSelectEnable,
+            // iptvChannelChangeListLoop = _iptvChannelChangeListLoop,
+            // epgEnable = _epgEnable,
+            // epgSourceCurrent = _epgSourceCurrent,
+            // epgSourceList = _epgSourceList,
+            // epgRefreshTimeThreshold = _epgRefreshTimeThreshold,
+            // epgSourceFollowIptv = _epgSourceFollowIptv,
+            // epgChannelReserveList = _epgChannelReserveList,
             uiShowEpgProgrammeProgress = _uiShowEpgProgrammeProgress,
-            uiShowEpgProgrammePermanentProgress = _uiShowEpgProgrammePermanentProgress,
+            // uiShowEpgProgrammePermanentProgress = _uiShowEpgProgrammePermanentProgress,
             uiShowChannelLogo = _uiShowChannelLogo,
             uiShowChannelPreview = _uiShowChannelPreview,
-            uiUseClassicPanelScreen = _uiUseClassicPanelScreen,
-            uiDensityScaleRatio = _uiDensityScaleRatio,
-            uiFontScaleRatio = _uiFontScaleRatio,
-            uiTimeShowMode = _uiTimeShowMode,
+            // uiUseClassicPanelScreen = _uiUseClassicPanelScreen,
+            // uiDensityScaleRatio = _uiDensityScaleRatio,
+            // uiFontScaleRatio = _uiFontScaleRatio,
+            // uiTimeShowMode = _uiTimeShowMode,
             uiFocusOptimize = _uiFocusOptimize,
-            uiScreenAutoCloseDelay = _uiScreenAutoCloseDelay,
-            updateForceRemind = _updateForceRemind,
-            updateChannel = _updateChannel,
-            videoPlayerUserAgent = _videoPlayerUserAgent,
-            videoPlayerHeaders = _videoPlayerHeaders,
-            videoPlayerLoadTimeout = _videoPlayerLoadTimeout,
-            videoPlayerDisplayMode = _videoPlayerDisplayMode,
+            // uiScreenAutoCloseDelay = _uiScreenAutoCloseDelay,
+            // updateForceRemind = _updateForceRemind,
+            // updateChannel = _updateChannel,
+            // videoPlayerUserAgent = _videoPlayerUserAgent,
+            // videoPlayerHeaders = _videoPlayerHeaders,
+            // videoPlayerLoadTimeout = _videoPlayerLoadTimeout,
+            // videoPlayerDisplayMode = _videoPlayerDisplayMode,
             themeAppCurrent = _themeAppCurrent,
-            cloudSyncAutoPull = _cloudSyncAutoPull,
-            cloudSyncProvider = _cloudSyncProvider,
-            cloudSyncGithubGistId = _cloudSyncGithubGistId,
-            cloudSyncGithubGistToken = _cloudSyncGithubGistToken,
-            cloudSyncGiteeGistId = _cloudSyncGiteeGistId,
-            cloudSyncGiteeGistToken = _cloudSyncGiteeGistToken,
-            cloudSyncNetworkUrl = _cloudSyncNetworkUrl,
+            // cloudSyncAutoPull = _cloudSyncAutoPull,
+            // cloudSyncProvider = _cloudSyncProvider,
+            // cloudSyncGithubGistId = _cloudSyncGithubGistId,
+            // cloudSyncGithubGistToken = _cloudSyncGithubGistToken,
+            // cloudSyncGiteeGistId = _cloudSyncGiteeGistId,
+            // cloudSyncGiteeGistToken = _cloudSyncGiteeGistToken,
+            // cloudSyncNetworkUrl = _cloudSyncNetworkUrl,
         )
+    }
+
+    companion object {
+        private var instance: SettingsViewModel? = null
+
+        @Composable
+        fun getInstance(): SettingsViewModel {
+            return instance ?: viewModel<SettingsViewModel>().also { instance = it }
+        }
     }
 }

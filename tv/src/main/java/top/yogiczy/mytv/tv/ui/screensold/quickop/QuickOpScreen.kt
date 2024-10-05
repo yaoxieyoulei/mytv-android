@@ -119,10 +119,7 @@ private fun QuickOpScreenTop(
             )
         }
 
-        Row(
-            // modifier = Modifier.align(Alignment.TopEnd),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             ChannelNumber(channelNumberProvider = channelNumberProvider)
 
             Box(modifier = Modifier.padding(horizontal = 8.dp)) {

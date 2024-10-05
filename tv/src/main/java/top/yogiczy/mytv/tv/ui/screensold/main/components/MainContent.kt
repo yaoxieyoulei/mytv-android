@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
@@ -46,11 +48,13 @@ import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 @Composable
 fun MainContent(
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit = {},
     filteredChannelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
+    favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
     epgListProvider: () -> EpgList = { EpgList() },
     settingsViewModel: SettingsViewModel = viewModel(),
+    onChannelFavoriteToggle: (Channel) -> Unit = {},
     toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
+    onBackPressed: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -59,7 +63,7 @@ fun MainContent(
     val mainContentState = rememberMainContentState(
         videoPlayerState = videoPlayerState,
         channelGroupListProvider = filteredChannelGroupListProvider,
-        settingsViewModel = settingsViewModel,
+        favoriteChannelListProvider = favoriteChannelListProvider,
     )
     val channelNumberSelectState = rememberChannelNumberSelectState {
         val idx = it.toInt() - 1
@@ -163,7 +167,12 @@ fun MainContent(
     }
 
     Visibility({
-        !mainContentState.isTempChannelScreenVisible && !mainContentState.isChannelScreenVisible && !mainContentState.isQuickOpScreenVisible && !mainContentState.isEpgScreenVisible && !mainContentState.isChannelLineScreenVisible && channelNumberSelectState.channelNumber.isEmpty()
+        !mainContentState.isTempChannelScreenVisible
+                && !mainContentState.isChannelScreenVisible
+                && !mainContentState.isQuickOpScreenVisible
+                && !mainContentState.isEpgScreenVisible
+                && !mainContentState.isChannelLineScreenVisible
+                && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         DatetimeScreen(showModeProvider = { settingsViewModel.uiTimeShowMode })
     }
@@ -171,7 +180,12 @@ fun MainContent(
     ChannelNumberSelectScreen(channelNumberProvider = { channelNumberSelectState.channelNumber })
 
     Visibility({
-        mainContentState.isTempChannelScreenVisible && !mainContentState.isChannelScreenVisible && !mainContentState.isQuickOpScreenVisible && !mainContentState.isEpgScreenVisible && !mainContentState.isChannelLineScreenVisible && channelNumberSelectState.channelNumber.isEmpty()
+        mainContentState.isTempChannelScreenVisible
+                && !mainContentState.isChannelScreenVisible
+                && !mainContentState.isQuickOpScreenVisible
+                && !mainContentState.isEpgScreenVisible
+                && !mainContentState.isChannelLineScreenVisible
+                && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         ChannelTempScreen(
             channelProvider = { mainContentState.currentChannel },
@@ -339,6 +353,7 @@ fun MainContent(
     ) {
         ChannelScreen(
             channelGroupListProvider = filteredChannelGroupListProvider,
+            favoriteChannelListProvider = favoriteChannelListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelLineIdxProvider = { mainContentState.currentChannelLineIdx },
             showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
@@ -346,13 +361,12 @@ fun MainContent(
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(it)
             },
-            onChannelFavoriteToggle = { mainContentState.favoriteChannelOrNot(it) },
+            onChannelFavoriteToggle = onChannelFavoriteToggle,
             epgListProvider = epgListProvider,
             showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
             currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
             channelFavoriteEnabledProvider = { settingsViewModel.iptvChannelFavoriteEnable },
-            channelFavoriteListProvider = { settingsViewModel.iptvChannelFavoriteList.toImmutableList() },
             channelFavoriteListVisibleProvider = { settingsViewModel.iptvChannelFavoriteListVisible },
             onChannelFavoriteListVisibleChange = {
                 settingsViewModel.iptvChannelFavoriteListVisible = it
@@ -367,6 +381,7 @@ fun MainContent(
     ) {
         ClassicChannelScreen(
             channelGroupListProvider = filteredChannelGroupListProvider,
+            favoriteChannelListProvider = favoriteChannelListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelLineIdxProvider = { mainContentState.currentChannelLineIdx },
             showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
@@ -374,7 +389,7 @@ fun MainContent(
                 mainContentState.isChannelScreenVisible = false
                 mainContentState.changeCurrentChannel(it)
             },
-            onChannelFavoriteToggle = { mainContentState.favoriteChannelOrNot(it) },
+            onChannelFavoriteToggle = onChannelFavoriteToggle,
             epgListProvider = epgListProvider,
             epgProgrammeReserveListProvider = {
                 EpgProgrammeReserveList(settingsViewModel.epgChannelReserveList)

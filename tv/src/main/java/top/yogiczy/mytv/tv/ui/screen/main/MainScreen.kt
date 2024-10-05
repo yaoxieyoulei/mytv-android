@@ -65,6 +65,7 @@ fun MainScreen(
             ChannelList(filteredChannelGroupListProvider().channelList
                 .filter { favoriteChannelNameList.contains(it.name) })
         }
+    val favoriteChannelListProvider = { favoriteChannelList }
 
     val navController = rememberNavController()
 
@@ -149,7 +150,7 @@ fun MainScreen(
             composable(Screens.Dashboard()) {
                 DashboardScreen(
                     currentIptvSourceProvider = { settingsViewModel.iptvSourceCurrent },
-                    favoriteChannelListProvider = { favoriteChannelList },
+                    favoriteChannelListProvider = favoriteChannelListProvider,
                     onChannelSelected = { onChannelSelected(it) },
                     epgListProvider = epgListProvider,
                     toLiveScreen = { navController.navigateSingleTop(Screens.Live()) },
@@ -174,21 +175,22 @@ fun MainScreen(
 
                 top.yogiczy.mytv.tv.ui.screensold.main.components.MainContent(
                     filteredChannelGroupListProvider = filteredChannelGroupListProvider,
+                    favoriteChannelListProvider = favoriteChannelListProvider,
                     epgListProvider = epgListProvider,
-                    settingsViewModel = settingsViewModel,
+                    onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
+                    toSettingsScreen = {
+                        if (it != null) {
+                            navController.navigateSingleTop(Screens.Settings.withArgs(it))
+                        } else {
+                            navController.navigateSingleTop(Screens.Settings())
+                        }
+                    },
                     onBackPressed = {
                         if (doubleBackPressedExitState.allowExit) {
                             navController.navigateUp()
                         } else {
                             doubleBackPressedExitState.backPress()
                             Snackbar.show("再按一次退出直播")
-                        }
-                    },
-                    toSettingsScreen = {
-                        if (it != null) {
-                            navController.navigateSingleTop(Screens.Settings.withArgs(it))
-                        } else {
-                            navController.navigateSingleTop(Screens.Settings())
                         }
                     },
                 )
@@ -206,7 +208,7 @@ fun MainScreen(
 
             composable(Screens.Favorites()) {
                 FavoritesScreen(
-                    channelListProvider = { favoriteChannelList },
+                    channelListProvider = favoriteChannelListProvider,
                     onChannelSelected = { onChannelSelected(it) },
                     onChannelFavoriteToggle = { onChannelFavoriteToggle(it) },
                     onChannelFavoriteClear = { onChannelFavoriteClear() },
@@ -246,7 +248,6 @@ fun MainScreen(
                         else startDestination
                     },
                     channelGroupListProvider = channelGroupListProvider,
-                    settingsViewModel = settingsViewModel,
                     onCheckUpdate = { checkUpdate(false) },
                     onReload = {
                         mainViewModel.init()

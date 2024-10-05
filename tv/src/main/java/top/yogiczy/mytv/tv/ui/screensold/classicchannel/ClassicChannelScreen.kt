@@ -67,6 +67,7 @@ import kotlin.math.max
 fun ClassicChannelScreen(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
+    favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
     currentChannelProvider: () -> Channel = { Channel() },
     currentChannelLineIdxProvider: () -> Int = { 0 },
     showChannelLogoProvider: () -> Boolean = { false },
@@ -154,8 +155,7 @@ fun ClassicChannelScreen(
                 channelGroupProvider = { focusedChannelGroup },
                 channelListProvider = {
                     if (focusedChannelGroup == ClassicPanelScreenFavoriteChannelGroup)
-                        ChannelList(channelGroupListProvider().channelList
-                            .filter { channelFavoriteListProvider().contains(it.name) })
+                        favoriteChannelListProvider()
                     else
                         focusedChannelGroup.channelList
                 },
