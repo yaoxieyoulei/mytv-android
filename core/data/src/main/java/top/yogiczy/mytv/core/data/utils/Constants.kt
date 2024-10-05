@@ -42,10 +42,6 @@ object Constants {
                 name = "默认直播源 YanG-1989（电视）",
                 url = "https://tv.iill.top/m3u/Gather",
             ),
-            IptvSource(
-                name = "默认直播源 YanG-1989（直播）",
-                url = "https://tv.iill.top/m3u/Live",
-            ),
         )
     )
 
@@ -59,6 +55,10 @@ object Constants {
      */
     val EPG_SOURCE_LIST = EpgSourceList(
         listOf(
+            EpgSource(
+                name = "默认节目单 fanmingming",
+                url = "https://live.fanmingming.com/e.xml",
+            ),
             EpgSource(
                 name = "默认节目单 老张的EPG",
                 url = "http://epg.51zmt.top:8000/e.xml.gz",
