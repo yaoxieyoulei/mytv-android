@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 
@@ -42,7 +42,7 @@ fun ChannelsChannelGroupList(
         modifier = modifier
             .fillMaxWidth()
             .ifElse(
-                LocalSettings.current.uiFocusOptimize,
+                settingsVM.uiFocusOptimize,
                 Modifier.focusRestorer { firstItemFocusRequester }
             ),
         contentAlignment = Alignment.Center

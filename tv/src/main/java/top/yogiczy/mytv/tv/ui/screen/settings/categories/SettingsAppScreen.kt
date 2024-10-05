@@ -5,7 +5,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
 import kotlinx.coroutines.launch
@@ -17,12 +16,13 @@ import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 
 @Composable
 fun SettingsAppScreen(
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
     onReload: () -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {

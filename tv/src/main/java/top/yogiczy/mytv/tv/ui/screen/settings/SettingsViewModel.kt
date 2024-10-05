@@ -562,70 +562,12 @@ class SettingsViewModel : ViewModel() {
         _cloudSyncNetworkUrl = Configs.cloudSyncNetworkUrl
     }
 
-    fun toLocalSettings(): Configs.Required {
-        return Configs.Required(
-            // appBootLaunch = _appBootLaunch,
-            // appPipEnable = _appPipEnable,
-            // appLastLatestVersion = _appLastLatestVersion,
-            // appAgreementAgreed = _appAgreementAgreed,
-            // debugShowFps = _debugShowFps,
-            // debugShowVideoPlayerMetadata = _debugShowVideoPlayerMetadata,
-            // debugShowLayoutGrids = _debugShowLayoutGrids,
-            // iptvLastChannelIdx = _iptvLastChannelIdx,
-            // iptvSourceCacheTime = _iptvSourceCacheTime,
-            iptvSourceCurrent = _iptvSourceCurrent,
-            // iptvSourceList = _iptvSourceList,
-            // iptvPlayableHostList = _iptvPlayableHostList,
-            // iptvChannelFavoriteEnable = _iptvChannelFavoriteEnable,
-            // iptvChannelFavoriteListVisible = _iptvChannelFavoriteListVisible,
-            // iptvChannelFavoriteList = _iptvChannelFavoriteList,
-            // iptvChannelGroupHiddenList = _iptvChannelGroupHiddenList,
-            // iptvHybridMode = _iptvHybridMode,
-            // iptvSimilarChannelMerge = _iptvSimilarChannelMerge,
-            // iptvChannelLogoProvider = _iptvChannelLogoProvider,
-            // iptvChannelLogoOverride = _iptvChannelLogoOverride,
-            // iptvChannelChangeFlip = _iptvChannelChangeFlip,
-            // iptvChannelNoSelectEnable = _iptvChannelNoSelectEnable,
-            // iptvChannelChangeListLoop = _iptvChannelChangeListLoop,
-            // epgEnable = _epgEnable,
-            // epgSourceCurrent = _epgSourceCurrent,
-            // epgSourceList = _epgSourceList,
-            // epgRefreshTimeThreshold = _epgRefreshTimeThreshold,
-            // epgSourceFollowIptv = _epgSourceFollowIptv,
-            // epgChannelReserveList = _epgChannelReserveList,
-            uiShowEpgProgrammeProgress = _uiShowEpgProgrammeProgress,
-            // uiShowEpgProgrammePermanentProgress = _uiShowEpgProgrammePermanentProgress,
-            uiShowChannelLogo = _uiShowChannelLogo,
-            uiShowChannelPreview = _uiShowChannelPreview,
-            // uiUseClassicPanelScreen = _uiUseClassicPanelScreen,
-            // uiDensityScaleRatio = _uiDensityScaleRatio,
-            // uiFontScaleRatio = _uiFontScaleRatio,
-            // uiTimeShowMode = _uiTimeShowMode,
-            uiFocusOptimize = _uiFocusOptimize,
-            // uiScreenAutoCloseDelay = _uiScreenAutoCloseDelay,
-            // updateForceRemind = _updateForceRemind,
-            // updateChannel = _updateChannel,
-            // videoPlayerUserAgent = _videoPlayerUserAgent,
-            // videoPlayerHeaders = _videoPlayerHeaders,
-            // videoPlayerLoadTimeout = _videoPlayerLoadTimeout,
-            // videoPlayerDisplayMode = _videoPlayerDisplayMode,
-            themeAppCurrent = _themeAppCurrent,
-            // cloudSyncAutoPull = _cloudSyncAutoPull,
-            // cloudSyncProvider = _cloudSyncProvider,
-            // cloudSyncGithubGistId = _cloudSyncGithubGistId,
-            // cloudSyncGithubGistToken = _cloudSyncGithubGistToken,
-            // cloudSyncGiteeGistId = _cloudSyncGiteeGistId,
-            // cloudSyncGiteeGistToken = _cloudSyncGiteeGistToken,
-            // cloudSyncNetworkUrl = _cloudSyncNetworkUrl,
-        )
-    }
-
     companion object {
-        private var instance: SettingsViewModel? = null
-
-        @Composable
-        fun getInstance(): SettingsViewModel {
-            return instance ?: viewModel<SettingsViewModel>().also { instance = it }
-        }
+        var instance: SettingsViewModel? = null
     }
 }
+
+val settingsVM: SettingsViewModel
+    @Composable get() = SettingsViewModel.instance ?: viewModel<SettingsViewModel>().also {
+        SettingsViewModel.instance = it
+    }

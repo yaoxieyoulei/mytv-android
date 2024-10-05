@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,7 +47,7 @@ import top.yogiczy.mytv.tv.ui.material.ProgressBar
 import top.yogiczy.mytv.tv.ui.material.ProgressBarColors
 import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.material.TagDefaults
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
@@ -66,6 +65,7 @@ fun LiveChannelsChannelInfo(
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     playerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     dense: Boolean = false,
+    showChannelLogo: Boolean = settingsVM.uiShowChannelLogo,
 ) {
     val currentPlaybackEpgProgramme = currentPlaybackEpgProgrammeProvider()
 
@@ -74,9 +74,11 @@ fun LiveChannelsChannelInfo(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        LiveChannelsChannelInfoLogo(
-            channelProvider = channelProvider,
-        )
+        if(showChannelLogo) {
+            LiveChannelsChannelInfoLogo(
+                channelProvider = channelProvider,
+            )
+        }
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             LiveChannelsChannelInfoTitle(
@@ -113,8 +115,6 @@ private fun LiveChannelsChannelInfoLogo(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
 ) {
-    if (!LocalSettings.current.uiShowChannelLogo) return
-
     val channel = channelProvider()
 
     SubcomposeAsyncImage(
@@ -439,30 +439,27 @@ private fun rememberNetSpeed(): Long {
 @Composable
 private fun LiveChannelsChannelInfoPreview() {
     MyTvTheme {
-        CompositionLocalProvider(
-            LocalSettings provides LocalSettings.current.copy(uiShowChannelLogo = true)
-        ) {
-            LiveChannelsChannelInfo(
-                channelProvider = { Channel.EXAMPLE.copy(name = "CCTV-1 法治与法治".repeat(3)) },
-                channelLineIdxProvider = { 1 },
-                recentEpgProgrammeProvider = {
-                    EpgProgrammeRecent.EXAMPLE.copy(
-                        now = EpgProgrammeRecent.EXAMPLE.now?.copy(
-                            title = "2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场".repeat(
-                                2
-                            )
+        LiveChannelsChannelInfo(
+            channelProvider = { Channel.EXAMPLE.copy(name = "CCTV-1 法治与法治".repeat(3)) },
+            channelLineIdxProvider = { 1 },
+            recentEpgProgrammeProvider = {
+                EpgProgrammeRecent.EXAMPLE.copy(
+                    now = EpgProgrammeRecent.EXAMPLE.now?.copy(
+                        title = "2023/2024赛季中国男子篮球职业联赛季后赛12进8第五场".repeat(
+                            2
                         )
                     )
-                },
-                playerMetadataProvider = {
-                    VideoPlayer.Metadata(
-                        videoWidth = 7680,
-                        videoHeight = 4320,
-                        audioChannels = 12,
-                    )
-                },
-            )
-        }
+                )
+            },
+            playerMetadataProvider = {
+                VideoPlayer.Metadata(
+                    videoWidth = 7680,
+                    videoHeight = 4320,
+                    audioChannels = 12,
+                )
+            },
+            showChannelLogo = true,
+        )
     }
 }
 
@@ -470,15 +467,12 @@ private fun LiveChannelsChannelInfoPreview() {
 @Composable
 private fun LiveChannelsChannelInfoPlaybackPreview() {
     MyTvTheme {
-        CompositionLocalProvider(
-            LocalSettings provides LocalSettings.current.copy(uiShowChannelLogo = true)
-        ) {
-            LiveChannelsChannelInfo(
-                channelProvider = { Channel.EXAMPLE },
-                channelLineIdxProvider = { 1 },
-                currentPlaybackEpgProgrammeProvider = { EpgProgramme.EXAMPLE },
-            )
-        }
+        LiveChannelsChannelInfo(
+            channelProvider = { Channel.EXAMPLE },
+            channelLineIdxProvider = { 1 },
+            currentPlaybackEpgProgrammeProvider = { EpgProgramme.EXAMPLE },
+            showChannelLogo = true,
+        )
     }
 }
 

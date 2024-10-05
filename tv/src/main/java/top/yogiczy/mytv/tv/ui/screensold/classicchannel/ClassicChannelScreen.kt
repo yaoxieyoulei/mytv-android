@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,8 +34,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
@@ -50,7 +47,6 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.screen.live.channels.components.LiveChannelsChannelInfo
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelScreenTopRight
 import top.yogiczy.mytv.tv.ui.screensold.classicchannel.components.ClassicChannelGroupItemList
 import top.yogiczy.mytv.tv.ui.screensold.classicchannel.components.ClassicChannelItemList
@@ -83,7 +79,6 @@ fun ClassicChannelScreen(
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
     videoPlayerMetadataProvider: () -> VideoPlayer.Metadata = { VideoPlayer.Metadata() },
     channelFavoriteEnabledProvider: () -> Boolean = { false },
-    channelFavoriteListProvider: () -> ImmutableList<String> = { persistentListOf() },
     channelFavoriteListVisibleProvider: () -> Boolean = { false },
     onChannelFavoriteListVisibleChange: (Boolean) -> Unit = {},
     onClose: () -> Unit = {},
@@ -201,30 +196,27 @@ fun ClassicChannelScreen(
 
     Visibility({ !epgListVisible }) {
         Box(Modifier.fillMaxSize()) {
-            CompositionLocalProvider(
-                LocalSettings provides LocalSettings.current.copy(uiShowChannelLogo = false)
-            ) {
-                LiveChannelsChannelInfo(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .fillMaxWidth(0.5f)
-                        .padding(SAFE_AREA_VERTICAL_PADDING.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface.copy(0.8f),
-                            MaterialTheme.shapes.medium,
-                        )
-                        .padding(horizontal = 20.dp, vertical = 10.dp),
-                    channelProvider = currentChannelProvider,
-                    channelLineIdxProvider = currentChannelLineIdxProvider,
-                    recentEpgProgrammeProvider = {
-                        epgListProvider().recentProgramme(currentChannelProvider())
-                    },
-                    isInTimeShiftProvider = isInTimeShiftProvider,
-                    currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
-                    playerMetadataProvider = videoPlayerMetadataProvider,
-                    dense = true,
-                )
-            }
+            LiveChannelsChannelInfo(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .fillMaxWidth(0.5f)
+                    .padding(SAFE_AREA_VERTICAL_PADDING.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surface.copy(0.8f),
+                        MaterialTheme.shapes.medium,
+                    )
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                channelProvider = currentChannelProvider,
+                channelLineIdxProvider = currentChannelLineIdxProvider,
+                recentEpgProgrammeProvider = {
+                    epgListProvider().recentProgramme(currentChannelProvider())
+                },
+                isInTimeShiftProvider = isInTimeShiftProvider,
+                currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
+                playerMetadataProvider = videoPlayerMetadataProvider,
+                dense = true,
+                showChannelLogo = false,
+            )
         }
     }
 }

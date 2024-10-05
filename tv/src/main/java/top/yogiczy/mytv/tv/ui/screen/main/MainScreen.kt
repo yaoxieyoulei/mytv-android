@@ -3,10 +3,8 @@ package top.yogiczy.mytv.tv.ui.screen.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,16 +33,18 @@ import top.yogiczy.mytv.tv.ui.screen.search.SearchScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screen.update.UpdateScreen
 import top.yogiczy.mytv.tv.ui.screen.update.UpdateViewModel
+import top.yogiczy.mytv.tv.ui.screen.update.updateVM
 import top.yogiczy.mytv.tv.ui.utils.navigateSingleTop
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = viewModel(),
-    updateViewModel: UpdateViewModel = viewModel(),
-    mainViewModel: MainViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
+    updateViewModel: UpdateViewModel = updateVM,
+    mainViewModel: MainViewModel = mainVM,
     onBackPressed: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -59,13 +59,11 @@ fun MainScreen(
         (uiState as? MainUiState.Ready)?.filteredChannelGroupList ?: ChannelGroupList()
     }
     val epgListProvider = { (uiState as MainUiState.Ready).epgList }
-    val favoriteChannelList =
-        remember(uiState, settingsViewModel.iptvChannelFavoriteList) {
-            val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
-            ChannelList(filteredChannelGroupListProvider().channelList
-                .filter { favoriteChannelNameList.contains(it.name) })
-        }
-    val favoriteChannelListProvider = { favoriteChannelList }
+    val favoriteChannelListProvider = {
+        val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
+        ChannelList(filteredChannelGroupListProvider().channelList
+            .filter { favoriteChannelNameList.contains(it.name) })
+    }
 
     val navController = rememberNavController()
 
@@ -268,7 +266,6 @@ fun MainScreen(
 
             composable(Screens.Update()) {
                 UpdateScreen(
-                    updateViewModel = updateViewModel,
                     onBackPressed = { navController.navigateUp() },
                 )
             }

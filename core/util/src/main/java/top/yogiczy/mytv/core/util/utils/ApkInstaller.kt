@@ -21,9 +21,11 @@ object ApkInstaller {
             }
 
             val uri =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) FileProvider.getUriForFile(
-                    context, context.packageName + ".FileProvider", cachedApkFile
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    FileProvider.getUriForFile(
+                        context, context.packageName + ".FileProvider", cachedApkFile
+                    )
+                }
                 else Uri.fromFile(cachedApkFile)
 
             val installIntent = Intent(Intent.ACTION_VIEW).apply {

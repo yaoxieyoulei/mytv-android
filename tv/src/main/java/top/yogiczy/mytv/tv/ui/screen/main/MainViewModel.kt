@@ -1,7 +1,9 @@
 package top.yogiczy.mytv.tv.ui.screen.main
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -241,6 +243,10 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
+    companion object {
+        var instance: MainViewModel? = null
+    }
 }
 
 sealed interface MainUiState {
@@ -252,3 +258,8 @@ sealed interface MainUiState {
         val epgList: EpgList = EpgList(),
     ) : MainUiState
 }
+
+val mainVM: MainViewModel
+    @Composable get() = MainViewModel.instance ?: viewModel<MainViewModel>().also {
+        MainViewModel.instance = it
+    }

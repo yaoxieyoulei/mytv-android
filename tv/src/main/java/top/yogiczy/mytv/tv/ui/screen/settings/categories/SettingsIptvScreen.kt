@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
@@ -20,6 +19,7 @@ import top.yogiczy.mytv.tv.ui.material.TagDefaults
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
@@ -27,7 +27,7 @@ import top.yogiczy.mytv.tv.ui.utils.Configs
 fun SettingsIptvScreen(
     modifier: Modifier = Modifier,
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
     toIptvSourceScreen: () -> Unit = {},
     toIptvSourceCacheTimeScreen: () -> Unit = {},
     toChannelGroupVisibilityScreen: () -> Unit = {},

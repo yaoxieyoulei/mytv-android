@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -43,8 +42,8 @@ import top.yogiczy.mytv.tv.ui.material.SnackbarUI
 import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.screen.main.MainScreen
 import top.yogiczy.mytv.tv.ui.screen.monitor.MonitorPopup
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.DESIGN_WIDTH
 import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_HORIZONTAL_PADDING
 import top.yogiczy.mytv.tv.ui.theme.SAFE_AREA_VERTICAL_PADDING
@@ -53,7 +52,7 @@ import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 @Composable
 fun App(
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
     onBackPressed: () -> Unit = {},
 ) {
     if (settingsViewModel.iptvSourceCurrent.needExternalStoragePermission()) {
@@ -71,7 +70,6 @@ fun App(
             },
             fontScale = LocalDensity.current.fontScale * settingsViewModel.uiFontScaleRatio,
         ),
-        LocalSettings provides settingsViewModel.toLocalSettings(),
     ) {
         PopupHandleableApplication {
             MainScreen(

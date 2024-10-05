@@ -27,12 +27,11 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
-import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.dashboard.DashboardScreeIptvSource
 import top.yogiczy.mytv.tv.ui.screen.live.channels.components.LiveChannelsChannelInfo
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelNumber
 import top.yogiczy.mytv.tv.ui.screensold.components.rememberScreenAutoCloseState
 import top.yogiczy.mytv.tv.ui.screensold.datetime.components.DateTimeDetail
@@ -100,7 +99,7 @@ private fun QuickOpScreenTop(
     channelNumberProvider: () -> String = { "" },
     toSettingsIptvSourceScreen: () -> Unit = {},
 ) {
-    val settings = LocalSettings.current
+    val iptvSourceCurrent = settingsVM.iptvSourceCurrent
     val childPadding = rememberChildPadding()
 
     Row(
@@ -114,7 +113,7 @@ private fun QuickOpScreenTop(
             LocalTextStyle provides MaterialTheme.typography.titleLarge
         ) {
             DashboardScreeIptvSource(
-                currentIptvSourceProvider = { settings.iptvSourceCurrent },
+                currentIptvSourceProvider = { iptvSourceCurrent },
                 toSettingsIptvSourceScreen = toSettingsIptvSourceScreen,
             )
         }
@@ -192,17 +191,13 @@ private fun QuickOpScreenBottom(
 private fun QuickOpScreenPreview() {
     MyTvTheme {
         PreviewWithLayoutGrids {
-            CompositionLocalProvider(
-                LocalSettings provides LocalSettings.current.copy(iptvSourceCurrent = IptvSource.EXAMPLE)
-            ) {
-                QuickOpScreen(
-                    currentChannelProvider = { Channel.EXAMPLE },
-                    currentChannelNumberProvider = { "1" },
-                    epgListProvider = {
-                        EpgList.example(ChannelList(listOf(Channel.EXAMPLE)))
-                    },
-                )
-            }
+            QuickOpScreen(
+                currentChannelProvider = { Channel.EXAMPLE },
+                currentChannelNumberProvider = { "1" },
+                epgListProvider = {
+                    EpgList.example(ChannelList(listOf(Channel.EXAMPLE)))
+                },
+            )
         }
     }
 }

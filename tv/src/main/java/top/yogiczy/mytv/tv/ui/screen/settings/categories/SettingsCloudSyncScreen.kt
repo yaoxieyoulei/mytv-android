@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Switch
@@ -33,6 +32,7 @@ import top.yogiczy.mytv.tv.ui.screen.components.AppScaffoldHeaderBtn
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -40,7 +40,7 @@ import java.util.Locale
 @Composable
 fun SettingsCloudSyncScreen(
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
     toCloudSyncProviderScreen: () -> Unit = {},
     onReload: () -> Unit = {},
     onBackPressed: () -> Unit = {},

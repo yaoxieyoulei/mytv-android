@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.backHandler
 import top.yogiczy.mytv.tv.ui.utils.ifElse
@@ -66,7 +66,7 @@ fun DashboardModuleList(
                 }
             }
             .ifElse(
-                LocalSettings.current.uiFocusOptimize,
+                settingsVM.uiFocusOptimize,
                 Modifier.focusRestorer {
                     if (listState.firstVisibleItemIndex == 0) firstItemFocusRequester
                     else FocusRequester.Default

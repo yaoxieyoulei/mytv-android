@@ -86,7 +86,7 @@ fun SettingsCategoriesScreen(
 
         LazyVerticalGrid(
             modifier = Modifier.ifElse(
-                LocalSettings.current.uiFocusOptimize,
+                settingsVM.uiFocusOptimize,
                 Modifier.focusRestorer { firstItemFocusRequester },
             ),
             columns = GridCells.Fixed(6),

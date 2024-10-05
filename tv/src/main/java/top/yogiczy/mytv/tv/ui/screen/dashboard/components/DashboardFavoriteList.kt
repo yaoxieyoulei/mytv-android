@@ -31,7 +31,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.channels.components.ChannelsChannelItem
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.backHandler
@@ -74,7 +74,7 @@ fun DashboardFavoriteList(
                     }
                 }
                 .ifElse(
-                    LocalSettings.current.uiFocusOptimize,
+                    settingsVM.uiFocusOptimize,
                     Modifier.focusRestorer { firstItemFocusRequester },
                 ),
             state = listState,

@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +50,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.core.util.utils.M3u8AnalysisUtil
 import top.yogiczy.mytv.core.util.utils.isIPv6
 import top.yogiczy.mytv.core.util.utils.urlHost
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
@@ -120,18 +119,18 @@ private fun ChannelsChannelItemLogo(
     channelProvider: () -> Channel = { Channel() },
     isFocusedProvider: () -> Boolean = { false },
 ) {
-    if (!LocalSettings.current.uiShowChannelLogo) return
+    if (!settingsVM.uiShowChannelLogo) return
 
     val channel = channelProvider()
     val isFocused = isFocusedProvider()
 
-    val settings = LocalSettings.current
+    val showChannelPreview = settingsVM.uiShowChannelPreview
 
     var preview by remember { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(channel) {
         preview = null
 
-        if (settings.uiShowChannelPreview) {
+        if (showChannelPreview) {
             val line = channel.lineList.firstOrNull {
                 Configs.iptvPlayableHostList.contains(it.url.urlHost())
             } ?: channel.lineList.first()
@@ -241,10 +240,9 @@ private fun ChannelsChannelItemProgress(
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
 ) {
     val recentEpgProgramme = recentEpgProgrammeProvider()
-    val showEpgProgrammeProgress = LocalSettings.current.uiShowEpgProgrammeProgress
 
     recentEpgProgramme?.now?.let { nowProgramme ->
-        if (showEpgProgrammeProgress) {
+        if (settingsVM.uiShowEpgProgrammeProgress) {
             Box(
                 modifier = modifier
                     .fillMaxWidth(nowProgramme.progress())
@@ -288,7 +286,7 @@ private fun ChannelsChannelItemTagList(
     channelProvider: () -> Channel = { Channel() },
     isFocusedProvider: () -> Boolean = { false },
 ) {
-    if (!LocalSettings.current.uiShowChannelLogo) return
+    if (!settingsVM.uiShowChannelLogo) return
 
     val channel = channelProvider()
 
@@ -316,14 +314,10 @@ private fun ChannelsChannelItemTagList(
 @Composable
 private fun ChannelsChannelItemPreview() {
     MyTvTheme {
-        CompositionLocalProvider(
-            LocalSettings provides LocalSettings.current.copy(uiShowChannelLogo = true)
-        ) {
-            ChannelsChannelItem(
-                modifier = Modifier.padding(16.dp),
-                channelProvider = { Channel.EXAMPLE.copy(index = 9999) },
-                recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
-            )
-        }
+        ChannelsChannelItem(
+            modifier = Modifier.padding(16.dp),
+            channelProvider = { Channel.EXAMPLE.copy(index = 9999) },
+            recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
+        )
     }
 }

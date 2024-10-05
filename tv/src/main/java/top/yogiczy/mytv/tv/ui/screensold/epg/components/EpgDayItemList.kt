@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.ifElse
 import kotlin.math.max
@@ -47,7 +47,7 @@ fun EpgDayItemList(
 
     LazyColumn(
         modifier = modifier.ifElse(
-            LocalSettings.current.uiFocusOptimize,
+            settingsVM.uiFocusOptimize,
             Modifier.focusRestorer { itemFocusRequesterList[dayList.indexOf(currentDay)] },
         ),
         state = listState,

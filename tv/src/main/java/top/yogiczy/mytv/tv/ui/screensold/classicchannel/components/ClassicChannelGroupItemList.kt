@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -74,7 +74,7 @@ fun ClassicChannelGroupItemList(
             .fillMaxHeight()
             .background(MaterialTheme.colorScheme.surface.copy(0.9f))
             .ifElse(
-                LocalSettings.current.uiFocusOptimize,
+                settingsVM.uiFocusOptimize,
                 Modifier.focusRestorer {
                     itemFocusRequesterList[channelGroupList.indexOf(focusedChannelGroup)]
                 },

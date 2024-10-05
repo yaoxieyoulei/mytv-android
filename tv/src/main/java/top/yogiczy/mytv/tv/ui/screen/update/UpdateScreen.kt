@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.ListItemDefaults
 import androidx.tv.material3.MaterialTheme
@@ -45,7 +44,7 @@ import java.io.File
 @Composable
 fun UpdateScreen(
     modifier: Modifier = Modifier,
-    updateViewModel: UpdateViewModel = viewModel(),
+    updateViewModel: UpdateViewModel = updateVM,
     onBackPressed: () -> Unit = {},
 ) {
     val latestFile by lazy { File(Globals.cacheDir, "latest.apk") }

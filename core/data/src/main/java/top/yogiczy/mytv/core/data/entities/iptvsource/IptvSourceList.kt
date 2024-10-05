@@ -20,7 +20,7 @@ data class IptvSourceList(
                 ),
                 IptvSource(
                     name = "测试直播源2",
-                    url = "/sdcard/Download/tv.txt",
+                    url = "/path/Download/tv.txt",
                     isLocal = true,
                 )
             )

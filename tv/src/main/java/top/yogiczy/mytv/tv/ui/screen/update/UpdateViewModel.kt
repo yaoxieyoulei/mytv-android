@@ -1,9 +1,11 @@
 package top.yogiczy.mytv.tv.ui.screen.update
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import top.yogiczy.mytv.core.data.entities.git.GitRelease
 import top.yogiczy.mytv.core.data.repositories.git.GitRepository
 import top.yogiczy.mytv.core.data.utils.Constants
@@ -90,4 +92,13 @@ class UpdateViewModel(
             _isUpdating = false
         }
     }
+
+    companion object {
+        var instance: UpdateViewModel? = null
+    }
 }
+
+val updateVM: UpdateViewModel
+    @Composable get() = UpdateViewModel.instance ?: viewModel<UpdateViewModel>().also {
+        UpdateViewModel.instance = it
+    }

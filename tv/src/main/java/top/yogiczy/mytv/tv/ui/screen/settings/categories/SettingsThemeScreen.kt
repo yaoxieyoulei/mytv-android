@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.MaterialTheme
@@ -42,6 +41,7 @@ import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeWrapper
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -49,7 +49,7 @@ import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 @Composable
 fun SettingsThemeScreen(
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
     onBackPressed: () -> Unit = {},
 ) {
     val context = LocalContext.current

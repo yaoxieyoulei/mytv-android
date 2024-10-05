@@ -47,7 +47,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelItemLogo
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -105,7 +105,7 @@ fun ClassicChannelItemList(
             .width(if (showChannelLogoProvider()) 280.dp else 220.dp)
             .background(MaterialTheme.colorScheme.surface.copy(0.8f))
             .ifElse(
-                LocalSettings.current.uiFocusOptimize,
+                settingsVM.uiFocusOptimize,
                 Modifier.focusRestorer { itemFocusRequesterList[channelList.indexOf(focusedChannel)] },
             ),
         state = listState,

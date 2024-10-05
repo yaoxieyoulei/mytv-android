@@ -33,7 +33,7 @@ import top.yogiczy.mytv.tv.ui.material.SimplePopup
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.push.PushContent
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -65,7 +65,7 @@ fun SettingsEpgSourceScreen(
         LazyColumn(
             modifier = Modifier
                 .ifElse(
-                    LocalSettings.current.uiFocusOptimize,
+                    settingsVM.uiFocusOptimize,
                     Modifier.focusRestorer { firstItemFocusRequester }
                 )
                 .padding(top = 10.dp),

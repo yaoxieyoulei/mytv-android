@@ -36,7 +36,7 @@ fun SettingsEpgRefreshTimeThresholdScreen(
     val childPadding = rememberChildPadding()
 
     AppScreen(
-        modifier = Modifier.padding(top = 10.dp),
+        modifier = modifier.padding(top = 10.dp),
         header = { Text("设置 / 节目单 / 刷新时间阈值") },
         canBack = true,
         onBackPressed = onBackPressed,

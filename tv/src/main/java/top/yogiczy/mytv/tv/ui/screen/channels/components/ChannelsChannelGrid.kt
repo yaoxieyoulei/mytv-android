@@ -31,7 +31,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
 import top.yogiczy.mytv.tv.ui.utils.backHandler
@@ -84,7 +84,7 @@ fun ChannelsChannelGrid(
                 }
             }
             .ifElse(
-                LocalSettings.current.uiFocusOptimize && channelList.isNotEmpty(),
+                settingsVM.uiFocusOptimize && channelList.isNotEmpty(),
                 Modifier.focusRestorer { firstItemFocusRequester }
             ),
         state = gridState,

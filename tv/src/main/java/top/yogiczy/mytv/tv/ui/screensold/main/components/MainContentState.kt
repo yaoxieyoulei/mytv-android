@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,6 +32,7 @@ import top.yogiczy.mytv.core.data.utils.Loggable
 import top.yogiczy.mytv.core.util.utils.urlHost
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerState
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.rememberVideoPlayerState
@@ -321,7 +321,7 @@ fun rememberMainContentState(
     videoPlayerState: VideoPlayerState = rememberVideoPlayerState(),
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
 ): MainContentState {
     val favoriteChannelListProviderUpdated by rememberUpdatedState(favoriteChannelListProvider)
 

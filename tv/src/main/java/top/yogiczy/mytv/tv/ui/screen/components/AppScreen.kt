@@ -53,7 +53,7 @@ import coil.compose.SubcomposeAsyncImage
 import kotlinx.serialization.Serializable
 import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -214,7 +214,7 @@ data class AppThemeDef(
  */
 @Composable
 fun AppThemeWrapper(
-    appThemeDef: AppThemeDef? = LocalSettings.current.themeAppCurrent,
+    appThemeDef: AppThemeDef? = settingsVM.themeAppCurrent,
     content: @Composable () -> Unit,
 ) {
     if (appThemeDef == null) {

@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
@@ -25,6 +23,7 @@ import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.material.popupable
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsSubCategories
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelNumberSelectScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelScreen
 import top.yogiczy.mytv.tv.ui.screensold.channel.ChannelTempScreen
@@ -51,7 +50,7 @@ fun MainContent(
     filteredChannelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
     favoriteChannelListProvider: () -> ChannelList = { ChannelList() },
     epgListProvider: () -> EpgList = { EpgList() },
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = settingsVM,
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
     onBackPressed: () -> Unit = {},
@@ -406,7 +405,6 @@ fun MainContent(
             },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
             channelFavoriteEnabledProvider = { settingsViewModel.iptvChannelFavoriteEnable },
-            channelFavoriteListProvider = { settingsViewModel.iptvChannelFavoriteList.toImmutableList() },
             channelFavoriteListVisibleProvider = { settingsViewModel.iptvChannelFavoriteListVisible },
             onChannelFavoriteListVisibleChange = {
                 settingsViewModel.iptvChannelFavoriteListVisible = it

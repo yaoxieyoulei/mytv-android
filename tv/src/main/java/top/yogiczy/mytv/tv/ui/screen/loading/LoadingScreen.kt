@@ -29,7 +29,7 @@ import top.yogiczy.mytv.tv.ui.material.CircularProgressIndicator
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screen.components.AppScreen
 import top.yogiczy.mytv.tv.ui.screen.main.MainUiState
-import top.yogiczy.mytv.tv.ui.screen.settings.LocalSettings
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 import top.yogiczy.mytv.tv.ui.utils.gridColumns
@@ -63,7 +63,7 @@ fun LoadingScreen(
                 onSettings = toSettingsScreen,
             ),
         header = {
-            Text(LocalSettings.current.iptvSourceCurrent.name)
+            Text(settingsVM.iptvSourceCurrent.name)
         },
         onBackPressed = onBackPressed,
     ) {
