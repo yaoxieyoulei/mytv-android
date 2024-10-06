@@ -149,6 +149,9 @@ object Configs {
         UPDATE_CHANNEL,
 
         /** ==================== 播放器 ==================== */
+        /** 播放器 内核 */
+        VIDEO_PLAYER_CORE,
+
         /** 播放器 自定义ua */
         VIDEO_PLAYER_USER_AGENT,
 
@@ -419,6 +422,13 @@ object Configs {
         set(value) = SP.putString(KEY.UPDATE_CHANNEL.name, value)
 
     /** ==================== 播放器 ==================== */
+    /** 播放器 内核 */
+    var videoPlayerCore: VideoPlayerCore
+        get() = VideoPlayerCore.fromValue(
+            SP.getInt(KEY.VIDEO_PLAYER_CORE.name, VideoPlayerCore.MEDIA3.value)
+        )
+        set(value) = SP.putInt(KEY.VIDEO_PLAYER_CORE.name, value.value)
+
     /** 播放器 自定义ua */
     var videoPlayerUserAgent: String
         get() = SP.getString(KEY.VIDEO_PLAYER_USER_AGENT.name, "").ifBlank {
@@ -528,6 +538,20 @@ object Configs {
         }
     }
 
+    enum class VideoPlayerCore(val value: Int) {
+        /** Media3 */
+        MEDIA3(0),
+
+        /** IJK */
+        IJK(1);
+
+        companion object {
+            fun fromValue(value: Int): VideoPlayerCore {
+                return entries.firstOrNull { it.value == value } ?: MEDIA3
+            }
+        }
+    }
+
     fun toPartial(): Partial {
         return Partial(
             appBootLaunch = appBootLaunch,
@@ -571,6 +595,7 @@ object Configs {
             uiScreenAutoCloseDelay = uiScreenAutoCloseDelay,
             updateForceRemind = updateForceRemind,
             updateChannel = updateChannel,
+            videoPlayerCore = videoPlayerCore,
             videoPlayerUserAgent = videoPlayerUserAgent,
             videoPlayerHeaders = videoPlayerHeaders,
             videoPlayerLoadTimeout = videoPlayerLoadTimeout,
@@ -630,6 +655,7 @@ object Configs {
         configs.uiScreenAutoCloseDelay?.let { uiScreenAutoCloseDelay = it }
         configs.updateForceRemind?.let { updateForceRemind = it }
         configs.updateChannel?.let { updateChannel = it }
+        configs.videoPlayerCore?.let { videoPlayerCore = it }
         configs.videoPlayerUserAgent?.let { videoPlayerUserAgent = it }
         configs.videoPlayerHeaders?.let { videoPlayerHeaders = it }
         configs.videoPlayerLoadTimeout?.let { videoPlayerLoadTimeout = it }
@@ -687,6 +713,7 @@ object Configs {
         val uiScreenAutoCloseDelay: Long? = null,
         val updateForceRemind: Boolean? = null,
         val updateChannel: String? = null,
+        val videoPlayerCore: VideoPlayerCore? = null,
         val videoPlayerUserAgent: String? = null,
         val videoPlayerHeaders: String? = null,
         val videoPlayerLoadTimeout: Long? = null,

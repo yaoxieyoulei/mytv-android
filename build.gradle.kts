@@ -1,4 +1,6 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.gradle.tasks.PackageAndroidArtifact
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -40,15 +42,30 @@ allprojects {
         applicationVariants.all {
             outputs.all {
                 val ver = defaultConfig.versionName
-                val minSdk =
-                    project.extensions.getByType(BaseAppModuleExtension::class.java).defaultConfig.minSdk
+                val minSdk = defaultConfig.minSdk
                 val abi = filters.find { it.filterType == "ABI" }?.identifier ?: "all"
+                val flavor = productFlavors.joinToString("-") { it.name }
 
-                (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                    "mytv-android-${project.name}-$ver-${abi}-sdk$minSdk-${flavorName}.apk"
+                (this as BaseVariantOutputImpl).outputFileName =
+                    "mytv-android-${project.name}-$ver-${abi}-sdk$minSdk-${flavor}.apk"
             }
         }
     }
 
     extra["appConfig"] = appConfig
+
+    tasks.withType<PackageAndroidArtifact>().configureEach {
+        doLast {
+            val outputDir = outputDirectory.get().asFile
+            val targetDir = file("$outputDir/../../release")
+
+            if (!targetDir.exists()) {
+                targetDir.mkdirs()
+            }
+
+            outputDir.listFiles { file -> file.extension == "apk" }?.forEach { apkFile ->
+                apkFile.copyTo(file("${targetDir}/${apkFile.name}"), overwrite = true)
+            }
+        }
+    }
 }

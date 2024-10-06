@@ -7,17 +7,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.tv.material3.Text
+import top.yogiczy.mytv.core.util.utils.headersValid
 import top.yogiczy.mytv.core.util.utils.humanizeMs
 import top.yogiczy.mytv.tv.ui.screen.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Composable
 fun SettingsVideoPlayerScreen(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = settingsVM,
+    toVideoPlayerCoreScreen: () -> Unit = {},
     toVideoPlayerDisplayModeScreen: () -> Unit = {},
     toVideoPlayerLoadTimeoutScreen: () -> Unit = {},
     onBackPressed: () -> Unit = {},
@@ -30,9 +33,21 @@ fun SettingsVideoPlayerScreen(
         item {
             SettingsListItem(
                 modifier = Modifier.focusRequester(firstItemFocusRequester),
+                trailingContent = when (settingsViewModel.videoPlayerCore) {
+                    Configs.VideoPlayerCore.MEDIA3 -> "Media3"
+                    Configs.VideoPlayerCore.IJK -> "IjkPlayer"
+                },
+                headlineContent = "内核",
+                onSelect = toVideoPlayerCoreScreen,
+                link = true,
+            )
+        }
+
+        item {
+            SettingsListItem(
                 headlineContent = "全局显示模式",
                 trailingContent = settingsViewModel.videoPlayerDisplayMode.label,
-                onSelected = toVideoPlayerDisplayModeScreen,
+                onSelect = toVideoPlayerDisplayModeScreen,
                 link = true,
             )
         }
@@ -42,7 +57,7 @@ fun SettingsVideoPlayerScreen(
                 headlineContent = "加载超时",
                 supportingContent = "影响超时换源、断线重连",
                 trailingContent = settingsViewModel.videoPlayerLoadTimeout.humanizeMs(),
-                onSelected = toVideoPlayerLoadTimeoutScreen,
+                onSelect = toVideoPlayerLoadTimeoutScreen,
                 link = true,
             )
         }
@@ -56,16 +71,7 @@ fun SettingsVideoPlayerScreen(
         }
 
         item {
-            fun isValidHeaderFormat(headersString: String): Boolean {
-                if (headersString.isBlank()) return true
-
-                return headersString.lines().all { line ->
-                    val parts = line.split(":", limit = 2)
-                    parts.size == 2 && parts[0].isNotBlank() && parts[1].isNotBlank()
-                }
-            }
-
-            val isValid = isValidHeaderFormat(settingsViewModel.videoPlayerHeaders)
+            val isValid = settingsViewModel.videoPlayerHeaders.headersValid()
 
             SettingsListItem(
                 headlineContent = "自定义headers",

@@ -16,6 +16,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
+import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.IjkVideoPlayer
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.Media3VideoPlayer
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.utils.Configs
@@ -150,14 +152,18 @@ fun rememberVideoPlayerState(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
-    val state = remember {
-        VideoPlayerState(
-            Media3VideoPlayer(context, coroutineScope),
-            defaultDisplayModeProvider,
-        )
+
+    val videoPlayerCore = settingsVM.videoPlayerCore
+    val state = remember(videoPlayerCore) {
+        val player = when (videoPlayerCore) {
+            Configs.VideoPlayerCore.MEDIA3 -> Media3VideoPlayer(context, coroutineScope)
+            Configs.VideoPlayerCore.IJK -> IjkVideoPlayer(coroutineScope)
+        }
+
+        VideoPlayerState(player, defaultDisplayModeProvider)
     }
 
-    DisposableEffect(Unit) {
+    DisposableEffect(videoPlayerCore) {
         state.initialize()
         onDispose { state.release() }
     }

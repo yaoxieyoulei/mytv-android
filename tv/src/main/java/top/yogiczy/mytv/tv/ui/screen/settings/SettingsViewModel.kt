@@ -390,6 +390,15 @@ class SettingsViewModel : ViewModel() {
             afterSetWhenCloudSyncAutoPull()
         }
 
+    private var _videoPlayerCore by mutableStateOf(Configs.VideoPlayerCore.MEDIA3)
+    var videoPlayerCore: Configs.VideoPlayerCore
+        get() = _videoPlayerCore
+        set(value) {
+            _videoPlayerCore = value
+            Configs.videoPlayerCore = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+
     private var _videoPlayerUserAgent by mutableStateOf("")
     var videoPlayerUserAgent: String
         get() = _videoPlayerUserAgent
@@ -548,6 +557,7 @@ class SettingsViewModel : ViewModel() {
         _uiScreenAutoCloseDelay = Configs.uiScreenAutoCloseDelay
         _updateForceRemind = Configs.updateForceRemind
         _updateChannel = Configs.updateChannel
+        _videoPlayerCore = Configs.videoPlayerCore
         _videoPlayerUserAgent = Configs.videoPlayerUserAgent
         _videoPlayerHeaders = Configs.videoPlayerHeaders
         _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout

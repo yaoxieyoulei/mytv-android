@@ -184,6 +184,7 @@ fun MainContent(
                 && !mainContentState.isQuickOpScreenVisible
                 && !mainContentState.isEpgScreenVisible
                 && !mainContentState.isChannelLineScreenVisible
+                && !mainContentState.isVideoPlayerControllerScreenVisible
                 && channelNumberSelectState.channelNumber.isEmpty()
     }) {
         ChannelTempScreen(

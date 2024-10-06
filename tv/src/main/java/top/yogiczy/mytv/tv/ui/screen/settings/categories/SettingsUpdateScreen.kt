@@ -36,7 +36,7 @@ fun SettingsUpdateScreen(
                     "dev" -> "开发版"
                     else -> channel
                 },
-                onSelected = toUpdateChannelScreen,
+                onSelect = toUpdateChannelScreen,
                 link = true,
             )
         }

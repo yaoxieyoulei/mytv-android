@@ -28,6 +28,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
+import top.yogiczy.mytv.core.util.utils.toHeaders
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @OptIn(UnstableApi::class)
@@ -52,14 +53,7 @@ class Media3VideoPlayer(
             context,
             DefaultHttpDataSource.Factory().apply {
                 setUserAgent(currentChannelLine.httpUserAgent ?: Configs.videoPlayerUserAgent)
-
-                if (Configs.videoPlayerHeaders.isNotBlank()) {
-                    setDefaultRequestProperties(Configs.videoPlayerHeaders.lines().associate {
-                        val (key, value) = it.split(":", limit = 2)
-                        key.trim() to value.trim()
-                    })
-                }
-
+                setDefaultRequestProperties(Configs.videoPlayerHeaders.toHeaders())
                 setConnectTimeoutMs(Configs.videoPlayerLoadTimeout.toInt())
                 setReadTimeoutMs(Configs.videoPlayerLoadTimeout.toInt())
                 setKeepPostFor302Redirects(true)

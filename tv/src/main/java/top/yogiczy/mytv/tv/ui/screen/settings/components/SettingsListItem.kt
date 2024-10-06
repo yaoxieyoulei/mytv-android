@@ -117,7 +117,7 @@ fun SettingsListItem(
     supportingContent: String? = null,
     trailingContent: String,
     trailingIcon: ImageVector? = null,
-    onSelected: (() -> Unit)? = null,
+    onSelect: (() -> Unit)? = null,
     onLongSelected: () -> Unit = {},
     locK: Boolean = false,
     remoteConfig: Boolean = false,
@@ -135,7 +135,7 @@ fun SettingsListItem(
             )
         },
         trailingIcon = trailingIcon,
-        onSelect = onSelected,
+        onSelect = onSelect,
         onLongSelect = onLongSelected,
         locK = locK,
         remoteConfig = remoteConfig,

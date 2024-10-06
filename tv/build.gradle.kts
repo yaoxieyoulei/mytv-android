@@ -67,7 +67,7 @@ android {
         }
     }
 
-    flavorDimensions.add("version")
+    flavorDimensions += listOf("version")
     productFlavors {
         create("original") {
             dimension = "version"
@@ -134,11 +134,20 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
+androidComponents {
+    beforeVariants { variantBuilder ->
+        if (variantBuilder.productFlavors.containsAll(listOf("version" to "disguised"))) {
+            variantBuilder.enable = false
+        }
+    }
+}
+
 sentry {
     org.set("yogiczy")
     projectName.set("mytv-android")
     authToken.set(getProperty("sentry.auth_token") ?: System.getenv("SENTRY_AUTH_TOKEN"))
     ignoredBuildTypes.set(setOf("debug"))
+    autoUploadProguardMapping = false
 }
 
 fun getProperty(key: String): String? {

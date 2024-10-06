@@ -163,7 +163,7 @@ fun SettingsCloudSyncScreen(
             SettingsListItem(
                 headlineContent = "云同步服务商",
                 trailingContent = settingsViewModel.cloudSyncProvider.label,
-                onSelected = toCloudSyncProviderScreen,
+                onSelect = toCloudSyncProviderScreen,
                 link = true,
             )
         }

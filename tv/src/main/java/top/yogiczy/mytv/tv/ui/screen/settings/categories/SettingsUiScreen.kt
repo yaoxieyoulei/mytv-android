@@ -131,7 +131,7 @@ fun SettingsUiScreen(
                     Long.MAX_VALUE -> "不关闭"
                     else -> delay.humanizeMs()
                 },
-                onSelected = toUiScreenAutoCloseDelayScreen,
+                onSelect = toUiScreenAutoCloseDelayScreen,
                 link = true,
             )
         }
@@ -145,7 +145,7 @@ fun SettingsUiScreen(
                     0f -> "自适应"
                     else -> "×${DecimalFormat("#.#").format(scaleRatio)}"
                 },
-                onSelected = toUiDensityScaleRatioScreen,
+                onSelect = toUiDensityScaleRatioScreen,
                 link = true,
             )
         }
@@ -156,7 +156,7 @@ fun SettingsUiScreen(
             SettingsListItem(
                 headlineContent = "界面字体缩放比例",
                 trailingContent = "×${DecimalFormat("#.#").format(scaleRatio)}",
-                onSelected = toUiFontScaleRatioScreen,
+                onSelect = toUiFontScaleRatioScreen,
                 link = true,
             )
         }

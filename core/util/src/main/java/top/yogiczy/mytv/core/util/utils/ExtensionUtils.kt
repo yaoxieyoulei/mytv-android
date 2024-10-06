@@ -79,3 +79,21 @@ fun Context.actionView(url: String) {
         startActivity(intent)
     }
 }
+
+fun String.toHeaders(): Map<String, String> {
+    return runCatching {
+        lines().associate {
+            val (key, value) = it.split(":", limit = 2)
+            key.trim() to value.trim()
+        }
+    }.getOrElse { emptyMap() }
+}
+
+fun String.headersValid(): Boolean {
+    if (isBlank()) return true
+
+    return lines().all { line ->
+        val parts = line.split(":", limit = 2)
+        parts.size == 2 && parts[0].isNotBlank() && parts[1].isNotBlank()
+    }
+}

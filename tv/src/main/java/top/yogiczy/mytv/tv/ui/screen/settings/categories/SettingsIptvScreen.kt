@@ -74,7 +74,7 @@ fun SettingsIptvScreen(
                     Long.MAX_VALUE -> "永久"
                     else -> cacheTime.humanizeMs()
                 },
-                onSelected = toIptvSourceCacheTimeScreen,
+                onSelect = toIptvSourceCacheTimeScreen,
                 link = true,
             )
         }
