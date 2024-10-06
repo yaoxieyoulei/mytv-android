@@ -15,24 +15,22 @@ data class EpgList(
     val value: List<Epg> = emptyList(),
 ) : List<Epg> by value {
     companion object {
-        private val recentProgrammeCache =
-            object : LinkedHashMap<Channel, EpgProgrammeRecent?>(128, 0.75f, true) {
-                override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Channel, EpgProgrammeRecent?>?): Boolean {
+        private val matchCache =
+            object : LinkedHashMap<String, Epg?>(128, 0.75f, true) {
+                override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Epg?>?): Boolean {
                     return size > 1024
                 }
             }
 
         fun EpgList.recentProgramme(channel: Channel): EpgProgrammeRecent? {
-            return recentProgrammeCache[channel] ?: run {
-                match(channel)?.recentProgramme().also {
-                    recentProgrammeCache[channel] = it
-                }
-            }
+            return match(channel)?.recentProgramme()
         }
 
         fun EpgList.match(channel: Channel): Epg? {
-            return firstOrNull { epg ->
-                epg.channelList.any { it.equals(channel.epgName, ignoreCase = true) }
+            return matchCache.getOrPut(channel.epgName) {
+                firstOrNull { epg ->
+                    epg.channelList.any { it.equals(channel.epgName, ignoreCase = true) }
+                }
             }
         }
 
