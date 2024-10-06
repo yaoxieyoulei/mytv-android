@@ -12,7 +12,6 @@ import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.text.DecimalFormat
 
 @Composable
@@ -107,16 +106,7 @@ fun SettingsUiScreen(
 
             SettingsListItem(
                 headlineContent = "时间显示",
-                trailingContent = {
-                    Text(
-                        when (timeShowMode) {
-                            Configs.UiTimeShowMode.HIDDEN -> "隐藏"
-                            Configs.UiTimeShowMode.ALWAYS -> "常显"
-                            Configs.UiTimeShowMode.EVERY_HOUR -> "整点"
-                            Configs.UiTimeShowMode.HALF_HOUR -> "半点"
-                        }
-                    )
-                },
+                trailingContent = { Text(timeShowMode.label) },
                 onSelect = toUiTimeShowModeScreen,
                 link = true,
             )

@@ -21,7 +21,6 @@ import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Composable
 fun SettingsIptvScreen(
@@ -150,15 +149,7 @@ fun SettingsIptvScreen(
 
             SettingsListItem(
                 headlineContent = "混合模式",
-                trailingContent = {
-                    Text(
-                        when (hybridMode) {
-                            Configs.IptvHybridMode.DISABLE -> "禁用"
-                            Configs.IptvHybridMode.IPTV_FIRST -> "直播源优先"
-                            Configs.IptvHybridMode.HYBRID_FIRST -> "混合优先"
-                        }
-                    )
-                },
+                trailingContent = { Text(hybridMode.label ) },
                 onSelect = toIptvHybridModeScreen,
                 link = true,
             )

@@ -183,27 +183,24 @@ fun rememberVideoPlayerState(
     return state
 }
 
-enum class VideoPlayerDisplayMode(
-    val label: String,
-    val value: Int,
-) {
+enum class VideoPlayerDisplayMode(val value: Int, val label: String) {
     /** 原始 */
-    ORIGINAL("原始", 0),
+    ORIGINAL(0, "原始"),
 
     /** 填充 */
-    FILL("填充", 1),
+    FILL(1, "填充"),
 
     /** 裁剪 */
-    CROP("裁剪", 2),
+    CROP(2, "裁剪"),
 
     /** 4:3 */
-    FOUR_THREE("4:3", 3),
+    FOUR_THREE(3, "4:3"),
 
     /** 16:9 */
-    SIXTEEN_NINE("16:9", 4),
+    SIXTEEN_NINE(4, "16:9"),
 
     /** 2.35:1 */
-    WIDE("2.35:1", 5);
+    WIDE(5, "2.35:1");
 
     companion object {
         fun fromValue(value: Int): VideoPlayerDisplayMode {

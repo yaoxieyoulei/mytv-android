@@ -51,16 +51,7 @@ fun SettingsUiTimeShowModeScreen(
                 ListItem(
                     modifier = Modifier
                         .handleKeyEvents(onSelect = { onTimeShowModeChanged(mode) }),
-                    headlineContent = {
-                        Text(
-                            when (mode) {
-                                Configs.UiTimeShowMode.HIDDEN -> "隐藏"
-                                Configs.UiTimeShowMode.ALWAYS -> "常显"
-                                Configs.UiTimeShowMode.EVERY_HOUR -> "整点"
-                                Configs.UiTimeShowMode.HALF_HOUR -> "半点"
-                            }
-                        )
-                    },
+                    headlineContent = { Text(mode.label) },
                     supportingContent = {
                         Text(
                             when (mode) {

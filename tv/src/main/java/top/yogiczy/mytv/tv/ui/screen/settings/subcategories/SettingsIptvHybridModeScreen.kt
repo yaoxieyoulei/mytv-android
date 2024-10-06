@@ -45,15 +45,7 @@ fun SettingsIptvHybridModeScreen(
                     modifier = Modifier.handleKeyEvents(
                         onSelect = { onHybridModeChanged(mode) },
                     ),
-                    headlineContent = {
-                        Text(
-                            when (mode) {
-                                Configs.IptvHybridMode.DISABLE -> "禁用"
-                                Configs.IptvHybridMode.IPTV_FIRST -> "直播源优先"
-                                Configs.IptvHybridMode.HYBRID_FIRST -> "混合优先"
-                            }
-                        )
-                    },
+                    headlineContent = { Text(mode.label) },
                     supportingContent = {
                         Text(
                             when (mode) {

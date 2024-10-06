@@ -501,18 +501,18 @@ object Configs {
         get() = SP.getString(KEY.CLOUD_SYNC_NETWORK_URL.name, "")
         set(value) = SP.putString(KEY.CLOUD_SYNC_NETWORK_URL.name, value)
 
-    enum class UiTimeShowMode(val value: Int) {
+    enum class UiTimeShowMode(val value: Int, val label: String) {
         /** 隐藏 */
-        HIDDEN(0),
+        HIDDEN(0, "隐藏"),
 
         /** 常显 */
-        ALWAYS(1),
+        ALWAYS(1, "常显"),
 
         /** 整点 */
-        EVERY_HOUR(2),
+        EVERY_HOUR(2, "整点"),
 
         /** 半点 */
-        HALF_HOUR(3);
+        HALF_HOUR(3, "半点");
 
         companion object {
             fun fromValue(value: Int): UiTimeShowMode {
@@ -521,15 +521,15 @@ object Configs {
         }
     }
 
-    enum class IptvHybridMode(val value: Int) {
+    enum class IptvHybridMode(val value: Int, val label: String) {
         /** 禁用 */
-        DISABLE(0),
+        DISABLE(0, "禁用"),
 
         /** 直播源优先 */
-        IPTV_FIRST(1),
+        IPTV_FIRST(1, "直播源优先"),
 
         /** 混合优先 */
-        HYBRID_FIRST(2);
+        HYBRID_FIRST(2, "混合优先");
 
         companion object {
             fun fromValue(value: Int): IptvHybridMode {
@@ -538,12 +538,12 @@ object Configs {
         }
     }
 
-    enum class VideoPlayerCore(val value: Int) {
+    enum class VideoPlayerCore(val value: Int, val label: String) {
         /** Media3 */
-        MEDIA3(0),
+        MEDIA3(0, "Media3"),
 
         /** IJK */
-        IJK(1);
+        IJK(1, "IjkPlayer");
 
         companion object {
             fun fromValue(value: Int): VideoPlayerCore {

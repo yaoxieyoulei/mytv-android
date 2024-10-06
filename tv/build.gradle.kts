@@ -134,14 +134,6 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
-androidComponents {
-    beforeVariants { variantBuilder ->
-        if (variantBuilder.productFlavors.containsAll(listOf("version" to "disguised"))) {
-            variantBuilder.enable = false
-        }
-    }
-}
-
 sentry {
     org.set("yogiczy")
     projectName.set("mytv-android")

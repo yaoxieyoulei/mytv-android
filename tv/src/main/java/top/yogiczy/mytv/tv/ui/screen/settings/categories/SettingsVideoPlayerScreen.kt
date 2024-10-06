@@ -14,7 +14,6 @@ import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsCategoryScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.components.SettingsListItem
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
-import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Composable
 fun SettingsVideoPlayerScreen(
@@ -33,10 +32,7 @@ fun SettingsVideoPlayerScreen(
         item {
             SettingsListItem(
                 modifier = Modifier.focusRequester(firstItemFocusRequester),
-                trailingContent = when (settingsViewModel.videoPlayerCore) {
-                    Configs.VideoPlayerCore.MEDIA3 -> "Media3"
-                    Configs.VideoPlayerCore.IJK -> "IjkPlayer"
-                },
+                trailingContent = settingsViewModel.videoPlayerCore.label,
                 headlineContent = "内核",
                 onSelect = toVideoPlayerCoreScreen,
                 link = true,

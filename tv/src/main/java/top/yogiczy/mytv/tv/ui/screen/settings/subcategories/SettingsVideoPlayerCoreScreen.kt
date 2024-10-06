@@ -45,11 +45,12 @@ fun SettingsVideoPlayerCoreScreen(
                     modifier = Modifier.handleKeyEvents(
                         onSelect = { onCoreChanged(core) },
                     ),
-                    headlineContent = {
+                    headlineContent = { Text(core.label) },
+                    supportingContent = {
                         Text(
                             when (core) {
-                                Configs.VideoPlayerCore.MEDIA3 -> "Media3"
-                                Configs.VideoPlayerCore.IJK -> "IjkPlayer"
+                                Configs.VideoPlayerCore.MEDIA3 -> "支持全部功能"
+                                Configs.VideoPlayerCore.IJK -> "部分功能可能无法正常使用"
                             }
                         )
                     },
