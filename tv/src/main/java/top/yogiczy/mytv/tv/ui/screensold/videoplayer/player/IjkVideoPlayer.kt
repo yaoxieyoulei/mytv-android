@@ -106,6 +106,7 @@ class IjkVideoPlayer(
         player.setOnVideoSizeChangedListener(null)
         player.setOnErrorListener(null)
         player.setOnInfoListener(null)
+        player.stop()
         player.release()
         super.release()
     }

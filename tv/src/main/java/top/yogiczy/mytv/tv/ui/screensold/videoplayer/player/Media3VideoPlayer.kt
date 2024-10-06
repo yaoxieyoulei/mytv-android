@@ -247,6 +247,7 @@ class Media3VideoPlayer(
         videoPlayer.removeListener(playerListener)
         videoPlayer.removeAnalyticsListener(metadataListener)
         videoPlayer.removeAnalyticsListener(eventLogger)
+        videoPlayer.stop()
         videoPlayer.release()
         super.release()
     }
