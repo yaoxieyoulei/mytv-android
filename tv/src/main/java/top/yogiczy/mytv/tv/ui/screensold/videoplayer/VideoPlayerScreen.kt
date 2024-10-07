@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screensold.videoplayer
 
 import android.view.SurfaceView
+import android.view.TextureView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -16,11 +17,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import top.yogiczy.mytv.tv.ui.material.Visibility
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.components.VideoPlayerError
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.components.VideoPlayerMetadata
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.tooling.PreviewWithLayoutGrids
+import top.yogiczy.mytv.tv.ui.utils.Configs
 
 @Composable
 fun VideoPlayerScreen(
@@ -47,13 +50,27 @@ fun VideoPlayerScreen(
             VideoPlayerDisplayMode.WIDE -> Modifier.aspectRatio(2.35f / 1)
         }
 
-        AndroidView(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .then(displayModeModifier),
-            factory = { SurfaceView(context) },
-            update = { state.setVideoSurfaceView(it) },
-        )
+        when (settingsVM.videoPlayerRenderMode) {
+            Configs.VideoPlayerRenderMode.SURFACE_VIEW -> {
+                AndroidView(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .then(displayModeModifier),
+                    factory = { SurfaceView(context) },
+                    update = { state.setVideoSurfaceView(it) },
+                )
+            }
+
+            Configs.VideoPlayerRenderMode.TEXTURE_VIEW -> {
+                AndroidView(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .then(displayModeModifier),
+                    factory = { TextureView(context) },
+                    update = { state.setVideoTextureView(it) },
+                )
+            }
+        }
     }
 
     VideoPlayerScreenCover(
@@ -92,11 +109,9 @@ private fun VideoPlayerScreenCover(
 private fun VideoPlayerScreenCoverPreview() {
     MyTvTheme {
         PreviewWithLayoutGrids {
-            VideoPlayerScreenCover(
-                showMetadataProvider = { true },
+            VideoPlayerScreenCover(showMetadataProvider = { true },
                 metadataProvider = { VideoPlayer.Metadata() },
-                errorProvider = { "ERROR_CODE_BEHIND_LIVE_WINDOW" }
-            )
+                errorProvider = { "ERROR_CODE_BEHIND_LIVE_WINDOW" })
         }
     }
 }

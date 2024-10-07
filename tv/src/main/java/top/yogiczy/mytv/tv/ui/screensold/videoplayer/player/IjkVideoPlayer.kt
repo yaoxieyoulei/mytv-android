@@ -1,6 +1,10 @@
 package top.yogiczy.mytv.tv.ui.screensold.videoplayer.player
 
+import android.graphics.SurfaceTexture
+import android.view.Surface
 import android.view.SurfaceView
+import android.view.TextureView
+import android.view.TextureView.SurfaceTextureListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,9 +35,9 @@ class IjkVideoPlayer(
             setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
             setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", 1)
             setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "infbuf", 1)
+            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
             setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 5)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max_cached_duration", 5000)
+            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
             setOption(
                 IjkMediaPlayer.OPT_CATEGORY_FORMAT,
                 "timeout",
@@ -43,6 +47,7 @@ class IjkVideoPlayer(
     }
 
     private var cacheSurfaceView: SurfaceView? = null
+    private var cacheSurfaceTexture: Surface? = null
     private var updateJob: Job? = null
 
     override fun prepare(line: ChannelLine) {
@@ -85,6 +90,36 @@ class IjkVideoPlayer(
 
     override fun setVideoSurfaceView(surfaceView: SurfaceView) {
         cacheSurfaceView = surfaceView
+        cacheSurfaceTexture?.release()
+        cacheSurfaceTexture = null
+    }
+
+    override fun setVideoTextureView(textureView: TextureView) {
+        cacheSurfaceView = null
+        textureView.surfaceTextureListener = object : SurfaceTextureListener {
+            override fun onSurfaceTextureAvailable(
+                surfaceTexture: SurfaceTexture,
+                width: Int,
+                height: Int
+            ) {
+                cacheSurfaceTexture = Surface(surfaceTexture)
+                player.setSurface(cacheSurfaceTexture)
+            }
+
+            override fun onSurfaceTextureSizeChanged(
+                surfaceTexture: SurfaceTexture,
+                width: Int,
+                height: Int
+            ) {
+            }
+
+            override fun onSurfaceTextureDestroyed(surfaceTexture: SurfaceTexture): Boolean {
+                return true
+            }
+
+            override fun onSurfaceTextureUpdated(surfaceTexture: SurfaceTexture) {
+            }
+        }
     }
 
     override fun initialize() {
@@ -108,11 +143,13 @@ class IjkVideoPlayer(
         player.setOnInfoListener(null)
         player.stop()
         player.release()
+        cacheSurfaceTexture?.release()
         super.release()
     }
 
     override fun onPrepared(player: IMediaPlayer) {
         cacheSurfaceView?.let { player.setDisplay(it.holder) }
+        cacheSurfaceTexture?.let { player.setSurface(it) }
 
         val info = player.mediaInfo
         metadata = Metadata(

@@ -23,42 +23,34 @@ import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 
 @Composable
-fun SettingsVideoPlayerCoreScreen(
+fun SettingsVideoPlayerRenderModeScreen(
     modifier: Modifier = Modifier,
-    coreProvider: () -> Configs.VideoPlayerCore = { Configs.VideoPlayerCore.MEDIA3 },
-    onCoreChanged: (Configs.VideoPlayerCore) -> Unit = {},
+    renderModeProvider: () -> Configs.VideoPlayerRenderMode = { Configs.VideoPlayerRenderMode.SURFACE_VIEW },
+    onRenderModeChanged: (Configs.VideoPlayerRenderMode) -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
     val childPadding = rememberChildPadding()
 
     AppScreen(
         modifier = modifier.padding(top = 10.dp),
-        header = { Text("设置 / 播放器 / 内核") },
+        header = { Text("设置 / 播放器 / 渲染方式") },
         canBack = true,
         onBackPressed = onBackPressed,
     ) {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(4),
             contentPadding = childPadding.copy(top = 10.dp).paddingValues,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(Configs.VideoPlayerCore.entries) { core ->
+            items(Configs.VideoPlayerRenderMode.entries) { renderMode ->
                 ListItem(
                     modifier = Modifier.handleKeyEvents(
-                        onSelect = { onCoreChanged(core) },
+                        onSelect = { onRenderModeChanged(renderMode) },
                     ),
-                    headlineContent = { Text(core.label) },
-                    supportingContent = {
-                        Text(
-                            when (core) {
-                                Configs.VideoPlayerCore.MEDIA3 -> "支持全部功能"
-                                Configs.VideoPlayerCore.IJK -> "部分功能可能无法正常使用"
-                            }
-                        )
-                    },
+                    headlineContent = { Text(renderMode.label) },
                     trailingContent = {
-                        if (coreProvider() == core) {
+                        if (renderModeProvider() == renderMode) {
                             Icon(Icons.Default.CheckCircle, contentDescription = null)
                         }
                     },
@@ -75,8 +67,8 @@ fun SettingsVideoPlayerCoreScreen(
 
 @Preview(device = "id:Android TV (720p)")
 @Composable
-private fun SettingsVideoPlayerCoreScreenPreview() {
+private fun SettingsVideoPlayerRenderModeScreenPreview() {
     MyTvTheme {
-        SettingsVideoPlayerCoreScreen()
+        SettingsVideoPlayerRenderModeScreen()
     }
 }

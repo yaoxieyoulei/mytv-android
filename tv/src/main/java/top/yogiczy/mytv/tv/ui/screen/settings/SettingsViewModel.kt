@@ -399,6 +399,15 @@ class SettingsViewModel : ViewModel() {
             afterSetWhenCloudSyncAutoPull()
         }
 
+    private var _videoPlayerRenderMode by mutableStateOf(Configs.VideoPlayerRenderMode.SURFACE_VIEW)
+    var videoPlayerRenderMode: Configs.VideoPlayerRenderMode
+        get() = _videoPlayerRenderMode
+        set(value) {
+            _videoPlayerRenderMode = value
+            Configs.videoPlayerRenderMode = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+
     private var _videoPlayerUserAgent by mutableStateOf("")
     var videoPlayerUserAgent: String
         get() = _videoPlayerUserAgent
@@ -558,6 +567,7 @@ class SettingsViewModel : ViewModel() {
         _updateForceRemind = Configs.updateForceRemind
         _updateChannel = Configs.updateChannel
         _videoPlayerCore = Configs.videoPlayerCore
+        _videoPlayerRenderMode = Configs.videoPlayerRenderMode
         _videoPlayerUserAgent = Configs.videoPlayerUserAgent
         _videoPlayerHeaders = Configs.videoPlayerHeaders
         _videoPlayerLoadTimeout = Configs.videoPlayerLoadTimeout

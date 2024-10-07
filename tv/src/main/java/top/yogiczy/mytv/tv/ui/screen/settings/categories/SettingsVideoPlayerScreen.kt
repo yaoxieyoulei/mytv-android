@@ -20,6 +20,7 @@ fun SettingsVideoPlayerScreen(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = settingsVM,
     toVideoPlayerCoreScreen: () -> Unit = {},
+    toVideoPlayerRenderModeScreen: () -> Unit = {},
     toVideoPlayerDisplayModeScreen: () -> Unit = {},
     toVideoPlayerLoadTimeoutScreen: () -> Unit = {},
     onBackPressed: () -> Unit = {},
@@ -32,9 +33,18 @@ fun SettingsVideoPlayerScreen(
         item {
             SettingsListItem(
                 modifier = Modifier.focusRequester(firstItemFocusRequester),
-                trailingContent = settingsViewModel.videoPlayerCore.label,
                 headlineContent = "内核",
+                trailingContent = settingsViewModel.videoPlayerCore.label,
                 onSelect = toVideoPlayerCoreScreen,
+                link = true,
+            )
+        }
+
+        item {
+            SettingsListItem(
+                headlineContent = "渲染方式",
+                trailingContent = settingsViewModel.videoPlayerRenderMode.label,
+                onSelect = toVideoPlayerRenderModeScreen,
                 link = true,
             )
         }

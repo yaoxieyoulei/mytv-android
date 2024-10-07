@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.tv.ui.screensold.videoplayer
 
 import android.view.SurfaceView
+import android.view.TextureView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -84,6 +85,10 @@ class VideoPlayerState(
 
     fun setVideoSurfaceView(surfaceView: SurfaceView) {
         instance.setVideoSurfaceView(surfaceView)
+    }
+
+    fun setVideoTextureView(textureView: TextureView) {
+        instance.setVideoTextureView(textureView)
     }
 
     private val onReadyListeners = mutableListOf<() -> Unit>()

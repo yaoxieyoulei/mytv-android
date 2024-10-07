@@ -42,6 +42,7 @@ import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsUpdateChanne
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsVideoPlayerCoreScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsVideoPlayerDisplayModeScreen
 import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsVideoPlayerLoadTimeoutScreen
+import top.yogiczy.mytv.tv.ui.screen.settings.subcategories.SettingsVideoPlayerRenderModeScreen
 import top.yogiczy.mytv.tv.ui.utils.navigateSingleTop
 
 object SettingsScreen {
@@ -141,6 +142,9 @@ fun SettingsScreen(
                     SettingsVideoPlayerScreen(
                         toVideoPlayerCoreScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.VIDEO_PLAYER_CORE.name)
+                        },
+                        toVideoPlayerRenderModeScreen = {
+                            navController.navigateSingleTop(SettingsSubCategories.VIDEO_PLAYER_RENDER_MODE.name)
                         },
                         toVideoPlayerDisplayModeScreen = {
                             navController.navigateSingleTop(SettingsSubCategories.VIDEO_PLAYER_DISPLAY_MODE.name)
@@ -318,6 +322,17 @@ fun SettingsScreen(
                         coreProvider = { settingsViewModel.videoPlayerCore },
                         onCoreChanged = {
                             settingsViewModel.videoPlayerCore = it
+                            navController.navigateUp()
+                        },
+                        onBackPressed = { navController.navigateUp() },
+                    )
+                }
+
+                composable(SettingsSubCategories.VIDEO_PLAYER_RENDER_MODE.name) {
+                    SettingsVideoPlayerRenderModeScreen(
+                        renderModeProvider = { settingsViewModel.videoPlayerRenderMode },
+                        onRenderModeChanged = {
+                            settingsViewModel.videoPlayerRenderMode = it
                             navController.navigateUp()
                         },
                         onBackPressed = { navController.navigateUp() },
