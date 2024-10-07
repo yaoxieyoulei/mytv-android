@@ -34,6 +34,7 @@ import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.screen.channels.components.ChannelsChannelItemLogo
+import top.yogiczy.mytv.tv.ui.screen.channels.components.rememberEpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
@@ -128,7 +129,7 @@ private fun ChannelItemContent(
     isFocusedProvider: () -> Boolean = { false },
 ) {
     val channel = channelProvider()
-    val recentEpgProgramme = recentEpgProgrammeProvider()
+    val recentEpgProgramme = rememberEpgProgrammeRecent(recentEpgProgrammeProvider)
     val isFocused = isFocusedProvider()
 
     Column(
@@ -161,7 +162,7 @@ private fun ChannelItemProgress(
     showEpgProgrammeProgressProvider: () -> Boolean = { false },
     isFocusedProvider: () -> Boolean = { false },
 ) {
-    val recentEpgProgramme = recentEpgProgrammeProvider()
+    val recentEpgProgramme = rememberEpgProgrammeRecent(recentEpgProgrammeProvider)
     val showEpgProgrammeProgress = showEpgProgrammeProgressProvider()
     val isFocused = isFocusedProvider()
 

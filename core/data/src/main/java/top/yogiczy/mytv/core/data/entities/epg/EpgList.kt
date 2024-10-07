@@ -1,6 +1,10 @@
 package top.yogiczy.mytv.core.data.entities.epg
 
 import androidx.compose.runtime.Immutable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
@@ -40,6 +44,13 @@ data class EpgList(
 
         fun example(channelList: ChannelList): EpgList {
             return EpgList(channelList.map(Epg.Companion::example))
+        }
+
+        private val semaphore = Semaphore(5)
+        suspend fun <T> action(action: () -> T): T {
+            return semaphore.withPermit {
+                withContext(Dispatchers.Default) { action() }
+            }
         }
     }
 }

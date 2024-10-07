@@ -300,7 +300,7 @@ class SettingsViewModel : ViewModel() {
             afterSetWhenCloudSyncAutoPull()
         }
 
-    private var _uiShowChannelLogo by mutableStateOf(false)
+    private var _uiShowChannelLogo by mutableStateOf(true)
     var uiShowChannelLogo: Boolean
         get() = _uiShowChannelLogo
         set(value) {

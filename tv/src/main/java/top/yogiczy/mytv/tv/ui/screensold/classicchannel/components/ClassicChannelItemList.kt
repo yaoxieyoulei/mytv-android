@@ -54,6 +54,7 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
 import top.yogiczy.mytv.tv.ui.screen.channels.components.ChannelsChannelItemLogo
+import top.yogiczy.mytv.tv.ui.screen.channels.components.rememberEpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
@@ -173,7 +174,7 @@ private fun ClassicChannelItem(
     isSelectedProvider: () -> Boolean = { false },
 ) {
     val channel = channelProvider()
-    val nowEpgProgramme = recentEpgProgrammeProvider()?.now
+    val recentEpgProgramme = rememberEpgProgrammeRecent(recentEpgProgrammeProvider)
     val showEpgProgrammeProgress = showEpgProgrammeProgressProvider()
     val focusRequester = focusRequesterProvider()
 
@@ -252,21 +253,23 @@ private fun ClassicChannelItem(
                 },
                 supportingContent = {
                     Text(
-                        text = nowEpgProgramme?.title ?: "无节目",
+                        text = recentEpgProgramme?.now?.title ?: "无节目",
                         maxLines = 1,
                         modifier = Modifier.ifElse(isFocused, Modifier.basicMarquee()),
                     )
                 },
             )
 
-            if (showEpgProgrammeProgress && nowEpgProgramme != null) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth(nowEpgProgramme.progress())
-                        .height(3.dp)
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)),
-                )
+            if (showEpgProgrammeProgress) {
+                recentEpgProgramme?.now?.let { nnNowEpgProgramme ->
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .fillMaxWidth(nnNowEpgProgramme.progress())
+                            .height(3.dp)
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)),
+                    )
+                }
             }
         }
     }

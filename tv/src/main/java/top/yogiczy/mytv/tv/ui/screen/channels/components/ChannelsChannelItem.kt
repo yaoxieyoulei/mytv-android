@@ -44,7 +44,9 @@ import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import coil.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.delay
 import top.yogiczy.mytv.core.data.entities.channel.Channel
+import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.core.util.utils.M3u8AnalysisUtil
@@ -238,7 +240,7 @@ private fun ChannelsChannelItemContent(
     val isFocused = isFocusedProvider()
 
     val channel = channelProvider()
-    val recentEpgProgramme = recentEpgProgrammeProvider()
+    val recentEpgProgramme = rememberEpgProgrammeRecent(recentEpgProgrammeProvider)
 
     Column(
         modifier = modifier
@@ -269,7 +271,7 @@ private fun ChannelsChannelItemProgress(
     modifier: Modifier = Modifier,
     recentEpgProgrammeProvider: () -> EpgProgrammeRecent? = { null },
 ) {
-    val recentEpgProgramme = recentEpgProgrammeProvider()
+    val recentEpgProgramme = rememberEpgProgrammeRecent(recentEpgProgrammeProvider)
 
     recentEpgProgramme?.now?.let { nowProgramme ->
         if (settingsVM.uiShowEpgProgrammeProgress) {
@@ -281,6 +283,20 @@ private fun ChannelsChannelItemProgress(
             )
         }
     }
+}
+
+@Composable
+fun rememberEpgProgrammeRecent(provider: () -> EpgProgrammeRecent? = { null }): EpgProgrammeRecent? {
+    var recentEpgProgramme by remember { mutableStateOf<EpgProgrammeRecent?>(null) }
+    LaunchedEffect(provider) {
+        while (true) {
+            recentEpgProgramme = EpgList.action(provider)
+            if (recentEpgProgramme != null) break
+            delay(100)
+        }
+    }
+
+    return recentEpgProgramme
 }
 
 @Composable
