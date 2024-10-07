@@ -14,10 +14,7 @@ interface IptvParser {
     /**
      * 解析直播源数据
      */
-    suspend fun parse(
-        data: String,
-        logoProvider: (name: String, logo: String?) -> String?,
-    ): ChannelGroupList
+    suspend fun parse(data: String): ChannelGroupList
 
     suspend fun getEpgUrl(data: String): String? {
         return null

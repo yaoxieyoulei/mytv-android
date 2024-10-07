@@ -33,6 +33,7 @@ import androidx.tv.material3.Text
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
+import top.yogiczy.mytv.tv.ui.screen.channels.components.ChannelsChannelItemLogo
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
@@ -88,10 +89,16 @@ fun ChannelItem(
                         .fillMaxWidth()
                         .padding(8.dp),
                 ) {
-                    ChannelItemLogo(
+                    ChannelsChannelItemLogo(
                         modifier = Modifier.align(Alignment.Center),
-                        logoProvider = { channelProvider().logo },
-                    )
+                        channelProvider = channelProvider,
+                    ) {
+                        Text(
+                            channelProvider().no,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
             }
 

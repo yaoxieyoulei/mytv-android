@@ -14,6 +14,7 @@ data class ChannelList(
             Channel.EXAMPLE.copy(
                 name = "直播频道${i + 1}",
                 epgName = "直播频道${i + 1}",
+                index = 9998,
             )
         })
     }

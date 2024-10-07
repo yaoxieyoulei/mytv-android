@@ -18,53 +18,50 @@ class TxtIptvParser : IptvParser {
         return data.contains("#genre#")
     }
 
-    override suspend fun parse(
-        data: String,
-        logoProvider: (name: String, logo: String?) -> String?,
-    ): ChannelGroupList = withContext(Dispatchers.Default) {
-        val lines = data.split("\r\n", "\n")
-        val iptvList = mutableListOf<ChannelItem>()
+    override suspend fun parse(data: String): ChannelGroupList =
+        withContext(Dispatchers.Default) {
+            val lines = data.split("\r\n", "\n")
+            val iptvList = mutableListOf<ChannelItem>()
 
-        var groupName: String? = null
-        lines.forEach { line ->
-            if (line.isBlank() || line.startsWith("#") || line.startsWith("//")) return@forEach
+            var groupName: String? = null
+            lines.forEach { line ->
+                if (line.isBlank() || line.startsWith("#") || line.startsWith("//")) return@forEach
 
-            if (line.contains("#genre#")) {
-                groupName = line.split(",", "，").firstOrNull()?.trim()
-            } else {
-                val res = line.split(",", "，")
-                if (res.size < 2) return@forEach
+                if (line.contains("#genre#")) {
+                    groupName = line.split(",", "，").firstOrNull()?.trim()
+                } else {
+                    val res = line.split(",", "，")
+                    if (res.size < 2) return@forEach
 
-                iptvList.addAll(res[1].split("#").map { url ->
-                    ChannelItem(
-                        name = res[0].trim(),
-                        epgName = res[0].trim(),
-                        groupName = groupName ?: "其他",
-                        url = url.trim(),
+                    iptvList.addAll(res[1].split("#").map { url ->
+                        ChannelItem(
+                            name = res[0].trim(),
+                            epgName = res[0].trim(),
+                            groupName = groupName ?: "其他",
+                            url = url.trim(),
+                        )
+                    })
+                }
+            }
+
+            return@withContext ChannelGroupList(iptvList.groupBy { it.groupName }
+                .map { (groupName, channelList) ->
+                    ChannelGroup(
+                        name = groupName,
+                        channelList = ChannelList(channelList.groupBy { it.name }
+                            .map { (channelName, channelList) ->
+                                Channel(
+                                    name = channelName,
+                                    epgName = channelList.first().epgName,
+                                    lineList = ChannelLineList(
+                                        channelList.distinctBy { it.url }
+                                            .map { ChannelLine(url = it.url) }
+                                    ),
+                                )
+                            }),
                     )
                 })
-            }
         }
-
-        return@withContext ChannelGroupList(iptvList.groupBy { it.groupName }
-            .map { (groupName, channelList) ->
-                ChannelGroup(
-                    name = groupName,
-                    channelList = ChannelList(channelList.groupBy { it.name }
-                        .map { (channelName, channelList) ->
-                            Channel(
-                                name = channelName,
-                                epgName = channelList.first().epgName,
-                                lineList = ChannelLineList(
-                                    channelList.distinctBy { it.url }
-                                        .map { ChannelLine(url = it.url) }
-                                ),
-                                logo = logoProvider(channelName, null),
-                            )
-                        }),
-                )
-            })
-    }
 
     private data class ChannelItem(
         val name: String,

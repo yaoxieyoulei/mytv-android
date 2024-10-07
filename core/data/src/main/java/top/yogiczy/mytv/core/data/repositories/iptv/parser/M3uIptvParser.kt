@@ -18,10 +18,7 @@ class M3uIptvParser : IptvParser {
         return data.startsWith("#EXTM3U")
     }
 
-    override suspend fun parse(
-        data: String,
-        logoProvider: (name: String, logo: String?) -> String?,
-    ): ChannelGroupList =
+    override suspend fun parse(data: String): ChannelGroupList =
         withContext(Dispatchers.Default) {
             val lines = data.split("\r\n", "\n")
             val iptvList = mutableListOf<ChannelItem>()
@@ -76,10 +73,7 @@ class M3uIptvParser : IptvParser {
                                                 )
                                             }
                                     ),
-                                    logo = logoProvider(
-                                        channelList.first().epgName,
-                                        channelList.first().logo
-                                    ),
+                                    logo = channelList.first().logo,
                                 )
                             })
                     )

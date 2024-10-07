@@ -33,7 +33,6 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
-import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.delay
 import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelLine
@@ -47,6 +46,7 @@ import top.yogiczy.mytv.tv.ui.material.ProgressBar
 import top.yogiczy.mytv.tv.ui.material.ProgressBarColors
 import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.material.TagDefaults
+import top.yogiczy.mytv.tv.ui.screen.channels.components.ChannelsChannelItemLogo
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
@@ -75,9 +75,14 @@ fun LiveChannelsChannelInfo(
         verticalAlignment = Alignment.Top,
     ) {
         if (showChannelLogo) {
-            LiveChannelsChannelInfoLogo(
+            ChannelsChannelItemLogo(
+                modifier = Modifier
+                    .height(94.dp)
+                    .aspectRatio(16 / 9f),
                 channelProvider = channelProvider,
-            )
+            ) {
+                LiveChannelsChannelInfoNo(channelProvider = channelProvider)
+            }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -108,24 +113,6 @@ fun LiveChannelsChannelInfo(
             }
         }
     }
-}
-
-@Composable
-private fun LiveChannelsChannelInfoLogo(
-    modifier: Modifier = Modifier,
-    channelProvider: () -> Channel = { Channel() },
-) {
-    val channel = channelProvider()
-
-    SubcomposeAsyncImage(
-        modifier = modifier
-            .height(94.dp)
-            .aspectRatio(16 / 9f),
-        model = channel.logo,
-        contentDescription = null,
-        loading = { LiveChannelsChannelInfoNo(channelProvider = channelProvider) },
-        error = { LiveChannelsChannelInfoNo(channelProvider = channelProvider) },
-    )
 }
 
 @Composable

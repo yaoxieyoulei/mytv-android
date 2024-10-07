@@ -16,10 +16,7 @@ class DefaultIptvParser : IptvParser {
         return true
     }
 
-    override suspend fun parse(
-        data: String,
-        logoProvider: (name: String, logo: String?) -> String?,
-    ): ChannelGroupList {
+    override suspend fun parse(data: String): ChannelGroupList {
         val channelList = ChannelList(
             listOf(
                 Channel(

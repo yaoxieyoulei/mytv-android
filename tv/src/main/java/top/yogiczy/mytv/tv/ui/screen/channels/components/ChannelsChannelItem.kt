@@ -84,7 +84,7 @@ fun ChannelsChannelItem(
         onClick = {},
     ) {
         Column {
-            ChannelsChannelItemLogo(
+            ChannelsChannelItemLogoWithPreview(
                 channelProvider = channelProvider,
                 isFocusedProvider = { isFocused },
             )
@@ -114,7 +114,7 @@ fun ChannelsChannelItem(
 }
 
 @Composable
-private fun ChannelsChannelItemLogo(
+private fun ChannelsChannelItemLogoWithPreview(
     modifier: Modifier = Modifier,
     channelProvider: () -> Channel = { Channel() },
     isFocusedProvider: () -> Boolean = { false },
@@ -162,17 +162,47 @@ private fun ChannelsChannelItemLogo(
         }
 
         if (preview == null) {
-            SubcomposeAsyncImage(
+            ChannelsChannelItemLogo(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .fillMaxSize(0.6f),
-                model = channel.logo,
-                contentDescription = null,
-                loading = { ChannelsChannelItemNo(channelProvider = channelProvider) },
-                error = { ChannelsChannelItemNo(channelProvider = channelProvider) },
-            )
+                channelProvider = channelProvider,
+            ) { ChannelsChannelItemNo(channelProvider = channelProvider) }
         }
     }
+}
+
+@Composable
+fun ChannelsChannelItemLogo(
+    modifier: Modifier = Modifier,
+    channelProvider: () -> Channel = { Channel() },
+    placeholder: @Composable () -> Unit = {},
+) {
+    val channel = channelProvider()
+
+    val logo = if (settingsVM.iptvChannelLogoOverride || channel.logo.isNullOrBlank()) {
+        settingsVM.iptvChannelLogoProvider
+            .replace("{name}", channel.epgName)
+            .replace("{name|lowercase}", channel.epgName.lowercase())
+            .replace("{name|uppercase}", channel.epgName.uppercase())
+    } else channel.logo
+
+    SubcomposeAsyncImage(
+        modifier = modifier,
+        model = logo,
+        contentDescription = null,
+        loading = { placeholder() },
+        error = {
+            if (channel.logo != null) {
+                SubcomposeAsyncImage(
+                    model = channel.logo,
+                    contentDescription = null,
+                    loading = { placeholder() },
+                    error = { placeholder() },
+                )
+            } else placeholder()
+        },
+    )
 }
 
 @Composable

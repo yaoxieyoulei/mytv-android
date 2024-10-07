@@ -7,13 +7,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,7 +39,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.ListItemDefaults
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Surface
+import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.core.data.entities.channel.Channel
@@ -47,8 +53,8 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme.Companion.progress
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeRecent
 import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
+import top.yogiczy.mytv.tv.ui.screen.channels.components.ChannelsChannelItemLogo
 import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
-import top.yogiczy.mytv.tv.ui.screensold.channel.components.ChannelItemLogo
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
 import top.yogiczy.mytv.tv.ui.utils.handleKeyEvents
 import top.yogiczy.mytv.tv.ui.utils.ifElse
@@ -190,10 +196,31 @@ private fun ClassicChannelItem(
                     .width(60.dp)
                     .fillMaxHeight()
             ) {
-                ChannelItemLogo(
-                    modifier = Modifier.align(Alignment.Center),
-                    logoProvider = { channel.logo },
-                )
+                CompositionLocalProvider(
+                    LocalTextStyle provides MaterialTheme.typography.titleLarge
+                ) {
+                    ChannelsChannelItemLogo(
+                        modifier = Modifier.align(Alignment.Center),
+                        channelProvider = { channel },
+                    ) {
+                        Surface(
+                            modifier = modifier.fillMaxSize(),
+                            colors = SurfaceDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
+                            ),
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            Text(
+                                channel.no,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(vertical = 10.dp),
+                            )
+                        }
+                    }
+                }
             }
         }
 

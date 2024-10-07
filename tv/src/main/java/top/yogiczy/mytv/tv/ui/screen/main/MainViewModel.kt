@@ -81,11 +81,7 @@ class MainViewModel : ViewModel() {
         flow {
             emit(
                 IptvRepository(Configs.iptvSourceCurrent)
-                    .getChannelGroupList(
-                        Configs.iptvSourceCacheTime,
-                        Configs.iptvChannelLogoProvider,
-                        Configs.iptvChannelLogoOverride,
-                    )
+                    .getChannelGroupList(Configs.iptvSourceCacheTime)
             )
         }
             .retryWhen { e, attempt ->
