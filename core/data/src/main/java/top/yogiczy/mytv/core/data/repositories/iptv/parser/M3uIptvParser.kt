@@ -30,7 +30,7 @@ class M3uIptvParser : IptvParser {
                 if (!line.startsWith("#EXTINF")) return@forEachIndexed
 
                 val name = line.split(",").last().trim()
-                val channelName =
+                val epgName =
                     Regex("tvg-name=\"(.+?)\"").find(line)?.groupValues?.get(1)?.trim()
                         ?: name
                 val groupNames =
@@ -47,7 +47,7 @@ class M3uIptvParser : IptvParser {
                         groupNames.map { groupName ->
                             ChannelItem(
                                 name = name,
-                                epgName = channelName,
+                                epgName = epgName,
                                 groupName = groupName,
                                 url = url,
                                 logo = logo,
@@ -76,7 +76,10 @@ class M3uIptvParser : IptvParser {
                                                 )
                                             }
                                     ),
-                                    logo = logoProvider(channelName, channelList.first().logo),
+                                    logo = logoProvider(
+                                        channelList.first().epgName,
+                                        channelList.first().logo
+                                    ),
                                 )
                             })
                     )
