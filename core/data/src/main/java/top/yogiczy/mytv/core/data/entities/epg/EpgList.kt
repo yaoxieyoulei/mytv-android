@@ -23,14 +23,18 @@ data class EpgList(
             }
 
         fun EpgList.recentProgramme(channel: Channel): EpgProgrammeRecent? {
+            if (isEmpty()) return null
+
             return match(channel)?.recentProgramme()
         }
 
         fun EpgList.match(channel: Channel): Epg? {
+            if (isEmpty()) return null
+
             return matchCache.getOrPut(channel.epgName) {
                 firstOrNull { epg ->
                     epg.channelList.any { it.equals(channel.epgName, ignoreCase = true) }
-                }
+                } ?: Epg()
             }
         }
 
