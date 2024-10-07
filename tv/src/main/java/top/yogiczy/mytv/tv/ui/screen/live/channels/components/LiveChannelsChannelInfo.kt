@@ -74,7 +74,7 @@ fun LiveChannelsChannelInfo(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        if(showChannelLogo) {
+        if (showChannelLogo) {
             LiveChannelsChannelInfoLogo(
                 channelProvider = channelProvider,
             )
@@ -194,15 +194,15 @@ private fun LiveChannelsChannelInfoTags(
         }
 
         if (playerMetadata.videoWidth * playerMetadata.videoHeight > 0) {
-            when (playerMetadata.videoWidth to playerMetadata.videoHeight) {
-                426 to 240 -> Tag("240p", colors = tagColors)
-                640 to 360 -> Tag("360p", colors = tagColors)
-                854 to 480 -> Tag("480p", colors = tagColors)
-                1280 to 720 -> Tag("HD", colors = tagColors)
-                1920 to 1080 -> Tag("FHD", colors = tagColors)
-                2560 to 1440 -> Tag("QHD", colors = tagColors)
-                3840 to 2160 -> Tag("4K UHD", colors = tagColors)
-                7680 to 4320 -> Tag("8K UHD", colors = tagColors)
+            when (playerMetadata.videoHeight) {
+                240 -> Tag("240p", colors = tagColors)
+                360 -> Tag("360p", colors = tagColors)
+                480 -> Tag("480p", colors = tagColors)
+                720 -> Tag("HD", colors = tagColors)
+                1080 -> Tag("FHD", colors = tagColors)
+                1440 -> Tag("QHD", colors = tagColors)
+                2160 -> Tag("4K UHD", colors = tagColors)
+                4320 -> Tag("8K UHD", colors = tagColors)
                 else -> Tag(
                     "${playerMetadata.videoWidth}x${playerMetadata.videoHeight}",
                     colors = tagColors
