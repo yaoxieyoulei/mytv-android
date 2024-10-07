@@ -27,7 +27,7 @@ class TxtIptvParser : IptvParser {
 
         var groupName: String? = null
         lines.forEach { line ->
-            if (line.isBlank() || line.startsWith("#")) return@forEach
+            if (line.isBlank() || line.startsWith("#") || line.startsWith("//")) return@forEach
 
             if (line.contains("#genre#")) {
                 groupName = line.split(",", "，").firstOrNull()?.trim()
