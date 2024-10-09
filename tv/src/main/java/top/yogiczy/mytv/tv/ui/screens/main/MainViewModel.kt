@@ -32,7 +32,12 @@ class MainViewModel : ViewModel() {
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     init {
+        init()
+    }
+
+    fun init() {
         viewModelScope.launch {
+            _uiState.value = MainUiState.Loading()
             refreshChannel()
             refreshEpg()
         }

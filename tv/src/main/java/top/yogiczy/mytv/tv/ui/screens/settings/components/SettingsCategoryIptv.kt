@@ -28,6 +28,7 @@ import top.yogiczy.mytv.tv.ui.material.Tag
 import top.yogiczy.mytv.tv.ui.screens.channelgroup.ChannelGroupManageScreen
 import top.yogiczy.mytv.tv.ui.screens.components.SelectDialog
 import top.yogiczy.mytv.tv.ui.screens.iptvsource.IptvSourceScreen
+import top.yogiczy.mytv.tv.ui.screens.main.MainViewModel
 import top.yogiczy.mytv.tv.ui.screens.settings.SettingsViewModel
 import top.yogiczy.mytv.tv.ui.utils.Configs
 
@@ -35,6 +36,7 @@ import top.yogiczy.mytv.tv.ui.utils.Configs
 fun SettingsCategoryIptv(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = viewModel(),
+    mainViewModel: MainViewModel = viewModel(),
     channelGroupListProvider: () -> ChannelGroupList = { ChannelGroupList() },
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -155,6 +157,7 @@ fun SettingsCategoryIptv(
                             coroutineScope.launch {
                                 IptvRepository(settingsViewModel.iptvSourceCurrent).clearCache()
                             }
+                            mainViewModel.init()
                         }
                     },
                     onIptvSourceDeleted = {
