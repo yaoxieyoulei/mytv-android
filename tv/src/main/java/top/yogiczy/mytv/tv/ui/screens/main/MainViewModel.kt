@@ -103,6 +103,7 @@ class MainViewModel : ViewModel() {
         if (!Configs.epgEnable) return
 
         if (_uiState.value is MainUiState.Ready) {
+            EpgList.clearCache()
             val channelGroupList = (_uiState.value as MainUiState.Ready).channelGroupList
 
             flow {

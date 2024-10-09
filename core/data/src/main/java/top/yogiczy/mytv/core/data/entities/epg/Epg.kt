@@ -22,19 +22,24 @@ data class Epg(
 ) {
     companion object {
         fun Epg.recentProgramme(): EpgProgrammeRecent {
-            var current = EpgProgrammeRecent(
-                now = programmeList.firstOrNull { it.isLive() },
-            )
+            val currentTime = System.currentTimeMillis()
 
-            current.now?.let { now ->
-                current = current.copy(
-                    next = programmeList.indexOf(now).let {
-                        programmeList.getOrNull(it + 1)
-                    }
-                )
+            val liveProgramIndex = programmeList.binarySearch {
+                when {
+                    currentTime < it.startAt -> 1
+                    currentTime > it.endAt -> -1
+                    else -> 0
+                }
             }
 
-            return current
+            return if (liveProgramIndex > -1) {
+                EpgProgrammeRecent(
+                    now = programmeList[liveProgramIndex],
+                    next = programmeList.getOrNull(liveProgramIndex + 1)
+                )
+            } else {
+                EpgProgrammeRecent()
+            }
         }
 
         fun example(channel: Channel): Epg {

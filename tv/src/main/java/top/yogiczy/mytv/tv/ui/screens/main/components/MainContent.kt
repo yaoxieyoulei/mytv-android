@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
+import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.Epg
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
@@ -385,6 +386,11 @@ fun MainContent(
             channelGroupListProvider = filteredChannelGroupListProvider,
             currentChannelProvider = { mainContentState.currentChannel },
             currentChannelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
+            favoriteChannelListProvider = {
+                val favoriteChannelNameList = settingsViewModel.iptvChannelFavoriteList
+                ChannelList(filteredChannelGroupListProvider().channelList
+                    .filter { favoriteChannelNameList.contains(it.name) })
+            },
             showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             onChannelSelected = {
                 mainContentState.isChannelScreenVisible = false
@@ -407,7 +413,6 @@ fun MainContent(
             },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },
             channelFavoriteEnabledProvider = { settingsViewModel.iptvChannelFavoriteEnable },
-            channelFavoriteListProvider = { settingsViewModel.iptvChannelFavoriteList.toImmutableList() },
             channelFavoriteListVisibleProvider = { settingsViewModel.iptvChannelFavoriteListVisible },
             onChannelFavoriteListVisibleChange = {
                 settingsViewModel.iptvChannelFavoriteListVisible = it

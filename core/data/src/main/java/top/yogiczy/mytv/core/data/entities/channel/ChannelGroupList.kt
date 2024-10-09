@@ -31,6 +31,6 @@ data class ChannelGroupList(
             this.flatMap { it.channelList }.indexOfFirst { it == channel }
 
         val ChannelGroupList.channelList: ChannelList
-            get() = ChannelList(this.flatMap { it.channelList })
+            get() = ChannelList(this.asSequence().flatMap { it.channelList.asSequence() }.toList())
     }
 }

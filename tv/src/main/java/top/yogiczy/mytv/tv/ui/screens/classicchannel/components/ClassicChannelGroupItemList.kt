@@ -34,6 +34,7 @@ import androidx.tv.material3.Text
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
+import top.yogiczy.mytv.tv.ui.material.rememberDebounceState
 import top.yogiczy.mytv.tv.ui.screens.settings.LocalSettings
 import top.yogiczy.mytv.tv.ui.theme.MyTVTheme
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunchedSaveable
@@ -63,6 +64,10 @@ fun ClassicChannelGroupItemList(
             .collect { _ -> onUserAction() }
     }
 
+    val onChannelGroupFocusedDebounce = rememberDebounceState(wait = 100L) {
+        onChannelGroupFocused(focusedChannelGroup)
+    }
+
     LazyColumn(
         modifier = modifier
             .width(140.dp)
@@ -83,13 +88,13 @@ fun ClassicChannelGroupItemList(
 
             ClassicChannelGroupItem(
                 modifier = Modifier
-                    .ifElse(channelGroup == focusedChannelGroup, Modifier.focusOnLaunchedSaveable())
+                    .ifElse(channelGroup == initialChannelGroup, Modifier.focusOnLaunchedSaveable())
                     .focusRequester(itemFocusRequesterList[index]),
                 channelGroupProvider = { channelGroup },
                 isSelectedProvider = { isSelected },
                 onFocused = {
                     focusedChannelGroup = channelGroup
-                    onChannelGroupFocused(channelGroup)
+                    onChannelGroupFocusedDebounce.send()
                 },
             )
         }
