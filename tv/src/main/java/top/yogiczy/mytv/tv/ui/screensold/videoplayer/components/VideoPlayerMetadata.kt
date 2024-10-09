@@ -55,6 +55,7 @@ fun VideoPlayerMetadata(
                     Text("解码器: ${metadata.audioDecoder}")
                     Text("声道数: ${metadata.audioChannels}")
                     Text("采样率: ${metadata.audioSampleRate} Hz")
+                    Text("比特率: ${metadata.audioBitrate / 1024} kbps")
                 }
             }
         }
@@ -80,6 +81,7 @@ private fun VideoMetadataPreview() {
                     audioChannels = 2,
                     audioSampleRate = 32000,
                     audioDecoder = "c2.android.aac.decoder",
+                    audioBitrate = 256 * 1024,
                 )
             }
         )

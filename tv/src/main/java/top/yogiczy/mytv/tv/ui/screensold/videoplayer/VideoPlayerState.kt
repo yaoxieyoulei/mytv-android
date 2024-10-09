@@ -94,7 +94,7 @@ class VideoPlayerState(
     private val onReadyListeners = mutableListOf<() -> Unit>()
     private val onErrorListeners = mutableListOf<() -> Unit>()
     private val onInterruptListeners = mutableListOf<() -> Unit>()
-    private val onBufferingListeners = mutableListOf<() -> Unit>()
+    private val onIsBufferingListeners = mutableListOf<(Boolean) -> Unit>()
 
     fun onReady(listener: () -> Unit) {
         onReadyListeners.add(listener)
@@ -108,8 +108,8 @@ class VideoPlayerState(
         onInterruptListeners.add(listener)
     }
 
-    fun onBuffering(listener: () -> Unit) {
-        onBufferingListeners.add(listener)
+    fun onIsBuffering(listener: (Boolean) -> Unit) {
+        onIsBufferingListeners.add(listener)
     }
 
     fun initialize() {
@@ -131,7 +131,7 @@ class VideoPlayerState(
             isBuffering = it
             if (it) error = null
 
-            if (isBuffering) onBufferingListeners.forEach { cb -> cb.invoke() }
+            onIsBufferingListeners.forEach { cb -> cb(isBuffering) }
         }
         instance.onPrepared { }
         instance.onIsPlayingChanged { isPlaying = it }
@@ -145,7 +145,7 @@ class VideoPlayerState(
         onReadyListeners.clear()
         onErrorListeners.clear()
         onInterruptListeners.clear()
-        onBufferingListeners.clear()
+        onIsBufferingListeners.clear()
         instance.release()
     }
 }
@@ -162,7 +162,7 @@ fun rememberVideoPlayerState(
     val state = remember(videoPlayerCore) {
         val player = when (videoPlayerCore) {
             Configs.VideoPlayerCore.MEDIA3 -> Media3VideoPlayer(context, coroutineScope)
-            Configs.VideoPlayerCore.IJK -> IjkVideoPlayer(coroutineScope)
+            Configs.VideoPlayerCore.IJK -> IjkVideoPlayer(context, coroutineScope)
         }
 
         VideoPlayerState(player, defaultDisplayModeProvider)
@@ -173,7 +173,7 @@ fun rememberVideoPlayerState(
         onDispose { state.release() }
     }
 
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(lifecycleOwner, videoPlayerCore) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) state.play()
             else if (event == Lifecycle.Event.ON_STOP) {

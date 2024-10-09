@@ -181,36 +181,43 @@ private fun LiveChannelsChannelInfoTags(
         }
 
         if (playerMetadata.videoWidth * playerMetadata.videoHeight > 0) {
-            when (playerMetadata.videoHeight) {
-                240 -> Tag("240p", colors = tagColors)
-                360 -> Tag("360p", colors = tagColors)
-                480 -> Tag("480p", colors = tagColors)
-                720 -> Tag("HD", colors = tagColors)
-                1080 -> Tag("FHD", colors = tagColors)
-                1440 -> Tag("QHD", colors = tagColors)
-                2160 -> Tag("4K UHD", colors = tagColors)
-                4320 -> Tag("8K UHD", colors = tagColors)
-                else -> Tag(
-                    "${playerMetadata.videoWidth}x${playerMetadata.videoHeight}",
-                    colors = tagColors
-                )
-            }
+            Tag(
+                when (playerMetadata.videoHeight) {
+                    240 -> "240p"
+                    360 -> "360p"
+                    480 -> "480p"
+                    720 -> "HD"
+                    1080 -> "FHD"
+                    1440 -> "QHD"
+                    2160 -> "4K UHD"
+                    4320 -> "8K UHD"
+                    else -> "${playerMetadata.videoWidth}x${playerMetadata.videoHeight}"
+                },
+                colors = tagColors,
+            )
+        }
+
+        if (playerMetadata.videoFrameRate > 0) {
+            Tag("${playerMetadata.videoFrameRate.toInt()}FPS", colors = tagColors)
         }
 
         if (playerMetadata.audioChannels > 0) {
-            when (playerMetadata.audioChannels) {
-                1 -> Tag("单声道", colors = tagColors)
-                2 -> Tag("立体声", colors = tagColors)
-                3 -> Tag("2.1 声道", colors = tagColors)
-                4 -> Tag("4.0 四声道", colors = tagColors)
-                5 -> Tag("5.0 环绕声", colors = tagColors)
-                6 -> Tag("5.1 环绕声", colors = tagColors)
-                7 -> Tag("6.1 环绕声", colors = tagColors)
-                8 -> Tag("7.1 环绕声", colors = tagColors)
-                10 -> Tag("7.1.2 杜比全景声", colors = tagColors)
-                12 -> Tag("7.1.4 杜比全景声", colors = tagColors)
-                else -> Tag("${playerMetadata.audioChannels}声道", colors = tagColors)
-            }
+            Tag(
+                playerMetadata.audioChannelsLabel ?: when (playerMetadata.audioChannels) {
+                    1 -> "单声道"
+                    2 -> "立体声"
+                    3 -> "2.1 声道"
+                    4 -> "4.0 四声道"
+                    5 -> "5.0 环绕声"
+                    6 -> "5.1 环绕声"
+                    7 -> "6.1 环绕声"
+                    8 -> "7.1 环绕声"
+                    10 -> "7.1.2 杜比全景声"
+                    12 -> "7.1.4 杜比全景声"
+                    else -> "${playerMetadata.audioChannels}声道"
+                },
+                colors = tagColors,
+            )
         }
     }
 }
@@ -395,7 +402,7 @@ fun LiveChannelsChannelInfoNetSpeed(
     Text(
         text = if (netSpeed < 1024 * 999) "${netSpeed / 1024}KB/s"
         else "${DecimalFormat("#.#").format(netSpeed / 1024 / 1024f)}MB/s",
-        modifier = modifier,
+        modifier = modifier.sizeIn(minWidth = 60.dp),
     )
 }
 
@@ -442,6 +449,7 @@ private fun LiveChannelsChannelInfoPreview() {
                 VideoPlayer.Metadata(
                     videoWidth = 7680,
                     videoHeight = 4320,
+                    videoFrameRate = 50f,
                     audioChannels = 12,
                 )
             },
@@ -467,6 +475,7 @@ private fun LiveChannelsChannelInfoPlaybackPreview() {
 @Composable
 private fun LiveChannelsChannelInfoNoLogoPreview() {
     MyTvTheme {
+        settingsVM.uiShowChannelLogo = false
         LiveChannelsChannelInfo(
             modifier = Modifier.width(6.gridColumns()),
             channelProvider = { Channel.EXAMPLE.copy(name = "中文") },

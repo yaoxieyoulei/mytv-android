@@ -121,15 +121,6 @@ class MainContentState(
 
         videoPlayerState.onReady {
             settingsViewModel.iptvPlayableHostList += currentChannelLine.url.urlHost()
-            _tempChannelScreenHideJob?.cancel()
-            _tempChannelScreenHideJob = coroutineScope.launch {
-                val name = _currentChannel.name
-                val lineIdx = _currentChannelLineIdx
-                delay(Constants.UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION)
-                if (name == _currentChannel.name && lineIdx == _currentChannelLineIdx) {
-                    _isTempChannelScreenVisible = false
-                }
-            }
         }
 
         videoPlayerState.onError {
@@ -150,8 +141,20 @@ class MainContentState(
             )
         }
 
-        videoPlayerState.onBuffering {
-            _isTempChannelScreenVisible = true
+        videoPlayerState.onIsBuffering { isBuffering ->
+            if (isBuffering) {
+                _isTempChannelScreenVisible = true
+            } else {
+                _tempChannelScreenHideJob?.cancel()
+                _tempChannelScreenHideJob = coroutineScope.launch {
+                    val name = _currentChannel.name
+                    val lineIdx = _currentChannelLineIdx
+                    delay(Constants.UI_TEMP_CHANNEL_SCREEN_SHOW_DURATION)
+                    if (name == _currentChannel.name && lineIdx == _currentChannelLineIdx) {
+                        _isTempChannelScreenVisible = false
+                    }
+                }
+            }
         }
     }
 
@@ -325,7 +328,7 @@ fun rememberMainContentState(
 ): MainContentState {
     val favoriteChannelListProviderUpdated by rememberUpdatedState(favoriteChannelListProvider)
 
-    return remember {
+    return remember(settingsVM.videoPlayerCore) {
         MainContentState(
             coroutineScope = coroutineScope,
             videoPlayerState = videoPlayerState,

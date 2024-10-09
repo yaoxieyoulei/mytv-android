@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.tv.ui.screensold.videoplayer.player
 
+import android.content.Context
 import android.graphics.SurfaceTexture
 import android.view.Surface
 import android.view.SurfaceView
@@ -15,40 +16,65 @@ import top.yogiczy.mytv.tv.ui.utils.Configs
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaMeta
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
+import java.io.File
 
 
 class IjkVideoPlayer(
+    private val context: Context,
     private val coroutineScope: CoroutineScope,
 ) : VideoPlayer(coroutineScope),
     IMediaPlayer.OnPreparedListener,
-    IMediaPlayer.OnCompletionListener,
-    IMediaPlayer.OnBufferingUpdateListener,
-    IMediaPlayer.OnSeekCompleteListener,
     IMediaPlayer.OnVideoSizeChangedListener,
     IMediaPlayer.OnErrorListener,
     IMediaPlayer.OnInfoListener {
+
     private val player by lazy {
         IjkMediaPlayer().apply {
             setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1)
             setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_timeout", 0)
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0)
             setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "reconnect", 1)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", 1)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 5)
-            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
             setOption(
                 IjkMediaPlayer.OPT_CATEGORY_FORMAT,
                 "timeout",
-                Configs.videoPlayerLoadTimeout * 1000L
+                Configs.videoPlayerLoadTimeout
             )
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L)
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1)
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "fflags", "fastseek")
         }
     }
-
     private var cacheSurfaceView: SurfaceView? = null
     private var cacheSurfaceTexture: Surface? = null
     private var updateJob: Job? = null
+    private var av3aModel = File(context.cacheDir, "model.bin")
+
+    init {
+        if (!av3aModel.exists()) {
+            runCatching {
+                context.assets.open("model.bin").use { inputStream ->
+                    av3aModel.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setOption() {
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1)
+        player.setOption(
+            IjkMediaPlayer.OPT_CATEGORY_PLAYER,
+            "av3a_model_path",
+            av3aModel.absolutePath
+        )
+    }
 
     override fun prepare(line: ChannelLine) {
         player.reset()
@@ -58,6 +84,7 @@ class IjkVideoPlayer(
                 "User-Agent" to (line.httpUserAgent ?: Configs.videoPlayerUserAgent),
             )
         )
+        setOption()
         player.prepareAsync()
 
         triggerPrepared()
@@ -125,9 +152,6 @@ class IjkVideoPlayer(
     override fun initialize() {
         super.initialize()
         player.setOnPreparedListener(this)
-        player.setOnCompletionListener(this)
-        player.setOnBufferingUpdateListener(this)
-        player.setOnSeekCompleteListener(this)
         player.setOnVideoSizeChangedListener(this)
         player.setOnErrorListener(this)
         player.setOnInfoListener(this)
@@ -135,9 +159,6 @@ class IjkVideoPlayer(
 
     override fun release() {
         player.setOnPreparedListener(null)
-        player.setOnCompletionListener(null)
-        player.setOnBufferingUpdateListener(null)
-        player.setOnSeekCompleteListener(null)
         player.setOnVideoSizeChangedListener(null)
         player.setOnErrorListener(null)
         player.setOnInfoListener(null)
@@ -153,52 +174,75 @@ class IjkVideoPlayer(
 
         val info = player.mediaInfo
         metadata = Metadata(
-            videoDecoder = info.mVideoDecoderImpl,
-            videoMimeType = info.mMeta.mVideoStream.mCodecName,
-            videoWidth = info.mMeta.mVideoStream.mWidth,
-            videoHeight = info.mMeta.mVideoStream.mHeight,
-            videoFrameRate = info.mMeta.mVideoStream.mFpsNum.toFloat(),
-            videoBitrate = info.mMeta.mVideoStream.mBitrate.toInt(),
-            audioMimeType = info.mMeta.mAudioStream.mCodecName,
-            audioDecoder = info.mAudioDecoderImpl,
-            audioSampleRate = info.mMeta.mAudioStream.mSampleRate,
-            audioChannels = when (info.mMeta.mAudioStream.mChannelLayout) {
+            videoDecoder = info.mVideoDecoderImpl ?: "",
+            videoMimeType = info.mMeta.mVideoStream?.mCodecName ?: "",
+            videoWidth = info.mMeta.mVideoStream?.mWidth ?: 0,
+            videoHeight = info.mMeta.mVideoStream?.mHeight ?: 0,
+            videoFrameRate = info.mMeta.mVideoStream?.mFpsNum?.toFloat() ?: 0f,
+            videoBitrate = info.mMeta.mVideoStream?.mBitrate?.toInt() ?: 0,
+            audioMimeType = info.mMeta.mAudioStream?.mCodecName ?: "",
+            audioDecoder = info.mAudioDecoderImpl ?: "",
+            audioSampleRate = info.mMeta.mAudioStream?.mSampleRate ?: 0,
+            audioChannels = when (info.mMeta.mAudioStream?.mChannelLayout) {
                 IjkMediaMeta.AV_CH_LAYOUT_MONO -> 1
                 IjkMediaMeta.AV_CH_LAYOUT_STEREO,
                 IjkMediaMeta.AV_CH_LAYOUT_2POINT1,
                 IjkMediaMeta.AV_CH_LAYOUT_STEREO_DOWNMIX -> 2
 
                 IjkMediaMeta.AV_CH_LAYOUT_2_1,
-                IjkMediaMeta.AV_CH_LAYOUT_SURROUND,
-                IjkMediaMeta.AV_CH_LAYOUT_3POINT1 -> 3
+                IjkMediaMeta.AV_CH_LAYOUT_SURROUND -> 3
 
+                IjkMediaMeta.AV_CH_LAYOUT_3POINT1,
                 IjkMediaMeta.AV_CH_LAYOUT_4POINT0,
-                IjkMediaMeta.AV_CH_LAYOUT_4POINT1,
                 IjkMediaMeta.AV_CH_LAYOUT_2_2,
                 IjkMediaMeta.AV_CH_LAYOUT_QUAD -> 4
 
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT0,
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT0_BACK,
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT1_BACK -> 5
+                IjkMediaMeta.AV_CH_LAYOUT_4POINT1,
+                IjkMediaMeta.AV_CH_LAYOUT_5POINT0 -> 5
 
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT0,
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT0_FRONT,
                 IjkMediaMeta.AV_CH_LAYOUT_HEXAGONAL,
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT1_BACK,
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT1_FRONT -> 6
+                IjkMediaMeta.AV_CH_LAYOUT_5POINT1,
+                IjkMediaMeta.AV_CH_LAYOUT_6POINT0 -> 6
 
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT0,
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT0_FRONT,
+                IjkMediaMeta.AV_CH_LAYOUT_6POINT1,
+                IjkMediaMeta.AV_CH_LAYOUT_7POINT0 -> 7
+
                 IjkMediaMeta.AV_CH_LAYOUT_7POINT1,
                 IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE,
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK -> 7
-
+                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK,
                 IjkMediaMeta.AV_CH_LAYOUT_OCTAGONAL -> 8
+
+                IjkMediaMeta.AV_CH_AV3A_LAYOUT_5POINT1POINT4 -> 10
                 else -> 0
             },
+            audioChannelsLabel = when (info.mMeta.mAudioStream?.mChannelLayout) {
+                IjkMediaMeta.AV_CH_LAYOUT_MONO -> "单声道"
+                IjkMediaMeta.AV_CH_LAYOUT_STEREO -> "立体声"
+                IjkMediaMeta.AV_CH_LAYOUT_2POINT1 -> "2.1 声道"
+                IjkMediaMeta.AV_CH_LAYOUT_2_1 -> "立体声"
+                IjkMediaMeta.AV_CH_LAYOUT_SURROUND -> "环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_3POINT1 -> "3.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_4POINT0 -> "4.0 四声道"
+                IjkMediaMeta.AV_CH_LAYOUT_4POINT1 -> "4.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_2_2 -> "四声道"
+                IjkMediaMeta.AV_CH_LAYOUT_QUAD -> "四声道"
+                IjkMediaMeta.AV_CH_LAYOUT_5POINT0 -> "5.0 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_5POINT1 -> "5.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_6POINT0 -> "6.0 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_6POINT1 -> "6.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_7POINT0 -> "7.0 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_7POINT1 -> "7.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE -> "宽域 7.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK -> "后置 7.1 环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_HEXAGONAL -> "六角环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_OCTAGONAL -> "八角环绕声"
+                IjkMediaMeta.AV_CH_LAYOUT_STEREO_DOWNMIX -> "立体声下混音"
+                IjkMediaMeta.AV_CH_AV3A_LAYOUT_5POINT1POINT4 -> "三维菁彩声"
+                else -> null
+            },
+            audioBitrate = info.mMeta.mAudioStream?.mBitrate?.toInt() ?: 0,
         )
+
         triggerMetadata(metadata)
         triggerReady()
         triggerDuration(player.duration)
@@ -213,21 +257,9 @@ class IjkVideoPlayer(
         }
     }
 
-    override fun onCompletion(player: IMediaPlayer) {
-
-    }
-
     override fun onError(player: IMediaPlayer, what: Int, extra: Int): Boolean {
-        triggerError(PlaybackException("IJK_ERROR_$what: $extra", what))
+        triggerError(PlaybackException("IJK_PLAYER_ERROR_$what: $extra", what))
         return true
-    }
-
-    override fun onBufferingUpdate(player: IMediaPlayer, percent: Int) {
-
-    }
-
-    override fun onSeekComplete(player: IMediaPlayer) {
-
     }
 
     override fun onVideoSizeChanged(
@@ -240,7 +272,13 @@ class IjkVideoPlayer(
         triggerResolution(width, height)
     }
 
-    override fun onInfo(player: IMediaPlayer, what: Int, extra: Int): Boolean {
+    override fun onInfo(mp: IMediaPlayer?, what: Int, extra: Int): Boolean {
+        if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            triggerBuffering(true)
+        } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            triggerBuffering(false)
+        }
+
         return true
     }
 }

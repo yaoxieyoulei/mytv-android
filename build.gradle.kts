@@ -59,9 +59,7 @@ allprojects {
             val outputDir = outputDirectory.get().asFile
             val targetDir = file("$outputDir/../../release")
 
-            if (!targetDir.exists()) {
-                targetDir.mkdirs()
-            }
+            if (!targetDir.exists()) targetDir.mkdirs()
 
             outputDir.listFiles { file -> file.extension == "apk" }?.forEach { apkFile ->
                 apkFile.copyTo(file("${targetDir}/${apkFile.name}"), overwrite = true)

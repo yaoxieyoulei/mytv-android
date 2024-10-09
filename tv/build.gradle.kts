@@ -125,6 +125,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:util"))
+    implementation(project(":ijkplayer-java"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -220,6 +220,7 @@ class Media3VideoPlayer(
                 audioMimeType = format.sampleMimeType ?: "",
                 audioChannels = format.channelCount,
                 audioSampleRate = format.sampleRate,
+                audioBitrate = format.bitrate,
             )
             triggerMetadata(metadata)
         }

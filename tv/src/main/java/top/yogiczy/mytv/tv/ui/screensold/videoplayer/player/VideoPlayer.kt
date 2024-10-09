@@ -198,8 +198,12 @@ abstract class VideoPlayer(
         val audioMimeType: String = "",
         /** 音频通道 */
         val audioChannels: Int = 0,
+        /** 音频通道名称 */
+        val audioChannelsLabel: String? = null,
         /** 音频采样率 */
         val audioSampleRate: Int = 0,
+        /** 音频比特率 */
+        val audioBitrate: Int = 0,
         /** 音频解码器 */
         val audioDecoder: String = "",
     )

@@ -13,7 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Text
 import kotlinx.coroutines.flow.distinctUntilChanged
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
+import top.yogiczy.mytv.tv.ui.screen.settings.settingsVM
 import top.yogiczy.mytv.tv.ui.theme.MyTvTheme
+import top.yogiczy.mytv.tv.ui.utils.Configs
 import top.yogiczy.mytv.tv.ui.utils.focusOnLaunched
 
 @Composable
@@ -68,6 +70,20 @@ fun QuickOpBtnList(
             QuickOpBtn(
                 title = { Text("显示模式") },
                 onSelect = onShowVideoPlayerDisplayMode,
+            )
+        }
+
+        item {
+            val settingsViewModel = settingsVM
+
+            QuickOpBtn(
+                title = { Text(settingsVM.videoPlayerCore.label) },
+                onSelect = {
+                    settingsViewModel.videoPlayerCore = when (settingsViewModel.videoPlayerCore) {
+                        Configs.VideoPlayerCore.MEDIA3 -> Configs.VideoPlayerCore.IJK
+                        Configs.VideoPlayerCore.IJK -> Configs.VideoPlayerCore.MEDIA3
+                    }
+                },
             )
         }
 
