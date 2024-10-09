@@ -35,7 +35,6 @@ import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelItemGrid
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelItemGroupList
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelNumber
-import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelPlayerInfo
 import top.yogiczy.mytv.tv.ui.screens.components.rememberScreenAutoCloseState
 import top.yogiczy.mytv.tv.ui.screens.datetime.components.DateTimeDetail
 import top.yogiczy.mytv.tv.ui.screens.videoplayer.player.VideoPlayer
@@ -101,7 +100,7 @@ fun ChannelScreen(
 }
 
 @Composable
-private fun ChannelScreenTopRight(
+fun ChannelScreenTopRight(
     modifier: Modifier = Modifier,
     channelNumberProvider: () -> String = { "" },
 ) {
@@ -168,14 +167,8 @@ private fun ChannelScreenBottom(
                 },
                 isInTimeShiftProvider = isInTimeShiftProvider,
                 currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
-            )
-
-            ChannelPlayerInfo(
-                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
-                resolutionProvider = {
-                    val metadata = videoPlayerMetadataProvider()
-                    metadata.videoWidth to metadata.videoHeight
-                },
+                videoPlayerMetadataProvider = videoPlayerMetadataProvider,
+                showChannelLogoProvider = showChannelLogoProvider,
             )
 
             ChannelScreenBottomChannelItemListAllAndFavorite(

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,13 +33,17 @@ import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelGroupIdx
+import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelIdx
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.match
+import top.yogiczy.mytv.core.data.entities.epg.EpgList.Companion.recentProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.core.data.entities.epg.EpgProgrammeReserveList
 import top.yogiczy.mytv.tv.ui.material.Visible
+import top.yogiczy.mytv.tv.ui.screens.channel.ChannelScreenTopRight
+import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.components.ClassicChannelGroupItemList
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.components.ClassicChannelItemList
 import top.yogiczy.mytv.tv.ui.screens.classicchannel.components.ClassicEpgItemList
@@ -172,6 +177,39 @@ fun ClassicChannelScreen(
                     onTap = { epgListVisible = true },
                 )
             }
+        }
+    }
+
+    ChannelScreenTopRight(
+        channelNumberProvider = {
+            (channelGroupListProvider().channelIdx(currentChannelProvider()) + 1)
+                .toString()
+                .padStart(2, '0')
+        },
+    )
+
+    Visible({ !epgListVisible }) {
+        Box(Modifier.fillMaxSize()) {
+            ChannelInfo(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .fillMaxWidth(0.5f)
+                    .padding(24.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surface.copy(0.8f),
+                        MaterialTheme.shapes.medium,
+                    )
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                channelProvider = currentChannelProvider,
+                channelUrlIdxProvider = currentChannelUrlIdxProvider,
+                recentEpgProgrammeProvider = {
+                    epgListProvider().recentProgramme(currentChannelProvider())
+                },
+                isInTimeShiftProvider = isInTimeShiftProvider,
+                currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
+                videoPlayerMetadataProvider = videoPlayerMetadataProvider,
+                dense = true,
+            )
         }
     }
 }

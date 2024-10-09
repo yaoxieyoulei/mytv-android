@@ -190,11 +190,12 @@ fun MainContent(
             channelProvider = { mainContentState.currentChannel },
             channelUrlIdxProvider = { mainContentState.currentChannelUrlIdx },
             channelNumberProvider = { filteredChannelGroupListProvider().channelIdx(mainContentState.currentChannel) + 1 },
+            showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             recentEpgProgrammeProvider = {
                 epgListProvider().recentProgramme(mainContentState.currentChannel)
             },
-            showEpgProgrammeProgressProvider = { settingsViewModel.uiShowEpgProgrammeProgress },
             currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
+            videoPlayerMetadataProvider = { videoPlayerState.metadata },
         )
     }
 
@@ -312,6 +313,7 @@ fun MainContent(
             currentChannelNumberProvider = {
                 (filteredChannelGroupListProvider().channelList.indexOf(mainContentState.currentChannel) + 1).toString()
             },
+            showChannelLogoProvider = { settingsViewModel.uiShowChannelLogo },
             epgListProvider = epgListProvider,
             currentPlaybackEpgProgrammeProvider = { mainContentState.currentPlaybackEpgProgramme },
             videoPlayerMetadataProvider = { videoPlayerState.metadata },

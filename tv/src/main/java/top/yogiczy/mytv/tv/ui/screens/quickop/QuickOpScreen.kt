@@ -27,7 +27,6 @@ import top.yogiczy.mytv.core.data.entities.epg.EpgProgramme
 import top.yogiczy.mytv.tv.ui.rememberChildPadding
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelInfo
 import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelNumber
-import top.yogiczy.mytv.tv.ui.screens.channel.components.ChannelPlayerInfo
 import top.yogiczy.mytv.tv.ui.screens.components.rememberScreenAutoCloseState
 import top.yogiczy.mytv.tv.ui.screens.datetime.components.DateTimeDetail
 import top.yogiczy.mytv.tv.ui.screens.quickop.components.QuickOpBtnList
@@ -42,6 +41,7 @@ fun QuickOpScreen(
     currentChannelProvider: () -> Channel = { Channel() },
     currentChannelUrlIdxProvider: () -> Int = { 0 },
     currentChannelNumberProvider: () -> String = { "" },
+    showChannelLogoProvider: () -> Boolean = { false },
     epgListProvider: () -> EpgList = { EpgList() },
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
@@ -72,6 +72,7 @@ fun QuickOpScreen(
         QuickOpScreenBottom(
             currentChannelProvider = currentChannelProvider,
             currentChannelUrlIdxProvider = currentChannelUrlIdxProvider,
+            showChannelLogoProvider = showChannelLogoProvider,
             epgListProvider = epgListProvider,
             isInTimeShiftProvider = isInTimeShiftProvider,
             currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
@@ -124,6 +125,7 @@ private fun QuickOpScreenBottom(
     modifier: Modifier = Modifier,
     currentChannelProvider: () -> Channel = { Channel() },
     currentChannelUrlIdxProvider: () -> Int = { 0 },
+    showChannelLogoProvider: () -> Boolean = { false },
     epgListProvider: () -> EpgList = { EpgList() },
     isInTimeShiftProvider: () -> Boolean = { false },
     currentPlaybackEpgProgrammeProvider: () -> EpgProgramme? = { null },
@@ -154,14 +156,8 @@ private fun QuickOpScreenBottom(
                 },
                 isInTimeShiftProvider = isInTimeShiftProvider,
                 currentPlaybackEpgProgrammeProvider = currentPlaybackEpgProgrammeProvider,
-            )
-
-            ChannelPlayerInfo(
-                modifier = Modifier.padding(start = childPadding.start, end = childPadding.end),
-                resolutionProvider = {
-                    val metadata = videoPlayerMetadataProvider()
-                    metadata.videoWidth to metadata.videoHeight
-                },
+                videoPlayerMetadataProvider = videoPlayerMetadataProvider,
+                showChannelLogoProvider = showChannelLogoProvider,
             )
 
             QuickOpBtnList(
