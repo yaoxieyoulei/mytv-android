@@ -42,6 +42,10 @@ data class EpgList(
             }
         }
 
+        fun clearCache() {
+            matchCache.clear()
+        }
+
         fun example(channelList: ChannelList): EpgList {
             return EpgList(channelList.map(Epg.Companion::example))
         }

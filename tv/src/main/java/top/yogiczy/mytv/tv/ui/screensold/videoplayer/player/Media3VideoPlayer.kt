@@ -166,7 +166,7 @@ class Media3VideoPlayer(
                             System.currentTimeMillis() - videoPlayer.currentLiveOffset
 
                         triggerCurrentPosition(if (livePosition > 0) livePosition else videoPlayer.currentPosition)
-                        delay(1000)
+                        delay(500)
                     }
                 }
 

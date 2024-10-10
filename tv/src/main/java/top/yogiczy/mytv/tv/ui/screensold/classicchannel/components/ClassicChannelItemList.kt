@@ -90,7 +90,6 @@ fun ClassicChannelItemList(
             if (hasFocused) channelList.firstOrNull() ?: Channel() else initialChannel
         )
     }
-
     val onChannelFocusedDebounce = rememberDebounceState(wait = 100L) {
         onChannelFocused(focusedChannel)
     }
@@ -102,8 +101,12 @@ fun ClassicChannelItemList(
         )
     }
     LaunchedEffect(listState) {
-        snapshotFlow { listState.isScrollInProgress }.distinctUntilChanged()
-            .collect { _ -> onUserAction() }
+        snapshotFlow { listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { _ ->
+                onUserAction()
+                onChannelFocusedDebounce.send()
+            }
     }
 
     LazyColumn(

@@ -477,8 +477,8 @@ private fun LiveChannelsChannelInfoNoLogoPreview() {
     MyTvTheme {
         settingsVM.uiShowChannelLogo = false
         LiveChannelsChannelInfo(
-            modifier = Modifier.width(6.gridColumns()),
-            channelProvider = { Channel.EXAMPLE.copy(name = "中文") },
+            modifier = Modifier.width(5.gridColumns()),
+            channelProvider = { Channel.EXAMPLE.copy(name = "中文".repeat(10)) },
             channelLineIdxProvider = { 1 },
             recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
             playerMetadataProvider = {

@@ -56,16 +56,18 @@ fun ClassicChannelGroupItemList(
     val itemFocusRequesterList = List(channelGroupList.size) { FocusRequester() }
 
     var focusedChannelGroup by remember { mutableStateOf(initialChannelGroup) }
+    val onChannelGroupFocusedDebounce = rememberDebounceState(wait = 100L) {
+        onChannelGroupFocused(focusedChannelGroup)
+    }
 
     val listState = rememberLazyListState(max(0, channelGroupList.indexOf(initialChannelGroup) - 2))
     LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }
             .distinctUntilChanged()
-            .collect { _ -> onUserAction() }
-    }
-
-    val onChannelGroupFocusedDebounce = rememberDebounceState(wait = 100L) {
-        onChannelGroupFocused(focusedChannelGroup)
+            .collect { _ ->
+                onUserAction()
+                onChannelGroupFocusedDebounce.send()
+            }
     }
 
     LazyColumn(

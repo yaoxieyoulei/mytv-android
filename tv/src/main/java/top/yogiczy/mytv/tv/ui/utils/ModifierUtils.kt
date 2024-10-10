@@ -92,7 +92,12 @@ fun Modifier.handleDragGestures(
     onSwipeDown: () -> Unit = {},
     onSwipeLeft: () -> Unit = {},
     onSwipeRight: () -> Unit = {},
-): Modifier {
+) = composed {
+    val currentOnSwipeUp by rememberUpdatedState(onSwipeUp)
+    val currentOnSwipeDown by rememberUpdatedState(onSwipeDown)
+    val currentOnSwipeLeft by rememberUpdatedState(onSwipeLeft)
+    val currentOnSwipeRight by rememberUpdatedState(onSwipeRight)
+
     val speedThreshold = 100.dp
     val distanceThreshold = 10.dp
 
@@ -102,31 +107,30 @@ fun Modifier.handleDragGestures(
     var horizontalDragOffset = 0f
 
 
-    return this
-        .pointerInput(Unit) {
-            detectVerticalDragGestures(
-                onDragEnd = {
-                    if (verticalDragOffset.absoluteValue > distanceThreshold.toPx()) {
-                        if (verticalTracker.calculateVelocity().y > speedThreshold.toPx()) {
-                            onSwipeDown()
-                        } else if (verticalTracker.calculateVelocity().y < -speedThreshold.toPx()) {
-                            onSwipeUp()
-                        }
+    pointerInput(Unit) {
+        detectVerticalDragGestures(
+            onDragEnd = {
+                if (verticalDragOffset.absoluteValue > distanceThreshold.toPx()) {
+                    if (verticalTracker.calculateVelocity().y > speedThreshold.toPx()) {
+                        currentOnSwipeDown()
+                    } else if (verticalTracker.calculateVelocity().y < -speedThreshold.toPx()) {
+                        currentOnSwipeUp()
                     }
-                },
-            ) { change, dragAmount ->
-                verticalDragOffset += dragAmount
-                verticalTracker.addPosition(change.uptimeMillis, change.position)
-            }
+                }
+            },
+        ) { change, dragAmount ->
+            verticalDragOffset += dragAmount
+            verticalTracker.addPosition(change.uptimeMillis, change.position)
         }
+    }
         .pointerInput(Unit) {
             detectHorizontalDragGestures(
                 onDragEnd = {
                     if (horizontalDragOffset.absoluteValue > distanceThreshold.toPx()) {
                         if (horizontalTracker.calculateVelocity().x > speedThreshold.toPx()) {
-                            onSwipeRight()
+                            currentOnSwipeRight()
                         } else if (horizontalTracker.calculateVelocity().x < -speedThreshold.toPx()) {
-                            onSwipeLeft()
+                            currentOnSwipeLeft()
                         }
                     }
                 },

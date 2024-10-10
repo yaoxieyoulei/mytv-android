@@ -130,7 +130,6 @@ class VideoPlayerState(
         instance.onBuffering {
             isBuffering = it
             if (it) error = null
-
             onIsBufferingListeners.forEach { cb -> cb(isBuffering) }
         }
         instance.onPrepared { }

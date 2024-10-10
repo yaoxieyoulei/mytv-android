@@ -25,8 +25,7 @@ class IjkVideoPlayer(
 ) : VideoPlayer(coroutineScope),
     IMediaPlayer.OnPreparedListener,
     IMediaPlayer.OnVideoSizeChangedListener,
-    IMediaPlayer.OnErrorListener,
-    IMediaPlayer.OnInfoListener {
+    IMediaPlayer.OnErrorListener {
 
     private val player by lazy {
         IjkMediaPlayer().apply {
@@ -154,14 +153,12 @@ class IjkVideoPlayer(
         player.setOnPreparedListener(this)
         player.setOnVideoSizeChangedListener(this)
         player.setOnErrorListener(this)
-        player.setOnInfoListener(this)
     }
 
     override fun release() {
         player.setOnPreparedListener(null)
         player.setOnVideoSizeChangedListener(null)
         player.setOnErrorListener(null)
-        player.setOnInfoListener(null)
         player.stop()
         player.release()
         cacheSurfaceTexture?.release()
@@ -245,6 +242,7 @@ class IjkVideoPlayer(
 
         triggerMetadata(metadata)
         triggerReady()
+        triggerBuffering(false)
         triggerDuration(player.duration)
 
         updateJob?.cancel()
@@ -252,7 +250,7 @@ class IjkVideoPlayer(
             while (true) {
                 triggerIsPlayingChanged(player.isPlaying)
                 triggerCurrentPosition(player.currentPosition)
-                delay(1000)
+                delay(500)
             }
         }
     }
@@ -270,15 +268,5 @@ class IjkVideoPlayer(
         sarDen: Int
     ) {
         triggerResolution(width, height)
-    }
-
-    override fun onInfo(mp: IMediaPlayer?, what: Int, extra: Int): Boolean {
-        if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
-            triggerBuffering(true)
-        } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
-            triggerBuffering(false)
-        }
-
-        return true
     }
 }

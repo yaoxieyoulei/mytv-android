@@ -257,7 +257,7 @@ object HttpServer : Loggable("HttpServer") {
         }
 
         body.setEndCallback {
-            Snackbar.show("文件接收完成")
+            Snackbar.show("正在准备安装，请稍后...", leadingLoading = true, duration = 10_000)
             body.dataEmitter.close()
             os.flush()
             os.close()
