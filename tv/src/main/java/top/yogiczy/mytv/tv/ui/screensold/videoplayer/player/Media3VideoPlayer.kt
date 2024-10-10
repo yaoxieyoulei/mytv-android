@@ -158,6 +158,7 @@ class Media3VideoPlayer(
                 triggerBuffering(true)
             } else if (playbackState == Player.STATE_READY) {
                 triggerReady()
+                triggerDuration(videoPlayer.duration)
 
                 updatePositionJob?.cancel()
                 updatePositionJob = coroutineScope.launch {
@@ -169,8 +170,6 @@ class Media3VideoPlayer(
                         delay(500)
                     }
                 }
-
-                triggerDuration(videoPlayer.duration)
             }
 
             if (playbackState != Player.STATE_BUFFERING) {
@@ -190,14 +189,17 @@ class Media3VideoPlayer(
             decoderReuseEvaluation: DecoderReuseEvaluation?,
         ) {
             metadata = metadata.copy(
-                videoMimeType = format.sampleMimeType ?: "",
-                videoWidth = format.width,
-                videoHeight = format.height,
-                videoColor = format.colorInfo?.toLogString() ?: "",
-                // TODO 帧率、比特率目前是从tag中获取，有的返回空，后续需要实时计算
-                videoFrameRate = format.frameRate,
-                videoBitrate = format.bitrate,
+                video = (metadata.video ?: Metadata.Video()).copy(
+                    width = format.width,
+                    height = format.height,
+                    color = format.colorInfo?.toLogString(),
+                    frameRate = format.frameRate,
+                    // TODO 帧率、比特率目前是从tag中获取，有的返回空，后续需要实时计算
+                    bitrate = format.bitrate,
+                    mimeType = format.sampleMimeType,
+                )
             )
+
             triggerMetadata(metadata)
         }
 
@@ -207,7 +209,10 @@ class Media3VideoPlayer(
             initializedTimestampMs: Long,
             initializationDurationMs: Long,
         ) {
-            metadata = metadata.copy(videoDecoder = decoderName)
+            metadata = metadata.copy(
+                video = (metadata.video ?: Metadata.Video()).copy(decoder = decoderName)
+            )
+
             triggerMetadata(metadata)
         }
 
@@ -217,11 +222,14 @@ class Media3VideoPlayer(
             decoderReuseEvaluation: DecoderReuseEvaluation?,
         ) {
             metadata = metadata.copy(
-                audioMimeType = format.sampleMimeType ?: "",
-                audioChannels = format.channelCount,
-                audioSampleRate = format.sampleRate,
-                audioBitrate = format.bitrate,
+                audio = (metadata.audio ?: Metadata.Audio()).copy(
+                    channels = format.channelCount,
+                    sampleRate = format.sampleRate,
+                    bitrate = format.bitrate,
+                    mimeType = format.sampleMimeType,
+                )
             )
+
             triggerMetadata(metadata)
         }
 
@@ -231,7 +239,10 @@ class Media3VideoPlayer(
             initializedTimestampMs: Long,
             initializationDurationMs: Long,
         ) {
-            metadata = metadata.copy(audioDecoder = decoderName)
+            metadata = metadata.copy(
+                audio = (metadata.audio ?: Metadata.Audio()).copy(decoder = decoderName)
+            )
+
             triggerMetadata(metadata)
         }
     }

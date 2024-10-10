@@ -179,32 +179,26 @@ abstract class VideoPlayer(
 
     /** 元数据 */
     data class Metadata(
-        /** 视频编码 */
-        val videoMimeType: String = "",
-        /** 视频宽度 */
-        val videoWidth: Int = 0,
-        /** 视频高度 */
-        val videoHeight: Int = 0,
-        /** 视频颜色 */
-        val videoColor: String = "",
-        /** 视频帧率 */
-        val videoFrameRate: Float = 0f,
-        /** 视频比特率 */
-        val videoBitrate: Int = 0,
-        /** 视频解码器 */
-        val videoDecoder: String = "",
+        val video: Video? = null,
+        val audio: Audio? = null,
+    ) {
+        data class Video(
+            val width: Int? = null,
+            val height: Int? = null,
+            val color: String? = null,
+            val frameRate: Float? = null,
+            val bitrate: Int? = null,
+            val mimeType: String? = null,
+            val decoder: String? = null,
+        )
 
-        /** 音频编码 */
-        val audioMimeType: String = "",
-        /** 音频通道 */
-        val audioChannels: Int = 0,
-        /** 音频通道名称 */
-        val audioChannelsLabel: String? = null,
-        /** 音频采样率 */
-        val audioSampleRate: Int = 0,
-        /** 音频比特率 */
-        val audioBitrate: Int = 0,
-        /** 音频解码器 */
-        val audioDecoder: String = "",
-    )
+        data class Audio(
+            val channels: Int? = null,
+            val channelsLabel: String? = null,
+            val sampleRate: Int? = null,
+            val bitrate: Int? = null,
+            val mimeType: String? = null,
+            val decoder: String? = null,
+        )
+    }
 }

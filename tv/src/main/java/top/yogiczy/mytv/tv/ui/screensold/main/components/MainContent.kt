@@ -36,6 +36,7 @@ import top.yogiczy.mytv.tv.ui.screensold.epg.EpgScreen
 import top.yogiczy.mytv.tv.ui.screensold.epgreverse.EpgReverseScreen
 import top.yogiczy.mytv.tv.ui.screensold.quickop.QuickOpScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.VideoPlayerScreen
+import top.yogiczy.mytv.tv.ui.screensold.videoplayer.player.VideoPlayer
 import top.yogiczy.mytv.tv.ui.screensold.videoplayer.rememberVideoPlayerState
 import top.yogiczy.mytv.tv.ui.screensold.videoplayercontroller.VideoPlayerControllerScreen
 import top.yogiczy.mytv.tv.ui.screensold.videoplayerdiaplaymode.VideoPlayerDisplayModeScreen
@@ -145,8 +146,11 @@ fun MainContent(
                 urlProvider = { mainContentState.currentChannelLine.url },
                 onVideoResolutionChanged = { width, height ->
                     videoPlayerState.metadata = videoPlayerState.metadata.copy(
-                        videoWidth = width,
-                        videoHeight = height,
+                        video = (videoPlayerState.metadata.video
+                            ?: VideoPlayer.Metadata.Video()).copy(
+                            width = width,
+                            height = height,
+                        ),
                     )
                     mainContentState.isTempChannelScreenVisible = false
                 },

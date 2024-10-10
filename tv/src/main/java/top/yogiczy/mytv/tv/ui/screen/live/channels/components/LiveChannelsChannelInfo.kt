@@ -54,6 +54,7 @@ import top.yogiczy.mytv.tv.ui.utils.gridColumns
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun LiveChannelsChannelInfo(
@@ -180,44 +181,48 @@ private fun LiveChannelsChannelInfoTags(
             if (line.url.isIPv6()) Tag("IPv6", colors = tagColors)
         }
 
-        if (playerMetadata.videoWidth * playerMetadata.videoHeight > 0) {
-            Tag(
-                when (playerMetadata.videoHeight) {
-                    240 -> "240p"
-                    360 -> "360p"
-                    480 -> "480p"
-                    720 -> "HD"
-                    1080 -> "FHD"
-                    1440 -> "QHD"
-                    2160 -> "4K UHD"
-                    4320 -> "8K UHD"
-                    else -> "${playerMetadata.videoWidth}x${playerMetadata.videoHeight}"
-                },
-                colors = tagColors,
-            )
+        playerMetadata.video?.let { nnVideo ->
+            if ((nnVideo.height ?: 0) > 0) {
+                Tag(
+                    when (nnVideo.height) {
+                        240 -> "240p"
+                        360 -> "360p"
+                        480 -> "480p"
+                        720 -> "HD"
+                        1080 -> "FHD"
+                        1440 -> "QHD"
+                        2160 -> "4K UHD"
+                        4320 -> "8K UHD"
+                        else -> "${nnVideo.width}x${nnVideo.height}"
+                    },
+                    colors = tagColors,
+                )
+            }
+
+            if ((nnVideo.frameRate ?: 0f) > 0f) {
+                Tag("${nnVideo.frameRate?.roundToInt()}FPS", colors = tagColors)
+            }
         }
 
-        if (playerMetadata.videoFrameRate > 0) {
-            Tag("${playerMetadata.videoFrameRate.toInt()}FPS", colors = tagColors)
-        }
-
-        if (playerMetadata.audioChannels > 0) {
-            Tag(
-                playerMetadata.audioChannelsLabel ?: when (playerMetadata.audioChannels) {
-                    1 -> "单声道"
-                    2 -> "立体声"
-                    3 -> "2.1 声道"
-                    4 -> "4.0 四声道"
-                    5 -> "5.0 环绕声"
-                    6 -> "5.1 环绕声"
-                    7 -> "6.1 环绕声"
-                    8 -> "7.1 环绕声"
-                    10 -> "7.1.2 杜比全景声"
-                    12 -> "7.1.4 杜比全景声"
-                    else -> "${playerMetadata.audioChannels}声道"
-                },
-                colors = tagColors,
-            )
+        playerMetadata.audio?.let { nnAudio ->
+            if ((nnAudio.channels ?: 0) > 0) {
+                Tag(
+                    nnAudio.channelsLabel ?: when (nnAudio.channels) {
+                        1 -> "单声道"
+                        2 -> "立体声"
+                        3 -> "2.1 声道"
+                        4 -> "4.0 四声道"
+                        5 -> "5.0 环绕声"
+                        6 -> "5.1 环绕声"
+                        7 -> "6.1 环绕声"
+                        8 -> "7.1 环绕声"
+                        10 -> "7.1.2 杜比全景声"
+                        12 -> "7.1.4 杜比全景声"
+                        else -> "${nnAudio.channels}声道"
+                    },
+                    colors = tagColors,
+                )
+            }
         }
     }
 }
@@ -447,10 +452,15 @@ private fun LiveChannelsChannelInfoPreview() {
             },
             playerMetadataProvider = {
                 VideoPlayer.Metadata(
-                    videoWidth = 7680,
-                    videoHeight = 4320,
-                    videoFrameRate = 50f,
-                    audioChannels = 12,
+                    video = VideoPlayer.Metadata.Video(
+                        width = 7680,
+                        height = 4320,
+                        frameRate = 50f,
+                    ),
+
+                    audio = VideoPlayer.Metadata.Audio(
+                        channels = 10,
+                    ),
                 )
             },
             showChannelLogo = true,
@@ -483,8 +493,11 @@ private fun LiveChannelsChannelInfoNoLogoPreview() {
             recentEpgProgrammeProvider = { EpgProgrammeRecent.EXAMPLE },
             playerMetadataProvider = {
                 VideoPlayer.Metadata(
-                    videoWidth = 7680,
-                    videoHeight = 4320,
+                    video = VideoPlayer.Metadata.Video(
+                        width = 7680,
+                        height = 4320,
+                        frameRate = 50f,
+                    ),
                 )
             },
             dense = true,

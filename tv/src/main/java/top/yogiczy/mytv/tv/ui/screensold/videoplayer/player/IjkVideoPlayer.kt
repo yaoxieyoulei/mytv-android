@@ -40,6 +40,7 @@ class IjkVideoPlayer(
             )
             setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L)
             setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1)
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024 * 10)
             setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "fflags", "fastseek")
         }
     }
@@ -65,7 +66,7 @@ class IjkVideoPlayer(
         player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", 1)
         player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1)
         player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
-        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 5)
         player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
         player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1)
         player.setOption(
@@ -171,73 +172,78 @@ class IjkVideoPlayer(
 
         val info = player.mediaInfo
         metadata = Metadata(
-            videoDecoder = info.mVideoDecoderImpl ?: "",
-            videoMimeType = info.mMeta.mVideoStream?.mCodecName ?: "",
-            videoWidth = info.mMeta.mVideoStream?.mWidth ?: 0,
-            videoHeight = info.mMeta.mVideoStream?.mHeight ?: 0,
-            videoFrameRate = info.mMeta.mVideoStream?.mFpsNum?.toFloat() ?: 0f,
-            videoBitrate = info.mMeta.mVideoStream?.mBitrate?.toInt() ?: 0,
-            audioMimeType = info.mMeta.mAudioStream?.mCodecName ?: "",
-            audioDecoder = info.mAudioDecoderImpl ?: "",
-            audioSampleRate = info.mMeta.mAudioStream?.mSampleRate ?: 0,
-            audioChannels = when (info.mMeta.mAudioStream?.mChannelLayout) {
-                IjkMediaMeta.AV_CH_LAYOUT_MONO -> 1
-                IjkMediaMeta.AV_CH_LAYOUT_STEREO,
-                IjkMediaMeta.AV_CH_LAYOUT_2POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_STEREO_DOWNMIX -> 2
+            video = Metadata.Video(
+                width = info.mMeta.mVideoStream?.mWidth,
+                height = info.mMeta.mVideoStream?.mHeight,
+                frameRate = info.mMeta.mVideoStream?.mFpsNum?.toFloat(),
+                bitrate = info.mMeta.mVideoStream?.mBitrate?.toInt(),
+                mimeType = info.mMeta.mVideoStream?.mCodecName,
+                decoder = info.mVideoDecoderImpl,
+            ),
 
-                IjkMediaMeta.AV_CH_LAYOUT_2_1,
-                IjkMediaMeta.AV_CH_LAYOUT_SURROUND -> 3
+            audio = Metadata.Audio(
+                channels = when (info.mMeta.mAudioStream?.mChannelLayout) {
+                    IjkMediaMeta.AV_CH_LAYOUT_MONO -> 1
+                    IjkMediaMeta.AV_CH_LAYOUT_STEREO,
+                    IjkMediaMeta.AV_CH_LAYOUT_2POINT1,
+                    IjkMediaMeta.AV_CH_LAYOUT_STEREO_DOWNMIX -> 2
 
-                IjkMediaMeta.AV_CH_LAYOUT_3POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_4POINT0,
-                IjkMediaMeta.AV_CH_LAYOUT_2_2,
-                IjkMediaMeta.AV_CH_LAYOUT_QUAD -> 4
+                    IjkMediaMeta.AV_CH_LAYOUT_2_1,
+                    IjkMediaMeta.AV_CH_LAYOUT_SURROUND -> 3
 
-                IjkMediaMeta.AV_CH_LAYOUT_4POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT0 -> 5
+                    IjkMediaMeta.AV_CH_LAYOUT_3POINT1,
+                    IjkMediaMeta.AV_CH_LAYOUT_4POINT0,
+                    IjkMediaMeta.AV_CH_LAYOUT_2_2,
+                    IjkMediaMeta.AV_CH_LAYOUT_QUAD -> 4
 
-                IjkMediaMeta.AV_CH_LAYOUT_HEXAGONAL,
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT0 -> 6
+                    IjkMediaMeta.AV_CH_LAYOUT_4POINT1,
+                    IjkMediaMeta.AV_CH_LAYOUT_5POINT0 -> 5
 
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT0 -> 7
+                    IjkMediaMeta.AV_CH_LAYOUT_HEXAGONAL,
+                    IjkMediaMeta.AV_CH_LAYOUT_5POINT1,
+                    IjkMediaMeta.AV_CH_LAYOUT_6POINT0 -> 6
 
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1,
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE,
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK,
-                IjkMediaMeta.AV_CH_LAYOUT_OCTAGONAL -> 8
+                    IjkMediaMeta.AV_CH_LAYOUT_6POINT1,
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT0 -> 7
 
-                IjkMediaMeta.AV_CH_AV3A_LAYOUT_5POINT1POINT4 -> 10
-                else -> 0
-            },
-            audioChannelsLabel = when (info.mMeta.mAudioStream?.mChannelLayout) {
-                IjkMediaMeta.AV_CH_LAYOUT_MONO -> "单声道"
-                IjkMediaMeta.AV_CH_LAYOUT_STEREO -> "立体声"
-                IjkMediaMeta.AV_CH_LAYOUT_2POINT1 -> "2.1 声道"
-                IjkMediaMeta.AV_CH_LAYOUT_2_1 -> "立体声"
-                IjkMediaMeta.AV_CH_LAYOUT_SURROUND -> "环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_3POINT1 -> "3.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_4POINT0 -> "4.0 四声道"
-                IjkMediaMeta.AV_CH_LAYOUT_4POINT1 -> "4.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_2_2 -> "四声道"
-                IjkMediaMeta.AV_CH_LAYOUT_QUAD -> "四声道"
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT0 -> "5.0 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_5POINT1 -> "5.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT0 -> "6.0 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_6POINT1 -> "6.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT0 -> "7.0 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1 -> "7.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE -> "宽域 7.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK -> "后置 7.1 环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_HEXAGONAL -> "六角环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_OCTAGONAL -> "八角环绕声"
-                IjkMediaMeta.AV_CH_LAYOUT_STEREO_DOWNMIX -> "立体声下混音"
-                IjkMediaMeta.AV_CH_AV3A_LAYOUT_5POINT1POINT4 -> "三维菁彩声"
-                else -> null
-            },
-            audioBitrate = info.mMeta.mAudioStream?.mBitrate?.toInt() ?: 0,
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT1,
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE,
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK,
+                    IjkMediaMeta.AV_CH_LAYOUT_OCTAGONAL -> 8
+
+                    IjkMediaMeta.AV_CH_AV3A_LAYOUT_5POINT1POINT4 -> 10
+                    else -> 0
+                },
+                channelsLabel = when (info.mMeta.mAudioStream?.mChannelLayout) {
+                    IjkMediaMeta.AV_CH_LAYOUT_MONO -> "单声道"
+                    IjkMediaMeta.AV_CH_LAYOUT_STEREO -> "立体声"
+                    IjkMediaMeta.AV_CH_LAYOUT_2POINT1 -> "2.1 声道"
+                    IjkMediaMeta.AV_CH_LAYOUT_2_1 -> "立体声"
+                    IjkMediaMeta.AV_CH_LAYOUT_SURROUND -> "环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_3POINT1 -> "3.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_4POINT0 -> "4.0 四声道"
+                    IjkMediaMeta.AV_CH_LAYOUT_4POINT1 -> "4.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_2_2 -> "四声道"
+                    IjkMediaMeta.AV_CH_LAYOUT_QUAD -> "四声道"
+                    IjkMediaMeta.AV_CH_LAYOUT_5POINT0 -> "5.0 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_5POINT1 -> "5.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_6POINT0 -> "6.0 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_6POINT1 -> "6.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT0 -> "7.0 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT1 -> "7.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE -> "宽域 7.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_7POINT1_WIDE_BACK -> "后置 7.1 环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_HEXAGONAL -> "六角环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_OCTAGONAL -> "八角环绕声"
+                    IjkMediaMeta.AV_CH_LAYOUT_STEREO_DOWNMIX -> "立体声下混音"
+                    IjkMediaMeta.AV_CH_AV3A_LAYOUT_5POINT1POINT4 -> "三维菁彩声"
+                    else -> null
+                },
+                sampleRate = info.mMeta.mAudioStream?.mSampleRate,
+                bitrate = info.mMeta.mAudioStream?.mBitrate?.toInt(),
+                mimeType = info.mMeta.mAudioStream?.mCodecName,
+                decoder = info.mAudioDecoderImpl,
+            ),
         )
 
         triggerMetadata(metadata)

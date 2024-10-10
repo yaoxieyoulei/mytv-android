@@ -36,26 +36,30 @@ fun VideoPlayerMetadata(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Column {
-                Text("视频", style = MaterialTheme.typography.titleMedium)
-                Column(modifier = Modifier.padding(start = 10.dp)) {
-                    Text("编码: ${metadata.videoMimeType}")
-                    Text("解码器: ${metadata.videoDecoder}")
-                    Text("分辨率: ${metadata.videoWidth}x${metadata.videoHeight}")
-                    Text("色彩: ${metadata.videoColor}")
-                    Text("帧率: ${metadata.videoFrameRate}")
-                    Text("比特率: ${metadata.videoBitrate / 1024} kbps")
+            metadata.video?.let { nnVideo ->
+                Column {
+                    Text("视频", style = MaterialTheme.typography.titleMedium)
+                    Column(modifier = Modifier.padding(start = 10.dp)) {
+                        nnVideo.width?.let { nnWidth -> Text("分辨率: ${nnWidth}x${nnVideo.height}") }
+                        nnVideo.color?.let { nnColor -> Text("颜色空间: $nnColor") }
+                        nnVideo.frameRate?.let { nnFrameRate -> Text("帧率: $nnFrameRate") }
+                        nnVideo.bitrate?.let { nnBitrate -> Text("码率: ${nnBitrate / 1024} kbps") }
+                        nnVideo.mimeType?.let { nnMimeType -> Text("编码: $nnMimeType") }
+                        nnVideo.decoder?.let { nnDecoder -> Text("解码器: $nnDecoder") }
+                    }
                 }
             }
 
-            Column {
-                Text("音频", style = MaterialTheme.typography.titleMedium)
-                Column(modifier = Modifier.padding(start = 10.dp)) {
-                    Text("编码: ${metadata.audioMimeType}")
-                    Text("解码器: ${metadata.audioDecoder}")
-                    Text("声道数: ${metadata.audioChannels}")
-                    Text("采样率: ${metadata.audioSampleRate} Hz")
-                    Text("比特率: ${metadata.audioBitrate / 1024} kbps")
+            metadata.audio?.let { nnAudio ->
+                Column {
+                    Text("音频", style = MaterialTheme.typography.titleMedium)
+                    Column(modifier = Modifier.padding(start = 10.dp)) {
+                        nnAudio.channels?.let { nnChannels -> Text("声道数: $nnChannels") }
+                        nnAudio.sampleRate?.let { nnSampleRate -> Text("采样率: $nnSampleRate Hz") }
+                        nnAudio.bitrate?.let { nnBitrate -> Text("比特率: ${nnBitrate / 1024} kbps") }
+                        nnAudio.mimeType?.let { nnMimeType -> Text("编码: $nnMimeType") }
+                        nnAudio.decoder?.let { nnDecoder -> Text("解码器: $nnDecoder") }
+                    }
                 }
             }
         }
@@ -69,19 +73,21 @@ private fun VideoMetadataPreview() {
         VideoPlayerMetadata(
             metadataProvider = {
                 VideoPlayer.Metadata(
-                    videoWidth = 1920,
-                    videoHeight = 1080,
-                    videoMimeType = "video/hevc",
-                    videoColor = "BT2020/Limited range/HLG/8/8",
-                    videoFrameRate = 25.0f,
-                    videoBitrate = 10605096,
-                    videoDecoder = "c2.goldfish.h264.decoder",
+                    video = VideoPlayer.Metadata.Video(
+                        width = 1920,
+                        height = 1080,
+                        color = "BT2020/Limited range/HLG/8/8",
+                        bitrate = 10605096,
+                        mimeType = "video/hevc",
+                        decoder = "c2.goldfish.h264.decoder",
+                    ),
 
-                    audioMimeType = "audio/mp4a-latm",
-                    audioChannels = 2,
-                    audioSampleRate = 32000,
-                    audioDecoder = "c2.android.aac.decoder",
-                    audioBitrate = 256 * 1024,
+                    audio = VideoPlayer.Metadata.Audio(
+                        channels = 2,
+                        sampleRate = 32000,
+                        bitrate = 256 * 1024,
+                        mimeType = "audio/mp4a-latm",
+                    ),
                 )
             }
         )
